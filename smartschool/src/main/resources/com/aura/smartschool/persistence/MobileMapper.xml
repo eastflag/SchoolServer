@@ -3,9 +3,22 @@
 
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
-	<select id="getMobile" parameterType="Mobile" resultType="Mobile">
-		SELECT * FROM mobile
-		WHERE mdn=#{mdn}
-	</select>
+<select id="getMobile" parameterType="Mobile" resultType="Mobile">
+	SELECT * FROM mobile
+	WHERE mdn=#{mdn};
+</select>
+
+<select id="getFamaily" parameterType="Mobile" resultType="Mobile">
+	SELECT * FROM mobile
+	WHERE home_id=#{home_id};
+</select>
+	
+<insert id="insertHome" parameterType="Home" useGeneratedKeys="true" keyProperty="home_id">
+	INSERT INTO home() values();
+</insert>
+
+<insert id="insertMobile" parameterType="Mobile">
+	INSERT INTO mobile(home_id, mdn, is_parent) values(#{home_id}, #{mdn}, #{is_parent});
+</insert>
 
 </mapper>

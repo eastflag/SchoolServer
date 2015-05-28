@@ -4,7 +4,7 @@ public class Mobile {
 	private int home_id;
 	private int mobile_id;
 	private String mdn;
-	private int relation; //0:부모, 1:학생
+	private int is_parent; //0:학생, 1:부모
 	
 	public int getHome_id() {
 		return home_id;
@@ -24,11 +24,12 @@ public class Mobile {
 	public void setMdn(String mdn) {
 		this.mdn = mdn;
 	}
-	public int getRelation() {
-		return relation;
+	public int getIs_parent() {
+		return is_parent;
 	}
-	public void setRelation(int relation) {
-		this.relation = relation;
+	public void setIs_parent(int is_parent) {
+		this.is_parent = is_parent;
 	}
+
 
 }

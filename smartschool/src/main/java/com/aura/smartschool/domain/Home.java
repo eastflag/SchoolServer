@@ -1,14 +1,14 @@
 package com.aura.smartschool.domain;
 
 public class Home {
-	private int id;
+	private int home_id;
 
-	public int getId() {
-		return id;
+	public int getHome_id() {
+		return home_id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setHome_id(int home_id) {
+		this.home_id = home_id;
 	}
 	
 	
