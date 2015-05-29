@@ -9,5 +9,5 @@ public interface MobileMapper {
 	public long insertHome(Home home);
 	public int insertMobile(Mobile mobile);
 	public List<Mobile> getFamily(Mobile mobile);
-	public Mobile getMobile(Mobile mobile);
+	public int signIn(Mobile mobile);
 }

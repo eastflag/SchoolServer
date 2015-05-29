@@ -3,9 +3,9 @@
 
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
-<select id="getMobile" parameterType="Mobile" resultType="Mobile">
-	SELECT * FROM mobile
-	WHERE mdn=#{mdn};
+<select id="signIn" parameterType="Mobile" resultType="Integer">
+	SELECT count(*) FROM mobile
+	WHERE mdn=#{mdn} and home_id=#{home_id};
 </select>
 
 <select id="getFamaily" parameterType="Mobile" resultType="Mobile">

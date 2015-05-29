@@ -19,15 +19,18 @@ public class ApiController {
 	@Autowired
 	private MobileService mobileService;
     
-	//전화번호로 로그인하기
+	//로그인하기 :home_id, mdn
 	@RequestMapping("/api/signIn")
-    public Mobile signIn(@RequestBody Mobile mobile) {
-		//전화번호에 해당하는 home_id가 존재하는지 체크, 
-		
-		
+    public Result<List<Mobile>> signIn(@RequestBody Mobile mobile) {
+		//home_id, mdn이 존재하는지 체크, 
+		int is_exist = mobileService.signIn(mobile);
 		//존재한다면 학생 정보를 리턴
-		
-        return mobileService.getMobile(mobile);
+		if(is_exist >0) {
+			List<Mobile> mobileList = mobileService.getFamily(mobile); 
+			return new Result<List<Mobile>>(0, "success", mobileList);
+		} else {
+			return new Result<List<Mobile>>(100, "login id does not exist", null);
+		}
     }
 	
 	//가입하기
@@ -45,8 +48,8 @@ public class ApiController {
 		} else {
 			mobileService.insertMobile(mobile);
 			//home_id와 매핑된 가족 정보를 리턴한다.
-			List<Mobile> family = mobileService.getFamily(mobile);
-			return new Result(0, "success", family);
+			List<Mobile> mobileList = mobileService.getFamily(mobile);
+			return new Result(0, "success", mobileList);
 		}
     }
 }

@@ -22,8 +22,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public Mobile getMobile(Mobile mobile) {
-		return mobileMapper.getMobile(mobile);
+	public int signIn(Mobile mobile) {
+		return mobileMapper.signIn(mobile);
 	}
 
 	@Override
