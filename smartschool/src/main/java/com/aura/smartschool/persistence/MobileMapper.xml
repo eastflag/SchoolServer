@@ -3,22 +3,42 @@
 
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
-<select id="signIn" parameterType="Mobile" resultType="Integer">
-	SELECT count(*) FROM mobile
+<select id="selectHome" parameterType="Home" resultType="Integer">
+	SELECT count(*) FROM HOME
+	WHERE home_id = #{home_id}
+</select> 
+
+<select id="signIn" parameterType="Member" resultType="Member">
+	SELECT * FROM member
 	WHERE mdn=#{mdn} and home_id=#{home_id};
 </select>
 
-<select id="getFamaily" parameterType="Mobile" resultType="Mobile">
-	SELECT * FROM mobile
+<select id="getMemberList" parameterType="Member" resultType="Member">
+	SELECT * FROM member
 	WHERE home_id=#{home_id};
 </select>
 	
-<insert id="insertHome" parameterType="Home" useGeneratedKeys="true" keyProperty="home_id">
-	INSERT INTO home() values();
+<insert id="insertHome" parameterType="Home">
+	INSERT INTO home(home_id) values(#{home_id});
 </insert>
 
-<insert id="insertMobile" parameterType="Mobile">
-	INSERT INTO mobile(home_id, mdn, is_parent) values(#{home_id}, #{mdn}, #{is_parent});
+<insert id="insertMember" parameterType="Member">
+	INSERT INTO 
+		MEMBER(home_id, mdn, is_parent, name, photo, school_name, school_grade, school_ban) 
+		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{photo}, #{school_name}, #{school_grade}, #{school_ban});
 </insert>
+
+<update id="updateMember" parameterType="Member">
+	UPDATE MEMBER
+	<set>
+		<if test="mdn != null">mdn=#{mdn},</if>
+		<if test="name != null">name=#{name},</if>
+		<if test="photo != null">photo=#{photo},</if>
+		<if test="school_name != null">school_name=#{school_name},</if>
+		<if test="school_grade != null">school_grade=#{school_grade},</if>
+		<if test="school_ban != null">school_ban=#{school_ban}</if>
+	</set>
+	WHERE member_id = #{member_id} 
+</update>
 
 </mapper>

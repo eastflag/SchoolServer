@@ -2,11 +2,12 @@ package com.aura.smartschool.service;
 
 import java.util.List;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aura.smartschool.domain.Home;
-import com.aura.smartschool.domain.Mobile;
+import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.persistence.MobileMapper;
 
 @Service("mobileService")
@@ -16,23 +17,33 @@ public class MobileServiceImpl implements MobileService {
 	private MobileMapper mobileMapper;
 
 	@Override
-	public long insertHome(Home home) {
-		mobileMapper.insertHome(home);
-		return home.getHome_id();
+	public int selectHome(Home home) {
+		return mobileMapper.selectHome(home);
 	}
 	
 	@Override
-	public int signIn(Mobile mobile) {
-		return mobileMapper.signIn(mobile);
+	public Member signIn(Member member) {
+		return mobileMapper.signIn(member);
+	}
+	
+	@Override
+	public List<Member> getMemberList(Member mobile) {
+		return mobileMapper.getMemberList(mobile);
+	}
+	
+	@Override
+	public long insertHome(Home home) throws PersistenceException {
+		return mobileMapper.insertHome(home);
 	}
 
 	@Override
-	public int insertMobile(Mobile mobile) {
-		return mobileMapper.insertMobile(mobile);
+	public long insertMember(Member member) throws PersistenceException {
+		return mobileMapper.insertMember(member);
 	}
 
 	@Override
-	public List<Mobile> getFamily(Mobile mobile) {
-		return mobileMapper.getFamily(mobile);
+	public long updateMember(Member member) throws PersistenceException {
+		return mobileMapper.updateMember(member);
 	}
+
 }
