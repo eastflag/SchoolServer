@@ -41,4 +41,10 @@
 	WHERE member_id = #{member_id} 
 </update>
 
+<insert id="insertLocation" parameterType="LocationVO">
+	INSERT INTO 
+		LOCATION(member_id, lat, lng, address) 
+		values(#{member_id}, #{lat}, #{lng}, #{address});
+</insert>
+
 </mapper>

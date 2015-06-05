@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
@@ -101,5 +102,19 @@ public class ApiController {
 			return new Result(100, "update failed");
 		}
 
+	}
+	
+	//자녀 위치 등록
+	@RequestMapping("/api/addLocation")
+    public Result addLocation(@RequestBody LocationVO location) {
+		int result = 0;
+		String msg = "success";
+		try {
+			mobileService.insertLocation(location);
+		} catch (PersistenceException e) {
+			result = 500;
+			msg = "server error";
+		} 
+		return new Result(result, msg);
 	}
 }

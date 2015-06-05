@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.persistence.MobileMapper;
 
@@ -44,6 +45,11 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long updateMember(Member member) throws PersistenceException {
 		return mobileMapper.updateMember(member);
+	}
+
+	@Override
+	public long insertLocation(LocationVO location) throws PersistenceException {
+		return mobileMapper.insertLocation(location);
 	}
 
 }

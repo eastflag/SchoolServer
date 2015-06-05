@@ -1,3 +1,16 @@
+* mysql 압축버전 설정법
+C:\mysql-5.6.24-winx64 에 압축해제
+bin폴더에 가서 mysqld --install 하여 서비스 등록 (해제는 --remove)
+mysql 시작 종료는 net start mysql, net stop mysql
+
+한글깨짐은 my-default.ini를 복사하여 my.ini로 카피후
+맨아래에 아래 내용 추가
+character-set-client-handshake=FALSE
+init_connect="SET collation_connection = utf8_general_ci"
+init_connect="SET NAMES utf8"
+character-set-server = utf8
+collation-server = utf8_general_ci
+
 *회원가입--------------------------------------
 http://localhost:9000/api/signUp
 {
@@ -87,3 +100,5 @@ http://localhost:9000/api/updateMember
 	"member_id" : 3,
 	"school_ban": "5"
 }
+
+자녀 위치 트래킹--------------------------------------------------
