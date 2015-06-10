@@ -17,9 +17,9 @@ public class DataConfig {
 	public DataSource dataSource() {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setDriverClass(com.mysql.jdbc.Driver.class);
-		dataSource.setUsername("root");
-		dataSource.setUrl("jdbc:mysql://localhost:3306/health");
-		dataSource.setPassword("");
+		dataSource.setUsername("healthcare");
+		dataSource.setUrl("jdbc:mysql://localhost:3306/healthcare");
+		dataSource.setPassword("!healthcare");
 
 		// populate some data
 		/*JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
