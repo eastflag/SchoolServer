@@ -107,7 +107,7 @@ public class ApiController {
 	}
 	
 	//가족 멤버 리스트 가져오기
-	@RequestMapping("/api/updateMember")
+	@RequestMapping("/api/getMemberList")
     public Result getMemberList(@RequestBody Home home) {
 		
 		List<Member> memberList = mobileService.getMemberList(home);
