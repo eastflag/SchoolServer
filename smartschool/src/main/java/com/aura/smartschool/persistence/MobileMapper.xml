@@ -13,7 +13,7 @@
 	WHERE mdn=#{mdn} and home_id=#{home_id};
 </select>
 
-<select id="getMemberList" parameterType="Member" resultType="Member">
+<select id="getMemberList" parameterType="Home" resultType="Member">
 	SELECT * FROM member
 	WHERE home_id=#{home_id};
 </select>

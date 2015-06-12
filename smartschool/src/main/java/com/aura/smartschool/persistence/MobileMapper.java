@@ -11,7 +11,7 @@ import com.aura.smartschool.domain.Member;
 public interface MobileMapper {
 	public int selectHome(Home home);
 	public Member signIn(Member member);
-	public List<Member> getMemberList(Member member);
+	public List<Member> getMemberList(Home home);
 	public long insertHome(Home home) throws PersistenceException;
 	public long insertMember(Member member) throws PersistenceException;
 	public long updateMember(Member member) throws PersistenceException;

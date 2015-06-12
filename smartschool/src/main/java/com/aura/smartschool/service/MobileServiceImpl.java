@@ -28,8 +28,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public List<Member> getMemberList(Member mobile) {
-		return mobileMapper.getMemberList(mobile);
+	public List<Member> getMemberList(Home home) {
+		return mobileMapper.getMemberList(home);
 	}
 	
 	@Override

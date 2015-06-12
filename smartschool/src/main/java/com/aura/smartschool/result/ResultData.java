@@ -6,6 +6,10 @@ public class ResultData<T> extends Result {
 	public ResultData() {
 
 	}
+	
+	public ResultData(int result, String msg) {
+		super(result, msg);
+	}
 
 	public ResultData(T data) {
 		this.data = data;

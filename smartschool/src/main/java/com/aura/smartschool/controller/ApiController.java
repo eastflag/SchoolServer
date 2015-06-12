@@ -32,7 +32,9 @@ public class ApiController {
 		Member myInfo = mobileService.signIn(member);
 		//존재한다면 구성원 리스트를 리턴
 		if(myInfo != null) {
-			List<Member> memberList = mobileService.getMemberList(member); 
+			Home home = new Home();
+			home.setHome_id(member.getHome_id());
+			List<Member> memberList = mobileService.getMemberList(home); 
 			
 			SignIn signInData = new SignIn();
 			signInData.setMyInfo(myInfo);
@@ -75,7 +77,7 @@ public class ApiController {
 		return new Result(result, msg);
     }
 	
-	//구성원 등록
+	//가족 멤버 등록
 	@RequestMapping("/api/addMember")
     public Result addMember(@RequestBody Member member) {
 		try {
@@ -90,7 +92,7 @@ public class ApiController {
 		} 
 	}
 	
-	//구성원 수정
+	//가족 멤버 수정
 	@RequestMapping("/api/updateMember")
     public Result updateMember(@RequestBody Member member) {
 		System.out.println("school_name:" + member.getSchool_name());
@@ -102,6 +104,21 @@ public class ApiController {
 			return new Result(100, "update failed");
 		}
 
+	}
+	
+	//가족 멤버 리스트 가져오기
+	@RequestMapping("/api/updateMember")
+    public Result getMemberList(@RequestBody Home home) {
+		
+		List<Member> memberList = mobileService.getMemberList(home);
+
+		ResultData<List<Member>> result = new ResultData<List<Member>>(0, "success");
+		
+		if(memberList.size() > 0) {
+			return new ResultData<List<Member>>(0, "success", memberList);
+		} else {
+			return new ResultData<List<Member>>(100, "home id does not exist", memberList);
+		}
 	}
 	
 	//자녀 위치 등록
