@@ -24,8 +24,8 @@
 
 <insert id="insertMember" parameterType="Member">
 	INSERT INTO 
-		MEMBER(home_id, mdn, is_parent, name, photo, school_name, school_grade, school_ban) 
-		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{photo}, #{school_name}, #{school_grade}, #{school_ban});
+		MEMBER(home_id, mdn, is_parent, name, relation, photo, school_name, school_grade, school_ban) 
+		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{relation}, #{photo}, #{school_name}, #{school_grade}, #{school_ban});
 </insert>
 
 <update id="updateMember" parameterType="Member">
@@ -33,6 +33,7 @@
 	<set>
 		<if test="mdn != null">mdn=#{mdn},</if>
 		<if test="name != null">name=#{name},</if>
+		<if test="relation != null">relation=#{relation},</if>
 		<if test="photo != null">photo=#{photo},</if>
 		<if test="school_name != null">school_name=#{school_name},</if>
 		<if test="school_grade != null">school_grade=#{school_grade},</if>

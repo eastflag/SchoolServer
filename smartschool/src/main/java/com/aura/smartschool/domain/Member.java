@@ -6,6 +6,7 @@ public class Member {
 	private String mdn;
 	private int is_parent; //0:학생, 1:부모
 	private String name;
+	private String relation;
 	private String photo;
 	private String school_name;
 	private String school_grade;
@@ -64,6 +65,12 @@ public class Member {
 	}
 	public void setSchool_ban(String school_ban) {
 		this.school_ban = school_ban;
+	}
+	public String getRelation() {
+		return relation;
+	}
+	public void setRelation(String relation) {
+		this.relation = relation;
 	}
 
 
