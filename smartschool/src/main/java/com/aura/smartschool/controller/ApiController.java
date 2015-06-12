@@ -27,7 +27,7 @@ public class ApiController {
     
 	//로그인하기 :home_id, mdn
 	@RequestMapping("/api/signIn")
-    public ResultData<SignIn> signIn(@RequestBody Member member) {
+    public ResultData<List<Member>> signIn(@RequestBody Member member) {
 		//home_id 존재하는지 체크, 
 		Member myInfo = mobileService.signIn(member);
 		//존재한다면 구성원 리스트를 리턴
@@ -36,14 +36,11 @@ public class ApiController {
 			home.setHome_id(member.getHome_id());
 			List<Member> memberList = mobileService.getMemberList(home); 
 			
-			SignIn signInData = new SignIn();
-			signInData.setMyInfo(myInfo);
-			signInData.setMemberList(memberList);
-			ResultData<SignIn> result = new ResultData<SignIn>(0, "success", signInData);
+			ResultData<List<Member>> result = new ResultData<List<Member>>(0, "success", memberList);
 			
 			return result;
 		} else {
-			return new ResultData<SignIn>(100, "login failed", null);
+			return new ResultData<List<Member>>(100, "login failed", null);
 		}
     }
 	
