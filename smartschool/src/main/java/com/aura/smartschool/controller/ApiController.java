@@ -92,8 +92,6 @@ public class ApiController {
 	//가족 멤버 수정
 	@RequestMapping("/api/updateMember")
     public Result updateMember(@RequestBody Member member) {
-		System.out.println("school_name:" + member.getSchool_name());
-		
 		long resultCount = mobileService.updateMember(member);
 		if(resultCount > 0) {
 			return new Result(0, "success");
