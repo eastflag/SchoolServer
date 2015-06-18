@@ -5,6 +5,8 @@ import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +24,16 @@ import com.aura.smartschool.service.MobileService;
 @RestController
 public class ApiController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
+	
 	@Autowired
 	private MobileService mobileService;
     
 	//로그인하기 :home_id, mdn
 	@RequestMapping("/api/signIn")
     public ResultData<List<Member>> signIn(@RequestBody Member member) {
+		logger.debug("/api/signIn----------------------------------------------------------------");
+		
 		//home_id 존재하는지 체크, 
 		Member myInfo = mobileService.signIn(member);
 		//존재한다면 구성원 리스트를 리턴
@@ -48,6 +54,8 @@ public class ApiController {
 	@Transactional
 	@RequestMapping("/api/signUp")
     public Result signUp(@RequestBody Member member) {
+		logger.debug("/api/signUp----------------------------------------------------------------");
+		
 		int result = 0;
 		String msg = "success";
 		try { 
@@ -77,6 +85,8 @@ public class ApiController {
 	//가족 멤버 등록
 	@RequestMapping("/api/addMember")
     public Result addMember(@RequestBody Member member) {
+		logger.debug("/api/addMember-------------------------------------------------------------");
+		
 		try {
 			long resultCount = mobileService.insertMember(member);
 			if(resultCount > 0) {
@@ -92,7 +102,7 @@ public class ApiController {
 	//가족 멤버 수정
 	@RequestMapping("/api/updateMember")
     public Result updateMember(@RequestBody Member member) {
-		System.out.println("school_name:" + member.getSchool_name());
+		logger.debug("/api/updateMember----------------------------------------------------------");
 		
 		long resultCount = mobileService.updateMember(member);
 		if(resultCount > 0) {
@@ -106,6 +116,7 @@ public class ApiController {
 	//가족 멤버 리스트 가져오기
 	@RequestMapping("/api/getMemberList")
     public Result getMemberList(@RequestBody Home home) {
+		logger.debug("/api/getMemberList---------------------------------------------------------");
 		
 		List<Member> memberList = mobileService.getMemberList(home);
 
@@ -121,6 +132,8 @@ public class ApiController {
 	//자녀 위치 등록
 	@RequestMapping("/api/addLocation")
     public Result addLocation(@RequestBody LocationVO location) {
+		logger.debug("/api/addLocation-----------------------------------------------------------");
+		
 		int result = 0;
 		String msg = "success";
 		try {
