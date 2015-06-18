@@ -24,7 +24,7 @@ import com.aura.smartschool.service.MobileService;
 @RestController
 public class ApiController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
+	private static Logger logger = LoggerFactory.getLogger(ApiController.class);
 	
 	@Autowired
 	private MobileService mobileService;
