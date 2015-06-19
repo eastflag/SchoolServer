@@ -3,35 +3,6 @@ CREATE TABLE `home` (
   PRIMARY KEY (`home_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `member` (
-  `member_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `home_id` varchar(45) NOT NULL,
-  `mdn` varchar(30) DEFAULT NULL,
-  `gcm_id` varchar(256) DEFAULT NULL,
-  `is_parent` tinyint(1) NOT NULL DEFAULT '0',
-  `name` varchar(45) NOT NULL,
-  `relation` varchar(45) DEFAULT NULL,
-  `photo` blob DEFAULT NULL,
-  `school_name` varchar(45) DEFAULT NULL,
-  `school_grade` varchar(2) DEFAULT NULL,
-  `school_ban` varchar(2) DEFAULT NULL,
-  PRIMARY KEY (`member_id`),
-  KEY `FK_Member_Home` (`home_id`),
-  CONSTRAINT `FK_Member_Home` FOREIGN KEY (`home_id`) REFERENCES `home` (`home_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `location` (
-  `location_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `member_id` bigint(20) NOT NULL,
-  `lat` double NOT NULL,
-  `lng` double NOT NULL,
-  `address` varchar(450) COLLATE utf8_bin DEFAULT NULL,
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`location_id`),
-  KEY `FK_LOCATION_MEMBER` (`member_id`),
-  CONSTRAINT `FK_LOCATION_MEMBER` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 CREATE TABLE `inbody_info` (
   `Inbody_seq` bigint(18) NOT NULL,
   `DATETIMES` datetime NOT NULL,
@@ -89,13 +60,17 @@ CREATE TABLE `inbody_info` (
   PRIMARY KEY (`Inbody_seq`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `smoke_info` (
-  `Smoke_seq` bigint(18) NOT NULL,
-  `PPM` varchar(4) NOT NULL,
-  `COHD` varchar(4) NOT NULL,
-  `DATETIMES` date NOT NULL,
-  PRIMARY KEY (`Smoke_seq`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `location` (
+  `location_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `member_id` bigint(20) NOT NULL,
+  `lat` varbinary(100) NOT NULL,
+  `lng` varbinary(100) NOT NULL,
+  `address` varchar(450) COLLATE utf8_bin DEFAULT NULL,
+  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`location_id`),
+  KEY `FK_LOCATION_MEMBER` (`member_id`),
+  CONSTRAINT `FK_LOCATION_MEMBER` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `measure_info` (
   `measure_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -105,11 +80,106 @@ CREATE TABLE `measure_info` (
   `school_ban` varchar(2) DEFAULT NULL,
   `Smoke_seq` bigint(18) DEFAULT NULL,
   `Inbody_seq` bigint(18) DEFAULT NULL,
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`measure_id`),
   KEY `FK_measure_member` (`member_id`),
   KEY `FK_measure_inbody` (`Inbody_seq`),
   KEY `FK_measure_smoke` (`Smoke_seq`),
-  CONSTRAINT `FK_measure_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_measure_inbody` FOREIGN KEY (`Inbody_seq`) REFERENCES `inbody_info` (`Inbody_seq`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_measure_member` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_measure_smoke` FOREIGN KEY (`Smoke_seq`) REFERENCES `smoke_info` (`Smoke_seq`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `member` (
+  `member_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `home_id` varchar(45) NOT NULL,
+  `mdn` varchar(30) DEFAULT NULL,
+  `gcm_id` varchar(256) DEFAULT NULL,
+  `is_parent` tinyint(1) NOT NULL DEFAULT '0',
+  `name` varchar(45) NOT NULL,
+  `relation` varchar(45) NOT NULL,
+  `photo` blob,
+  `school_name` varchar(45) DEFAULT NULL,
+  `school_grade` varchar(2) DEFAULT NULL,
+  `school_ban` varchar(2) DEFAULT NULL,
+  `school_id` int(11) DEFAULT '0',
+  PRIMARY KEY (`member_id`),
+  KEY `FK_Member_Home` (`home_id`),
+  KEY `FK_MEMBER_SCHOOL` (`school_id`),
+  CONSTRAINT `FK_MEMBER_SCHOOL` FOREIGN KEY (`school_id`) REFERENCES `school` (`school_id`) ON DELETE CASCADE,
+  CONSTRAINT `FK_Member_Home` FOREIGN KEY (`home_id`) REFERENCES `home` (`home_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `school` (
+  `school_id` int(11) NOT NULL AUTO_INCREMENT,
+  `_id` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(100) DEFAULT NULL,
+  `gubun1` varchar(20) DEFAULT NULL,
+  `gubun2` varchar(50) DEFAULT NULL,
+  `zipcode` varchar(15) DEFAULT NULL,
+  `address` varchar(400) DEFAULT NULL,
+  `new_address` varchar(400) DEFAULT NULL,
+  `lat` varbinary(100) DEFAULT NULL,
+  `lng` varbinary(100) DEFAULT NULL,
+  `homepage` varchar(400) DEFAULT NULL,
+  `fax` varchar(20) DEFAULT NULL,
+  `contact` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`school_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `smoke_info` (
+  `Smoke_seq` bigint(18) NOT NULL,
+  `PPM` varchar(4) NOT NULL,
+  `COHD` varchar(4) NOT NULL,
+  `DATETIMES` date NOT NULL,
+  PRIMARY KEY (`Smoke_seq`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+//----------------------------------------------------
+INSERT INTO `healthcare`.`school`
+(`_id`,
+`name`,
+`gubun1`,
+`gubun2`,
+`zipcode`,
+`address`,
+`new_address`,
+`lat`,
+`lng`,
+`homepage`,
+`fax`,
+`contact`)
+VALUES
+(1,
+'광명초등학교',
+'사립',
+'초등',
+'123-123',
+'경기도 광명시',
+'경기도 광명시 아나지로',
+AES_ENCRYPT('36.123123', 'aura'),
+AES_ENCRYPT('127.123123', 'aura'),
+'http://www.aaa.bbb',
+'02-1234-1234',
+'010-1234-1234');
+select  CAST(AES_DECRYPT(lat, 'aura') AS CHAR(20)) as 'lat' from school
+
+INSERT INTO `healthcare`.`member`
+(
+`home_id`,
+`mdn`,
+`is_parent`,
+`name`,
+school_id,
+`relation`)
+VALUES
+(
+'happy',
+'01012341234',
+1,
+'홍길동',
+null,
+'아빠');
+
+http://api.data.go.kr/openapi/4e1a3cda-db21-40b3-b4f8-a1e7de2993bd?serviceKey=39GJD5n4H%2B%2BZJlcm3k8okH3Bc%2F9fj1ne7fNKdFXYQGobEPJpXspv5zrN2ctlLdJcr2qqew%2FXSiMck9RPqhDQPQ%3D%3D&s_page=1&s_list=10&type=json
