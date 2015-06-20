@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.persistence.MobileMapper;
 
 @Service("mobileService")
@@ -50,6 +51,11 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long insertLocation(LocationVO location) throws PersistenceException {
 		return mobileMapper.insertLocation(location);
+	}
+
+	@Override
+	public long insertSchool(SchoolVO school) throws PersistenceException {
+		return mobileMapper.insertSchool(school);
 	}
 
 }

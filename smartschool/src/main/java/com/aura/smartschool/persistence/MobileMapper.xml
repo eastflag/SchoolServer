@@ -48,4 +48,31 @@
 		values(#{member_id}, #{lat}, #{lng}, #{address});
 </insert>
 
+<insert id="insertSchool" parameterType="SchoolVO">
+	INSERT INTO school(
+			name,
+			gubun1,
+			gubun2,
+			zipcode,
+			address,
+			new_address,
+			lat,
+			lng,
+			homepage,
+			fax,
+			contact) 
+		VALUES (
+			#{name},
+			#{gubun1},
+			#{gubun2},
+			#{zipcode},
+			HEX(AES_ENCRYPT(#{address}, 'aura')),
+			HEX(AES_ENCRYPT(#{new_address}, 'aura')),
+			HEX(AES_ENCRYPT(#{lat}, 'aura')),
+			HEX(AES_ENCRYPT(#{lng}, 'aura')),
+			#{homepage},
+			#{fax},
+			#{contact})
+</insert>
+
 </mapper>

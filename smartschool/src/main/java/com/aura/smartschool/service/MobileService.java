@@ -9,6 +9,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.SchoolVO;
 
 public interface MobileService {
 	public int selectHome(Home home);
@@ -19,4 +20,5 @@ public interface MobileService {
 	public long updateMember(Member member) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
+	public long insertSchool(SchoolVO school) throws PersistenceException;
 }
