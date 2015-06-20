@@ -8,9 +8,17 @@ public class Member {
 	private String name;
 	private String relation;
 	private String photo;
-	private String school_name;
+	private int school_id;
 	private String school_grade;
-	private String school_ban;
+	private String school_class;
+	
+	private String school_name;
+	private String address;
+	private String new_address;
+	private String lat;
+	private String lng;
+	private String homepage;
+	private String contact;
 	
 	public String getHome_id() {
 		return home_id;
@@ -42,17 +50,23 @@ public class Member {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getRelation() {
+		return relation;
+	}
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}
 	public String getPhoto() {
 		return photo;
 	}
 	public void setPhoto(String photo) {
 		this.photo = photo;
 	}
-	public String getSchool_name() {
-		return school_name;
+	public int getSchool_id() {
+		return school_id;
 	}
-	public void setSchool_name(String school_name) {
-		this.school_name = school_name;
+	public void setSchool_id(int school_id) {
+		this.school_id = school_id;
 	}
 	public String getSchool_grade() {
 		return school_grade;
@@ -60,18 +74,54 @@ public class Member {
 	public void setSchool_grade(String school_grade) {
 		this.school_grade = school_grade;
 	}
-	public String getSchool_ban() {
-		return school_ban;
+	public String getSchool_class() {
+		return school_class;
 	}
-	public void setSchool_ban(String school_ban) {
-		this.school_ban = school_ban;
+	public void setSchool_class(String school_class) {
+		this.school_class = school_class;
 	}
-	public String getRelation() {
-		return relation;
+	public String getSchool_name() {
+		return school_name;
 	}
-	public void setRelation(String relation) {
-		this.relation = relation;
+	public void setSchool_name(String school_name) {
+		this.school_name = school_name;
 	}
-
-
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getNew_address() {
+		return new_address;
+	}
+	public void setNew_address(String new_address) {
+		this.new_address = new_address;
+	}
+	public String getLat() {
+		return lat;
+	}
+	public void setLat(String lat) {
+		this.lat = lat;
+	}
+	public String getLng() {
+		return lng;
+	}
+	public void setLng(String lng) {
+		this.lng = lng;
+	}
+	public String getHomepage() {
+		return homepage;
+	}
+	public void setHomepage(String homepage) {
+		this.homepage = homepage;
+	}
+	public String getContact() {
+		return contact;
+	}
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+	
+	
 }

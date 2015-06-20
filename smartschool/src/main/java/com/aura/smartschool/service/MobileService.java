@@ -20,5 +20,8 @@ public interface MobileService {
 	public long updateMember(Member member) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
+	
+	public List<SchoolVO> getSchoolList(SchoolVO school);
+	
 	public long insertSchool(SchoolVO school) throws PersistenceException;
 }

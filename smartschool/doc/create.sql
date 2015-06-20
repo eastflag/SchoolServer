@@ -60,49 +60,17 @@ CREATE TABLE `inbody_info` (
   PRIMARY KEY (`Inbody_seq`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `school` (
-  `school_id` int(11) NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `gubun1` varchar(20) DEFAULT NULL,
-  `gubun2` varchar(50) DEFAULT NULL,
-  `zipcode` varchar(15) DEFAULT NULL,
-  `address` varchar(500) DEFAULT NULL,
-  `new_address` varchar(500) DEFAULT NULL,
-  `lat` varchar(100) DEFAULT NULL,
-  `lng` varchar(100) DEFAULT NULL,
-  `homepage` varchar(400) DEFAULT NULL,
-  `fax` varchar(20) DEFAULT NULL,
-  `contact` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`school_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
-
-CREATE TABLE `smoke_info` (
-  `Smoke_seq` bigint(18) NOT NULL,
-  `PPM` varchar(4) NOT NULL,
-  `COHD` varchar(4) NOT NULL,
-  `DATETIMES` date NOT NULL,
-  PRIMARY KEY (`Smoke_seq`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `member` (
-  `member_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `home_id` varchar(45) NOT NULL,
-  `mdn` varchar(30) DEFAULT NULL,
-  `gcm_id` varchar(256) DEFAULT NULL,
-  `is_parent` tinyint(1) NOT NULL DEFAULT '0',
-  `name` varchar(45) NOT NULL,
-  `relation` varchar(45) NOT NULL,
-  `photo` blob,
-  `school_name` varchar(45) DEFAULT NULL,
-  `school_grade` varchar(2) DEFAULT NULL,
-  `school_ban` varchar(2) DEFAULT NULL,
-  `school_id` int(11) DEFAULT '0',
-  PRIMARY KEY (`member_id`),
-  KEY `FK_Member_Home` (`home_id`),
-  KEY `FK_MEMBER_SCHOOL` (`school_id`),
-  CONSTRAINT `FK_MEMBER_SCHOOL` FOREIGN KEY (`school_id`) REFERENCES `school` (`school_id`) ON DELETE CASCADE,
-  CONSTRAINT `FK_Member_Home` FOREIGN KEY (`home_id`) REFERENCES `home` (`home_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+CREATE TABLE `location` (
+  `location_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `member_id` bigint(20) NOT NULL,
+  `lat` varchar(100) COLLATE utf8_bin NOT NULL,
+  `lng` varchar(100) COLLATE utf8_bin NOT NULL,
+  `address` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`location_id`),
+  KEY `FK_LOCATION_MEMBER` (`member_id`),
+  CONSTRAINT `FK_LOCATION_MEMBER` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `measure_info` (
   `measure_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -122,17 +90,50 @@ CREATE TABLE `measure_info` (
   CONSTRAINT `FK_measure_smoke` FOREIGN KEY (`Smoke_seq`) REFERENCES `smoke_info` (`Smoke_seq`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `location` (
-  `location_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `member_id` bigint(20) NOT NULL,
-  `lat` varbinary(100) NOT NULL,
-  `lng` varbinary(100) NOT NULL,
-  `address` varchar(500) COLLATE utf8_bin DEFAULT NULL,
-  `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`location_id`),
-  KEY `FK_LOCATION_MEMBER` (`member_id`),
-  CONSTRAINT `FK_LOCATION_MEMBER` FOREIGN KEY (`member_id`) REFERENCES `member` (`member_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+CREATE TABLE `member` (
+  `member_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `home_id` varchar(45) NOT NULL,
+  `mdn` varchar(30) DEFAULT NULL,
+  `gcm_id` varchar(256) DEFAULT NULL,
+  `is_parent` tinyint(1) NOT NULL DEFAULT '0',
+  `name` varchar(45) NOT NULL,
+  `relation` varchar(45) NOT NULL,
+  `photo` blob,
+  `school_id` int(11) DEFAULT '0',
+  `school_grade` varchar(2) DEFAULT NULL,
+  `school_class` varchar(2) DEFAULT NULL,
+  PRIMARY KEY (`member_id`),
+  KEY `FK_Member_Home` (`home_id`),
+  KEY `FK_MEMBER_SCHOOL` (`school_id`),
+  CONSTRAINT `FK_MEMBER_SCHOOL` FOREIGN KEY (`school_id`) REFERENCES `school` (`school_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_Member_Home` FOREIGN KEY (`home_id`) REFERENCES `home` (`home_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `school` (
+  `school_id` int(11) NOT NULL AUTO_INCREMENT,
+  `school_name` varchar(100) DEFAULT NULL,
+  `gubun1` varchar(20) DEFAULT NULL,
+  `gubun2` varchar(50) DEFAULT NULL,
+  `zipcode` varchar(15) DEFAULT NULL,
+  `address` varchar(500) DEFAULT NULL,
+  `new_address` varchar(500) DEFAULT NULL,
+  `lat` varchar(100) DEFAULT NULL,
+  `lng` varchar(100) DEFAULT NULL,
+  `homepage` varchar(400) DEFAULT NULL,
+  `fax` varchar(100) DEFAULT NULL,
+  `contact` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`school_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1850 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `smoke_info` (
+  `Smoke_seq` bigint(18) NOT NULL,
+  `PPM` varchar(4) NOT NULL,
+  `COHD` varchar(4) NOT NULL,
+  `DATETIMES` date NOT NULL,
+  PRIMARY KEY (`Smoke_seq`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 //----------------------------------------------------
 INSERT INTO `healthcare`.`school`

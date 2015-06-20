@@ -13,9 +13,18 @@
 	WHERE mdn=#{mdn} and home_id=#{home_id};
 </select>
 
-<select id="getMemberList" parameterType="Home" resultType="Member">
-	SELECT * FROM member
-	WHERE home_id=#{home_id};
+<select id="selectMemberList" parameterType="Home" resultType="Member">
+	SELECT 
+		M.member_id, M.home_id, M.mdn, M.gcm_id, M.is_parent, M.name, M.relation, M.photo, M.school_grade, M.school_class,
+		S.school_id, S.School_name, 
+		CAST(AES_DECRYPT(unhex(S.address), 'aura') AS CHAR(500)) as 'address', 
+		CAST(AES_DECRYPT(unhex(S.new_address), 'aura') AS CHAR(500)) as 'new_address', 
+		CAST(AES_DECRYPT(unhex(S.lat), 'aura') AS CHAR(20)) as 'lat', 
+		CAST(AES_DECRYPT(unhex(S.lng), 'aura') AS CHAR(20)) as 'lng',
+		S.homepage,
+		S.contact
+	FROM member M left join school S on M.school_id = S.school_id
+	WHERE M.home_id = #{home_id}
 </select>
 	
 <insert id="insertHome" parameterType="Home">
@@ -24,8 +33,17 @@
 
 <insert id="insertMember" parameterType="Member">
 	INSERT INTO 
-		MEMBER(home_id, mdn, is_parent, name, relation, photo, school_name, school_grade, school_ban) 
-		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{relation}, #{photo}, #{school_name}, #{school_grade}, #{school_ban});
+		MEMBER(home_id, mdn, is_parent, name, relation, photo, school_id, school_grade, school_class) 
+		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{relation}, #{photo}, 
+		<choose>                                                                                                  
+			<when test="school_id == 0">                                                                     
+				null,                                                                                  
+			</when>                                                                                               
+			<otherwise>                                                                     
+				#{school_id},                                                                                
+			</otherwise>                                                                                               
+		</choose> 
+		#{school_grade}, #{school_class});
 </insert>
 
 <update id="updateMember" parameterType="Member">
@@ -37,7 +55,7 @@
 		<if test="photo != null">photo=#{photo},</if>
 		<if test="school_name != null">school_name=#{school_name},</if>
 		<if test="school_grade != null">school_grade=#{school_grade},</if>
-		<if test="school_ban != null">school_ban=#{school_ban}</if>
+		<if test="school_class != null">school_class=#{school_class}</if>
 	</set>
 	WHERE member_id = #{member_id} 
 </update>
@@ -47,6 +65,20 @@
 		LOCATION(member_id, lat, lng, address) 
 		values(#{member_id}, #{lat}, #{lng}, #{address});
 </insert>
+
+<select id="selectSchoolList" parameterType="SchoolVO" resultType="SchoolVO">
+	SELECT school_id, school_name, gubun1, gubun2, zipcode,
+			CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
+			CAST(AES_DECRYPT(unhex(new_address), 'aura') AS CHAR(500)) as 'new_address', 
+			CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
+			CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
+			homepage, fax, contact
+	FROM school
+	WHERE school_name like CONCAT(#{school_name},'%')
+	order by school_name asc
+</select>
+
+
 
 <insert id="insertSchool" parameterType="SchoolVO">
 	INSERT INTO school(

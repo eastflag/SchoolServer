@@ -2,7 +2,7 @@ package com.aura.smartschool.domain;
 
 public class SchoolVO {
 	private int school_id;
-	private String name;
+	private String school_name;
 	private String gubun1;
 	private String gubun2;
 	private String zipcode;
@@ -13,17 +13,18 @@ public class SchoolVO {
 	private String homepage;
 	private String fax;
 	private String contact;
+	
 	public int getSchool_id() {
 		return school_id;
 	}
 	public void setSchool_id(int school_id) {
 		this.school_id = school_id;
 	}
-	public String getName() {
-		return name;
+	public String getSchool_name() {
+		return school_name;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setSchool_name(String school_name) {
+		this.school_name = school_name;
 	}
 	public String getGubun1() {
 		return gubun1;
@@ -85,6 +86,5 @@ public class SchoolVO {
 	public void setContact(String contact) {
 		this.contact = contact;
 	}
-	
 	
 }

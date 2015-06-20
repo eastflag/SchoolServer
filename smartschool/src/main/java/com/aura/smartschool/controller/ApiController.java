@@ -81,13 +81,13 @@ public class ApiController {
 				msg = "home_id exists";
 			} else {
 				long insertCount = mobileService.insertHome(home);
-				System.out.println("insertCount:" + insertCount);
+				logger.debug("insertCount:" + insertCount);
 				if(insertCount > 0) {
 					mobileService.insertMember(member);
 				}
 			}
 		} catch (PersistenceException e) {
-			System.out.println("PersistenceException:");
+			logger.debug("PersistenceException:");
 			result = 500;
 			msg = "server error";
 		}
@@ -158,7 +158,21 @@ public class ApiController {
 		return new Result(result, msg);
 	}
 	
-	//
+	//학교 검색 API
+	@RequestMapping("/api/getSchoolList")
+	public Result getSchoolList(@RequestBody SchoolVO school) {
+		logger.debug("/api/getSchoolList---------------------------------------------------------");
+		
+		List<SchoolVO> schoolList = mobileService.getSchoolList(school);
+		
+		if(schoolList.size() > 0) {
+			return new ResultData<List<SchoolVO>>(0, "success", schoolList);
+		} else {
+			return new ResultData<List<SchoolVO>>(100, "school does not exist", schoolList);
+		}
+	}
+	
+	//학교 DB 구축 API--------------------------------------------------------------------------------
 	@RequestMapping("/api/getSchool")
     public Result getSchool(@RequestParam(value="s_page", required=false) String s_page,
     		@RequestParam(value="e_page", required=false) String e_page) {
@@ -208,7 +222,7 @@ public class ApiController {
 				//school.setSchool_id(school_id);
 				school.setGubun1(gubun1);
 				school.setGubun2(gubun2);
-				school.setName(name);
+				school.setSchool_name(name);;
 				school.setZipcode(zipcode);
 				school.setAddress(address);
 				school.setNew_address(new_address);
@@ -271,13 +285,5 @@ public class ApiController {
 	       }
 	    }
 	    return null;
-	}
-	
-	private boolean isEmpty(Object obj) {
-		if(obj == null) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 }

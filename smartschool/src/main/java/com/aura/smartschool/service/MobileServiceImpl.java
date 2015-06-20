@@ -30,7 +30,7 @@ public class MobileServiceImpl implements MobileService {
 	
 	@Override
 	public List<Member> getMemberList(Home home) {
-		return mobileMapper.getMemberList(home);
+		return mobileMapper.selectMemberList(home);
 	}
 	
 	@Override
@@ -52,10 +52,17 @@ public class MobileServiceImpl implements MobileService {
 	public long insertLocation(LocationVO location) throws PersistenceException {
 		return mobileMapper.insertLocation(location);
 	}
+	
+	@Override
+	public List<SchoolVO> getSchoolList(SchoolVO school) {
+		return mobileMapper.selectSchoolList(school);
+	}
 
 	@Override
 	public long insertSchool(SchoolVO school) throws PersistenceException {
 		return mobileMapper.insertSchool(school);
 	}
+
+
 
 }
