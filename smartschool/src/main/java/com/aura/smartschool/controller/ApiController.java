@@ -54,8 +54,9 @@ public class ApiController {
 			Home home = new Home();
 			home.setHome_id(member.getHome_id());
 			List<Member> memberList = mobileService.getMemberList(home); 
-			
 			ResultData<List<Member>> result = new ResultData<List<Member>>(0, "success", memberList);
+			//reg id update
+			mobileService.updateGcmId(member);
 			
 			return result;
 		} else {
@@ -156,6 +157,34 @@ public class ApiController {
 			msg = "server error";
 		} 
 		return new Result(result, msg);
+	}
+	
+	//오늘날짜의 위치 데이터 가져오기
+	@RequestMapping("/api/getLocationList")
+    public Result getLocationList(@RequestBody Member member) {
+		logger.debug("/api/getLocationList-------------------------------------------------------");
+		
+		List<LocationVO> locationList = mobileService.selectLocationList(member);
+		
+		if(locationList.size() > 0) {
+			return new ResultData<List<LocationVO>>(0, "success", locationList);
+		} else {
+			return new ResultData<List<LocationVO>>(100, "location does not exist", locationList);
+		}
+	}
+	
+	//오늘날짜의 가장 최근 위치 가져오기
+	@RequestMapping("/api/getLastLocation")
+	public Result getLastLocation(@RequestBody Member member) {
+		logger.debug("/api/getLastLocation-------------------------------------------------------");
+		
+		LocationVO location = mobileService.selectLastLocation(member);
+		
+		if(location == null) {
+			return new ResultData<LocationVO>(100, "location does not exist", location);
+		} else {
+			return new ResultData<LocationVO>(0, "success", location);
+		}
 	}
 	
 	//학교 검색 API

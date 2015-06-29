@@ -33,8 +33,8 @@
 
 <insert id="insertMember" parameterType="Member">
 	INSERT INTO 
-		MEMBER(home_id, mdn, is_parent, name, relation, photo, school_id, school_grade, school_class) 
-		values(#{home_id}, #{mdn}, #{is_parent}, #{name}, #{relation}, #{photo}, 
+		MEMBER(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class) 
+		values(#{home_id}, #{mdn}, #{gcm_id}, #{is_parent}, #{name}, #{relation}, #{photo}, 
 		<choose>                                                                                                  
 			<when test="school_id == 0">                                                                     
 				null,                                                                                  
@@ -60,11 +60,55 @@
 	WHERE member_id = #{member_id} 
 </update>
 
+<update id="updateGcmId" parameterType="Member">
+	UPDATE MEMBER
+		set gcm_id = #{gcm_id}
+	WHERE home_id = #{home_id} and mdn = #{mdn}
+</update>
+
 <insert id="insertLocation" parameterType="LocationVO">
 	INSERT INTO 
 		LOCATION(member_id, lat, lng, address) 
-		values(#{member_id}, #{lat}, #{lng}, #{address});
+		values(#{member_id}, 
+			HEX(AES_ENCRYPT(#{lat}, 'aura')),
+			HEX(AES_ENCRYPT(#{lng}, 'aura')), 
+			HEX(AES_ENCRYPT(#{address}, 'aura'))
+		);
 </insert>
+
+<select id="selectLastLocation" parameterType="Member" resultType="LocationVO">
+	SELECT 
+		member_id,
+		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
+		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
+		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
+		CREATED_DATE
+	FROM LOCATION
+	WHERE member_id = #{member_id} and created_date >= curdate()
+	ORDER BY CREATED_DATE desc
+	LIMIT 1;
+</select>
+
+<select id="selectLastHomeLocation" parameterType="Home" resultType="LocationVO">
+	SELECT location_id, member_id, lat, lng, created_date 
+	from lat
+	(select * from location
+	where member_id in (select member_id from home where home_id = '길동이네집')
+	order by created_date desc ) A
+group by member_id;
+</select>
+
+<select id="selectLocationList" parameterType="Member" resultType="LocationVO">
+	SELECT 
+		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
+		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
+		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
+		CREATED_DATE
+	FROM LOCATION
+	WHERE member_id = #{member_id} and
+		 created_date > date_format(curdate( ), '%Y-%m-%d %H:%i:%s' ) 
+	ORDER BY CREATED_DATE asc
+</select>
 
 <select id="selectSchoolList" parameterType="SchoolVO" resultType="SchoolVO">
 	SELECT school_id, school_name, gubun1, gubun2, zipcode,

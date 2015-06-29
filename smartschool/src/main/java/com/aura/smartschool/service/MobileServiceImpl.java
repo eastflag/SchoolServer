@@ -49,8 +49,23 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
+	public long updateGcmId(Member member) throws PersistenceException {
+		return mobileMapper.updateGcmId(member);
+	}
+
+	@Override
 	public long insertLocation(LocationVO location) throws PersistenceException {
 		return mobileMapper.insertLocation(location);
+	}
+	
+	@Override
+	public LocationVO selectLastLocation(Member member) {
+		return mobileMapper.selectLastLocation(member);
+	}
+
+	@Override
+	public List<LocationVO> selectLocationList(Member member) {
+		return mobileMapper.selectLocationList(member);
 	}
 	
 	@Override
@@ -62,7 +77,6 @@ public class MobileServiceImpl implements MobileService {
 	public long insertSchool(SchoolVO school) throws PersistenceException {
 		return mobileMapper.insertSchool(school);
 	}
-
 
 
 }

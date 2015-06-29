@@ -16,8 +16,11 @@ public interface MobileMapper {
 	public long insertHome(Home home) throws PersistenceException;
 	public long insertMember(Member member) throws PersistenceException;
 	public long updateMember(Member member) throws PersistenceException;
+	public long updateGcmId(Member member) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
+	public LocationVO selectLastLocation(Member member);
+	public List<LocationVO> selectLocationList(Member member);
 	
 	public List<SchoolVO> selectSchoolList(SchoolVO school);
 	

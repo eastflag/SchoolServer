@@ -4,6 +4,7 @@ public class Member {
 	private String home_id;
 	private int member_id;
 	private String mdn;
+	private String gcm_id;
 	private int is_parent; //0:학생, 1:부모
 	private String name;
 	private String relation;
@@ -121,6 +122,12 @@ public class Member {
 	}
 	public void setContact(String contact) {
 		this.contact = contact;
+	}
+	public String getGcm_id() {
+		return gcm_id;
+	}
+	public void setGcm_id(String gcm_id) {
+		this.gcm_id = gcm_id;
 	}
 	
 	
