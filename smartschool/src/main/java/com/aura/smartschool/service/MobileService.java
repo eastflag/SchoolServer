@@ -13,6 +13,7 @@ import com.aura.smartschool.domain.SchoolVO;
 
 public interface MobileService {
 	public int selectHome(Home home);
+	public int selectMember(Member member);
 	public Member signIn(Member member);
 	public List<Member> getMemberList(Home home);
 	public long insertHome(Home home) throws PersistenceException;

@@ -1,0 +1,586 @@
+
+@charset "utf-8";
+
+/* HTML5 새 요소 초기화 */
+article, aside, figure, figure img, figcaption, hgroup, footer, header, nav, section, video, object {display:block;}
+
+
+body{
+	font-family: '나눔고딕',NanumGothic,'맑은 고딕','Malgun Gothic','돋움',Dotum,'굴림',Gulim,Helvetica,AppleGothic,sans-serif /*{global-font-family}; */
+}
+
+
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
+
+table{
+	width: 100%;
+	border-collapse: collapse;
+	border:0;
+}
+
+table td{
+	text-align: center;
+}
+
+/* Swipe 2 required styles */
+
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.swipe-wrap > div {
+  float:left;
+  width:100%;
+  position: relative;
+
+  /*height: 500px;*/
+}
+
+/* END required styles */
+
+.rollingCircle{width:auto; text-align:center; position:relative; z-index:102;}
+.rollingCircle a{display:inline-block; }
+.rollingCircle a span{
+	width:10px;
+	height:10px;
+	display:inline-block;
+	padding:2px;
+	background:url('../images/common/navidot_re.png') no-repeat;
+	text-indent:-9999em;
+	/* background-size:auto 10px; */
+}
+.rollingCircle a.on span{background:url('../images/common/navidot_red_re.png') no-repeat; /* background-size:auto 10px; */}
+
+/* chart */
+canvas.jqplot-barRenderer-highlight-canvas,
+canvas.jqplot-event-canvas,
+canvas.jqplot-highlight-canvas,
+canvas.jqplot-series-canvas,
+canvas.jqplot-series-shadowCanvas
+{
+	border-left:2px solid #9a9a9a;
+	border-bottom:2px solid #9a9a9a;
+}
+
+
+.jqplot-point-label{
+	font-size: 1.3em;
+}
+
+.jqplot-series-0 {
+color: #fc7736;
+}
+.jqplot-series-1 {
+color: #a4da00;
+}
+.jqplot-series-2 {
+color: #febd01;
+}
+.jqplot-series-3 {
+color: #558ED5;
+}
+.jqplot-series-4 {
+color: #3fc6f3;
+}
+
+#chart_rank .jqplot-point-label{
+	font-size: 1.0em;
+}
+
+
+.ui-mobile .ui-header{
+	padding:8px 10px 0 10px;
+}
+.ui-btn-right{
+	margin: 8px !important;
+}
+.ui-btn-right img{
+	width: 43px;
+	height: 40px;
+}
+
+.ui-content{
+	padding: 0;
+	text-align: center;
+}
+
+
+.footer{
+	padding: 0 1em 0 1em;
+	margin-top: 20px;
+}
+
+.footer table{
+	background-color: #46d7c6;
+	height: 2.2em;
+	color: #ffffff;
+	font-size: 1.8em;
+}
+
+.footer table th{
+	padding-left: 1em;
+	text-align: left;
+}
+.footer table td{
+	width: 2.1em;
+	padding-right: 1em;
+	text-align: right;
+	background: url('../images/common/sport_b_re.png') no-repeat left bottom;
+	/* background-size: 2em 1.8em; */
+}
+
+#_smoke .footer table td{
+	background: url('../images/common/nosmoke_b_re.png') no-repeat left top;
+	background-position: 20px 10px;
+	/* background-size: 1.5em 1.5em; */
+}
+
+
+
+.t_left{
+	text-align: right;
+}
+.t_right{
+	text-align: left;
+}
+.t_left img, .t_right img{
+	width: 1em;
+	height: 1.3em;
+}
+.t_center{
+	text-align: center;
+	vertical-align: top;
+	width:7em;
+	font-size: 1.6em;
+	color: #858482;
+}
+
+
+.chart{
+	margin: 0 1em 0.7em 1em;
+	height: 17em;
+}
+
+.chart_detail{
+	margin: 0 1em 0.7em 1em;
+	height: 23em;
+}
+
+.main_view{
+	text-align: center;
+}
+
+.point_box{
+	width: 7em;
+	height: 7em;
+	background: url('../images/common/point_box_re.png') no-repeat right top;
+	/* background-size: 7em 7em; */
+	color: #fff;
+	font-weight: bold;
+}
+.point_box th{
+	height: 40px;
+	font-size: 0.9em;
+}
+
+.point_box td{
+	color: #3fc6f3;
+	font-size: 1.5em;
+}
+.point_box td span{
+	color: #000;
+}
+/* 신장상세 *******************************************************/
+#sub_height{
+	width:100%;
+	text-align:center;
+}
+#sub_height header{
+	font-family: 'MalgunGothicBold';
+	margin:auto;
+	padding:0.4em 0;
+	background-color: #e9e9e9;
+	color: #465866;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+#sub_height img{
+	margin-top: 20px;
+	margin-bottom: 25px;
+	width:50px;
+	height:19px;
+}
+/* EMD 신장상세 ***************************************************/
+
+/* 체중상세 *******************************************************/
+#sub_weight{
+	width:100%;
+	text-align:center;
+}
+#sub_weight header{
+	font-family: 'MalgunGothicBold';
+	margin:auto;
+	padding:0.4em 0;
+	background-color: #e9e9e9;
+	color: #465866;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+#sub_weight img{
+	margin-top: 20px;
+	margin-bottom: 25px;
+	width:50px;
+	height:19px;
+}
+/* EMD 체중상세 ***************************************************/
+#sub_height .sub_button{
+	text-align: center;
+	margin-top: 2.1em;
+	margin-left: 7.4em;
+	background: url('../images/common/button_off.png') no-repeat center top;
+	height: 40px;
+	width: 120px;
+	color: white;
+}
+
+#sub_weight .sub_button{
+	text-align: center;
+	margin-top: 2.1em;
+	margin-left: 7.4em;
+	background: url('../images/common/button_off.png') no-repeat center top;
+	height: 40px;
+	width: 120px;
+	color: white;
+}
+#_smoke_sub #simg{ 
+	width: 19em;
+	margin: 0px auto;
+	text-align: center;
+}
+#_smoke_sub .sub_button{
+	text-align: center;
+	margin-top: 8.2em;
+	margin-left: 7.4em;
+	background: url('../images/common/button_off.png') no-repeat center top;
+	height: 40px;
+	width: 120px;
+	color: white;
+}
+
+#_score_sub .sub_button{
+	text-align: center;
+	margin-top: 3em;
+	margin-left: 7.4em;
+	background: url('../images/common/button_off.png') no-repeat center top;
+	height: 40px;
+	width: 120px;
+	color: white;
+}
+/* BMI *******************************************************/
+#_bmi .main_view, #_smoke .main_view{
+}
+
+.question{
+	width:22px;
+	height:22px;
+}
+
+#bmi_view{
+	width: 11.8em;
+	height: 15.8em;
+	
+}
+
+#bmi_view div{
+	position: absolute;top:0;
+	width: 11.8em;
+	height: 15.8em;
+}
+
+#bmi_view img{
+	width: 11.8em;
+	height: 15.8em;
+}
+
+/* EMD BMI ***************************************************/
+
+
+
+
+/* 흡연지수 ***************************************************/
+#smoke_view{
+	width: 19.8em;
+	height: 15.8em;
+}
+
+#smoke_view div{
+	position: absolute;top:0;
+	width: 19.8em;
+	height: 15.8em;
+}
+
+#smoke_view img{
+	width: 19.8em;
+	height: 15.8em;
+}
+
+/* END 흡연지수 ***********************************************/
+
+/* 흡연지수 팝업***************************************************/
+
+/* END 흡연지수 팝업***********************************************/
+
+/* 금연사이트***************************************************/
+#_smoke_sub div.smoke_img a img{
+	margin-top: 0.4em;
+	/*margin-left: 0.7em;*/
+	width: 19em;
+	height: 4em;
+}
+
+#_smoke_sub div.smoke_img2 a img{
+	margin-top: 0.4em;
+	/*margin-left: 0.7em;*/
+	width: 19em;
+	height: 2.9em;
+}
+#_smoke_sub{
+	width:100%;
+	text-align:center
+}
+#_smoke_sub header{
+	font-family: 'MalgunGothicBold';
+	margin:auto;
+	padding:0.4em 0;
+	background-color: #e9e9e9;
+	color: #465866;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+/* END 금연사이트***********************************************/
+
+/* 랭킹 *******************************************************/
+#_rank .main_view table{
+	font-size: 1.4em;
+	height: 2.3em;
+	font-weight: bold;
+	background-color: #e7e2de;
+	/*color: #7e7d7b;*/
+}
+
+#_rank .main_view table a{
+	color: #7e7d7b;
+}
+
+#_rank .main_view table a.on{
+	color: #eb2b2a;
+}
+#_rank .chart{
+	height: 22em;
+	margin-top: 2em;
+}
+.class_ranking{
+	font-weight:bold;
+	font-size:1.3em;
+	color:#b5b5b4;
+	height:2.1em;
+	margin:1px 0 1px 0;
+}
+.class_ranking tr td{
+	cursor:pointer;
+	border:1px solid rgb(169,169,169);
+	width:50%;
+}
+.class_ranking tr td:hover {
+	border: 1px solid #bbbbbb /*{b-bhover-border}*/;
+	background: #e6e6e6 /*{b-bhover-background-color}*/;
+	font-weight: bold;
+	color: #363636 /*{b-bhover-color}*/;
+	text-shadow: 0 /*{b-bhover-shadow-x}*/ 0 /*{b-bhover-shadow-y}*/ 0 /*{b-bhover-shadow-radius}*/ #ffffff /*{b-bhover-shadow-color}*/;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ececec /*{b-bhover-background-start}*/), to( #dfdfdf /*{b-bhover-background-end}*/)); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
+	background-image:    -moz-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* FF3.6 */
+	background-image:     -ms-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* IE10 */
+	background-image:      -o-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* Opera 11.10+ */
+	background-image:         linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/);
+}
+.class_ranking_title{
+	height:2.1em;
+	font-weight:bold;
+	font-size:1.2em;
+}
+.class_ranking_title th#first, .class_ranking_title th#third{
+	background-color:#7e7d7b;color:#fff;
+}
+.class_ranking_title th#second, .class_ranking_title th#fourth{
+	background-color:#aaa;color:#fff;
+}
+.class_ranking_list{
+	font-weight:bold;
+	height:2.3em;
+	font-size:1.0em;
+}
+/* END 랭킹 ***************************************************/
+
+
+
+
+/* 성장점수 ***************************************************/
+
+.people{
+	width: 19em;
+	height: 18.3em;
+	background: url('../images/inbody/people.png') no-repeat left bottom;
+	/* background-size: 14em 16em; */
+	margin-bottom: 1em;
+}
+.people .balloon{
+	float: right;
+	width: 9em;
+	height: 8em;
+	background: url('../images/inbody/point_ballon_re.png') no-repeat left top;
+	/* background-size: 9em 8em; */
+	color: #44d7c4;
+}
+
+.people .balloon div{
+	font-size: 2.6em;
+	margin-top: 0.6em;
+	font-weight: bold;
+}
+.people .balloon div span{
+	font-size: 1.4em;
+}
+
+
+
+.h_bar{
+	position: relative; top:1.9em;
+}
+.h_bar img{
+	width:85%;
+	height: 6px;
+}
+/* 추가로 생긴 체형 상세 이력의 h_bar */
+.h_bar_bmi{
+	position: relative; top:1.4em;
+}
+.h_bar_bmi img{
+	width:85%;
+	height: 6px;
+}
+
+.weight_bar th{
+	width:16.666%;
+	height: 2em;
+}
+
+
+.weight_bar img{
+	width:22px;
+	height: 22px;
+	position: relative;
+}
+
+.weight_bar img.on{
+	width:45px;
+	height: 45px;
+}
+
+.weight_bar td{
+	color: #b5b5b4;
+	font-weight: bold;
+	font-size: 0.8em;
+}
+
+/* sub */
+.main_logo div{
+	background: url('../images/common/main_logo.png') no-repeat left top;
+}
+
+#_score_sub header{
+	font-family: 'MalgunGothicBold';
+	text-align: center;
+	padding:0.4em 0;
+	background-color: #e9e9e9;
+	color: #eb3332;
+	font-size: 1.2em;
+	font-weight: bold;
+} 
+
+#_score_sub dl{
+	margin-left: 1em;
+	margin-right: 1em; 
+}
+
+#_score_sub dt{
+	color: #ee6842;
+	font-weight: bold;
+	font-size: 1.0em;
+}
+
+#_score_sub dd{
+	color: #747474;
+	margin: 0em 0 1em 0 !important;
+	font-size: 1.0em;
+}
+
+/* END 성장점수 ***************************************************/
+
+.popup{
+	padding: 0.5em 1em;
+}
+.ui-simpledialog-container {
+	width:17em !important;
+	height: 14em;
+	background: url('../images/common/info_re.png') no-repeat;
+	/* background-size: 17em 14em; */
+	top: 6em !important;
+	border: 0;
+	-webkit-box-shadow: none;
+}
+.pop_title{
+	font-family: 'MalgunGothicBold';
+	margin-left: 1em;
+	color: #eb2b2a;
+}
+.pop_comment{
+	font-family: 'MalgunGothicBold';
+	margin-left: 1em;
+	margin-right: 1em;
+}
+.he1{
+	color:#465866;
+	font-size: 1.1em;
+}
+
+.he2{
+	color:#858482;
+}
+
+.menu_font{
+	font-size: 0.8em;
+}
+
+/* yongH 웹에서 접속 시 swipe 사이즈 조정으로 깨짐 방지 */
+/* IE9 */
+:root .swipe{
+	width:400px \0/IE9;
+}
+
+/* IE10 */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {  
+:root .swipe{
+		width:344px;
+	}
+}

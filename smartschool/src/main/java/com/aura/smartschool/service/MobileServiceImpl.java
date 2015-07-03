@@ -22,6 +22,11 @@ public class MobileServiceImpl implements MobileService {
 	public int selectHome(Home home) {
 		return mobileMapper.selectHome(home);
 	}
+
+	@Override
+	public int selectMember(Member member) {
+		return mobileMapper.selectMember(member);
+	}
 	
 	@Override
 	public Member signIn(Member member) {
@@ -77,6 +82,4 @@ public class MobileServiceImpl implements MobileService {
 	public long insertSchool(SchoolVO school) throws PersistenceException {
 		return mobileMapper.insertSchool(school);
 	}
-
-
 }

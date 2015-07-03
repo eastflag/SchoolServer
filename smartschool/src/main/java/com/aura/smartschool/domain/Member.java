@@ -12,7 +12,10 @@ public class Member {
 	private int school_id;
 	private String school_grade;
 	private String school_class;
+	private String sex;
+	private String birth_date;
 	
+	//school infomation
 	private String school_name;
 	private String address;
 	private String new_address;
@@ -20,7 +23,8 @@ public class Member {
 	private String lng;
 	private String homepage;
 	private String contact;
-	
+	private String sido;
+	private String gugun;
 	public String getHome_id() {
 		return home_id;
 	}
@@ -38,6 +42,12 @@ public class Member {
 	}
 	public void setMdn(String mdn) {
 		this.mdn = mdn;
+	}
+	public String getGcm_id() {
+		return gcm_id;
+	}
+	public void setGcm_id(String gcm_id) {
+		this.gcm_id = gcm_id;
 	}
 	public int getIs_parent() {
 		return is_parent;
@@ -81,6 +91,18 @@ public class Member {
 	public void setSchool_class(String school_class) {
 		this.school_class = school_class;
 	}
+	public String getSex() {
+		return sex;
+	}
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+	public String getBirth_date() {
+		return birth_date;
+	}
+	public void setBirth_date(String birth_date) {
+		this.birth_date = birth_date;
+	}
 	public String getSchool_name() {
 		return school_name;
 	}
@@ -123,11 +145,17 @@ public class Member {
 	public void setContact(String contact) {
 		this.contact = contact;
 	}
-	public String getGcm_id() {
-		return gcm_id;
+	public String getSido() {
+		return sido;
 	}
-	public void setGcm_id(String gcm_id) {
-		this.gcm_id = gcm_id;
+	public void setSido(String sido) {
+		this.sido = sido;
+	}
+	public String getGugun() {
+		return gugun;
+	}
+	public void setGugun(String gugun) {
+		this.gugun = gugun;
 	}
 	
 	

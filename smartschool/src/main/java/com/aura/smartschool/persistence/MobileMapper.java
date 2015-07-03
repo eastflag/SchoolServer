@@ -11,6 +11,7 @@ import com.aura.smartschool.domain.SchoolVO;
 
 public interface MobileMapper {
 	public int selectHome(Home home);
+	public int selectMember(Member member);
 	public Member signIn(Member member);
 	public List<Member> selectMemberList(Home home);
 	public long insertHome(Home home) throws PersistenceException;

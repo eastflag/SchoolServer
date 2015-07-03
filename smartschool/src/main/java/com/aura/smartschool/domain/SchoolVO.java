@@ -13,6 +13,9 @@ public class SchoolVO {
 	private String homepage;
 	private String fax;
 	private String contact;
+	private String sido;
+	private String gugun;
+	private String support;
 	
 	public int getSchool_id() {
 		return school_id;
@@ -85,6 +88,24 @@ public class SchoolVO {
 	}
 	public void setContact(String contact) {
 		this.contact = contact;
+	}
+	public String getSido() {
+		return sido;
+	}
+	public void setSido(String sido) {
+		this.sido = sido;
+	}
+	public String getGugun() {
+		return gugun;
+	}
+	public void setGugun(String gugun) {
+		this.gugun = gugun;
+	}
+	public String getSupport() {
+		return support;
+	}
+	public void setSupport(String support) {
+		this.support = support;
 	}
 	
 }

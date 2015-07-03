@@ -80,6 +80,9 @@ public class ApiController {
 			if(mobileService.selectHome(home) > 0) {
 				result = 100;
 				msg = "home_id exists";
+			} else if (mobileService.selectMember(member) > 0) {
+				result = 200;
+				msg = "phone number already registered";
 			} else {
 				long insertCount = mobileService.insertHome(home);
 				logger.debug("insertCount:" + insertCount);
