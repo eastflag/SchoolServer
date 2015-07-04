@@ -8,9 +8,11 @@
 	WHERE home_id = #{home_id}
 </select> 
 
-<select id="selectMember" parameterType="Member" resultType="Integer">
-	SELECT count(*) FROM MEMBER
-	WHERE mdn = #{mdn}
+<select id="selectMember" parameterType="Member" resultType="Member">
+	SELECT * FROM MEMBER
+	WHERE  1=1
+		<if test="mdn != null">and mdn=#{mdn}</if>
+		<if test="member_id != null">and member_id=#{member_id}</if>
 </select>
 
 <select id="signIn" parameterType="Member" resultType="Member">
@@ -58,6 +60,7 @@
 		<if test="name != null">name=#{name},</if>
 		<if test="relation != null">relation=#{relation},</if>
 		<if test="photo != null">photo=#{photo},</if>
+		<if test="school_id != null">school_id=#{school_id},</if>
 		<if test="school_name != null">school_name=#{school_name},</if>
 		<if test="school_grade != null">school_grade=#{school_grade},</if>
 		<if test="school_class != null">school_class=#{school_class},</if>
@@ -117,14 +120,18 @@ group by member_id;
 	ORDER BY CREATED_DATE asc
 </select>
 
+<select id="selectSchoolById" parameterType="Integer" resultType="SchoolVO">
+	SELECT *
+	FROM school
+	WHERE school_id = #{school_id}
+</select>
+
 <select id="selectSchoolList" parameterType="SchoolVO" resultType="SchoolVO">
 	SELECT *
 	FROM school
 	WHERE school_name like CONCAT(#{school_name},'%')
 	order by school_name asc
 </select>
-
-
 
 <insert id="insertSchool" parameterType="SchoolVO">
 	INSERT INTO school(
@@ -158,5 +165,61 @@ group by member_id;
 			#{gugun},
 			#{support})
 </insert>
+
+<select id="selectBodySummary" parameterType="Member" resultType="BodyMeasureSummary">
+	select member_id, measure_date, height, weight, bmi, muscle, fat, waist, growthGrade, ppm, cohd from 
+		(select 
+			measure_info.member_id,
+			measure_info.measure_date,
+			measure_info.smoke_seq,
+			truncate(inbody_info.HEIGHT, 1) AS height,
+			truncate(inbody_info.Weight, 1) AS weight,
+			truncate(inbody_info.BMI, 2) AS bmi,
+			inbody_info.Percent_Body_Fat AS fat,
+			truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
+			truncate(inbody_info.Waist_Hip_Ratio, 3) AS waist,
+			truncate(inbody_info.Fitness_Score, 0) AS growthGrade
+		FROM 
+			measure_info, inbody_info
+		where
+			measure_info.member_id = #{member_id} and
+			measure_info.inbody_seq = inbody_info.inbody_seq) inbody 
+		LEFT OUTER JOIN smoke_info 
+		ON inbody.smoke_seq = smoke_info.smoke_seq
+	ORDER BY measure_date desc;
+</select>
+
+<select id="selectGradeBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
+select 
+	ms_grade_data.Ms_Grade_ID as gradeId,
+	ms_grade_data.Srandard_Grade as gradeDesc,
+	ms_grade_data.Section as section,
+	#{value} as value,
+	ms_grade_data.Grade_ID as schoolGradeId,
+	ms_grade_data.sex as sex,
+	standard_data.Year as year
+from
+	healthcare_gwangmyeong.ms_grade_data,
+	healthcare_gwangmyeong.standard_data
+where
+	healthcare_gwangmyeong.ms_grade_data.Grade_ID = #{schoolGradeId}
+		and healthcare_gwangmyeong.ms_grade_data.sex = #{sex}
+		and healthcare_gwangmyeong.ms_grade_data.Section = #{section}
+		and healthcare_gwangmyeong.standard_data.Year = #{year}
+		and healthcare_gwangmyeong.standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID
+		and healthcare_gwangmyeong.standard_data.Start_Int &lt;= #{value}
+		and healthcare_gwangmyeong.standard_data.End_Int &gt; #{value};
+</select>
+
+<select id="selectSmokerGrade" parameterType="string" resultType="BodyMeasureGrade">
+select 
+	smoke_data.Smoke_Data_ID as gradeId,
+	smoke_data.DISCRIPTION as gradeDesc
+from
+	healthcare_gwangmyeong.smoke_data
+where
+	1 = 1
+	and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int);
+</select>
 
 </mapper>

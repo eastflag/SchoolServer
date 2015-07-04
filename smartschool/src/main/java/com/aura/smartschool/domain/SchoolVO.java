@@ -16,7 +16,6 @@ public class SchoolVO {
 	private String sido;
 	private String gugun;
 	private String support;
-	
 	public int getSchool_id() {
 		return school_id;
 	}
@@ -107,5 +106,7 @@ public class SchoolVO {
 	public void setSupport(String support) {
 		this.support = support;
 	}
+	
+	
 	
 }

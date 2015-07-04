@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
@@ -80,7 +81,7 @@ public class ApiController {
 			if(mobileService.selectHome(home) > 0) {
 				result = 100;
 				msg = "home_id exists";
-			} else if (mobileService.selectMember(member) > 0) {
+			} else if (mobileService.selectMember(member) != null) {
 				result = 200;
 				msg = "phone number already registered";
 			} else {
@@ -203,6 +204,58 @@ public class ApiController {
 			return new ResultData<List<SchoolVO>>(100, "school does not exist", schoolList);
 		}
 	}
+	
+	//학생 신체정보 가져오기
+	@RequestMapping("/api/getMeasureSummary")
+	public Result getMeasureSummary(@RequestBody Member member) {
+		logger.debug("/api/getMeasureSummary-----------------------------------------------------");
+		
+		BodyMeasureSummary summary = mobileService.getSummary(member);
+		if(summary != null) {
+			return new ResultData<BodyMeasureSummary>(0, "success", summary);
+		} else {
+			return new ResultData<BodyMeasureSummary>(100, "data does not exist", summary);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//학교 DB 구축 API--------------------------------------------------------------------------------
 	@RequestMapping("/api/getSchool")
