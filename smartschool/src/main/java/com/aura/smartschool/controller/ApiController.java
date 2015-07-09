@@ -14,23 +14,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.service.MobileService;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -218,7 +217,39 @@ public class ApiController {
 		}
 	}
 	
-	
+	//학생 신체정보 가져오기
+	@RequestMapping("/api/getHeight")
+	public Result getHeight(@RequestBody Member m) {
+		logger.debug("/api/getHeight-----------------------------------------------------");
+		ResultData<MeasureItem> result = new ResultData<MeasureItem>();
+		
+		MeasureItem vo = new MeasureItem();
+		
+		BodyMeasureGrade bodyMeasureGrade = mobileService.getMeasureGrade(m, "Height");
+		if(bodyMeasureGrade != null) {
+			vo.setValue(bodyMeasureGrade.getValue());
+			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
+			vo.setGradeId(bodyMeasureGrade.getGradeId());
+			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
+			vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
+			vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
+			vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
+			vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
+			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
+			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfNation());
+			
+			result.setResult(0);
+			result.setMsg("success");
+			result.setData(vo);
+		} else {
+			
+			result.setResult(100);
+			result.setMsg("error");
+		}
+		
+		return result;
+	}
 	
 	
 	

@@ -1,0 +1,304 @@
+
+<!-- 신장 *************************************************************************************** -->
+<div id="_height">
+	<div>
+		<div class="chart" id="chart_height"></div>
+	</div>
+	<div>
+		<table>
+			<tr>
+				<td style="float: right">
+					<table class="point_box">
+					    <tr>
+							<th valign="top" style="line-height:120%;">우리학교<br/>신장등수</th>
+						</tr>
+						<tr>
+							<td>
+								<a class ="he1"></a><a class ="he2"></a>
+							</td>
+					</tr></table>
+
+				</td>
+				<td style="width:2em;">&nbsp;
+					<div class="height_finger_image" id="height_finger_image"><img style="position:absolute;width:90px;margin:0 0 0 -4em;" src="./images/inbody/fingerOne.png"></div>
+				</td>
+				<td >
+					<table class="point_box"><tr>
+							<th>종합평가</th>
+						</tr>
+						<tr>
+							<td></td>
+					</tr></table>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="footer">
+		<table onclick="goPage('height')">
+			<tr>
+				<th class="menu_font">추천운동</th>
+				<td></td>
+			</tr>
+		</table>
+
+	</div>
+
+</div>
+
+
+
+
+<!-- 체중 *************************************************************************************** -->
+<div id="_weight">
+	<div>
+		<div class="chart" id="chart_weight"></div>
+	</div>
+	<div>
+		<table>
+			<tr>
+				<td style="float: right">
+					<table class="point_box"><tr>
+							<th valign="top" style="line-height:120%;">우리학교<br/>체중등수</th>
+						</tr>
+						<tr>
+							<td><a class ="he1"></a><a class ="he2"></a></td>
+					</tr></table>
+
+				</td>
+				<td style="width:2em;">&nbsp;
+					<div class="weight_finger_image" id="weight_finger_image"><img style="position:absolute;width:90px;margin:0 0 0 -4em;" src="./images/inbody/fingerOne.png"></div>
+				</td>
+				<td >
+					<table class="point_box"><tr>
+							<th>종합평가</th>
+						</tr>
+						<tr>
+							<td style="color:#3fc6f3;"></td>
+					</tr></table>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="footer">
+		<table onclick="goPage('weight')">
+			<tr>
+				<th class="menu_font">추천운동</th>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+
+
+
+<!-- BMI *************************************************************************************** -->
+<div id="_bmi">
+	<div class="main_view">
+            <table><tr><td style="width:50%;"></td>
+				<td id="bmi_view">
+					<img id="images" src="./images/inbody/default.png" />
+					<div>
+						<img id="images2" src="./images/inbody/default.png" style="display: none;" />
+					</div>
+				</td>
+			<td style="width:50%;"></td></tr></table>
+
+	</div>
+	<div>
+		<table>
+			<tr>
+				<td style="float: right">
+					<div><a href="#"  onclick="info(0)"><img class="question" src="./images/common/question.png" /></a></div>
+					<table class="point_box"><tr>
+							<th>BMI</th>
+						</tr>
+						<tr>
+							<td style="color:#ff5d15;font-size:35px;"><span></span></td>
+					</tr></table>
+
+				</td>
+				<td style="width:2em;">&nbsp;</td>
+				<td style="float: left;">
+					<div><a href="#"  onclick="info(1)"><img class="question" src="./images/common/question.png" /></a></div>
+					<table class="point_box"><tr>
+							<th>체지방률</th>
+						</tr>
+						<tr>
+							<td style="color:#ff5d15;font-size:35px;"></td>
+					</tr></table>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="footer">
+		<table onclick="goPage('bmi')">
+			<tr>
+				<th class="menu_font">추천운동</th>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+
+
+
+
+<!-- 흡연지수 *************************************************************************************** -->
+
+<div id="_smoke">
+	<div class="main_view">				
+            <table><tr><td style="width:50%;"></td>
+            		<td id="smoke_view">
+						<img id="images" src="./images/inbody/smoking-default.png" />
+						<div>
+							<img id="images2" src="./images/inbody/smoking-default.png" style="display: none;" />
+						</div>
+						<div id="smoke_popup" class="smoke_popup">
+						</div>
+					</td>				
+			<td style="width:50%;"></td></tr></table>
+	</div>
+	<div class="smoke_numeric" style="width:90%;height:3.4em;margin:0 0 0 1em;background-color:#ececec;">
+		<table>
+			<tr style="font-weight:bold;font-size:19px;color:#465866;line-height:50px;">
+				<td style="text-align:right;">ppm&nbsp;&nbsp;<span style="font-size:35px;"></span></td>
+				<td>COHb&nbsp;&nbsp;<span style="font-size:35px;"></span></td>
+			</tr>
+		</table>
+	</div>
+	<div style="padding: 0 10px;">
+		<div class="h_bar">
+			<img src="./images/inbody/line.png">
+		</div>
+		<table class="weight_bar">
+			<tr>
+			</tr>
+			<tr>
+				<th><img src="./images/inbody/point_1.png" /></th>
+				<th><img src="./images/inbody/point_2.png" /></th>
+				<th><img src="./images/inbody/point_3.png" /></th>
+				<th><img src="./images/inbody/point_5.png" /></th>
+			</tr>
+			<tr>
+				<td>정상</td>
+				<td>간접초기흡연</td>
+				<td>흡연중</td>
+				<td>과다흡연</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="_footer" class="footer">
+		<table onclick="smoke_sub()">
+			<tr>
+				<th class="menu_font">금연도움사이트</th>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+
+
+
+<!-- 랭킹 *************************************************************************************** -->
+<div id="_rank">
+	<div  class="main_view">
+		<table>
+			<tr>
+				<td><a href="#" onclick="subRank(0)" id="rank_height" >신장</a></td>
+				<td><a href="#" onclick="subRank(1)" id="rank_weight">체중</a></td>
+				<td><a href="#" onclick="subRank(2)" id="rank_bmi">BMI</a></td>
+			</tr>
+		</table>
+	</div>
+	<div>
+		<table class="class_ranking">
+			<tr>
+				<td onclick="rankDataPageScale = 'class';subRank(reloadRankingIdx);">반별 순위</td>
+				<td onclick="rankDataPageScale = 'school';subRank(reloadRankingIdx);">학교별 순위</td>
+			</tr>
+		</table>
+	</div>
+	<div>
+		<table style="width:100%;">
+			<colgroup>
+			<col width="15%" />
+			<col width="35%" />
+			<col width="30%" />
+			<col width="20%" />
+			</colgroup>
+			<thead>
+				<tr class="class_ranking_title">
+					<th scope="col" id="first">순위</th>
+					<th scope="col" id="second">이름</th>
+					<th scope="col" id="third">평균</th>
+					<th scope="col" id="fourth">비고</th>
+				</tr>
+			</thead>
+		</table>
+			<div style="overflow-y:auto;overflow-x:hidden;width:100%;height:345px" id="writeRanking">
+			</div>
+		<!--div>
+			<div style="position:absolute;z-index:99;display:none;" id="tooltip1b1"></div>
+			<div class="chart" id="chart_rank"></div>
+		</div-->
+	</div>
+</div>
+
+<!-- 성장점수 *************************************************************************************** -->
+<div id="_score">
+	<div class="main_view">
+		<table><tr><td style="width:50%;"></td>
+			<td>
+				<div class="people" onclick="score_sub()">
+					
+					<div class="balloon">
+						<div>
+							<span></span>점
+						</div>
+					</div>
+				</div>
+			</td>
+		<td style="width:50%;"></td></tr></table>
+	</div>
+	<div style="padding: 0 10px;">
+		<div class="h_bar">
+			<img src="./images/inbody/line.png">
+		</div>
+		<table class="weight_bar">
+			<tr>
+			</tr>
+			<tr>
+				<th><img src="./images/inbody/point_0.png" /></th>
+				<th><img src="./images/inbody/point_1.png" /></th>
+				<th><img src="./images/inbody/point_2.png" /></th>
+				<th><img src="./images/inbody/point_3.png" /></th>
+				<th><img src="./images/inbody/point_4.png" /></th>
+				<th><img src="./images/inbody/point_5.png" /></th>
+			</tr>
+			<tr>
+				<td>저체중</td>
+				<td>정상</td>
+				<td>과체중</td>
+				<td>비만</td>
+				<td>중도비만</td>
+				<td>고도비만</td>
+			</tr>
+		</table>
+	</div>
+	<div class="footer">
+		<table onclick="goPage('score')">
+			<tr>
+				<th class="menu_font">추천운동</th>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+</div>
+

@@ -1,5 +1,10 @@
 package com.aura.smartschool.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+
 public class CommonUtil {
 	//get School grade id : 1 ~ 12
 	public static String getGradeId(String grade, String gubun2) {
@@ -22,5 +27,12 @@ public class CommonUtil {
 		} catch (NumberFormatException e) {
 			return grade;
 		} 
+	}
+	
+	public static boolean doFindMobileDevice(String target, HttpServletRequest request) {
+		Pattern p = Pattern.compile(target.toLowerCase());
+		Matcher m = p.matcher(request.getHeader("User-Agent").toLowerCase());
+
+		return m.find();
 	}
 }

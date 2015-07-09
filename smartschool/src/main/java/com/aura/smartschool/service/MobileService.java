@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
+import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
@@ -30,4 +31,5 @@ public interface MobileService {
 	public long insertSchool(SchoolVO school) throws PersistenceException;
 	
 	public BodyMeasureSummary getSummary(Member member);
+	public BodyMeasureGrade getMeasureGrade(Member m, String section);
 }

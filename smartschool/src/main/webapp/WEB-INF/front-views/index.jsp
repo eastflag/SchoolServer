@@ -2,7 +2,7 @@
 <%
 
 	String pType = request.getParameter("p") == null ? "height" : request.getParameter("p");
-	String pUserId = request.getParameter("userId");
+	String pUserId = request.getParameter("member_id");
 	String pToken = request.getParameter("token");
 	String isUpdate = (String)request.getAttribute("isUpdate");
 
@@ -27,21 +27,21 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"/>
     <title>health care</title>
 
-	<link rel="Stylesheet" href="./css/health-care.css" />
-	<link rel="Stylesheet" href="./css/jquery.mobile.structure-1.3.2.css" />
-	<link rel="Stylesheet" href="./css/basic.css" />
-	<link rel="stylesheet" href="./css/jquery.jqplot.min.css">
+	<link rel="Stylesheet" href="/css/health-care.css" />
+	<link rel="Stylesheet" href="/css/jquery.mobile.structure-1.3.2.css" />
+	<link rel="Stylesheet" href="/css/basic.css" />
+	<link rel="stylesheet" href="/css/jquery.jqplot.min.css">
 	
-	<script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="./js/jquery.mobile-1.3.2.min.js"></script>
-	<script type="text/javascript" src="./js/swipe.js"></script>
-	<script type="text/javascript" src="./js/jquery.mobile.simpledialog2.min.js"></script>
-	<script type="text/javascript" src="./js/jquery.jqplot.min.js"></script>
-  	<script type="text/javascript" src="./js/util.js"></script>
-	<script class="include" type="text/javascript" src="./plugins/jqplot.barRenderer.min.js"></script>
-	<script class="include" type="text/javascript" src="./plugins/jqplot.pointLabels.min.js"></script> 
-	<script class="include" type="text/javascript" src="./plugins/jqplot.categoryAxisRenderer.min.js"></script> 
-	<script class="include" type="text/javascript" src="./plugins/jqplot.highlighter.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.mobile-1.3.2.min.js"></script>
+	<script type="text/javascript" src="/js/swipe.js"></script>
+	<script type="text/javascript" src="/js/jquery.mobile.simpledialog2.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.jqplot.min.js"></script>
+  	<script type="text/javascript" src="/js/util.js"></script>
+	<script class="include" type="text/javascript" src="/plugins/jqplot.barRenderer.min.js"></script>
+	<script class="include" type="text/javascript" src="/plugins/jqplot.pointLabels.min.js"></script> 
+	<script class="include" type="text/javascript" src="/plugins/jqplot.categoryAxisRenderer.min.js"></script> 
+	<script class="include" type="text/javascript" src="/plugins/jqplot.highlighter.min.js"></script>
 	
 	<!--[if IE]><script type="text/javascript" src="./js/excanvas.js"></script><![endif]-->
 	
@@ -179,7 +179,7 @@
             <table><tr>
 				<td class="t_left">
 					<a href="javascript:pSwipe.prev()">
-						<img src="./images/common/arrow_left.png" class="imgsl"></a>
+						<img src="/images/common/arrow_left.png" class="imgsl"></a>
 				</td>
 				<td class="t_center" >
 					<div id="title">
@@ -187,14 +187,14 @@
 				</td>
 				<td class="t_right">
 					<a href="javascript:pSwipe.next()">
-						<img src="./images/common/arrow_right.png" class="imgsl"></a>
+						<img src="/images/common/arrow_right.png" class="imgsl"></a>
 				</td>
 			</tr></table>
         </div>
  		<div class="ui-btn-right">
 			<a href="javascript:setDetail()">
 				<div id="_detail">
-					<img src="./images/common/detail.png" >
+					<img src="/images/common/detail.png" >
 				</div>
 			</a>
  		</div>
@@ -259,48 +259,48 @@
 		//금연 도움 사이트 닫기 이벤트
 		$(document).on("vmousedown", "#_smoke_sub img", function(evt){
 			var idx = $(this).attr('data-href');
-			$(this).attr({src: "./images/common/smoke"+idx+"_on.png"});
+			$(this).attr({src: "/images/common/smoke"+idx+"_on.png"});
 		});
 
 		$(document).on("vmouseup", "#_smoke_sub img", function(evt){
 			var idx = $(this).attr('data-href');
-			$(this).attr({src: "./images/common/smoke"+idx+"_off.png"});
+			$(this).attr({src: "/images/common/smoke"+idx+"_off.png"});
 		});
 		//상세이력 가기 버튼 이벤트
 		$(document).on("vmousedown", "#_detail img", function(evt){
 			var idx = $(this).attr('data-href');
-			$(this).attr({src: "./images/common/detail_on.png"});
+			$(this).attr({src: "/images/common/detail_on.png"});
 		});
 
 		$(document).on("vmouseup", "#_detail img", function(evt){
 			var idx = $(this).attr('data-href');
-			$(this).attr({src: "./images/common/detail.png"});
+			$(this).attr({src: "/images/common/detail.png"});
 		});
 		//신장 상세이력 닫기 버튼 이벤트
 		$(document).on("vmousedown", "#sub_height .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_on.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_on.png') no-repeat center top");
 		});
 
 		$(document).on("vmouseup", "#sub_height .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_off.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_off.png') no-repeat center top");
 		});
 
 		//체중 상세이력 닫기 버튼 이벤트
 		$(document).on("vmousedown", "#sub_weight .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_on.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_on.png') no-repeat center top");
 		});
 
 		$(document).on("vmouseup", "#sub_weight .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_off.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_off.png') no-repeat center top");
 		});
 
 		//금연도움 사이트 클릭이벤트
 		$(document).on("vmousedown", "#_smoke_sub .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_on.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_on.png') no-repeat center top");
 		});
 
 		$(document).on("vmouseup", "#_smoke_sub .sub_button", function(evt){
-			$(".sub_button").css("background", "url('./images/common/button_off.png') no-repeat center top");
+			$(".sub_button").css("background", "url('/images/common/button_off.png') no-repeat center top");
 		});
 
 		$(document).on("vmousedown", ".footer table", function(){
@@ -327,7 +327,7 @@
 		$("#circleLocation a").removeClass('on').eq(idx).addClass('on');
 		typeObj = pTypes[idx];
 		if(typeObj.isFirst){
-			$("#pSwipe > .swipe-wrap > div:eq("+idx+")").load("subHtml.html #_"+typeObj.name, function(){
+			$("#pSwipe > .swipe-wrap > div:eq("+idx+")").load("/HealthCare/subHtml.html #_"+typeObj.name, function(){
           		// 해당페이지가 로드되고 나서 데이터 바인딩
           		setDataPage(idx);
 			});
@@ -701,17 +701,19 @@ var pToken = "<%= pToken%>";
 
 			//console.log(arguments);
 			//var argu = arguments;
-			var pars = "{\"userId\":\"" + pUserId + 
-					"\",\"token\":\"" + pToken +"\"}";
+			//var pars = "{\"userId\":\"" + pUserId + 
+			//		"\",\"token\":\"" + pToken +"\"}";
+			var pars = {};
+			pars.member_id = pUserId;
 			//console.log(pars);
 
 		$.ajax({
 			type : "post",
 			dataType : "json",
-			url : rootPath + "/" + pUrl,
+			url : rootPath + pUrl,
 			contentType : 'application/json',
 			cache : false,
-			data : pars,
+			data : JSON.stringify(pars),
 			success : func,
 			error : function() {
 				alert('Error while request..');
@@ -917,7 +919,7 @@ var pToken = "<%= pToken%>";
 
 		$("#bmi_view img:eq(0)").fadeTo(3000, 0);
 		$("#bmi_view img:eq(1)").attr({
-			src: './images/inbody/'+vImg+'.png'
+			src: '/images/inbody/'+vImg+'.png'
 		}).fadeIn(3000);
 		
 		// BMI
@@ -971,7 +973,7 @@ var pToken = "<%= pToken%>";
 		
 			$("#smoke_view img:eq(0)").fadeTo(3000, 0);
 			$("#smoke_view img:eq(1)").attr({
-				src: './images/inbody/'+vImg+'.png'
+				src: '/images/inbody/'+vImg+'.png'
 			}).fadeIn(3000);
 			
 			// CO
@@ -980,8 +982,8 @@ var pToken = "<%= pToken%>";
 			vCohd == null ? $("#_smoke .smoke_numeric table td:eq(1) span").text('-') : $("#_smoke .smoke_numeric table td:eq(1) span").text(vCohd);
 		}
 		$("#_smoke .weight_bar img").removeClass('on').each(function(index){
-		//$(this).attr("src", "./images/inbody/point_"+index+".png");
-		}).eq(imageIndex).attr("src", "./images/inbody/point_type_"+smoke+".png").addClass('on');
+		//$(this).attr("src", "/images/inbody/point_"+index+".png");
+		}).eq(imageIndex).attr("src", "/images/inbody/point_type_"+smoke+".png").addClass('on');
 	}
 
 	var popup_flag = false;
@@ -1012,7 +1014,7 @@ var pToken = "<%= pToken%>";
 			     headerText: false,
 			     headerClose: false,
 			     blankContent : 
-			       "<div class='popup'><p id='cm_pop_header'><%= pUserName + pUserSexStr%> 신장 변화</p><div><img class='cm_popImage1' src='./images/inbody/big_cm_popImage1.png' alt='신장팝업이미지1'></div><div><img class='cm_popImage2' src='./images/inbody/big_cm_popImage2.png' alt='신장팝업이미지2'></div><span class='cm_popText1'></span><span class='cm_popText2'></span></div>"
+			       "<div class='popup'><p id='cm_pop_header'><%= pUserName + pUserSexStr%> 신장 변화</p><div><img class='cm_popImage1' src='/images/inbody/big_cm_popImage1.png' alt='신장팝업이미지1'></div><div><img class='cm_popImage2' src='/images/inbody/big_cm_popImage2.png' alt='신장팝업이미지2'></div><span class='cm_popText1'></span><span class='cm_popText2'></span></div>"
 			});	
 		}
 		
@@ -1023,7 +1025,7 @@ var pToken = "<%= pToken%>";
 			     headerText: false,
 			     headerClose: false,
 			     blankContent : 
-			       "<div class='popup'><p id='kg_pop_header'><%= pUserName + pUserSexStr%> 체중 변화</p><div><img class='kg_popImage1' src='./images/inbody/big_kg_popImage1.png' alt='체중팝업이미지1'></div><div><img class='kg_popImage2' src='./images/inbody/big_kg_popImage2.png' alt='체중팝업이미지2'></div><span class='kg_popText1'></span><span class='kg_popText2'></span></div>"
+			       "<div class='popup'><p id='kg_pop_header'><%= pUserName + pUserSexStr%> 체중 변화</p><div><img class='kg_popImage1' src='/images/inbody/big_kg_popImage1.png' alt='체중팝업이미지1'></div><div><img class='kg_popImage2' src='/images/inbody/big_kg_popImage2.png' alt='체중팝업이미지2'></div><span class='kg_popText1'></span><span class='kg_popText2'></span></div>"
 			});	
 		}
 		 
@@ -1180,8 +1182,8 @@ var pToken = "<%= pToken%>";
 
 	//	var score = 3;
 		$("#_score .weight_bar img").removeClass('on').each(function(index){
-			$(this).attr("src", "./images/inbody/point_"+index+".png");
-		}).eq(score).attr("src", "./images/inbody/point_type_"+score+".png").addClass('on');
+			$(this).attr("src", "/images/inbody/point_"+index+".png");
+		}).eq(score).attr("src", "/images/inbody/point_type_"+score+".png").addClass('on');
 
 	}
 // END data 바인딩 ***************************************************************************

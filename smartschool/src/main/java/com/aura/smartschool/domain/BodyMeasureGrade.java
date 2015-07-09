@@ -17,6 +17,9 @@ public class BodyMeasureGrade {
 	
 	// beforeValue : 이전 측정값
 	String beforeValue;
+	
+	// 학교 ID
+	int schoolId;
 		
 	// 학년 Grade ID : 1~ 12
 	String schoolGradeId;
@@ -196,6 +199,14 @@ public class BodyMeasureGrade {
 
 	public void setGradeId(String gradeId) {
 		this.gradeId = gradeId;
+	}
+
+	public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
 	}
 
 }

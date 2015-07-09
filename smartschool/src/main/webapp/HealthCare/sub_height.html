@@ -1,0 +1,87 @@
+<style>
+	.ui-field-contain{
+		position:relative;
+		width:90%;
+		float:right;
+		right:1.2em;
+	}
+	
+	#monthTxt:hover {
+		border: 1px solid #bbbbbb /*{b-bhover-border}*/;
+		background: #e6e6e6 /*{b-bhover-background-color}*/;
+		font-weight: bold;
+		color: #363636 /*{b-bhover-color}*/;
+		text-shadow: 0 /*{b-bhover-shadow-x}*/ 0 /*{b-bhover-shadow-y}*/ 0 /*{b-bhover-shadow-radius}*/ #ffffff /*{b-bhover-shadow-color}*/;
+		background-image: -webkit-gradient(linear, left top, left bottom, from( #ececec /*{b-bhover-background-start}*/), to( #dfdfdf /*{b-bhover-background-end}*/)); /* Saf4+, Chrome */
+		background-image: -webkit-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
+		background-image:    -moz-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* FF3.6 */
+		background-image:     -ms-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* IE10 */
+		background-image:      -o-linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/); /* Opera 11.10+ */
+		background-image:         linear-gradient( #ececec /*{b-bhover-background-start}*/, #dfdfdf /*{b-bhover-background-end}*/);
+	}
+</style>
+<div id="sub_height">
+	<header>신장 상세 이력</header>
+		<table>
+			<tr>
+				<td style="width:50%;"><a id="monthTxt" style='border:1px solid rgb(169,169,169);padding:9px 50px;' href="javascript:setDetailPage(chart_index);">월별</a></td>
+				<td style="width:50%;">
+					<div data-role="fieldcontain">
+					<select name="selYear" id="selYear" onchange="javascript:setDetailYearPage(this.options[this.selectedIndex].value);">
+						<option value="yearSelect">연도선택</option>
+					</select>
+					</div>
+				</td>			
+			</tr>
+		</table>
+		<!-- section class="select first">
+			<div class="selected-text">
+				<input id="test" readonly="readonly" type="text" value="연도선택">
+			</div>
+			<div class="list" style="height:0;">
+				<ul style="top:-123px;">
+					<li>2013</li>
+					<li>2014</li>
+				</ul>
+			</div>
+		</section-->
+	<div>
+		<div>
+			<div style="position:absolute;z-index:99;margin-left: 60px;margin-top: 5px;" id="tooltip1b2"></div>
+			<div class="chart_detail" id="chart_height_datail"></div>
+		</div>
+	</div>	
+	<div id="chart_datail_info"></div>		
+	<script type="text/javascript">
+
+	
+	var base_selYaer = 2013;
+	var curr_selYear = new Date().getFullYear();
+	
+	function setSelYearItem() {
+		
+		var year_len = curr_selYear - base_selYaer;
+		
+		var selectValue = document.getElementById("selYear");
+		
+		//selectValue.length = 0;
+
+		for(var i = selectValue.length; i >= 0; i--){
+			selectValue.options[i] = null;
+		}
+
+		selectValue.add(new Option("연도선택", "yearSelect", true, true));
+		selectValue.add(new Option(base_selYaer, base_selYaer));
+		
+	    for (var i = 1; i <= year_len; i++) {
+
+			selectValue.add(new Option(base_selYaer + i, base_selYaer + i));
+	    }
+		
+	}
+	setSelYearItem();
+	
+	function goBack(){
+	}
+	</script>
+</div>
