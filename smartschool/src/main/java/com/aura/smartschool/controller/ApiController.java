@@ -238,6 +238,8 @@ public class ApiController {
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
 			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfNation());
+			vo.setRank(bodyMeasureGrade.getRank());
+			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
 			
 			result.setResult(0);
 			result.setMsg("success");

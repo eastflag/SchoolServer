@@ -1,5 +1,6 @@
 package com.aura.smartschool.persistence;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -35,6 +36,10 @@ public interface MobileMapper {
 	//등수 구하기: 현재는 광명데이터로 광명시 전체에서 몇등인가, 향후에는 전체 데이터로 변경 필요
 	public BodyMeasureGrade selectGradeBySection(BodyMeasureGrade grade);
 	public BodyMeasureGrade selectBeforeGradeRankingBySection(BodyMeasureGrade grade);
+	//temp: 광명시 데이터에서 랭킹을 구한다.
+	public HashMap<String, Long> selectRankInGwangmyeong(BodyMeasureGrade grade);
+	public HashMap<String, Long> selectBeforeRankInGwangmyeong(BodyMeasureGrade grade);
+	
 	public BodyMeasureGrade selectSmokerGrade(String ppm);
 	public String selectBeforeMeasureDate(BodyMeasureGrade grade);
 	public BodyMeasureGrade selectGradeRankingBySection(BodyMeasureGrade grade);

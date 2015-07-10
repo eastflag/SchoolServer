@@ -1,12 +1,11 @@
 package com.aura.smartschool.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import ch.qos.logback.classic.Logger;
 
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.AverageItem;
@@ -174,10 +173,6 @@ public class MobileServiceImpl implements MobileService {
 				heightVO.setSection(section);
 				heightVO.setMeasureDate(summaryVO.getMeasure_date());
 				//heightVO.setBeforeMeasureDate(mobileMapper.selectBeforeMeasureDate(heightVO));
-				if(list.size()>1) {
-					System.out.println("before measure date:" + list.get(1).getMeasure_date());
-					heightVO.setBeforeMeasureDate(list.get(1).getMeasure_date());
-				}
 				
 				if(Constant.Height.equals(section)) {
 					heightVO.setValue(summaryVO.getHeight());
@@ -185,7 +180,36 @@ public class MobileServiceImpl implements MobileService {
 					heightVO.setValue(summaryVO.getWeight());
 				}
 				
-				//get grade
+				if(list.size()>1) {
+					//System.out.println("before measure date:" + list.get(1).getMeasure_date());
+					heightVO.setBeforeMeasureDate(list.get(1).getMeasure_date());
+					if(Constant.Height.equals(section)) {
+						heightVO.setBeforeValue(list.get(1).getHeight());
+					} else if(Constant.Weight.equals(section)) {
+						heightVO.setBeforeValue(list.get(1).getWeight());
+					}
+				}
+				
+				//temp by many data, 광명시에서 랭킹 구하기
+				HashMap<String, Long> rankVO = mobileMapper.selectRankInGwangmyeong(heightVO);
+				HashMap<String, Long> beforeRankVO = mobileMapper.selectBeforeRankInGwangmyeong(heightVO);
+				long total = rankVO.get("total");
+				long rank = rankVO.get("rank");
+				int order = (int) (rank * 100/total);
+				order = order == 0 ? 1 : order;
+				long beforeTotal = beforeRankVO.get("total");
+				long beforeRank = beforeRankVO.get("rank");
+				int beforeOrder = (int) (beforeRank * 100/beforeTotal);
+				beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
+				System.out.println("total:" + total);
+				System.out.println("rank:" + rank);
+				System.out.println("beforetotal:" + beforeTotal);
+				System.out.println("beforerank:" + beforeRank);
+				heightVO.setRank(String.valueOf(order));
+				heightVO.setBeforeRank(String.valueOf(beforeOrder));
+				
+				
+				//랭킹 구하기,
 				BodyMeasureGrade gradeVO = mobileMapper.selectGradeBySection(heightVO);
 				
 				if(gradeVO != null) {
@@ -213,11 +237,11 @@ public class MobileServiceImpl implements MobileService {
 							heightVO.setBeforeSchoolGrade(beforeRankingVO.getBeforeSchoolGrade());
 						}
 						
-						if(beforeRankingVO.getBeforeValue() == null  || "".equals(beforeRankingVO.getBeforeValue())){
+						/*if(beforeRankingVO.getBeforeValue() == null  || "".equals(beforeRankingVO.getBeforeValue())){
 							heightVO.setBeforeValue(heightVO.getValue());
 						}else{
 							heightVO.setBeforeValue(beforeRankingVO.getBeforeValue());
-						}
+						}*/
 					}else{
 						heightVO.setBeforeSchoolGrade(heightVO.getSchoolGrade());
 						heightVO.setBeforeValue(heightVO.getValue());

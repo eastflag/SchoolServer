@@ -312,6 +312,82 @@ FROM
   WHERE T.member_id = #{member_id}; 
 </select>
 
+<select id="selectRankInGwangmyeong" parameterType="BodyMeasureGrade" resultType="java.util.Map">
+select 
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
+	) total,
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
+			<choose>                                                                                                  
+       			<when test="section == 'Height'">        
+					and II.HEIGHT > #{value}
+				</when>
+				<when test="section == 'Weight'">  
+					and II.WEIGHT > #{value}
+				</when>
+			</choose>
+	) rank
+</select>
+
+<select id="selectBeforeRankInGwangmyeong" parameterType="BodyMeasureGrade" resultType="java.util.Map">
+select 
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')
+	) total,
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')
+			<choose>                                                                                                  
+       			<when test="section == 'Height'">        
+					and II.HEIGHT > #{value}
+				</when>
+				<when test="section == 'Weight'">  
+					and II.WEIGHT > #{value}
+				</when>
+			</choose>
+	) rank
+</select>
+
 <select id="selectAveragePerSchool" parameterType="StatisticsParam" resultType="AverageItem">
 	select 
 		DATE_FORMAT(MI.Measure_Date, '%Y%m') AS measureDate,

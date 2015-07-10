@@ -21,6 +21,21 @@ public class MeasureItem {
 	String percentageOfBodyFat; // DongQ 2014.03.12
 	String msGradeString;
 	
+	String rank;
+	String beforeRank;
+	
+	public String getRank() {
+		return rank;
+	}
+	public void setRank(String rank) {
+		this.rank = rank;
+	}
+	public String getBeforeRank() {
+		return beforeRank;
+	}
+	public void setBeforeRank(String beforeRank) {
+		this.beforeRank = beforeRank;
+	}
 	public String getValue() {
 		return value;
 	}

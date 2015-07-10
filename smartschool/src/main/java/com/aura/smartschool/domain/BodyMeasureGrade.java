@@ -42,6 +42,10 @@ public class BodyMeasureGrade {
 	// 이전 학교내 학년별 순위
 	String beforeSchoolGrade = "0";
 	
+	//100명 중에 등수
+	String rank;
+	String beforeRank;
+	
 	// 학교내 학년별 전체 학생 수
 	String totalNumberOfStudent = "0";
 	
@@ -207,6 +211,22 @@ public class BodyMeasureGrade {
 
 	public void setSchoolId(int schoolId) {
 		this.schoolId = schoolId;
+	}
+
+	public String getRank() {
+		return rank;
+	}
+
+	public void setRank(String rank) {
+		this.rank = rank;
+	}
+
+	public String getBeforeRank() {
+		return beforeRank;
+	}
+
+	public void setBeforeRank(String beforeRank) {
+		this.beforeRank = beforeRank;
 	}
 
 }
