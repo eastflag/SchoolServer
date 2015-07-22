@@ -11,6 +11,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.StatisticsParam;
 
@@ -50,4 +51,11 @@ public interface MobileMapper {
 	//전국 평균, 2012년 데이터
 	public AverageItem selectAveragePerNation(StatisticsParam param);
 	
+	//admin----------------------------------------------------
+	public List<SchoolVO> selectSchoolListOfMember();
+	public long updateSchool(SchoolVO school) throws PersistenceException; 
+	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);
 }

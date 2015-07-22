@@ -14,6 +14,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.StatisticsParam;
 import com.aura.smartschool.persistence.MobileMapper;
@@ -125,7 +126,7 @@ public class MobileServiceImpl implements MobileService {
 				gradeVO.setValue(summaryVO.getWeight());
 				BodyMeasureGrade weightVO = mobileMapper.selectGradeBySection(gradeVO);
 				if (weightVO != null) {
-					summaryVO.setWeigthStatus(weightVO.getGradeDesc());
+					summaryVO.setWeightStatus(weightVO.getGradeDesc());
 				}
 				
 				//get BMI desc
@@ -180,6 +181,7 @@ public class MobileServiceImpl implements MobileService {
 					heightVO.setValue(summaryVO.getWeight());
 				}
 				
+				//이전 데이터가 없다면 최신데이터 값이 들어갑니다.
 				if(list.size()>1) {
 					//System.out.println("before measure date:" + list.get(1).getMeasure_date());
 					heightVO.setBeforeMeasureDate(list.get(1).getMeasure_date());
@@ -188,19 +190,33 @@ public class MobileServiceImpl implements MobileService {
 					} else if(Constant.Weight.equals(section)) {
 						heightVO.setBeforeValue(list.get(1).getWeight());
 					}
+				} else {
+					heightVO.setBeforeValue(heightVO.getValue());
 				}
 				
-				//temp by many data, 광명시에서 랭킹 구하기
+				//temp by many data, 광명시에서 랭킹 구하기-------------------------------------------
 				HashMap<String, Long> rankVO = mobileMapper.selectRankInGwangmyeong(heightVO);
-				HashMap<String, Long> beforeRankVO = mobileMapper.selectBeforeRankInGwangmyeong(heightVO);
 				long total = rankVO.get("total");
 				long rank = rankVO.get("rank");
 				int order = (int) (rank * 100/total);
 				order = order == 0 ? 1 : order;
-				long beforeTotal = beforeRankVO.get("total");
-				long beforeRank = beforeRankVO.get("rank");
-				int beforeOrder = (int) (beforeRank * 100/beforeTotal);
-				beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
+				
+				long beforeTotal;
+				long beforeRank;
+				int beforeOrder;
+				//이전 데이터가 없다면 최신데이터 값이 들어갑니다.
+				if(list.size()>1) {
+					HashMap<String, Long> beforeRankVO = mobileMapper.selectBeforeRankInGwangmyeong(heightVO);
+					beforeTotal = beforeRankVO.get("total");
+					beforeRank = beforeRankVO.get("rank");
+					beforeOrder = (int) (beforeRank * 100/beforeTotal);
+					beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
+				} else {
+					beforeTotal = total;
+					beforeRank = rank;
+					beforeOrder= order;
+				}
+
 				System.out.println("total:" + total);
 				System.out.println("rank:" + rank);
 				System.out.println("beforetotal:" + beforeTotal);
@@ -279,5 +295,37 @@ public class MobileServiceImpl implements MobileService {
 		}
 		
 		return null;
+	}
+
+	//admin----------------------------------------------------------------------------------
+	
+	@Override
+	public List<SchoolVO> getSchoolListOfMember() {
+		return mobileMapper.selectSchoolListOfMember();
+	}
+
+	@Override
+	public long updateSchool(SchoolVO school) throws PersistenceException {
+		return mobileMapper.updateSchool(school);
+	}
+
+	@Override
+	public long addSchoolNoti(SchoolNoti noti) throws PersistenceException {
+		return mobileMapper.insertSchoolNoti(noti);
+	}
+
+	@Override
+	public long modifySchoolNoti(SchoolNoti noti) throws PersistenceException {
+		return mobileMapper.updateSchoolNoti(noti);
+	}
+
+	@Override
+	public long removeSchoolNoti(SchoolNoti noti) throws PersistenceException {
+		return mobileMapper.deleteSchoolNoti(noti);
+	}
+
+	@Override
+	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti) {
+		return mobileMapper.selectSchoolNotiList(noti);
 	}
 }

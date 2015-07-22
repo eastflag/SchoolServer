@@ -17,6 +17,7 @@ public class MeasureItem {
 	String averageOfSchool;
 	String averageOfLocal;
 	String averageOfNation;
+	String averageOfStandard;
 
 	String percentageOfBodyFat; // DongQ 2014.03.12
 	String msGradeString;
@@ -24,6 +25,12 @@ public class MeasureItem {
 	String rank;
 	String beforeRank;
 	
+	public String getAverageOfStandard() {
+		return averageOfStandard;
+	}
+	public void setAverageOfStandard(String averageOfStandard) {
+		this.averageOfStandard = averageOfStandard;
+	}
 	public String getRank() {
 		return rank;
 	}

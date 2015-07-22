@@ -11,7 +11,7 @@ public class BodyMeasureSummary {
 	String heightStatus;
 	
 	String weight;
-	String weigthStatus;
+	String weightStatus;
 	
 	String fat;
 	String muscle; 
@@ -69,12 +69,12 @@ public class BodyMeasureSummary {
 		this.weight = weight;
 	}
 
-	public String getWeigthStatus() {
-		return weigthStatus;
+	public String getWeightStatus() {
+		return weightStatus;
 	}
 
-	public void setWeigthStatus(String weigthStatus) {
-		this.weigthStatus = weigthStatus;
+	public void setWeightStatus(String weightStatus) {
+		this.weightStatus = weightStatus;
 	}
 
 	public String getFat() {

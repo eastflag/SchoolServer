@@ -379,10 +379,10 @@ select
 			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')
 			<choose>                                                                                                  
        			<when test="section == 'Height'">        
-					and II.HEIGHT > #{value}
+					and II.HEIGHT > #{beforeValue}
 				</when>
 				<when test="section == 'Weight'">  
-					and II.WEIGHT > #{value}
+					and II.WEIGHT > #{beforeValue}
 				</when>
 			</choose>
 	) rank
@@ -463,6 +463,63 @@ select
 				and standard_data.Year = DATE_FORMAT(#{measureDate}, '%Y')
 				and ms_grade_data.Srandard_Grade = '표준'
 				and standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID;
+</select>
+
+<select id="selectSchoolListOfMember" resultType="SchoolVO">
+select * from school
+where school_id in (
+	SELECT school_id FROM healthcare.member
+	group by school_id
+)
+</select>
+
+<update id="updateSchool" parameterType="SchoolVO">
+	UPDATE SCHOOL
+	<set>
+		<if test="school_name != null">school_name=#{school_name},</if>
+		<if test="address != null">address=#{address},</if>
+		<if test="zipcode != null">zipcode=#{zipcode},</if>
+		<if test="gubun1 != null">gubun1=#{gubun1},</if>
+		<if test="gubun2 != null">gubun2=#{gubun2},</if>
+		<if test="homepage != null">homepage=#{homepage},</if>
+		<if test="fax != null">fax=#{fax},</if>
+		<if test="contact != null">contact=#{contact},</if>
+		<if test="sido != null">sido=#{sido},</if>
+		<if test="gugun != null">gugun=#{gugun},</if>
+		<if test="lat != null">lat=#{lat},</if>
+		<if test="lng != null">lng=#{lng}</if>
+	</set>
+	WHERE school_id = #{school_id} 
+</update>
+
+<insert id="insertSchoolNoti" parameterType="SchoolNoti">
+	INSERT INTO 
+		school_noti(school_id, category, title, content, noti_date) 
+		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
+</insert>
+
+<update id="updateSchoolNoti" parameterType="SchoolNoti">
+	UPDATE school_noti
+	<set>
+		<if test="school_id != null">school_id=#{school_id},</if>
+		<if test="category != null">category=#{category},</if>
+		<if test="title != null">title=#{title},</if>
+		<if test="content != null">content=#{content},</if>
+		<if test="noti_date != null">noti_date=#{noti_date}</if>
+	</set>
+	WHERE noti_seq = #{noti_seq} 
+</update>
+
+<delete id="deleteSchoolNoti" parameterType="SchoolNoti">
+	Delete From school_noti
+	Where noti_seq = #{noti_seq}
+</delete>
+
+<select id="selectSchoolNotiList" parameterType="SchoolNoti" resultType="SchoolNoti">
+	SELECT noti_seq, school_id, category, title, content,
+		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date' FROM SCHOOL_NOTI
+	WHERE school_id = #{school_id} 
+	Order By noti_date desc
 </select>
 
 </mapper>

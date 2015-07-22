@@ -11,6 +11,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 
 public interface MobileService {
@@ -32,4 +33,12 @@ public interface MobileService {
 	
 	public BodyMeasureSummary getSummary(Member member);
 	public BodyMeasureGrade getMeasureGrade(Member m, String section);
+	
+	//admin----------------------------------------------------
+	public List<SchoolVO> getSchoolListOfMember();
+	public long updateSchool(SchoolVO school) throws PersistenceException;
+	public long addSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long modifySchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long removeSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti);
 }

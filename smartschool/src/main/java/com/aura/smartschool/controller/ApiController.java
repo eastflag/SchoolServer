@@ -237,7 +237,9 @@ public class ApiController {
 			vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
-			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfNation());
+			//전국 평균은 향후 데이터가 많아지면 추출 예정
+			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfLocal());
+			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfNation());
 			vo.setRank(bodyMeasureGrade.getRank());
 			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
 			
@@ -253,155 +255,43 @@ public class ApiController {
 		return result;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//학교 DB 구축 API--------------------------------------------------------------------------------
-	@RequestMapping("/api/getSchool")
-    public Result getSchool(@RequestParam(value="s_page", required=false) String s_page,
-    		@RequestParam(value="e_page", required=false) String e_page) {
-		int result = 0;
-		String msg = "success";
+	@RequestMapping("/api/getWeight")
+	public Result getWeight(@RequestBody Member m) {
+		logger.debug("/api/getWeight-----------------------------------------------------");
+		ResultData<MeasureItem> result = new ResultData<MeasureItem>();
 		
-		if(s_page==null) {
-			s_page = "0";
+		MeasureItem vo = new MeasureItem();
+		
+		BodyMeasureGrade bodyMeasureGrade = mobileService.getMeasureGrade(m, "Weight");
+		if(bodyMeasureGrade != null) {
+			vo.setValue(bodyMeasureGrade.getValue());
+			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
+			vo.setGradeId(bodyMeasureGrade.getGradeId());
+			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
+			vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
+			vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
+			vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
+			vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
+			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
+			//전국 평균은 향후 데이터가 많아지면 추출 예정
+			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfLocal());
+			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfNation());
+			vo.setRank(bodyMeasureGrade.getRank());
+			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
+			
+			result.setResult(0);
+			result.setMsg("success");
+			result.setData(vo);
+		} else {
+			
+			result.setResult(100);
+			result.setMsg("error");
 		}
 		
-		int page = Integer.parseInt(s_page);
-		int ePage = Integer.parseInt(e_page);
-
-		String url = "http://api.data.go.kr/openapi/4e1a3cda-db21-40b3-b4f8-a1e7de2993bd?serviceKey=39GJD5n4H%2B%2BZJlcm3k8okH3Bc%2F9fj1ne7fNKdFXYQGobEPJpXspv5zrN2ctlLdJcr2qqew%2FXSiMck9RPqhDQPQ%3D%3D";
-		
-		while(page <= ePage) {
-			String parameter = String.format("&s_page=%d&s_list=100&type=json", page);
-			logger.debug("url:  " + url+parameter);
-			String data = getJSON(url+parameter, 3000);
-			
-			ArrayList<SchoolVO> mSchoolList = new ArrayList<SchoolVO>();
-			JsonArray array = new JsonParser().parse(data).getAsJsonArray();
-			
-			if(array.size() == 0) {
-				break;
-			}
-			
-			for(int i=0; i<array.size(); ++i) {
-				JsonObject json = array.get(i).getAsJsonObject();
-				SchoolVO school = new SchoolVO();
-				
-				//SchoolVO school = new Gson().fromJson(json, SchoolVO.class);
-				
-				//int school_id = json.get("_id").isJsonNull() ? 0 : json.get("_id").getAsInt();
-				String gubun1 = json.get("설립구분").isJsonNull() ? null : json.get("설립구분").getAsString();
-				String gubun2 = json.get("학교급").isJsonNull() ? null : json.get("학교급").getAsString();
-				String name = json.get("학교명").isJsonNull() ? null : json.get("학교명").getAsString();
-				String zipcode = json.get("소재지우편번호").isJsonNull() ? null : json.get("소재지우편번호").getAsString();
-				String address = json.get("소재지지번주소").isJsonNull() ? null : json.get("소재지지번주소").getAsString();
-				String new_address = json.get("소재지도로명주소").isJsonNull() ? null : json.get("소재지도로명주소").getAsString();
-				String lat = json.get("위도").isJsonNull() ? null : json.get("위도").getAsString();
-				String lng = json.get("경도").isJsonNull() ? null : json.get("경도").getAsString();
-				String homepage = json.get("홈페이지주소").isJsonNull() ? null : json.get("홈페이지주소").getAsString();
-				String fax = json.get("팩스번호").isJsonNull() ? null : json.get("팩스번호").getAsString();
-				String contact = json.get("연락처").isJsonNull() ? null : json.get("연락처").getAsString();
-				
-				//school.setSchool_id(school_id);
-				school.setGubun1(gubun1);
-				school.setGubun2(gubun2);
-				school.setSchool_name(name);;
-				school.setZipcode(zipcode);
-				school.setAddress(address);
-				school.setNew_address(new_address);
-				school.setLat(lat);
-				school.setLng(lng);
-				school.setHomepage(homepage);
-				school.setFax(fax);
-				school.setContact(contact);
-				
-				mSchoolList.add(school);
-				mobileService.insertSchool(school);
-			}
-			
-			page += array.size();
-		}
-		
-		return new Result(result, msg);
+		return result;
 	}
+
 	
-	public String getJSON(String url, int timeout) {
-	    HttpURLConnection c = null;
-	    try {
-	        URL u = new URL(url);
-	        c = (HttpURLConnection) u.openConnection();
-	        c.setRequestMethod("GET");
-	        c.setRequestProperty("Content-length", "0");
-	        c.setUseCaches(false);
-	        c.setAllowUserInteraction(false);
-	        c.setConnectTimeout(timeout);
-	        c.setReadTimeout(timeout);
-	        c.connect();
-	        int status = c.getResponseCode();
-
-	        switch (status) {
-	            case 200:
-	            case 201:
-	                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-	                StringBuilder sb = new StringBuilder();
-	                String line;
-	                while ((line = br.readLine()) != null) {
-	                    sb.append(line+"\n");
-	                }
-	                br.close();
-	                return sb.toString();
-	        }
-
-	    } catch (MalformedURLException ex) {
-	        logger.debug(ex.getMessage());
-	    } catch (IOException ex) {
-	    	logger.debug(ex.getMessage());
-	    } catch (JsonSyntaxException ex) {
-	    	logger.debug(ex.getMessage());
-	    } finally {
-	       if (c != null) {
-	          try {
-	              c.disconnect();
-	          } catch (Exception ex) {
-	        	  logger.debug(ex.getMessage());
-	          }
-	       }
-	    }
-	    return null;
-	}
+	//web api------------------------------------------------------------------------------d
 }
