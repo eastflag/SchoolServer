@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.result.Result;
@@ -26,7 +25,7 @@ public class AdminController {
 	//get school list of member
 	@RequestMapping("/admin/api/getSchoolListOfMember")
     public ResultData<List<SchoolVO>> getSchoolListOfMember() {
-		logger.debug("/admin/api/getSchoolListOfMembe--------------------------------------------");
+		logger.debug("/admin/api/getSchoolListOfMember-------------------------------------------");
 		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember();
 		return new ResultData<List<SchoolVO>>(0, "success", schoolList);
 	}

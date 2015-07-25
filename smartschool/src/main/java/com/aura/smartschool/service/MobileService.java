@@ -1,11 +1,10 @@
 package com.aura.smartschool.service;
 
-import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
+import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
@@ -33,6 +32,10 @@ public interface MobileService {
 	
 	public BodyMeasureSummary getSummary(Member member);
 	public BodyMeasureGrade getMeasureGrade(Member m, String section);
+	
+	public long addArea(AreaVO area) throws PersistenceException;
+	public AreaVO getArea(AreaVO area);
+	public List<AreaVO> getAreaList();
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> getSchoolListOfMember();

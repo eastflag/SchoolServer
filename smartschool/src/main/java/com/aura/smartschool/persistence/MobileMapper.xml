@@ -167,6 +167,21 @@ group by member_id;
 			#{support})
 </insert>
 
+<insert id="insertArea" parameterType="AreaVO">
+	INSERT INTO AREA_INFO (
+		lat, lng, category, title, content, picture)
+		VALUES(#{lat}, #{lng}, #{category}, #{title}, #{content}, #{picture});
+</insert>
+
+<select id="selectAreaList" resultType="AreaVO">
+	SELECT id, lat, lng, category, title, content FROM AREA_INFO;
+</select> 
+
+<select id="selectArea" resultType="AreaVO">
+	SELECT * FROM AREA_INFO
+	WHERE id = #{id};
+</select> 
+
 <select id="selectBodySummary" parameterType="Member" resultType="BodyMeasureSummary">
 	select member_id, measure_date, height, weight, bmi, muscle, fat, waist, growthGrade, ppm, cohd from 
 		(select 
@@ -501,7 +516,6 @@ where school_id in (
 <update id="updateSchoolNoti" parameterType="SchoolNoti">
 	UPDATE school_noti
 	<set>
-		<if test="school_id != null">school_id=#{school_id},</if>
 		<if test="category != null">category=#{category},</if>
 		<if test="title != null">title=#{title},</if>
 		<if test="content != null">content=#{content},</if>

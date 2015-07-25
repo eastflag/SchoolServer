@@ -21,6 +21,12 @@ app.service('SchoolSvc', function($http) {
 	this.getSchoolNotiList = function(school) {
 		return $http.post('/admin/api/getSchoolNotiList', school);
 	}
+	this.addSchoolNoti = function(noti) {
+		return $http.post('/admin/api/addSchoolNoti', noti);
+	}
+	this.modifySchoolNoti = function(noti) {
+		return $http.post('/admin/api/modifySchoolNoti', noti);
+	}
 });
 
 app.service('UserSvc', function($http) {
@@ -43,13 +49,16 @@ app.controller('ApplicationCtrl', function ($scope, SchoolSvc) {
 })
 
 app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
-	$scope.mode = "";
+	$scope.mode = ""; //edit or noti
+	$scope.noti_mode = "";
+	$scope.school_id;
+
 	$scope.categories = [
 		{code: 1, name: "가정통신문"},
 		{code: 2, name: "공지사항"},
-		{code: 3, name: "가정통신문"}
+		{code: 3, name: "일정"}
 	];
-	$scope.category = 0;
+
 	$scope.schools = [];
 	$scope.notis = [];
 	
@@ -111,8 +120,10 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		})
 	}
 	
+	//알리미 버튼 클릭-----------------------------------------------------
 	$scope.getNoti = function(school) {
 		$scope.mode = "noti";
+		$scope.school_id = school.school_id;
 		
 		var noti = {school_id:school.school_id};
 		SchoolSvc.getSchoolNotiList(noti)
@@ -120,8 +131,50 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 			$scope.notis = schools.data;
 		})
 	}
+	
+	$scope.clickEditNoti = function(noti) {
+		$scope.noti_mode = "edit";
+		
+		$scope.noti_seq = noti.noti_seq;
+		$scope.category = noti.category;
+		$scope.title = noti.title;
+		$scope.content = noti.content;
+		$scope.noti_date = noti.noti_date;
+	}
+	//알리미  글 수정
+	$scope.modifyNoti = function() {
+		var noti = {
+			noti_seq: $scope.noti_seq,
+			category: $scope.category,
+			title: $scope.title,
+			content: $scope.content,
+			noti_date: $scope.noti_date
+		}
+
+		SchoolSvc.modifySchoolNoti(noti)
+		.success(function(result){
+
+		});
+	}
+	//알리미 신규 글 등록
+	$scope.addNoti = function() {
+		var noti = {
+				school_id: $scope.school_id,
+				category: $scope.category,
+				title: $scope.title,
+				content: $scope.content,
+				noti_date: $scope.noti_date
+		}
+
+		SchoolSvc.addSchoolNoti(noti)
+		.success(function(result){
+			$scope.getNoti();
+		});
+	}
 })
 
 app.controller('UserCtrl', function ($scope, SchoolSvc) {
-
+	$scope.saveUser = function () {
+		console.log("id:" + $scope.id + " name:" + $scope.name);
+	}
 })

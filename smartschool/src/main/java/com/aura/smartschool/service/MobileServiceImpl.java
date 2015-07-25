@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aura.smartschool.Constant;
+import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
@@ -327,5 +328,20 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti) {
 		return mobileMapper.selectSchoolNotiList(noti);
+	}
+
+	@Override
+	public long addArea(AreaVO area) throws PersistenceException {
+		return mobileMapper.insertArea(area);
+	}
+
+	@Override
+	public AreaVO getArea(AreaVO area) {
+		return mobileMapper.selectArea(area);
+	}
+
+	@Override
+	public List<AreaVO> getAreaList() {
+		return mobileMapper.selectAreaList();
 	}
 }

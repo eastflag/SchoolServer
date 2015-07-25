@@ -1,12 +1,5 @@
 package com.aura.smartschool.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -16,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.Home;
@@ -29,10 +22,6 @@ import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.service.MobileService;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 @RestController
 public class ApiController {
@@ -136,8 +125,6 @@ public class ApiController {
 		logger.debug("/api/getMemberList---------------------------------------------------------");
 		
 		List<Member> memberList = mobileService.getMemberList(home);
-
-		ResultData<List<Member>> result = new ResultData<List<Member>>(0, "success");
 		
 		if(memberList.size() > 0) {
 			return new ResultData<List<Member>>(0, "success", memberList);
@@ -203,6 +190,47 @@ public class ApiController {
 			return new ResultData<List<SchoolVO>>(100, "school does not exist", schoolList);
 		}
 	}
+	
+	
+	@RequestMapping("/api/addArea")
+	public Result addArea(@RequestBody AreaVO area) {
+		logger.debug("/api/addArea---------------------------------------------------------------");
+		
+		long result = mobileService.addArea(area);
+		
+		if(result > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "fail");
+		}
+	}
+	
+	@RequestMapping("/api/getArea")
+	public Result getArea(@RequestBody AreaVO area) {
+		logger.debug("/api/getArea---------------------------------------------------------------");
+		
+		AreaVO areaVO = mobileService.getArea(area);
+		
+		if(areaVO == null) {
+			return new ResultData<AreaVO>(100, "area does not exist", areaVO);
+		} else {
+			return new ResultData<AreaVO>(0, "success", areaVO);
+		}
+	}
+	
+	@RequestMapping("/api/getAreaList")
+    public Result getMemberList() {
+		logger.debug("/api/getAreaList-----------------------------------------------------------");
+		
+		List<AreaVO> areaList = mobileService.getAreaList();
+		
+		if(areaList.size() > 0) {
+			return new ResultData<List<AreaVO>>(0, "success", areaList);
+		} else {
+			return new ResultData<List<AreaVO>>(100, "area does not exist", areaList);
+		}
+	}
+	
 	
 	//학생 신체정보 가져오기
 	@RequestMapping("/api/getMeasureSummary")

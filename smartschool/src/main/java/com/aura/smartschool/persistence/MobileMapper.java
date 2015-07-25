@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
+import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
@@ -50,6 +51,10 @@ public interface MobileMapper {
 	public AverageItem selectAveragePerLocal(StatisticsParam param);
 	//전국 평균, 2012년 데이터
 	public AverageItem selectAveragePerNation(StatisticsParam param);
+	//area_info
+	public long insertArea(AreaVO area) throws PersistenceException;
+	public AreaVO selectArea(AreaVO area);
+	public List<AreaVO> selectAreaList();
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember();
