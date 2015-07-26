@@ -480,14 +480,22 @@ select
 				and standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID;
 </select>
 
-<select id="selectSchoolListOfMember" resultType="SchoolVO">
-select * from school
-where school_id in (
-	SELECT school_id FROM healthcare.member
-	group by school_id
-)
-order by school_name
-Limit #{start_index}, #{page_size}
+<select id="selectSchoolListOfMember" parameterType="SchoolVO" resultType="SchoolVO">
+	select * from school
+	where school_id in (
+		SELECT school_id FROM healthcare.member
+		group by school_id
+	)
+	order by school_name
+	Limit #{start_index}, #{page_size}
+</select>
+
+<select id="countSchoolListOfMember" resultType="Integer">
+	select count(*) from school
+	where school_id in (
+		SELECT school_id FROM healthcare.member
+		group by school_id
+	)
 </select>
 
 <update id="updateSchool" parameterType="SchoolVO">

@@ -58,6 +58,7 @@ public interface MobileMapper {
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember(SchoolVO school);
+	public int countSchoolListOfMember();
 	public long updateSchool(SchoolVO school) throws PersistenceException; 
 	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;

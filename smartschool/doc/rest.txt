@@ -10,6 +10,7 @@ http://aurasystem.kr:9000/admin/api/getSchoolListOfMember
 {
     "result": 0,
     "msg": "success",
+    "total": 10,
     "data": [{
         "school_id": 5943,
         "school_name": "밀알유치원",

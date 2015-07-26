@@ -13,6 +13,7 @@ import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
+import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 
 @RestController
@@ -27,7 +28,9 @@ public class AdminController {
     public ResultData<List<SchoolVO>> getSchoolListOfMember(@RequestBody SchoolVO school) {
 		logger.debug("/admin/api/getSchoolListOfMember-------------------------------------------");
 		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember(school);
-		return new ResultData<List<SchoolVO>>(0, "success", schoolList);
+		int total = mobileService.countSchoolListOfMember();
+		
+		return new ResultDataTotal<List<SchoolVO>>(0, "success", schoolList, total);
 	}
 	
 	@RequestMapping("/admin/api/modifySchool")

@@ -344,4 +344,9 @@ public class MobileServiceImpl implements MobileService {
 	public List<AreaVO> getAreaList() {
 		return mobileMapper.selectAreaList();
 	}
+
+	@Override
+	public int countSchoolListOfMember() {
+		return mobileMapper.countSchoolListOfMember();
+	}
 }
