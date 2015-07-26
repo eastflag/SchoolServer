@@ -544,6 +544,14 @@ select
 		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date' FROM SCHOOL_NOTI
 	WHERE school_id = #{school_id} 
 	Order By noti_date desc
+	<if test="page_size != 0">
+		Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="countSchoolNotiList" parameterType="SchoolNoti" resultType="Integer">
+	SELECT count(*) FROM SCHOOL_NOTI
+	WHERE school_id = #{school_id} 
 </select>
 
 </mapper>

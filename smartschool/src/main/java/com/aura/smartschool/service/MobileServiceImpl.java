@@ -349,4 +349,9 @@ public class MobileServiceImpl implements MobileService {
 	public int countSchoolListOfMember() {
 		return mobileMapper.countSchoolListOfMember();
 	}
+
+	@Override
+	public int countSchoolNotiList(SchoolNoti noti) {
+		return mobileMapper.countSchoolNotiList(noti);
+	}
 }

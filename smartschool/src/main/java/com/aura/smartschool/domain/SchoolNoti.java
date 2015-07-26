@@ -7,6 +7,10 @@ public class SchoolNoti {
 	private String title;
 	private String content;
 	private String noti_date;
+	
+	private int start_index;
+	private int page_size;
+	
 	public int getNoti_seq() {
 		return noti_seq;
 	}
@@ -43,4 +47,19 @@ public class SchoolNoti {
 	public void setCategory(int category) {
 		this.category = category;
 	}
+	
+	public int getStart_index() {
+		return start_index;
+	}
+	public void setStart_index(int start_index) {
+		this.start_index = start_index;
+	}
+	public int getPage_size() {
+		return page_size;
+	}
+	public void setPage_size(int page_size) {
+		this.page_size = page_size;
+	}
+
+	
 }

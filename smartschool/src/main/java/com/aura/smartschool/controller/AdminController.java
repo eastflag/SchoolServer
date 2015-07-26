@@ -82,6 +82,7 @@ public class AdminController {
     public ResultData<List<SchoolNoti>> getSchoolNotiList(@RequestBody SchoolNoti noti) {
 		logger.debug("/admin/api/getSchoolNotiList-----------------------------------------------");
 		List<SchoolNoti> notiList = mobileService.getSchoolNotiList(noti);
-		return new ResultData<List<SchoolNoti>>(0, "success", notiList);
+		int total = mobileService.countSchoolNotiList(noti);
+		return new ResultDataTotal<List<SchoolNoti>>(0, "success", notiList, total);
 	}
 }

@@ -64,4 +64,5 @@ public interface MobileMapper {
 	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);
+	public int countSchoolNotiList(SchoolNoti noti);
 }
