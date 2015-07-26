@@ -16,6 +16,11 @@ public class SchoolVO {
 	private String sido;
 	private String gugun;
 	private String support;
+	
+	//paging
+	private int start_index = 0;
+	private int page_size = 20;
+	
 	public int getSchool_id() {
 		return school_id;
 	}
@@ -106,7 +111,16 @@ public class SchoolVO {
 	public void setSupport(String support) {
 		this.support = support;
 	}
-	
-	
-	
+	public int getStart_index() {
+		return start_index;
+	}
+	public void setStart_index(int start_index) {
+		this.start_index = start_index;
+	}
+	public int getPage_size() {
+		return page_size;
+	}
+	public void setPage_size(int page_size) {
+		this.page_size = page_size;
+	}
 }

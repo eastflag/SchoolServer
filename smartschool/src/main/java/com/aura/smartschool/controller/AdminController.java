@@ -24,9 +24,9 @@ public class AdminController {
     
 	//get school list of member
 	@RequestMapping("/admin/api/getSchoolListOfMember")
-    public ResultData<List<SchoolVO>> getSchoolListOfMember() {
+    public ResultData<List<SchoolVO>> getSchoolListOfMember(@RequestBody SchoolVO school) {
 		logger.debug("/admin/api/getSchoolListOfMember-------------------------------------------");
-		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember();
+		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember(school);
 		return new ResultData<List<SchoolVO>>(0, "success", schoolList);
 	}
 	

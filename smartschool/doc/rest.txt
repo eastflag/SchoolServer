@@ -1,0 +1,111 @@
+* 멤버가 존재하는 학교 리스트 가져오기-------------------------------------------------
+http://aurasystem.kr:9000/admin/api/getSchoolListOfMember
+//start_index : 시작 인덱스(0부터 시작)
+//page_size : 가져올 데이터 갯수
+{
+   "start_index" : 0,
+   "page_size" : 5
+}
+결과
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "school_id": 5943,
+        "school_name": "밀알유치원",
+        "gubun1": "사립",
+        "gubun2": "유치원",
+        "zipcode": "301-837",
+        "address": "대전광역시 중구 문화로 101 105번안길 7",
+        "new_address": "",
+        "lat": "",
+        "lng": "",
+        "homepage": "http://cafe.daum.net/lovelymilal",
+        "fax": "070-7614-2211",
+        "contact": "042-582-0127",
+        "sido": "대전",
+        "gugun": "중구",
+        "support": "동부\r"
+    }, {
+        "school_id": 10609,
+        "school_name": "광명남초등학교",
+        "gubun1": "공립",
+        "gubun2": "초등학교",
+        "zipcode": "423-813",
+        "address": "경기도 광명시 광명로 866-9 (광명동_광명남초등학교)",
+        "new_address": "",
+        "lat": "",
+        "lng": "",
+        "homepage": "http://www.gmnam.es.kr",
+        "fax": "02-2616-7346",
+        "contact": "02-2612-0381",
+        "sido": "경기",
+        "gugun": "광명시",
+        "support": "광명\r"
+    }]
+}
+
+* 학교 정보 변경하기-------------------------------------------------------------------
+http://aurasystem.kr:9000/admin/api/modifySchool
+(수정할 파라메터만...)
+{
+   "school_id" : 18247,
+   "lat" : "37.123456",
+   "lng" : "127.123456"
+}
+결과
+{
+    "result": 0,
+    "msg": "success"
+}
+
+* 공지사항 등록하기-------------------------------------------------------------
+//category: 1:가정통신문, 2:공지사항, 3: 일정
+//첨부화일은 나중에,,,추가해야 함.
+http://aurasystem.kr:9000/admin/api/addSchoolNoti
+{
+"school_id" : 18247,
+"category" : 1,
+"title" : "가정통신문1",
+"content" : "aaabbbccc",
+"noti_date" : "2015-07-21"
+}
+결과
+{
+    "result": 0,
+    "msg": "success"
+}
+
+* 공지사항 수정하기-------------------------------------------------
+http://aurasystem.kr:9000/admin/api/modifySchoolNoti
+{
+"noti_seq" : 14,
+"category" : 1,
+"title" : "해오름 자원봉사자 모집",
+"content" : "해오름 교육 자원봉사자 모집안내입니다.",
+"noti_date" : "2015-06-20"
+}
+결과
+{
+    "result": 0,
+    "msg": "success"
+}
+
+* 공지사항 리스트 가져오기-------------------------------------------------
+http://aurasystem.kr:9000/admin/api/getSchoolNotiList
+{
+"school_id" : 18247
+}
+결과
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "noti_seq": 1,
+        "school_id": 18247,
+        "category": 1,
+        "title": "가정통신문1",
+        "content": "aaabbbccc",
+        "noti_date": "2015-07-21"
+    }]
+}

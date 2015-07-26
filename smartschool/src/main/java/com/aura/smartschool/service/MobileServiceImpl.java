@@ -301,8 +301,8 @@ public class MobileServiceImpl implements MobileService {
 	//admin----------------------------------------------------------------------------------
 	
 	@Override
-	public List<SchoolVO> getSchoolListOfMember() {
-		return mobileMapper.selectSchoolListOfMember();
+	public List<SchoolVO> getSchoolListOfMember(SchoolVO school) {
+		return mobileMapper.selectSchoolListOfMember(school);
 	}
 
 	@Override

@@ -12,8 +12,8 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 }]);
 
 app.service('SchoolSvc', function($http) {
-	this.getSchoolList = function() {
-		return $http.post('/admin/api/getSchoolListOfMember');
+	this.getSchoolList = function(school) {
+		return $http.post('/admin/api/getSchoolListOfMember', school);
 	}
 	this.modifySchool = function(school) {
 		return $http.post('/admin/api/modifySchool', school);
@@ -62,7 +62,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	$scope.schools = [];
 	$scope.notis = [];
 	
-	SchoolSvc.getSchoolList()
+	SchoolSvc.getSchoolList({start_index:0, page_size:5})
 	.success(function(schools) {
 		$scope.schools = schools.data;
 	})

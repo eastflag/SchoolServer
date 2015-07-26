@@ -486,6 +486,8 @@ where school_id in (
 	SELECT school_id FROM healthcare.member
 	group by school_id
 )
+order by school_name
+Limit #{start_index}, #{page_size}
 </select>
 
 <update id="updateSchool" parameterType="SchoolVO">

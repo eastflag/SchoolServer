@@ -57,7 +57,7 @@ public interface MobileMapper {
 	public List<AreaVO> selectAreaList();
 	
 	//admin----------------------------------------------------
-	public List<SchoolVO> selectSchoolListOfMember();
+	public List<SchoolVO> selectSchoolListOfMember(SchoolVO school);
 	public long updateSchool(SchoolVO school) throws PersistenceException; 
 	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
