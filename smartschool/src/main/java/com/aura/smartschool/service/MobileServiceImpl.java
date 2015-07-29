@@ -199,8 +199,15 @@ public class MobileServiceImpl implements MobileService {
 				HashMap<String, Long> rankVO = mobileMapper.selectRankInGwangmyeong(heightVO);
 				long total = rankVO.get("total");
 				long rank = rankVO.get("rank");
-				int order = (int) (rank * 100/total);
-				order = order == 0 ? 1 : order;
+				int order;
+				//if data does not exist, set order to 1
+				if ( total == 0) {
+					order = 1;
+				} else {
+					order = (int) (rank * 100/total);
+					order = order == 0 ? 1 : order;
+				}
+
 				
 				long beforeTotal;
 				long beforeRank;
@@ -210,8 +217,15 @@ public class MobileServiceImpl implements MobileService {
 					HashMap<String, Long> beforeRankVO = mobileMapper.selectBeforeRankInGwangmyeong(heightVO);
 					beforeTotal = beforeRankVO.get("total");
 					beforeRank = beforeRankVO.get("rank");
-					beforeOrder = (int) (beforeRank * 100/beforeTotal);
-					beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
+					//if before data does not exit,,
+					if (beforeTotal == 0) {
+						beforeTotal = total;
+						beforeRank = rank;
+						beforeOrder= order;
+					} else {
+						beforeOrder = (int) (beforeRank * 100/beforeTotal);
+						beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
+					}
 				} else {
 					beforeTotal = total;
 					beforeRank = rank;
