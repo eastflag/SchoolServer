@@ -62,7 +62,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	$scope.schools = [];
 	$scope.notis = [];
 	
-	SchoolSvc.getSchoolList({start_index:0, page_size:5})
+	SchoolSvc.getSchoolList({start_index:0, page_size:10})
 	.success(function(schools) {
 		$scope.schools = schools.data;
 	})

@@ -16,6 +16,9 @@ public class BodyMeasureSummary {
 	String fat;
 	String muscle; 
 	String waist;
+	String skeletal;
+	String weight_control;
+	String fat_control;
 	
 	String bmi;
 	String bmiStatus;
@@ -155,6 +158,30 @@ public class BodyMeasureSummary {
 
 	public void setGrowthGrade(String growthGrade) {
 		this.growthGrade = growthGrade;
+	}
+
+	public String getSkeletal() {
+		return skeletal;
+	}
+
+	public void setSkeletal(String skeletal) {
+		this.skeletal = skeletal;
+	}
+
+	public String getWeight_control() {
+		return weight_control;
+	}
+
+	public void setWeight_control(String weight_control) {
+		this.weight_control = weight_control;
+	}
+
+	public String getFat_control() {
+		return fat_control;
+	}
+
+	public void setFat_control(String fat_control) {
+		this.fat_control = fat_control;
 	}
 
 	

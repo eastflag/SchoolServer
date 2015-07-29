@@ -183,7 +183,7 @@ group by member_id;
 </select> 
 
 <select id="selectBodySummary" parameterType="Member" resultType="BodyMeasureSummary">
-	select member_id, measure_date, height, weight, bmi, muscle, fat, waist, growthGrade, ppm, cohd from 
+	select member_id, measure_date, height, weight, bmi, muscle, skeletal, weight_Control, fat_Control, fat, waist, growthGrade, ppm, cohd from 
 		(select 
 			measure_info.member_id,
 			measure_info.measure_date,
@@ -193,6 +193,9 @@ group by member_id;
 			truncate(inbody_info.BMI, 2) AS bmi,
 			inbody_info.Percent_Body_Fat AS fat,
 			truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
+			truncate(inbody_info.Skeletal_Muscle_Mass, 1) AS skeletal,
+			truncate(inbody_info.weight_Control, 1) AS weight_Control,
+			truncate(inbody_info.fat_Control, 1) AS fat_Control,
 			truncate(inbody_info.Waist_Hip_Ratio, 3) AS waist,
 			truncate(inbody_info.Fitness_Score, 0) AS growthGrade
 		FROM 
