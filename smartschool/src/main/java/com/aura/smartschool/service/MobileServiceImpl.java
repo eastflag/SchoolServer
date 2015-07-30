@@ -12,11 +12,13 @@ import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
 import com.aura.smartschool.persistence.MobileMapper;
 import com.aura.smartschool.util.CommonUtil;
@@ -367,5 +369,45 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public int countSchoolNotiList(SchoolNoti noti) {
 		return mobileMapper.countSchoolNotiList(noti);
+	}
+
+	@Override
+	public long insertSession(SessionVO session) throws PersistenceException {
+		return mobileMapper.insertSession(session);
+	}
+
+	@Override
+	public long insertConsult(ConsultVO consult) throws PersistenceException {
+		return mobileMapper.insertConsult(consult);
+	}
+
+	@Override
+	public long updateSession(SessionVO session) throws PersistenceException {
+		return mobileMapper.updateSession(session);
+	}
+
+	@Override
+	public List<SessionVO> selectSessionOngoingList(SessionVO session) {
+		return mobileMapper.selectSessionOngoingList(session);
+	}
+
+	@Override
+	public int countSessionOngoingList(SessionVO session) {
+		return mobileMapper.countSessionOngoingList(session);
+	}
+
+	@Override
+	public SessionVO selectSession(SessionVO session) {
+		return mobileMapper.selectSession(session);
+	}
+
+	@Override
+	public List<ConsultVO> selectConsultList(SessionVO session) {
+		return mobileMapper.selectConsultList(session);
+	}
+
+	@Override
+	public SessionVO selectLastSession() {
+		return mobileMapper.selectLastSession();
 	}
 }

@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.service.MobileService;
@@ -319,7 +321,19 @@ public class ApiController {
 		
 		return result;
 	}
-
 	
-	//web api------------------------------------------------------------------------------d
+	//get consult list
+	@RequestMapping("/api/getConsultList")
+    public ResultData<List<ConsultVO>> getConsultList(@RequestBody SessionVO inSession) {
+		logger.debug("/api/getConsultList--------------------------------------------------");
+		SessionVO session = mobileService.selectSession(inSession);
+		
+		if(session == null) {
+			return new ResultData<List<ConsultVO>>(100, "data does not exist", null);
+		} else {
+			List<ConsultVO> consultList = mobileService.selectConsultList(session);
+
+			return new ResultData<List<ConsultVO>>(0, "success", consultList);
+		}
+	}
 }

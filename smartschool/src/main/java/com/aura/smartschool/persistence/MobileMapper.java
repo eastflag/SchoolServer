@@ -9,11 +9,13 @@ import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
 
 public interface MobileMapper {
@@ -65,4 +67,13 @@ public interface MobileMapper {
 	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);
 	public int countSchoolNotiList(SchoolNoti noti);
+	//ession, consult
+	public long insertSession(SessionVO session) throws PersistenceException;
+	public long insertConsult(ConsultVO consult) throws PersistenceException;
+	public long updateSession(SessionVO session) throws PersistenceException;
+	public List<SessionVO> selectSessionOngoingList(SessionVO session);
+	public int countSessionOngoingList(SessionVO session);
+	public SessionVO selectSession(SessionVO session);
+	public SessionVO selectLastSession();
+	public List<ConsultVO> selectConsultList(SessionVO session);
 }

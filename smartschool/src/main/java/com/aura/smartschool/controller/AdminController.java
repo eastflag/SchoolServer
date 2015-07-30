@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import scala.annotation.meta.setter;
+
+import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
@@ -47,7 +51,7 @@ public class AdminController {
 	
 	@RequestMapping("/admin/api/addSchoolNoti")
     public Result addSchoolNoti(@RequestBody SchoolNoti noti) {
-		logger.debug("/admin/api/modifySchool----------------------------------------------------");
+		logger.debug("/admin/api/addSchoolNoti---------------------------------------------------");
 		long resultCount = mobileService.addSchoolNoti(noti);
 		if(resultCount > 0) {
 			return new Result(0, "success");
@@ -84,5 +88,46 @@ public class AdminController {
 		List<SchoolNoti> notiList = mobileService.getSchoolNotiList(noti);
 		int total = mobileService.countSchoolNotiList(noti);
 		return new ResultDataTotal<List<SchoolNoti>>(0, "success", notiList, total);
+	}
+	
+	//add session and consult
+	@RequestMapping("/admin/api/addConsult")
+    public Result addConsult(@RequestBody SessionVO inSession) {
+		logger.debug("/admin/api/addConsult----------------------------------------------------");
+		SessionVO outSession = mobileService.selectSession(inSession);
+		
+		int session_id;
+		if(outSession == null) {
+			mobileService.insertSession(inSession);
+			SessionVO session = mobileService.selectLastSession();
+			session_id = session.getSession_id();
+		} else {
+			session_id = outSession.getSession_id();
+		}
+		ConsultVO consult = new ConsultVO();
+		consult.setSession_id(session_id);
+		consult.setContent(inSession.getContent());
+		consult.setWho(inSession.getWho());
+		mobileService.insertConsult(consult);
+		
+		return new Result(0, "success");
+	}
+	
+	//get current session
+	@RequestMapping("/admin/api/getSessionList")
+    public ResultData<List<SessionVO>> getSessionList(@RequestBody SessionVO inSession) {
+		logger.debug("/admin/api/getSessionList--------------------------------------------------");
+		List<SessionVO> sessionList = mobileService.selectSessionOngoingList(inSession);
+
+		return new ResultData<List<SessionVO>>(0, "success", sessionList);
+	}
+	
+	//get consult list
+	@RequestMapping("/admin/api/getConsultList")
+    public ResultData<List<ConsultVO>> getConsultList(@RequestBody SessionVO inSession) {
+		logger.debug("/admin/api/getConsultList--------------------------------------------------");
+		List<ConsultVO> consultList = mobileService.selectConsultList(inSession);
+
+		return new ResultData<List<ConsultVO>>(0, "success", consultList);
 	}
 }

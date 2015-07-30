@@ -124,3 +124,75 @@ http://aurasystem.kr:9000/admin/api/getSchoolNotiList
         "page_size": 0
     }],
 }
+
+
+* 실시간상담 입력하기--------------------------------------------------------------------------
+who: 0: 학생, 1: 선생님
+category
+1: 성상담
+2:학업상담
+3:진로상담
+4:심리상담
+5:성장상담
+6:흡연상담
+http://aurasystem.kr:9000/admin/api/addConsult
+{
+	"content": "고민이 있어요",
+	"category": 1,
+    "who": 0,
+	"member_id": 31
+}
+결과
+{
+    "result": 0,
+    "msg": "success"
+}
+
+* 실시간상담 세션리스트 가져오기-----------------------------------------------------------------
+category : 0 전체, 1-6 :해당 카테고리
+http://aurasystem.kr:9000/admin/api/getSessionList
+{
+	"category" : 1
+}
+결과
+who: 
+0 : 가장 마지막에 학생이 입력
+1 : 가장 마지막에 선생님이 입력 ( 목록시 new로 표시)
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "session_id": 2,
+        "member_id": 31,
+        "category": 1,
+        "rate": 0,
+        "created": null,
+        "ended": null,
+        "content": null,
+        "who": 0
+    }]
+}
+
+* 실시간 상담 상담 목록 가져오기---------------------------------------------------
+http://aurasystem.kr:9000/admin/api/getConsultList
+{
+	"session_id" : 2
+}
+결과
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "consult_id": 3,
+        "session_id": 2,
+        "who": 0,
+        "content": "고민이 있어요2",
+        "created": "2015-07-30 22:44:43.0"
+    }, {
+        "consult_id": 2,
+        "session_id": 2,
+        "who": 0,
+        "content": "고민이 있어요",
+        "created": "2015-07-30 22:42:32.0"
+    }]
+}
