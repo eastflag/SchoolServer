@@ -152,7 +152,7 @@ http://aurasystem.kr:9000/admin/api/addConsult
 category : 0 전체, 1-6 :해당 카테고리
 http://aurasystem.kr:9000/admin/api/getSessionList
 {
-	"category" : 1
+	"category" : 0
 }
 결과
 who: 
@@ -166,8 +166,23 @@ who:
         "member_id": 31,
         "category": 1,
         "rate": 0,
-        "created": null,
+        "created": "2015-07-30 22:42:32.0",
         "ended": null,
+        "school_name": "광명초등학교",
+        "name": "홍귀돌",
+        "school_class": "3",
+        "content": null,
+        "who": 0
+    }, {
+        "session_id": 3,
+        "member_id": 31,
+        "category": 2,
+        "rate": 0,
+        "created": "2015-08-02 01:17:07.0",
+        "ended": null,
+        "school_name": "광명초등학교",
+        "name": "홍귀돌",
+        "school_class": "3",
         "content": null,
         "who": 0
     }]
