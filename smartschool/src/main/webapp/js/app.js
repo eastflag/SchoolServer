@@ -4,8 +4,9 @@ var app = angular.module('app', [
 
 app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 	$routeProvider
-	.when('/school', {templateUrl: 'templates/school.html'})
 	.when('/user', {templateUrl: 'templates/user.html'})
+	.when('/school', {templateUrl: 'templates/school.html'})
+	.when('/consult', {templateUrl: 'templates/consult.html'})
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -41,6 +42,18 @@ app.service('UserSvc', function($http) {
 	}
 	this.remove = function(user) {
 		return $http.post('/api/user/remove', user);
+	}
+});
+
+app.service('ConsultSvc', function($http) {
+	this.getSessionList = function() {
+		return $http.post('/admin/api/getSessionList', session);
+	}
+	this.getConsultList = function() {
+		return $http.post('/admin/api/getConsultList', session);
+	}
+	this.addConsult = function() {
+		return $http.post('/admin/api/addConsult', consult);
 	}
 });
 
@@ -177,4 +190,16 @@ app.controller('UserCtrl', function ($scope, SchoolSvc) {
 	$scope.saveUser = function () {
 		console.log("id:" + $scope.id + " name:" + $scope.name);
 	}
+})
+
+app.controller('ConsultCtrl', function ($scope, SchoolSvc) {
+	$scope.categories = [
+		{code: 0, name: "전체"},
+		{code: 1, name: "성상담"},
+		{code: 2, name: "학업상담"},
+		{code: 3, name: "진로상담"},
+		{code: 4, name: "심리상담"},
+		{code: 5, name: "성장상담"},
+		{code: 6, name: "흡연상담"}
+	];
 })
