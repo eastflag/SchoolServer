@@ -8,6 +8,10 @@ public class SessionVO {
 	private String created;
 	private String ended;
 	
+	private String school_name;
+	private String name;
+	private String school_class;
+	
 	private String content;
 	private int who;
 	
@@ -59,4 +63,24 @@ public class SessionVO {
 	public void setWho(int who) {
 		this.who = who;
 	}
+	public String getSchool_name() {
+		return school_name;
+	}
+	public void setSchool_name(String school_name) {
+		this.school_name = school_name;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getSchool_class() {
+		return school_class;
+	}
+	public void setSchool_class(String school_class) {
+		this.school_class = school_class;
+	}
+	
+	
 }
