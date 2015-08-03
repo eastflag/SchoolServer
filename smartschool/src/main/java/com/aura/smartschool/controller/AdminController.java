@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.Member;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -17,6 +18,11 @@ import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
+import com.aura.smartschool.util.NetworkUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 @RestController
 public class AdminController {
@@ -52,6 +58,24 @@ public class AdminController {
 		logger.debug("/admin/api/addSchoolNoti---------------------------------------------------");
 		long resultCount = mobileService.addSchoolNoti(noti);
 		if(resultCount > 0) {
+			//send gcm
+			SchoolVO school = new SchoolVO();
+			school.setSchool_id(noti.getSchool_id());;
+			List<Member> memberList = mobileService.selectMemberOfSchool(school);
+			JsonArray array = new JsonArray(); //get gcm_id
+			for(Member m : memberList) {
+				array.add(new JsonPrimitive(m.getGcm_id()));
+			}
+			
+			JsonObject data = new JsonObject();
+			data.addProperty("category", noti.getCategory());
+			data.addProperty("title", noti.getTitle());
+			data.addProperty("content", noti.getContent());
+			data.addProperty("noti_date", noti.getNoti_date());
+			
+			String res = NetworkUtil.sendGCM(array, data);
+			logger.debug("send gcm result:" + res);
+			
 			return new Result(0, "success");
 		} else {
 			return new Result(100, "update failed");

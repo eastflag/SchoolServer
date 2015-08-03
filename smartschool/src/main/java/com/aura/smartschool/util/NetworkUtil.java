@@ -64,7 +64,7 @@ public class NetworkUtil {
 				while ((line = reader.readLine()) != null) {
 					buffer.append(line + "\n");
 				}
-				// System.out.println(LogUtil.getPath("RESPONSE : " + "\n" + buffer.toString()));
+				//System.out.println(LogUtil.getPath("RESPONSE : " + "\n" + buffer.toString()));
 				res = buffer.toString();
 			}
 		} catch (IOException e) {

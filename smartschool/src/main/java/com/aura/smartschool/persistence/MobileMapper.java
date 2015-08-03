@@ -63,11 +63,12 @@ public interface MobileMapper {
 	public int countSchoolListOfMember();
 	public long updateSchool(SchoolVO school) throws PersistenceException; 
 	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public List<Member> selectMemberOfSchool(SchoolVO school);
 	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);
 	public int countSchoolNotiList(SchoolNoti noti);
-	//ession, consult
+	//session, consult
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
 	public long updateSession(SessionVO session) throws PersistenceException;

@@ -526,6 +526,11 @@ select
 		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
 </insert>
 
+<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="Member"
+	SELECT * FROM member
+	WHERE home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
+</select>
+
 <update id="updateSchoolNoti" parameterType="SchoolNoti">
 	UPDATE school_noti
 	<set>

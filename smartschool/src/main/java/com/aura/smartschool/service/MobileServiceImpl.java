@@ -410,4 +410,10 @@ public class MobileServiceImpl implements MobileService {
 	public SessionVO selectLastSession() {
 		return mobileMapper.selectLastSession();
 	}
+
+	@Override
+	public List<Member> selectMemberOfSchool(SchoolVO school) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
