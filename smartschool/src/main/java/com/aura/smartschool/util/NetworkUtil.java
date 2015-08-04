@@ -50,6 +50,7 @@ public class NetworkUtil {
 			http.setRequestProperty("Authorization", "key=" + props.getProperty("api.key"));
 			out = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
 			writer = new PrintWriter(out);
+			//System.out.println("json:" + json.toString());
 			writer.write(json.toString()); // 보내기
 			writer.flush(); // 비우기
 			writer.close(); // 닫기

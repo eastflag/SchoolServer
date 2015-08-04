@@ -526,7 +526,7 @@ select
 		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
 </insert>
 
-<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="Member"
+<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="Member">
 	SELECT * FROM member
 	WHERE home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
 </select>

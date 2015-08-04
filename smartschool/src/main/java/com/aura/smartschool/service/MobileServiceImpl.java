@@ -413,7 +413,6 @@ public class MobileServiceImpl implements MobileService {
 
 	@Override
 	public List<Member> selectMemberOfSchool(SchoolVO school) {
-		// TODO Auto-generated method stub
-		return null;
+		return mobileMapper.selectMemberOfSchool(school);
 	}
 }
