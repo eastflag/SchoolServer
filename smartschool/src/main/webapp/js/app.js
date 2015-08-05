@@ -46,13 +46,13 @@ app.service('UserSvc', function($http) {
 });
 
 app.service('ConsultSvc', function($http) {
-	this.getSessionList = function() {
-		return $http.post('/admin/api/getSessionList', session);
+	this.getSessionList = function(category) {
+		return $http.post('/admin/api/getSessionList', category);
 	}
-	this.getConsultList = function() {
-		return $http.post('/admin/api/getConsultList', session);
+	this.getConsultList = function(session_id) {
+		return $http.post('/admin/api/getConsultList', session_id);
 	}
-	this.addConsult = function() {
+	this.addConsult = function(consult) {
 		return $http.post('/admin/api/addConsult', consult);
 	}
 });
@@ -192,7 +192,30 @@ app.controller('UserCtrl', function ($scope, SchoolSvc) {
 	}
 })
 
-app.controller('ConsultCtrl', function ($scope, SchoolSvc) {
+app.filter('changeCategoryName', function() {
+	return function(categoryNo) {
+		var categoryName = "";
+
+		switch (categoryNo) {
+			case 1 : categoryName = "성상담"; break;
+			case 2 : categoryName = "학업상담"; break;
+			case 3 : categoryName = "진로상담"; break;
+			case 4 : categoryName = "심리상담"; break;
+			case 5 : categoryName = "성장상담"; break;
+			case 6 : categoryName = "흡연상담"; break;
+		}
+
+		return categoryName;
+	}
+});
+
+app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
+	$scope.selectedCategoryNo = 0;
+	$scope.selectedCategoryInfo = "";
+	$scope.consultMessage = "";
+	$scope.sessions = [];
+	$scope.consultLists = [];
+
 	$scope.categories = [
 		{code: 0, name: "전체"},
 		{code: 1, name: "성상담"},
@@ -202,4 +225,49 @@ app.controller('ConsultCtrl', function ($scope, SchoolSvc) {
 		{code: 5, name: "성장상담"},
 		{code: 6, name: "흡연상담"}
 	];
+
+	$scope.getSessionList = function(categoryNo) {
+		ConsultSvc.getSessionList({ categoryNo : categoryNo})
+			.success(function(sessions) {
+				$scope.sessions = sessions.data;
+			});
+	};
+
+	$scope.getSelectedCategoryData = function() {
+		if ($scope.selectedCategoryInfo != null) {
+			$scope.selectedCategoryNo = $scope.selectedCategoryInfo["code"];
+			$scope.getSessionList($scope.selectedCategoryNo);
+		};
+	}
+
+	$scope.showConsultList = function(session_id, member_id) {
+		$scope.session_id = session_id;
+		$scope.member_id = member_id;
+		
+	 	ConsultSvc.getConsultList({ session_id : session_id})
+			.success(function(lists) {
+				$scope.consultLists = lists.data;
+
+			});
+    }
+
+    $scope.addConsultMessage = function(){
+    	if ($scope.consultMessage != "") {
+    		var consult = {
+				content: $scope.consultMessage,
+				category: $scope.selectedCategoryNo,
+				who: 1,
+				member_id: $scope.member_id
+			}
+
+    		ConsultSvc.addConsult(consult)
+    			.success(function(result) {
+    				$scope.showConsultList($scope.session_id, $scope.member_id);
+    				$scope.consultMessage = "";
+    			});
+    	};
+    }
+
+    $scope.getSessionList($scope.selectedCategoryNo);
+
 })

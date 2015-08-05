@@ -1,39 +1,78 @@
 <div ng-controller='ConsultCtrl' class="container">
-	<h3>상담 목록</h3>
-	<div class="form-group">
-    	<label for="categorySelect" class="col-md-2 control-label">상담 카테고리</label>
-    	<div class="col-md-4">
-      		<select class="form-control" id="categorySelect" ng-model="category">
-      			<option ng-repeat="c in categories" value="{{c.code}}">
-	        		{{c.name}}
-	    		</option>
-      		</select>
-    	</div>
-  	</div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3>상담 목록</h3>
+        </div>
 
-    <table class="table table-striped">
-    	<thead>
-    		<tr>
-    			<td>편집</td>
-    			<td>카테고리</td>
-    			<td>학생이름</td>
-    			<td>학교명</td>
-    			<td>학년</td>
-    			<td>새글유무</td>
-    			<td>날짜</td>
-    		</tr>
-    	</thead>
-    	<tbody>
-		    <tr ng-repeat="session in sessions | orderBy:'-created'">
-		    	<td>
-			    </td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-		    </tr>
-	    </tbody>
-    </table>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="categorySelect" class="col-md-2 control-label">상담 카테고리</label>
+                <div class="col-md-4">
+                    <select class="form-control" id="categorySelect" ng-model="selectedCategoryInfo" ng-change="getSelectedCategoryData()" 
+                        ng-options="c.name for c in categories">
+                        <!--<option ng-repeat="c in categories" value="{{c.code}}">
+                            {{c.name}}
+                        </option>-->
+                    </select>
+                </div>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>편집</td>
+                        <td>카테고리</td>
+                        <td>학생이름</td>
+                        <td>학교명</td>
+                        <td>학년</td>
+                        <td>새글유무</td>
+                        <td>날짜</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="session in sessions | orderBy:'-created'" ng-click="showConsultList(session.session_id, session.member_id)">
+                        <td></td>
+                        <td>{{session.category | changeCategoryName}}</td>
+                        <td>{{session.name}}</td>
+                        <td>{{session.school_name}}</td>
+                        <td>{{session.school_class}}</td>
+                        <td ng-switch="{{session.who}}">
+                            <span ng-switch-when="0">새글</span>
+                            <span ng-switch-default></span>
+                        </td>
+                        <td>{{session.created}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="panel-body" ng-show="consultLists != null">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <td>WHO</td>
+                            <td>내용</td>
+                            <td>날짜</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="cslist in consultLists">
+                             <td ng-switch="{{cslist.who}}">
+                                <span ng-switch-when="1">선생님</span>
+                                <span ng-switch-when="0">학생</span>
+                            </td>
+                            <td>{{cslist.content}}</td>
+                            <td>{{cslist.created}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="add_consult_msg" ng-model="consultMessage">
+                        <button type="submit" ng-click="addConsultMessage()" class="btn btn-default">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>   
+    </div>
 </div>
