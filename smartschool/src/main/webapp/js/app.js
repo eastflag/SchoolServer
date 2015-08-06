@@ -1,5 +1,5 @@
 var app = angular.module('app', [
-    'ngRoute'
+    'ngRoute', 'ui.bootstrap'
 ]);
 
 app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -65,6 +65,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
 	$scope.noti_mode = "";
 	$scope.school_id;
+	$scope.selected_school = null;
 
 	$scope.categories = [
 		{code: 1, name: "가정통신문"},
@@ -74,11 +75,26 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 	$scope.schools = [];
 	$scope.notis = [];
+
+	$scope.currentPageSchool = 1;
+	$scope.totalSchoolListCount = 0;
+
+	$scope.schoolPageChanged = function() {
+		$scope.getSchoolList();
+		$scope.clearSchool();
+		$scope.notis = [];
+		$scope.clearNoti();
+	};
 	
-	SchoolSvc.getSchoolList({start_index:0, page_size:10})
-	.success(function(schools) {
-		$scope.schools = schools.data;
-	})
+	$scope.getSchoolList = function() {
+		SchoolSvc.getSchoolList({start_index:$scope.currentPageSchool - 1, page_size:10})
+		.success(function(schools) {
+			$scope.schools = schools.data;
+			$scope.totalSchoolLists = schools.total;
+		});
+	}
+
+	$scope.getSchoolList();
 	
 	$scope.editSchool = function(school) {
 		$scope.mode = "edit";
@@ -126,22 +142,46 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 			$scope.gugun = null;
 			$scope.lat = null;
 			$scope.lng = null;
-			SchoolSvc.getSchoolList()
-			.success(function(schools) {
-				$scope.schools = schools.data;
-			})
+			
+			$scope.getSchoolList();
+			//SchoolSvc.getSchoolList()
+			//.success(function(schools) {
+			//	$scope.schools = schools.data;
+			//})
 		})
 	}
 	
 	//알리미 버튼 클릭-----------------------------------------------------
+	$scope.currentPageNoti = 1;
+	$scope.totalNotiListCount = 0;
+	$scope.itemPerNotiPage = 5;
+
+	$scope.initNotiVariables = function() {
+		$scope.currentPageNoti = 1;
+		$scope.totalNotiListCount = 0;	
+	}	
+
+	$scope.notiPageChanged = function() {
+		$scope.getNoti($scope.selected_school);
+		$scope.clearNoti();
+	};
+
+
 	$scope.getNoti = function(school) {
+		if ($scope.selected_school == null || $scope.selected_school.school_id != school.school_id) {
+			$scope.initNotiVariables();	
+		};
+
+		$scope.selected_school = school;
 		$scope.mode = "noti";
 		$scope.school_id = school.school_id;
 		
-		var noti = {school_id:school.school_id};
+		var noti = {school_id:school.school_id, start_index:$scope.currentPageNoti - 1, page_size:$scope.itemPerNotiPage};
+		
 		SchoolSvc.getSchoolNotiList(noti)
-		.success(function(schools) {
-			$scope.notis = schools.data;
+		.success(function(notiList) {
+			$scope.notis = notiList.data;
+			$scope.totalNotiListCount = notiList.total;	
 		})
 	}
 	
@@ -166,7 +206,8 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 		SchoolSvc.modifySchoolNoti(noti)
 		.success(function(result){
-
+			$scope.getNoti($scope.selected_school);
+			$scope.clearNoti();
 		});
 	}
 	//알리미 신규 글 등록
@@ -181,9 +222,34 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 		SchoolSvc.addSchoolNoti(noti)
 		.success(function(result){
-			$scope.getNoti();
+			$scope.getNoti($scope.selected_school);
+			$scope.clearNoti();
 		});
 	}
+
+	$scope.clearNoti = function() {
+		$scope.noti_seq = null;
+		$scope.category = null;
+		$scope.title = null;
+		$scope.content = null;
+		$scope.noti_date = null;
+	}
+})
+
+app.directive('calendar', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, el, attr, ngModel) {
+            $(el).datepicker({
+                dateFormat: 'yy-mm-dd',
+                onSelect: function (dateText) {
+                    scope.$apply(function () {
+                        ngModel.$setViewValue(dateText);
+                    });
+                }
+            });
+        }
+    };
 })
 
 app.controller('UserCtrl', function ($scope, SchoolSvc) {
@@ -215,6 +281,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	$scope.consultMessage = "";
 	$scope.sessions = [];
 	$scope.consultLists = [];
+	$scope.consultListCategoryNo = 0;
 
 	$scope.categories = [
 		{code: 0, name: "전체"},
@@ -240,10 +307,11 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 		};
 	}
 
-	$scope.showConsultList = function(session_id, member_id) {
+	$scope.showConsultList = function(session_id, member_id, category_no) {
 		$scope.session_id = session_id;
 		$scope.member_id = member_id;
-		
+		$scope.consultListCategoryNo = category_no;
+
 	 	ConsultSvc.getConsultList({ session_id : session_id})
 			.success(function(lists) {
 				$scope.consultLists = lists.data;
@@ -255,14 +323,14 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
     	if ($scope.consultMessage != "") {
     		var consult = {
 				content: $scope.consultMessage,
-				category: $scope.selectedCategoryNo,
+				category: $scope.consultListCategoryNo,
 				who: 1,
 				member_id: $scope.member_id
 			}
 
     		ConsultSvc.addConsult(consult)
     			.success(function(result) {
-    				$scope.showConsultList($scope.session_id, $scope.member_id);
+    				$scope.showConsultList($scope.session_id, $scope.member_id, $scope.consultListCategoryNo);
     				$scope.consultMessage = "";
     			});
     	};
