@@ -1,3 +1,7 @@
+$(function() {
+    $('#side-menu').metisMenu();
+});
+
 var app = angular.module('app', [
     'ngRoute'
 ]);
