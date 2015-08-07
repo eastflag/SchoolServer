@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -58,4 +60,14 @@ public interface MobileService {
 	public SessionVO selectSession(SessionVO session);
 	public SessionVO selectLastSession();
 	public List<ConsultVO> selectConsultList(SessionVO session);
+	
+	//board, noti
+	public List<NotiVO> getNotiList();
+	public long addNoti(NotiVO noti) throws PersistenceException;
+	public long modifyNoti(NotiVO noti) throws PersistenceException;
+	public long removeNoti(NotiVO noti) throws PersistenceException;
+	public List<BoardVO> getBoardList(BoardVO board);
+	public long addBoard(BoardVO board) throws PersistenceException;
+	public long modifyBoard(BoardVO board) throws PersistenceException;
+	public long removeBoard(BoardVO board) throws PersistenceException;
 }

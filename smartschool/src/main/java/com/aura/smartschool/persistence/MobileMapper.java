@@ -7,12 +7,14 @@ import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
+import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -77,4 +79,14 @@ public interface MobileMapper {
 	public SessionVO selectSession(SessionVO session);
 	public SessionVO selectLastSession();
 	public List<ConsultVO> selectConsultList(SessionVO session);
+	
+	//board, noti
+	public List<NotiVO> selectNotiList();
+	public long insertNoti(NotiVO noti) throws PersistenceException;
+	public long updateNoti(NotiVO noti) throws PersistenceException;
+	public long deleteNoti(NotiVO noti) throws PersistenceException;
+	public List<BoardVO> selectBoardList(BoardVO board);
+	public long insertBoard(BoardVO board) throws PersistenceException;
+	public long updateBoard(BoardVO board) throws PersistenceException;
+	public long deleteBoard(BoardVO board) throws PersistenceException;
 }

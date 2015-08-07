@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
@@ -19,6 +20,7 @@ import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.result.Result;
@@ -334,6 +336,111 @@ public class ApiController {
 			List<ConsultVO> consultList = mobileService.selectConsultList(session);
 
 			return new ResultData<List<ConsultVO>>(0, "success", consultList);
+		}
+	}
+	
+
+	@RequestMapping("/api/getNotiList")
+    public ResultData<List<NotiVO>> getNotiList() {
+		logger.debug("/api/getNotiList--------------------------------------------------");
+		List<NotiVO> notiList = mobileService.getNotiList();
+		
+		if(notiList == null) {
+			return new ResultData<List<NotiVO>>(100, "data does not exist", null);
+		} else {
+			return new ResultData<List<NotiVO>>(0, "success", notiList);
+		}
+	}
+	
+	@RequestMapping("/api/addNoti")
+    public Result addNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/api/addNoti-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addNoti(inNoti);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	
+	@RequestMapping("/api/modifyNoti")
+    public Result modifyNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/api/modifyNoti----------------------------------------------------------");
+		
+		long resultCount = mobileService.modifyNoti(inNoti);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	
+	@RequestMapping("/api/removeNoti")
+    public Result removeNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/api/removeNoti----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeNoti(inNoti);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "delete failed");
+		}
+	}
+	
+	@RequestMapping("/api/getBoardList")
+    public ResultData<List<BoardVO>> getBoardList(@RequestBody BoardVO inBoard) {
+		logger.debug("/api/getBoardList--------------------------------------------------");
+		List<BoardVO> boardList = mobileService.getBoardList(inBoard);
+		
+		if(boardList == null) {
+			return new ResultData<List<BoardVO>>(100, "data does not exist", null);
+		} else {
+			return new ResultData<List<BoardVO>>(0, "success", boardList);
+		}
+	}
+	
+	@RequestMapping("/api/addBoard")
+    public Result addBoard(@RequestBody BoardVO inBoard) {
+		logger.debug("/api/addBoard-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addBoard(inBoard);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	
+	@RequestMapping("/api/modifyBoard")
+    public Result modifyBoard(@RequestBody BoardVO inBoard) {
+		logger.debug("/api/modifyBoard----------------------------------------------------------");
+		
+		long resultCount = mobileService.modifyBoard(inBoard);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	
+	@RequestMapping("/api/removeBoard")
+    public Result removeBoard(@RequestBody BoardVO inBoard) {
+		logger.debug("/api/removeBoard----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeBoard(inBoard);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "delete failed");
 		}
 	}
 }

@@ -3,6 +3,8 @@ package com.aura.smartschool.service;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.text.DefaultEditorKit.InsertBreakAction;
+
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,12 +12,14 @@ import org.springframework.stereotype.Service;
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
+import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.Home;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -414,5 +418,45 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<Member> selectMemberOfSchool(SchoolVO school) {
 		return mobileMapper.selectMemberOfSchool(school);
+	}
+
+	@Override
+	public List<NotiVO> getNotiList() {
+		return mobileMapper.selectNotiList();
+	}
+
+	@Override
+	public long addNoti(NotiVO noti) throws PersistenceException {
+		return mobileMapper.insertNoti(noti);
+	}
+
+	@Override
+	public long modifyNoti(NotiVO noti) throws PersistenceException {
+		return mobileMapper.updateNoti(noti);
+	}
+
+	@Override
+	public List<BoardVO> getBoardList(BoardVO board) {
+		return mobileMapper.selectBoardList(board);
+	}
+
+	@Override
+	public long addBoard(BoardVO board) throws PersistenceException {
+		return mobileMapper.insertBoard(board);
+	}
+
+	@Override
+	public long modifyBoard(BoardVO board) throws PersistenceException {
+		return mobileMapper.updateBoard(board);
+	}
+
+	@Override
+	public long removeNoti(NotiVO noti) throws PersistenceException {
+		return mobileMapper.deleteNoti(noti);
+	}
+
+	@Override
+	public long removeBoard(BoardVO board) throws PersistenceException {
+		return mobileMapper.deleteBoard(board);
 	}
 }

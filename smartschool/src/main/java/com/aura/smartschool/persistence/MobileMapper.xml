@@ -610,4 +610,49 @@ select
 	ORDER BY created desc
 </select>
 
+
+<insert id="insertNoti" parameterType="NotiVO">
+	INSERT INTO 
+		noti(title, content) 
+	VALUES(#{title}, #{content});
+</insert>
+<select id="selectNotiList" resultType="NotiVO">
+	SELECT * FROM noti
+	ORDER BY noti_id desc
+</select>
+<update id="updateNoti" parameterType="NotiVO">
+	UPDATE noti
+		<set>
+			<if test="title != null">title=#{title},</if>
+			<if test="content != null">content=#{content}</if>
+		</set>
+	WHERE noti_id = #{noti_id} 
+</update>
+
+<delete id="deleteNoti" parameterType="NotiVO">
+	DELETE FROM noti
+	WHERE noti_id = #{noti_id}
+</delete>
+
+<insert id="insertBoard" parameterType="BoardVO">
+	INSERT INTO 
+		board(member_id, board_type, title, content) 
+	VALUES(#{member_id}, #{board_type}, #{title}, #{content});
+</insert>
+<select id="selectBoardList" parameterType="BoardVO" resultType="BoardVO">
+	SELECT * FROM board
+	WHERE board_type = #{board_type}
+	ORDER BY board_id desc
+</select>
+<update id="updateBoard" parameterType="BoardVO">
+	UPDATE board
+		SET updated = now()
+		<if test="answer != null">, answer=#{answer}</if>
+	WHERE board_id = #{board_id} 
+</update>
+<delete id="deleteBoard" parameterType="BoardVO">
+	DELETE FROM board
+	WHERE board_id = #{board_id}
+</delete>
+
 </mapper>
