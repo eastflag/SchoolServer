@@ -11,6 +11,8 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 	.when('/user', {templateUrl: 'templates/user.html'})
 	.when('/school', {templateUrl: 'templates/school.html'})
 	.when('/consult', {templateUrl: 'templates/consult.html'})
+	.when('/noti', {templateUrl: 'templates/noti.html'})
+	.when('/qna', {templateUrl: 'templates/qna.html'})
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -58,6 +60,36 @@ app.service('ConsultSvc', function($http) {
 	}
 	this.addConsult = function(consult) {
 		return $http.post('/admin/api/addConsult', consult);
+	}
+});
+
+app.service('NotiSvc', function($http) {
+	this.getNotiList = function() {
+		return $http.post('/api/getNotiList');
+	}
+	this.addNoti = function(noti) {
+		return $http.post('/api/addNoti', noti);
+	}
+	this.modifyNoti = function(noti) {
+		return $http.post('/api/modifyNoti', noti);
+	}
+	this.removeNoti = function(noti) {
+		return $http.post('/api/removeNoti', noti);
+	}
+});
+
+app.service('BoardSvc', function($http) {
+	this.getBoardList = function(board) {
+		return $http.post('/api/getBoardList', board);
+	}
+	this.addBoard = function(board) {
+		return $http.post('/api/addBoard', board);
+	}
+	this.modifyBoard = function(board) {
+		return $http.post('/api/modifyBoard', board);
+	}
+	this.removeBoard = function(board) {
+		return $http.post('/api/removeBoard', board);
 	}
 });
 
@@ -342,4 +374,17 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 
     $scope.getSessionList($scope.selectedCategoryNo);
 
+})
+
+app.controller('NotiCtrl', function ($scope, NotiSvc) {
+	$scope.notis = [];
+
+	$scope.getNotiList = function() {
+		NotiSvc.getNotiList()
+		.success(function(notis) {
+			$scope.notis = notis.data;
+		});
+	}
+
+	$scope.getNotiList();
 })
