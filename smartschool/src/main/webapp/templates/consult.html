@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label for="categorySelect" class="control-label">상담 카테고리</label>
                             <select class="form-control" id="categorySelect" ng-model="selectedCategoryInfo" ng-change="getSelectedCategoryData()" 
-                                ng-options="c.name for c in categories">
+                                ng-options="c.name for c in categories" ng-init="selectedCategoryInfo = categories[0]">
                             </select>
                         </div>
                     </form>

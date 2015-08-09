@@ -330,7 +330,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	];
 
 	$scope.getSessionList = function(categoryNo) {
-		ConsultSvc.getSessionList({ categoryNo : categoryNo})
+		ConsultSvc.getSessionList({ category : categoryNo})
 			.success(function(sessions) {
 				$scope.sessions = sessions.data;
 			});
@@ -368,12 +368,13 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
     			.success(function(result) {
     				$scope.showConsultList($scope.session_id, $scope.member_id, $scope.consultListCategoryNo);
     				$scope.consultMessage = "";
+
+    				$scope.getSessionList($scope.selectedCategoryNo);
     			});
     	};
     }
 
     $scope.getSessionList($scope.selectedCategoryNo);
-
 })
 
 app.controller('NotiCtrl', function ($scope, NotiSvc) {
