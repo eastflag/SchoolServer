@@ -68,13 +68,13 @@ public class AdminController {
 			}
 			
 			JsonObject data = new JsonObject();
+			data.addProperty("command", "school");
 			data.addProperty("category", noti.getCategory());
 			data.addProperty("title", noti.getTitle());
 			data.addProperty("content", noti.getContent());
 			data.addProperty("noti_date", noti.getNoti_date());
 			
-			String res = NetworkUtil.sendGCM(array, data);
-			logger.debug("send gcm result:" + res);
+			NetworkUtil.requestGCM(array, data);
 			
 			return new Result(0, "success");
 		} else {
@@ -131,6 +131,22 @@ public class AdminController {
 		consult.setContent(inSession.getContent());
 		consult.setWho(inSession.getWho());
 		mobileService.insertConsult(consult);
+		
+		//if who is 1, send gcm : member_id = > gcm id, content
+		if(inSession.getWho() == 1) {
+			JsonArray array = new JsonArray(); //get gcm_id
+			Member m = new Member();
+			m.setMember_id(inSession.getMember_id());
+			Member member = mobileService.selectMember(m);
+			array.add(new JsonPrimitive(member.getGcm_id()));
+			
+			JsonObject data = new JsonObject();
+			data.addProperty("command", "consult");
+			data.addProperty("category", inSession.getCategory());
+			data.addProperty("content", inSession.getContent());
+			
+			NetworkUtil.requestGCM(array, data);
+		}
 		
 		return new Result(0, "success");
 	}

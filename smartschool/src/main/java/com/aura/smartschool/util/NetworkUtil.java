@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -18,7 +20,18 @@ import com.google.gson.JsonObject;
 
 public class NetworkUtil {
 	
-	public static String sendGCM(JsonArray reg_IDs, JsonObject sendData) {
+	private static final Executor threadPool = Executors.newFixedThreadPool(5);
+	
+	public static void requestGCM(final JsonArray reg_IDs, final JsonObject sendData) {
+		threadPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				sendGCM(reg_IDs, sendData);
+			}
+		});
+	}
+	
+	private static void sendGCM(JsonArray reg_IDs, JsonObject sendData) {
 		
 		JsonObject json = new JsonObject();
 		Resource resource = new ClassPathResource("/app.properties");
@@ -50,7 +63,7 @@ public class NetworkUtil {
 			http.setRequestProperty("Authorization", "key=" + props.getProperty("api.key"));
 			out = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
 			writer = new PrintWriter(out);
-			//System.out.println("json:" + json.toString());
+			System.out.println("json:" + json.toString());
 			writer.write(json.toString()); // 보내기
 			writer.flush(); // 비우기
 			writer.close(); // 닫기
@@ -65,9 +78,9 @@ public class NetworkUtil {
 				while ((line = reader.readLine()) != null) {
 					buffer.append(line + "\n");
 				}
-				//System.out.println(LogUtil.getPath("RESPONSE : " + "\n" + buffer.toString()));
 				res = buffer.toString();
 			}
+			System.out.println(res);
 		} catch (IOException e) {
 			e.getMessage();
 		} catch (Exception e) {
@@ -93,7 +106,6 @@ public class NetworkUtil {
 				}
 			}
 		}
-		return res;
 	}
 
 }
