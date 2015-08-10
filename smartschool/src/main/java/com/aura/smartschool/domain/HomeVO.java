@@ -1,6 +1,6 @@
 package com.aura.smartschool.domain;
 
-public class Home {
+public class HomeVO {
 	private String home_id;
 
 	public String getHome_id() {

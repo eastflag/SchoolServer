@@ -16,12 +16,13 @@ import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
-import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
 import com.aura.smartschool.persistence.MobileMapper;
@@ -36,42 +37,42 @@ public class MobileServiceImpl implements MobileService {
 	private MobileMapper mobileMapper;
 
 	@Override
-	public int selectHome(Home home) {
-		return mobileMapper.selectHome(home);
+	public int countHome(HomeVO home) {
+		return mobileMapper.countHome(home);
 	}
 
 	@Override
-	public Member selectMember(Member member) {
+	public MemberVO selectMember(MemberVO member) {
 		return mobileMapper.selectMember(member);
 	}
 	
 	@Override
-	public Member signIn(Member member) {
+	public MemberVO signIn(MemberVO member) {
 		return mobileMapper.signIn(member);
 	}
 	
 	@Override
-	public List<Member> getMemberList(Home home) {
+	public List<MemberVO> getMemberList(HomeVO home) {
 		return mobileMapper.selectMemberList(home);
 	}
 	
 	@Override
-	public long insertHome(Home home) throws PersistenceException {
+	public long insertHome(HomeVO home) throws PersistenceException {
 		return mobileMapper.insertHome(home);
 	}
 
 	@Override
-	public long insertMember(Member member) throws PersistenceException {
+	public long insertMember(MemberVO member) throws PersistenceException {
 		return mobileMapper.insertMember(member);
 	}
 
 	@Override
-	public long updateMember(Member member) throws PersistenceException {
+	public long updateMember(MemberVO member) throws PersistenceException {
 		return mobileMapper.updateMember(member);
 	}
 
 	@Override
-	public long updateGcmId(Member member) throws PersistenceException {
+	public long updateGcmId(MemberVO member) throws PersistenceException {
 		return mobileMapper.updateGcmId(member);
 	}
 
@@ -81,12 +82,12 @@ public class MobileServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public LocationVO selectLastLocation(Member member) {
+	public LocationVO selectLastLocation(MemberVO member) {
 		return mobileMapper.selectLastLocation(member);
 	}
 
 	@Override
-	public List<LocationVO> selectLocationList(Member member) {
+	public List<LocationVO> selectLocationList(MemberVO member) {
 		return mobileMapper.selectLocationList(member);
 	}
 	
@@ -101,9 +102,9 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public BodyMeasureSummary getSummary(Member m) {
+	public BodyMeasureSummary getSummary(MemberVO m) {
 		//find member by member_id
-		Member member = mobileMapper.selectMember(m);
+		MemberVO member = mobileMapper.selectMember(m);
 		SchoolVO school = mobileMapper.selectSchoolById(member.getSchool_id());
 		
 		if(member != null) {
@@ -158,8 +159,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public BodyMeasureGrade getMeasureGrade(Member m, String section) {
-		Member member = mobileMapper.selectMember(m);
+	public BodyMeasureGrade getMeasureGrade(MemberVO m, String section) {
+		MemberVO member = mobileMapper.selectMember(m);
 		SchoolVO school = mobileMapper.selectSchoolById(member.getSchool_id());
 		
 		if(member != null) {
@@ -321,8 +322,8 @@ public class MobileServiceImpl implements MobileService {
 	//admin----------------------------------------------------------------------------------
 	
 	@Override
-	public List<SchoolVO> getSchoolListOfMember(SchoolVO school) {
-		return mobileMapper.selectSchoolListOfMember(school);
+	public List<SchoolVO> getSchoolListOfMember(SearchVO search) {
+		return mobileMapper.selectSchoolListOfMember(search);
 	}
 
 	@Override
@@ -366,8 +367,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int countSchoolListOfMember() {
-		return mobileMapper.countSchoolListOfMember();
+	public int countSchoolListOfMember(SearchVO search) {
+		return mobileMapper.countSchoolListOfMember(search);
 	}
 
 	@Override
@@ -416,7 +417,7 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<Member> selectMemberOfSchool(SchoolVO school) {
+	public List<MemberVO> selectMemberOfSchool(SchoolVO school) {
 		return mobileMapper.selectMemberOfSchool(school);
 	}
 
@@ -458,5 +459,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long removeBoard(BoardVO board) throws PersistenceException {
 		return mobileMapper.deleteBoard(board);
+	}
+
+	@Override
+	public List<HomeVO> selectHomeList(SearchVO search) {
+		return mobileMapper.selectHomeList(search);
+	}
+
+	@Override
+	public int countHomeList(SearchVO search) {
+		return mobileMapper.countHomeList(search);
 	}
 }

@@ -3,6 +3,7 @@ http://aurasystem.kr:9000/admin/api/getSchoolListOfMember
 //start_index : 시작 인덱스(0부터 시작)
 //page_size : 가져올 데이터 갯수
 {
+   "search_value" : "광명", //"search_value" : null or 키값이 없으면 모든 걸 검색
    "start_index" : 0,
    "page_size" : 5
 }
@@ -10,7 +11,7 @@ http://aurasystem.kr:9000/admin/api/getSchoolListOfMember
 {
     "result": 0,
     "msg": "success",
-    "total": 10,
+    "total": 11,
     "data": [{
         "school_id": 5943,
         "school_name": "밀알유치원",
@@ -321,7 +322,7 @@ http://aurasystem.kr:9000/api/addBoard
     "msg": "success"
 }
 
-//QnA 수정하기(답변하기)
+//QnA 수정하기(답변하기)-----------------------------------------------------------------------------
 http://aurasystem.kr:9000/api/modifyBoard
 {
     "board_id" : 1,
@@ -333,7 +334,7 @@ http://aurasystem.kr:9000/api/modifyBoard
     "msg": "success"
 }
 
-//QnA 삭제하기
+//QnA 삭제하기--------------------------------------------------------------------------------------
 http://aurasystem.kr:9000/api/removeBoard
 {
     "board_id" : 2
@@ -342,4 +343,29 @@ http://aurasystem.kr:9000/api/removeBoard
 {
     "result": 0,
     "msg": "success"
+}
+
+* home list 가져오기---------------------------------------------------------------------------------
+http://aurasystem.kr:9000/api/getHomeList
+{
+	"search_value" : "길동", //"search_value" : null or 키값이 없으면 모든 걸 검색
+	"start_index" : 0,
+	"page_size" : 5
+}
+결과
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "home_id": "1234"
+    }, {
+        "home_id": "12345"
+    }, {
+        "home_id": "antiflow"
+    }, {
+        "home_id": "antiflow1"
+    }, {
+        "home_id": "aura"
+    }],
+    "total": 26
 }

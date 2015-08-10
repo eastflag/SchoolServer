@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
 
@@ -38,9 +38,9 @@ public class HomeController {
 		if(CommonUtil.doFindMobileDevice("android", request)){
 			isUpdate = "Y";
 		} else {
-			Member m = new Member();
+			MemberVO m = new MemberVO();
 			m.setMember_id(member_id);
-			Member member = mobileService.selectMember(m);
+			MemberVO member = mobileService.selectMember(m);
 			
 			if (member != null) {
 				request.setAttribute("userName", member.getName());

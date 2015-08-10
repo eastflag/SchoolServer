@@ -3,24 +3,40 @@
 
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
-<select id="selectHome" parameterType="Home" resultType="Integer">
+<select id="countHome" parameterType="HomeVO" resultType="Integer">
 	SELECT count(*) FROM HOME
 	WHERE home_id = #{home_id}
 </select> 
 
-<select id="selectMember" parameterType="Member" resultType="Member">
+<select id="selectHomeList" parameterType="SearchVO" resultType="HomeVO">
+	select * from home
+	<if test="search_value != null">
+		where home_id like concat('%', #{search_value}, '%')
+	</if>
+	order by home_id asc
+	limit #{start_index}, #{page_size}
+</select> 
+
+<select id="countHomeList" parameterType="SearchVO" resultType="Integer">
+	select count(*) from home
+	<if test="search_value != null">
+		where home_id like concat('%', #{search_value}, '%')
+	</if>
+</select>
+
+<select id="selectMember" parameterType="MemberVO" resultType="MemberVO">
 	SELECT * FROM MEMBER
 	WHERE  1=1
 		<if test="mdn != null">and mdn=#{mdn}</if>
 		<if test="member_id != null">and member_id=#{member_id}</if>
 </select>
 
-<select id="signIn" parameterType="Member" resultType="Member">
+<select id="signIn" parameterType="MemberVO" resultType="MemberVO">
 	SELECT * FROM member
 	WHERE mdn=#{mdn} and home_id=#{home_id};
 </select>
 
-<select id="selectMemberList" parameterType="Home" resultType="Member">
+<select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
 	SELECT 
 		M.member_id, M.home_id, M.mdn, M.gcm_id, M.is_parent, M.name, M.relation, M.photo, M.school_grade, M.school_class,
 		M.birth_date, M.sex,
@@ -30,16 +46,17 @@
 		CAST(AES_DECRYPT(unhex(S.lat), 'aura') AS CHAR(20)) as 'lat', 
 		CAST(AES_DECRYPT(unhex(S.lng), 'aura') AS CHAR(20)) as 'lng',
 		S.homepage,
-		S.contact
+		S.contact,
+		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id}
 </select>
 	
-<insert id="insertHome" parameterType="Home">
+<insert id="insertHome" parameterType="HomeVO">
 	INSERT INTO home(home_id) values(#{home_id});
 </insert>
 
-<insert id="insertMember" parameterType="Member">
+<insert id="insertMember" parameterType="MemberVO">
 	INSERT INTO 
 		MEMBER(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
 		values(#{home_id}, #{mdn}, #{gcm_id}, #{is_parent}, #{name}, #{relation}, #{photo}, 
@@ -54,7 +71,7 @@
 		#{school_grade}, #{school_class}, #{sex}, #{birth_date});
 </insert>
 
-<update id="updateMember" parameterType="Member">
+<update id="updateMember" parameterType="MemberVO">
 	UPDATE MEMBER
 	<set>
 		<if test="mdn != null">mdn=#{mdn},</if>
@@ -71,7 +88,7 @@
 	WHERE member_id = #{member_id} 
 </update>
 
-<update id="updateGcmId" parameterType="Member">
+<update id="updateGcmId" parameterType="MemberVO">
 	UPDATE MEMBER
 		set gcm_id = #{gcm_id}
 	WHERE home_id = #{home_id} and mdn = #{mdn}
@@ -87,7 +104,7 @@
 		);
 </insert>
 
-<select id="selectLastLocation" parameterType="Member" resultType="LocationVO">
+<select id="selectLastLocation" parameterType="MemberVO" resultType="LocationVO">
 	SELECT 
 		member_id,
 		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
@@ -100,7 +117,7 @@
 	LIMIT 1;
 </select>
 
-<select id="selectLastHomeLocation" parameterType="Home" resultType="LocationVO">
+<select id="selectLastHomeLocation" parameterType="HomeVO" resultType="LocationVO">
 	SELECT location_id, member_id, lat, lng, created_date 
 	from lat
 	(select * from location
@@ -109,7 +126,7 @@
 group by member_id;
 </select>
 
-<select id="selectLocationList" parameterType="Member" resultType="LocationVO">
+<select id="selectLocationList" parameterType="MemberVO" resultType="LocationVO">
 	SELECT 
 		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
 		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
@@ -182,7 +199,7 @@ group by member_id;
 	WHERE id = #{id};
 </select> 
 
-<select id="selectBodySummary" parameterType="Member" resultType="BodyMeasureSummary">
+<select id="selectBodySummary" parameterType="MemberVO" resultType="BodyMeasureSummary">
 	select member_id, measure_date, height, weight, bmi, muscle, skeletal, weight_Control, fat_Control, fat, waist, growthGrade, ppm, cohd from 
 		(select 
 			measure_info.member_id,
@@ -483,22 +500,28 @@ select
 				and standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID;
 </select>
 
-<select id="selectSchoolListOfMember" parameterType="SchoolVO" resultType="SchoolVO">
+<select id="selectSchoolListOfMember" parameterType="SearchVO" resultType="SchoolVO">
 	select * from school
 	where school_id in (
 		SELECT school_id FROM healthcare.member
 		group by school_id
 	)
+		<if test="search_value != null">
+			AND school_name like concat('%', #{search_value}, '%')
+		</if>
 	order by school_name
 	Limit #{start_index}, #{page_size}
 </select>
 
-<select id="countSchoolListOfMember" resultType="Integer">
+<select id="countSchoolListOfMember" parameterType="SearchVO" resultType="Integer">
 	select count(*) from school
 	where school_id in (
 		SELECT school_id FROM healthcare.member
 		group by school_id
 	)
+		<if test="search_value != null">
+			AND school_name like concat('%', #{search_value}, '%')
+		</if>
 </select>
 
 <update id="updateSchool" parameterType="SchoolVO">
@@ -526,7 +549,7 @@ select
 		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
 </insert>
 
-<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="Member">
+<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="MemberVO">
 	SELECT * FROM member
 	WHERE home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
 </select>

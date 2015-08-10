@@ -16,15 +16,17 @@ import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
-import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MeasureItem;
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
+import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 
 @RestController
@@ -37,40 +39,50 @@ public class ApiController {
     
 	//로그인하기 :home_id, mdn
 	@RequestMapping("/api/signIn")
-    public ResultData<List<Member>> signIn(@RequestBody Member member) {
+    public ResultData<List<MemberVO>> signIn(@RequestBody MemberVO member) {
 		logger.debug("/api/signIn----------------------------------------------------------------");
 		
 		//home_id 존재하는지 체크, 
-		Member myInfo = mobileService.signIn(member);
+		MemberVO myInfo = mobileService.signIn(member);
 		//존재한다면 구성원 리스트를 리턴
 		if(myInfo != null) {
-			Home home = new Home();
+			HomeVO home = new HomeVO();
 			home.setHome_id(member.getHome_id());
-			List<Member> memberList = mobileService.getMemberList(home); 
-			ResultData<List<Member>> result = new ResultData<List<Member>>(0, "success", memberList);
+			List<MemberVO> memberList = mobileService.getMemberList(home); 
+			ResultData<List<MemberVO>> result = new ResultData<List<MemberVO>>(0, "success", memberList);
 			//reg id update
 			mobileService.updateGcmId(member);
 			
 			return result;
 		} else {
-			return new ResultData<List<Member>>(100, "login failed", null);
+			return new ResultData<List<MemberVO>>(100, "login failed", null);
 		}
     }
+	
+	@RequestMapping("/api/getHomeList")
+	public Result getHomeList(@RequestBody SearchVO search) {
+		logger.debug("/api/getHomeList-----------------------------------------------------------");
+		
+		List<HomeVO> homeList = mobileService.selectHomeList(search);
+		int total = mobileService.countHomeList(search);
+		
+		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
+	}
 	
 	//회원가입
 	@Transactional
 	@RequestMapping("/api/signUp")
-    public Result signUp(@RequestBody Member member) {
+    public Result signUp(@RequestBody MemberVO member) {
 		logger.debug("/api/signUp----------------------------------------------------------------");
 		
 		int result = 0;
 		String msg = "success";
 		try { 
-			Home home = new Home();
+			HomeVO home = new HomeVO();
 			home.setHome_id(member.getHome_id());
 			
 			//home_id 가 존재하는지 체크
-			if(mobileService.selectHome(home) > 0) {
+			if(mobileService.countHome(home) > 0) {
 				result = 100;
 				msg = "home_id exists";
 			} else if (mobileService.selectMember(member) != null) {
@@ -94,7 +106,7 @@ public class ApiController {
 	
 	//가족 멤버 등록
 	@RequestMapping("/api/addMember")
-    public Result addMember(@RequestBody Member member) {
+    public Result addMember(@RequestBody MemberVO member) {
 		logger.debug("/api/addMember-------------------------------------------------------------");
 		
 		try {
@@ -111,7 +123,7 @@ public class ApiController {
 	
 	//가족 멤버 수정
 	@RequestMapping("/api/updateMember")
-    public Result updateMember(@RequestBody Member member) {
+    public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
 		long resultCount = mobileService.updateMember(member);
@@ -125,15 +137,15 @@ public class ApiController {
 	
 	//가족 멤버 리스트 가져오기
 	@RequestMapping("/api/getMemberList")
-    public Result getMemberList(@RequestBody Home home) {
+    public Result getMemberList(@RequestBody HomeVO home) {
 		logger.debug("/api/getMemberList---------------------------------------------------------");
 		
-		List<Member> memberList = mobileService.getMemberList(home);
+		List<MemberVO> memberList = mobileService.getMemberList(home);
 		
 		if(memberList.size() > 0) {
-			return new ResultData<List<Member>>(0, "success", memberList);
+			return new ResultData<List<MemberVO>>(0, "success", memberList);
 		} else {
-			return new ResultData<List<Member>>(100, "home id does not exist", memberList);
+			return new ResultData<List<MemberVO>>(100, "home id does not exist", memberList);
 		}
 	}
 	
@@ -155,7 +167,7 @@ public class ApiController {
 	
 	//오늘날짜의 위치 데이터 가져오기
 	@RequestMapping("/api/getLocationList")
-    public Result getLocationList(@RequestBody Member member) {
+    public Result getLocationList(@RequestBody MemberVO member) {
 		logger.debug("/api/getLocationList-------------------------------------------------------");
 		
 		List<LocationVO> locationList = mobileService.selectLocationList(member);
@@ -169,7 +181,7 @@ public class ApiController {
 	
 	//오늘날짜의 가장 최근 위치 가져오기
 	@RequestMapping("/api/getLastLocation")
-	public Result getLastLocation(@RequestBody Member member) {
+	public Result getLastLocation(@RequestBody MemberVO member) {
 		logger.debug("/api/getLastLocation-------------------------------------------------------");
 		
 		LocationVO location = mobileService.selectLastLocation(member);
@@ -238,7 +250,7 @@ public class ApiController {
 	
 	//학생 신체정보 가져오기
 	@RequestMapping("/api/getMeasureSummary")
-	public Result getMeasureSummary(@RequestBody Member member) {
+	public Result getMeasureSummary(@RequestBody MemberVO member) {
 		logger.debug("/api/getMeasureSummary-----------------------------------------------------");
 		
 		BodyMeasureSummary summary = mobileService.getSummary(member);
@@ -251,7 +263,7 @@ public class ApiController {
 	
 	//학생 신체정보 가져오기
 	@RequestMapping("/api/getHeight")
-	public Result getHeight(@RequestBody Member m) {
+	public Result getHeight(@RequestBody MemberVO m) {
 		logger.debug("/api/getHeight-----------------------------------------------------");
 		ResultData<MeasureItem> result = new ResultData<MeasureItem>();
 		
@@ -288,7 +300,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/getWeight")
-	public Result getWeight(@RequestBody Member m) {
+	public Result getWeight(@RequestBody MemberVO m) {
 		logger.debug("/api/getWeight-----------------------------------------------------");
 		ResultData<MeasureItem> result = new ResultData<MeasureItem>();
 		

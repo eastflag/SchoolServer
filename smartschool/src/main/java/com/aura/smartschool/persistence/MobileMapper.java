@@ -11,34 +11,37 @@ import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
-import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
 
 public interface MobileMapper {
-	public int selectHome(Home home);
-	public Member selectMember(Member member);
-	public Member signIn(Member member);
-	public List<Member> selectMemberList(Home home);
-	public long insertHome(Home home) throws PersistenceException;
-	public long insertMember(Member member) throws PersistenceException;
-	public long updateMember(Member member) throws PersistenceException;
-	public long updateGcmId(Member member) throws PersistenceException;
+	public int countHome(HomeVO home);
+	public List<HomeVO> selectHomeList(SearchVO search);
+	public int countHomeList(SearchVO search);
+	public MemberVO selectMember(MemberVO member);
+	public MemberVO signIn(MemberVO member);
+	public List<MemberVO> selectMemberList(HomeVO home);
+	public long insertHome(HomeVO home) throws PersistenceException;
+	public long insertMember(MemberVO member) throws PersistenceException;
+	public long updateMember(MemberVO member) throws PersistenceException;
+	public long updateGcmId(MemberVO member) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
-	public LocationVO selectLastLocation(Member member);
-	public List<LocationVO> selectLocationList(Member member);
+	public LocationVO selectLastLocation(MemberVO member);
+	public List<LocationVO> selectLocationList(MemberVO member);
 	
 	public SchoolVO selectSchoolById(int school_id);
 	public List<SchoolVO> selectSchoolList(SchoolVO school);
 	public long insertSchool(SchoolVO school) throws PersistenceException;
 	
-	public List<BodyMeasureSummary> selectBodySummary(Member member);
+	public List<BodyMeasureSummary> selectBodySummary(MemberVO member);
 	//등수 구하기: 현재는 광명데이터로 광명시 전체에서 몇등인가, 향후에는 전체 데이터로 변경 필요
 	public BodyMeasureGrade selectGradeBySection(BodyMeasureGrade grade);
 	public BodyMeasureGrade selectBeforeGradeRankingBySection(BodyMeasureGrade grade);
@@ -61,11 +64,11 @@ public interface MobileMapper {
 	public List<AreaVO> selectAreaList();
 	
 	//admin----------------------------------------------------
-	public List<SchoolVO> selectSchoolListOfMember(SchoolVO school);
-	public int countSchoolListOfMember();
+	public List<SchoolVO> selectSchoolListOfMember(SearchVO search);
+	public int countSchoolListOfMember(SearchVO search);
 	public long updateSchool(SchoolVO school) throws PersistenceException; 
 	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public List<Member> selectMemberOfSchool(SchoolVO school);
+	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
 	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);

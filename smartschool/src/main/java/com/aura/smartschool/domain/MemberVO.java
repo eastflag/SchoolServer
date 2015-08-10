@@ -1,6 +1,6 @@
 package com.aura.smartschool.domain;
 
-public class Member {
+public class MemberVO {
 	private String home_id;
 	private int member_id;
 	private String mdn;
@@ -25,6 +25,9 @@ public class Member {
 	private String contact;
 	private String sido;
 	private String gugun;
+	
+	private String pay_date;
+	
 	public String getHome_id() {
 		return home_id;
 	}
@@ -157,6 +160,10 @@ public class Member {
 	public void setGugun(String gugun) {
 		this.gugun = gugun;
 	}
-	
-	
+	public String getPay_date() {
+		return pay_date;
+	}
+	public void setPay_date(String pay_date) {
+		this.pay_date = pay_date;
+	}
 }

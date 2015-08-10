@@ -9,44 +9,47 @@ import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
-import com.aura.smartschool.domain.Home;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 
 public interface MobileService {
-	public int selectHome(Home home);
-	public Member selectMember(Member member);
-	public Member signIn(Member member);
-	public List<Member> getMemberList(Home home);
-	public long insertHome(Home home) throws PersistenceException;
-	public long insertMember(Member member) throws PersistenceException;
-	public long updateMember(Member member) throws PersistenceException;
-	public long updateGcmId(Member member) throws PersistenceException;
+	public int countHome(HomeVO home);
+	public List<HomeVO> selectHomeList(SearchVO search);
+	public int countHomeList(SearchVO search);
+	public MemberVO selectMember(MemberVO member);
+	public MemberVO signIn(MemberVO member);
+	public List<MemberVO> getMemberList(HomeVO home);
+	public long insertHome(HomeVO home) throws PersistenceException;
+	public long insertMember(MemberVO member) throws PersistenceException;
+	public long updateMember(MemberVO member) throws PersistenceException;
+	public long updateGcmId(MemberVO member) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
-	public LocationVO selectLastLocation(Member member);
-	public List<LocationVO> selectLocationList(Member member);
+	public LocationVO selectLastLocation(MemberVO member);
+	public List<LocationVO> selectLocationList(MemberVO member);
 	
 	public List<SchoolVO> getSchoolList(SchoolVO school);
 	public long insertSchool(SchoolVO school) throws PersistenceException;
 	
-	public BodyMeasureSummary getSummary(Member member);
-	public BodyMeasureGrade getMeasureGrade(Member m, String section);
+	public BodyMeasureSummary getSummary(MemberVO member);
+	public BodyMeasureGrade getMeasureGrade(MemberVO m, String section);
 	
 	public long addArea(AreaVO area) throws PersistenceException;
 	public AreaVO getArea(AreaVO area);
 	public List<AreaVO> getAreaList();
 	
 	//admin----------------------------------------------------
-	public List<SchoolVO> getSchoolListOfMember(SchoolVO school);
-	public int countSchoolListOfMember();
+	public List<SchoolVO> getSchoolListOfMember(SearchVO search);
+	public int countSchoolListOfMember(SearchVO search);
 	public long updateSchool(SchoolVO school) throws PersistenceException;
 	public long addSchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public List<Member> selectMemberOfSchool(SchoolVO school);
+	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
 	public long modifySchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public long removeSchoolNoti(SchoolNoti noti) throws PersistenceException;
 	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti);

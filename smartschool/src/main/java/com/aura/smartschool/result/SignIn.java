@@ -2,21 +2,21 @@ package com.aura.smartschool.result;
 
 import java.util.List;
 
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 
 public class SignIn {
-	private Member myInfo;
-	private List<Member> memberList;
-	public Member getMyInfo() {
+	private MemberVO myInfo;
+	private List<MemberVO> memberList;
+	public MemberVO getMyInfo() {
 		return myInfo;
 	}
-	public void setMyInfo(Member myInfo) {
+	public void setMyInfo(MemberVO myInfo) {
 		this.myInfo = myInfo;
 	}
-	public List<Member> getMemberList() {
+	public List<MemberVO> getMemberList() {
 		return memberList;
 	}
-	public void setMemberList(List<Member> memberList) {
+	public void setMemberList(List<MemberVO> memberList) {
 		this.memberList = memberList;
 	}
 }

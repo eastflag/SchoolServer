@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.ConsultVO;
-import com.aura.smartschool.domain.Member;
+import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
@@ -20,7 +21,6 @@ import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -33,10 +33,10 @@ public class AdminController {
     
 	//get school list of member
 	@RequestMapping("/admin/api/getSchoolListOfMember")
-    public ResultData<List<SchoolVO>> getSchoolListOfMember(@RequestBody SchoolVO school) {
+    public ResultData<List<SchoolVO>> getSchoolListOfMember(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getSchoolListOfMember-------------------------------------------");
-		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember(school);
-		int total = mobileService.countSchoolListOfMember();
+		List<SchoolVO> schoolList = mobileService.getSchoolListOfMember(search);
+		int total = mobileService.countSchoolListOfMember(search);
 		
 		return new ResultDataTotal<List<SchoolVO>>(0, "success", schoolList, total);
 	}
@@ -61,18 +61,20 @@ public class AdminController {
 			//send gcm
 			SchoolVO school = new SchoolVO();
 			school.setSchool_id(noti.getSchool_id());;
-			List<Member> memberList = mobileService.selectMemberOfSchool(school);
+			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
 			JsonArray array = new JsonArray(); //get gcm_id
-			for(Member m : memberList) {
+			for(MemberVO m : memberList) {
 				array.add(new JsonPrimitive(m.getGcm_id()));
 			}
 			
 			JsonObject data = new JsonObject();
+			JsonObject value = new JsonObject();
+			value.addProperty("category", noti.getCategory());
+			value.addProperty("title", noti.getTitle());
+			value.addProperty("content", noti.getContent());
+			value.addProperty("noti_date", noti.getNoti_date());
 			data.addProperty("command", "school");
-			data.addProperty("category", noti.getCategory());
-			data.addProperty("title", noti.getTitle());
-			data.addProperty("content", noti.getContent());
-			data.addProperty("noti_date", noti.getNoti_date());
+			data.addProperty("value", value.toString());
 			
 			NetworkUtil.requestGCM(array, data);
 			
@@ -135,15 +137,17 @@ public class AdminController {
 		//if who is 1, send gcm : member_id = > gcm id, content
 		if(inSession.getWho() == 1) {
 			JsonArray array = new JsonArray(); //get gcm_id
-			Member m = new Member();
+			MemberVO m = new MemberVO();
 			m.setMember_id(inSession.getMember_id());
-			Member member = mobileService.selectMember(m);
+			MemberVO member = mobileService.selectMember(m);
 			array.add(new JsonPrimitive(member.getGcm_id()));
 			
 			JsonObject data = new JsonObject();
+			JsonObject value = new JsonObject();
+			value.addProperty("category", inSession.getCategory());
+			value.addProperty("content", inSession.getContent());
 			data.addProperty("command", "consult");
-			data.addProperty("category", inSession.getCategory());
-			data.addProperty("content", inSession.getContent());
+			data.addProperty("value", value.toString());
 			
 			NetworkUtil.requestGCM(array, data);
 		}
