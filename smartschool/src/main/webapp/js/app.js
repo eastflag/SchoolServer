@@ -8,7 +8,8 @@ var app = angular.module('app', [
 
 app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 	$routeProvider
-	.when('/user', {templateUrl: 'templates/user.html'})
+	.when('/member', {templateUrl: 'templates/member.html'})
+	.when('/subscriber', {templateUrl: 'templates/subscriber.html'})
 	.when('/school', {templateUrl: 'templates/school.html'})
 	.when('/consult', {templateUrl: 'templates/consult.html'})
 	.when('/noti', {templateUrl: 'templates/noti.html'})
@@ -17,6 +18,21 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
 }]);
+
+app.service('MemberSvc', function($http) {
+	this.getHomeList = function(search) {
+		return $http.post('/api/getHomeList', search);
+	}
+	this.getMemberList = function(home) {
+		return $http.post('/api/getMemberList', home);
+	}
+	this.addSchoolNoti = function(noti) {
+		return $http.post('/admin/api/addSchoolNoti', noti);
+	}
+	this.modifySchoolNoti = function(noti) {
+		return $http.post('/admin/api/modifySchoolNoti', noti);
+	}
+});
 
 app.service('SchoolSvc', function($http) {
 	this.getSchoolList = function(school) {
@@ -93,9 +109,33 @@ app.service('BoardSvc', function($http) {
 	}
 });
 
-app.controller('ApplicationCtrl', function ($scope, SchoolSvc) {
+app.controller('ApplicationCtrl', function ($scope) {
 
 })
+
+app.controller('MemberCtrl', function ($scope, MemberSvc) {
+	$scope.currentPage = 1;
+	$scope.total = 0;
+	$scope.homes = [];
+	$scope.members = [];
+
+	$scope.getHomeList = function() {
+		MemberSvc.getHomeList({start_index:$scope.currentPage - 1, page_size:10})
+		.success(function(homes) {
+			$scope.homes = homes.data;
+			$scope.total = homes.total;
+		});
+	}
+
+	$scope.getHomeList();
+
+	$scope.getMemberList = function(home) {
+		MemberSvc.getMemberList(home)
+		.success(function(memberList) {
+			$scope.members = memberList.data;
+		})
+	}
+});
 
 app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
