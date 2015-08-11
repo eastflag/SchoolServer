@@ -21,6 +21,7 @@ import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -149,6 +150,16 @@ public class ApiController {
 		}
 	}
 	
+	@RequestMapping("/api/getPayList")
+    public Result getPayList(@RequestBody MemberVO member) {
+		logger.debug("/api/getPayList---------------------------------------------------------");
+		
+		List<PayVO> payList = mobileService.getPayList(member);
+		
+		return new ResultData<List<PayVO>>(0, "success", payList);
+
+	}
+	
 	//자녀 위치 등록
 	@RequestMapping("/api/addLocation")
     public Result addLocation(@RequestBody LocationVO location) {
@@ -235,7 +246,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/getAreaList")
-    public Result getMemberList() {
+    public Result getAreaList() {
 		logger.debug("/api/getAreaList-----------------------------------------------------------");
 		
 		List<AreaVO> areaList = mobileService.getAreaList();

@@ -13,6 +13,7 @@ import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -25,6 +26,7 @@ public interface MobileService {
 	public MemberVO selectMember(MemberVO member);
 	public MemberVO signIn(MemberVO member);
 	public List<MemberVO> getMemberList(HomeVO home);
+	public List<PayVO> getPayList(MemberVO member);
 	public long insertHome(HomeVO home) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;

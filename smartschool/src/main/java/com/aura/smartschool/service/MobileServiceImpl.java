@@ -20,6 +20,7 @@ import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -469,5 +470,10 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public int countHomeList(SearchVO search) {
 		return mobileMapper.countHomeList(search);
+	}
+
+	@Override
+	public List<PayVO> getPayList(MemberVO member) {
+		return mobileMapper.selectPayList(member);
 	}
 }

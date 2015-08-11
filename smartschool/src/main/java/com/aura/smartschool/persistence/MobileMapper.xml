@@ -51,6 +51,11 @@
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id}
 </select>
+
+<select id="selectPayList" parameterType="MemberVO" resultType="PayVO">
+	SELECT * FROM PAY_INFO
+	WHERE member_id = #{member_id}
+</select>
 	
 <insert id="insertHome" parameterType="HomeVO">
 	INSERT INTO home(home_id) values(#{home_id});
