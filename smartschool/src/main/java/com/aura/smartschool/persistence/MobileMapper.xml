@@ -56,6 +56,21 @@
 	SELECT * FROM PAY_INFO
 	WHERE member_id = #{member_id}
 </select>
+
+<update id="updatePay" parameterType="PayVO">
+	UPDATE PAY_INFO
+	SET pay_date = #{pay_date}
+	WHERE pay_id = #{pay_id}
+</update>
+
+<insert id="insertPay" parameterType="PayVO">
+	INSERT INTO pay_info(member_id, pay_date) values(#{member_id}, #{pay_date});
+</insert>
+
+<delete id="deletePay" parameterType="PayVO">
+	DELETE FROM pay_info
+	WHERE pay_id = #{pay_id}
+</delete>
 	
 <insert id="insertHome" parameterType="HomeVO">
 	INSERT INTO home(home_id) values(#{home_id});

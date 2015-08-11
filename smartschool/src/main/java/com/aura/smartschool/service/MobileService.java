@@ -26,11 +26,15 @@ public interface MobileService {
 	public MemberVO selectMember(MemberVO member);
 	public MemberVO signIn(MemberVO member);
 	public List<MemberVO> getMemberList(HomeVO home);
-	public List<PayVO> getPayList(MemberVO member);
 	public long insertHome(HomeVO home) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;
 	public long updateGcmId(MemberVO member) throws PersistenceException;
+	
+	public List<PayVO> getPayList(MemberVO member);
+	public long modifyPay(PayVO pay) throws PersistenceException;
+	public long removePay(PayVO pay) throws PersistenceException;
+	public long addPay(PayVO pay) throws PersistenceException;
 	
 	public long insertLocation(LocationVO location) throws PersistenceException;
 	public LocationVO selectLastLocation(MemberVO member);

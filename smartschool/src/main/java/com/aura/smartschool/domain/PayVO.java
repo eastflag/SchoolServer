@@ -1,9 +1,16 @@
 package com.aura.smartschool.domain;
 
 public class PayVO {
+	private int pay_id;
 	private int member_id;
 	private String pay_date;
-	
+
+	public int getPay_id() {
+		return pay_id;
+	}
+	public void setPay_id(int pay_id) {
+		this.pay_id = pay_id;
+	}
 	public int getMember_id() {
 		return member_id;
 	}

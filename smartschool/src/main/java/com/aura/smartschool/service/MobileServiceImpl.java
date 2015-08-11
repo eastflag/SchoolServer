@@ -476,4 +476,19 @@ public class MobileServiceImpl implements MobileService {
 	public List<PayVO> getPayList(MemberVO member) {
 		return mobileMapper.selectPayList(member);
 	}
+
+	@Override
+	public long modifyPay(PayVO pay) throws PersistenceException {
+		return mobileMapper.updatePay(pay);
+	}
+
+	@Override
+	public long removePay(PayVO pay) throws PersistenceException {
+		return mobileMapper.deletePay(pay);
+	}
+
+	@Override
+	public long addPay(PayVO pay) throws PersistenceException {
+		return mobileMapper.insertPay(pay);
+	}
 }

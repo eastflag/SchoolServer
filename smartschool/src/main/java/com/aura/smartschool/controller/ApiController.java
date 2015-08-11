@@ -160,6 +160,33 @@ public class ApiController {
 
 	}
 	
+	@RequestMapping("/api/addPay")
+    public Result addPay(@RequestBody PayVO pay) {
+		logger.debug("/api/addPay---------------------------------------------------------");
+		
+		long result = mobileService.addPay(pay);
+		
+		return new Result(0, "success");
+	}
+	
+	@RequestMapping("/api/modifyPay")
+    public Result modifyPay(@RequestBody PayVO pay) {
+		logger.debug("/api/modifyPay---------------------------------------------------------");
+		
+		long result = mobileService.modifyPay(pay);
+		
+		return new Result(0, "success");
+	}
+	
+	@RequestMapping("/api/removePay")
+    public Result removePay(@RequestBody PayVO pay) {
+		logger.debug("/api/removePay---------------------------------------------------------");
+		
+		long result = mobileService.removePay(pay);
+		
+		return new Result(0, "success");
+	}
+	
 	//자녀 위치 등록
 	@RequestMapping("/api/addLocation")
     public Result addLocation(@RequestBody LocationVO location) {
