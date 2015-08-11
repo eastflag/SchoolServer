@@ -128,22 +128,45 @@ app.controller('ApplicationCtrl', function ($scope) {
 })
 
 app.controller('MemberCtrl', function ($scope, MemberSvc) {
-	$scope.currentPage = 1;
-	$scope.total = 0;
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.pay;
+	
+	$scope.currentPageHome = 1;
+	$scope.totalHomeListCount = 0;
+
+	$scope.search_value = "";
+	$scope.home_mode = "";
+	$scope.home_mode_text = "홈아이디 추가";
 
 	$scope.getHomeList = function() {
-		MemberSvc.getHomeList({start_index:$scope.currentPage - 1, page_size:10})
+		var search_query = "";
+
+		if ($scope.search_value == "") {
+			search_query = {start_index:$scope.currentPageHome - 1, page_size:10};
+		} else {
+			search_query = {start_index:$scope.currentPageHome - 1, page_size:10, search_value:$scope.search_value};
+		}
+
+		MemberSvc.getHomeList(search_query)
 		.success(function(homes) {
 			$scope.homes = homes.data;
-			$scope.total = homes.total;
+			$scope.totalHomeListCount = homes.total;
 		});
 	}
 
 	$scope.getHomeList();
+
+	$scope.homeListPageChanged = function() {
+		$scope.getHomeList();
+	};
+
+	$scope.editHome = function(home) {
+		$scope.home_mode = "edit";
+
+		$scope.home_id = home.home_id;
+	}
 
 	$scope.getMemberList = function(home) {
 		MemberSvc.getMemberList(home)
@@ -186,6 +209,8 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 	$scope.currentPageSchool = 1;
 	$scope.totalSchoolListCount = 0;
+	$scope.search_value = "";
+	$scope.noti_mode_text = "알림창 추가";
 
 	$scope.schoolPageChanged = function() {
 		$scope.getSchoolList();
@@ -193,9 +218,17 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		$scope.notis = [];
 		$scope.clearNoti();
 	};
-	
+
 	$scope.getSchoolList = function() {
-		SchoolSvc.getSchoolList({start_index:$scope.currentPageSchool - 1, page_size:10})
+		var search_query = "";
+
+		if ($scope.search_value == "") {
+			search_query = {start_index:$scope.currentPageSchool - 1, page_size:10};
+		} else {
+			search_query = {start_index:$scope.currentPageSchool - 1, page_size:10, search_value:$scope.search_value};
+		}
+
+		SchoolSvc.getSchoolList(search_query)
 		.success(function(schools) {
 			$scope.schools = schools.data;
 			$scope.totalSchoolLists = schools.total;
@@ -206,7 +239,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	
 	$scope.editSchool = function(school) {
 		$scope.mode = "edit";
-		
+
 		$scope.school_id = school.school_id;
 		$scope.school_name = school.school_name;
 		$scope.address = school.address;
@@ -280,6 +313,8 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 			$scope.initNotiVariables();	
 		};
 
+		$scope.clearNoti();
+
 		$scope.selected_school = school;
 		$scope.mode = "noti";
 		$scope.school_id = school.school_id;
@@ -295,7 +330,8 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	
 	$scope.clickEditNoti = function(noti) {
 		$scope.noti_mode = "edit";
-		
+		$scope.noti_mode_text = "알림장 수정";
+
 		$scope.noti_seq = noti.noti_seq;
 		$scope.category = noti.category;
 		$scope.title = noti.title;
@@ -341,6 +377,9 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		$scope.title = null;
 		$scope.content = null;
 		$scope.noti_date = null;
+
+		$scope.noti_mode = "";
+		$scope.noti_mode_text = "알림장 추가";
 	}
 })
 

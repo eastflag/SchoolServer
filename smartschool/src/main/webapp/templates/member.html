@@ -18,7 +18,7 @@
                 <div class="panel-body">
                 	<div class="input-group margin-bottom-sm">
 	                    <input type="text" class="form-control" placeholder="홈아이디" ng-model="search_value" />
-	                    <span class="input-group-addon" ng-click="searchMember()"><i class="fa fa-send fa-fw"></i>검색</span>
+	                    <span class="input-group-addon" ng-click="getHomeList()"><i class="fa fa-send fa-fw"></i>검색</span>
 	                </div>
                     <table class="table table-striped .table-bordered .table-condensed">
 				    	<thead>
@@ -42,6 +42,11 @@
 							    </td>
 							    <td>{{ home.home_id }}</td>
 						    </tr>
+						    <tr>
+						    	<td colspan="2" style="text-align:center">
+						    		<pagination boundary-links="true" total-items="totalHomeListCount" ng-model="currentPageHome" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="homeListPageChanged()"></pagination>
+						    	</td>
+						    </tr>
 					    </tbody>
 				    </table>
                 </div>
@@ -52,7 +57,7 @@
     	<div class="col-lg-4">
 			<div class="panel panel-info">
                 <div class="panel-heading">
-                    <i class="fa fa-list fa-lg"></i> 홈아이디 추가
+                    <i class="fa fa-list fa-lg"></i> {{home_mode_text}}
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
@@ -60,11 +65,11 @@
                 </div>
                 <!-- /.panel-body -->
                 <div class="panel-footer">
-					<div class="row">
-							<div class="col-lg-6">
+					<div class="row" ng-switch="home_mode">
+							<div class="col-lg-6" ng-switch-when="edit">
 					      		<button type="button" ng-click="modifyHome()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
 					    	</div>
-					    	<div class="col-lg-6">
+					    	<div class="col-lg-6" ng-switch-default>
 					      		<button type="button" ng-click="addHome()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 					    	</div>
 					   	</div>
