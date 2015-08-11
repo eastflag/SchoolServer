@@ -6,8 +6,8 @@
     </div>
 
 	<div class="row">
-        <div class="col-lg-8">
-            <div class="panel panel-success">
+        <div class="col-lg-6">
+            <div class="panel panel-info">
                 <div class="panel-heading">
                     <i class="fa fa-list fa-lg"></i> 공지사항 목록
                     <div class="pull-right">
@@ -24,12 +24,12 @@
 				    		</tr>
 				    	</thead>
 				    	<tbody>
-						    <tr ng-repeat="noti in notis | orderBy:'-created'">
+						    <tr ng-repeat="noti in notis">
 						    	<td>
-						    		<button class="btn btn-default" ng-click="editUser(user)">
+						    		<button class="btn btn-default btn-xs" ng-click="editNoti(noti)">
 							          <span class="glyphicon glyphicon-pencil"></span> 수 정
 							        </button>
-							        <button class="btn btn-default" ng-click="deleteConfirm(user)">
+							        <button class="btn btn-default btn-xs" ng-click="deleteConfirm(noti)">
 							          <span class="glyphicon glyphicon-remove-circle"></span> 삭 제
 							        </button>
 							    </td>
@@ -42,17 +42,33 @@
             </div>
         </div>
 
-    	<div class="col-lg-4">
-			<div class="panel panel-success">
+    	<div class="col-lg-6">
+			<div class="panel panel-info">
                 <div class="panel-heading">
-                    <i class="fa fa-list fa-lg"></i> 공지 수정
+                    <i class="fa fa-list fa-lg"></i> 공지 추가
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <input type="text" class="form-control" id="inputEmail" ng-model="title" placeholder="title">
-                    <input type="textarea" class="form-control" id="inputEmail" ng-model="content" placeholder="content">
+                    <div class="form-group">
+						<label for="title">제목</label>
+						<input type="text" class="form-control" ng-model="noti.title" />
+					</div>
+                    <div class="form-group">
+						<label for="content">내용</label>
+						<textarea class="form-control" rows="6" ng-model="noti.content"></textarea>
+					</div>
                 </div>
                 <!-- /.panel-body -->
+                <div class="panel-footer">
+					<div class="row">
+						<div class="col-lg-6">
+				      		<button type="button" ng-click="modifyNoti()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Edit</button>
+				    	</div>
+				    	<div class="col-lg-6">
+				      		<button type="button" ng-click="addNoti()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
+				    	</div>
+				   	</div>
+                </div>
             </div>
     	</div>
     </div>

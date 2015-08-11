@@ -9,7 +9,6 @@ var app = angular.module('app', [
 app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 	$routeProvider
 	.when('/member', {templateUrl: 'templates/member.html'})
-	.when('/subscriber', {templateUrl: 'templates/subscriber.html'})
 	.when('/school', {templateUrl: 'templates/school.html'})
 	.when('/consult', {templateUrl: 'templates/consult.html'})
 	.when('/noti', {templateUrl: 'templates/noti.html'})
@@ -26,11 +25,11 @@ app.service('MemberSvc', function($http) {
 	this.getMemberList = function(home) {
 		return $http.post('/api/getMemberList', home);
 	}
-	this.addSchoolNoti = function(noti) {
-		return $http.post('/admin/api/addSchoolNoti', noti);
+	this.getPayList = function(member) {
+		return $http.post('/api/getPayList', member);
 	}
-	this.modifySchoolNoti = function(noti) {
-		return $http.post('/admin/api/modifySchoolNoti', noti);
+	this.addPay = function(pay) {
+		return $http.post('/api/addPay', pay);
 	}
 });
 
@@ -49,21 +48,6 @@ app.service('SchoolSvc', function($http) {
 	}
 	this.modifySchoolNoti = function(noti) {
 		return $http.post('/admin/api/modifySchoolNoti', noti);
-	}
-});
-
-app.service('UserSvc', function($http) {
-	this.fetch = function() {
-		return $http.post('/api/user/getList');
-	}
-	this.create = function(user) {
-		return $http.post('/api/user/add', user);
-	}
-	this.modify = function(user) {
-		return $http.post('/api/user/modify', user);
-	}
-	this.remove = function(user) {
-		return $http.post('/api/user/remove', user);
 	}
 });
 
@@ -98,14 +82,44 @@ app.service('BoardSvc', function($http) {
 	this.getBoardList = function(board) {
 		return $http.post('/api/getBoardList', board);
 	}
-	this.addBoard = function(board) {
-		return $http.post('/api/addBoard', board);
-	}
-	this.modifyBoard = function(board) {
+	this.answerBoard = function(board) {
 		return $http.post('/api/modifyBoard', board);
 	}
 	this.removeBoard = function(board) {
 		return $http.post('/api/removeBoard', board);
+	}
+});
+
+app.directive('calendar', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, el, attr, ngModel) {
+            $(el).datepicker({
+                dateFormat: 'yy-mm-dd',
+                onSelect: function (dateText) {
+                    scope.$apply(function () {
+                        ngModel.$setViewValue(dateText);
+                    });
+                }
+            });
+        }
+    };
+})
+
+app.filter('changeCategoryName', function() {
+	return function(categoryNo) {
+		var categoryName = "";
+
+		switch (categoryNo) {
+			case 1 : categoryName = "성상담"; break;
+			case 2 : categoryName = "학업상담"; break;
+			case 3 : categoryName = "진로상담"; break;
+			case 4 : categoryName = "심리상담"; break;
+			case 5 : categoryName = "성장상담"; break;
+			case 6 : categoryName = "흡연상담"; break;
+		}
+
+		return categoryName;
 	}
 });
 
@@ -118,6 +132,8 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.total = 0;
 	$scope.homes = [];
 	$scope.members = [];
+	$scope.pays = [];
+	$scope.pay;
 
 	$scope.getHomeList = function() {
 		MemberSvc.getHomeList({start_index:$scope.currentPage - 1, page_size:10})
@@ -133,6 +149,22 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		MemberSvc.getMemberList(home)
 		.success(function(memberList) {
 			$scope.members = memberList.data;
+		})
+	}
+
+	$scope.getPayList = function(member) {
+		$scope.pay = {member_id:member.member_id};
+
+		MemberSvc.getPayList({member_id:member.member_id})
+		.success(function(payList){
+			$scope.pays = payList.data;
+		})
+	}
+
+	$scope.addPay = function() {
+		MemberSvc.addPay({member_id: $scope.pay.member_id, pay_date:$scope.pay_date})
+		.success(function(){
+			$scope.getPayList({member_id: $scope.pay.member_id});
 		})
 	}
 });
@@ -312,45 +344,6 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 	}
 })
 
-app.directive('calendar', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, el, attr, ngModel) {
-            $(el).datepicker({
-                dateFormat: 'yy-mm-dd',
-                onSelect: function (dateText) {
-                    scope.$apply(function () {
-                        ngModel.$setViewValue(dateText);
-                    });
-                }
-            });
-        }
-    };
-})
-
-app.controller('UserCtrl', function ($scope, SchoolSvc) {
-	$scope.saveUser = function () {
-		console.log("id:" + $scope.id + " name:" + $scope.name);
-	}
-})
-
-app.filter('changeCategoryName', function() {
-	return function(categoryNo) {
-		var categoryName = "";
-
-		switch (categoryNo) {
-			case 1 : categoryName = "성상담"; break;
-			case 2 : categoryName = "학업상담"; break;
-			case 3 : categoryName = "진로상담"; break;
-			case 4 : categoryName = "심리상담"; break;
-			case 5 : categoryName = "성장상담"; break;
-			case 6 : categoryName = "흡연상담"; break;
-		}
-
-		return categoryName;
-	}
-});
-
 app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	$scope.selectedCategoryNo = 0;
 	$scope.selectedCategoryInfo = "";
@@ -418,6 +411,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 })
 
 app.controller('NotiCtrl', function ($scope, NotiSvc) {
+	$scope.noti;
 	$scope.notis = [];
 
 	$scope.getNotiList = function() {
@@ -427,5 +421,41 @@ app.controller('NotiCtrl', function ($scope, NotiSvc) {
 		});
 	}
 
+	$scope.editNoti = function(noti) {
+		$scope.noti = noti;
+	}
+
+	$scope.addNoti = function() {
+		NotiSvc.addNoti($scope.noti)
+		.success(function(result) {
+			$scope.getNotiList();
+		});
+	}
+
 	$scope.getNotiList();
+})
+
+app.controller('BoardCtrl', function ($scope, BoardSvc) {
+	$scope.board;
+	$scope.boards = [];
+
+	$scope.getBoardList = function() {
+		BoardSvc.getBoardList({board_type:1})
+		.success(function(boards) {
+			$scope.boards = boards.data;
+		});
+	}
+
+	$scope.clickBoard = function(board) {
+		$scope.board = board;
+	}
+
+	$scope.answerBoard = function() {
+		BoardSvc.answerBoard({board_id:$scope.board.board_id, answer:$scope.board.answer})
+		.success(function(result) {
+			$scope.getBoardList({board_type:1});
+		});
+	}
+
+	$scope.getBoardList();
 })
