@@ -25,6 +25,8 @@ public class MemberVO {
 	private String contact;
 	private String sido;
 	private String gugun;
+	private String gubun2;
+	private String code;
 	
 	private String pay_date;
 	
@@ -166,4 +168,17 @@ public class MemberVO {
 	public void setPay_date(String pay_date) {
 		this.pay_date = pay_date;
 	}
+	public String getGubun2() {
+		return gubun2;
+	}
+	public void setGubun2(String gubun2) {
+		this.gubun2 = gubun2;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
 }

@@ -47,6 +47,8 @@
 		CAST(AES_DECRYPT(unhex(S.lng), 'aura') AS CHAR(20)) as 'lng',
 		S.homepage,
 		S.contact,
+		S.gubun2,
+		S.code,
 		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id}
@@ -685,6 +687,9 @@ select
 <select id="selectBoardList" parameterType="BoardVO" resultType="BoardVO">
 	SELECT * FROM board
 	WHERE board_type = #{board_type}
+		<if test="member_id != 0">
+			AND member_id = #{member_id}
+		</if>
 	ORDER BY board_id desc
 </select>
 <update id="updateBoard" parameterType="BoardVO">

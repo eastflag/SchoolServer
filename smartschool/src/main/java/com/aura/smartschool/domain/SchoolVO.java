@@ -16,6 +16,7 @@ public class SchoolVO {
 	private String sido;
 	private String gugun;
 	private String support;
+	private String code;
 	
 	public int getSchool_id() {
 		return school_id;
@@ -106,5 +107,11 @@ public class SchoolVO {
 	}
 	public void setSupport(String support) {
 		this.support = support;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 }
