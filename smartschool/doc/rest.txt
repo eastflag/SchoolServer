@@ -269,9 +269,10 @@ http://aurasystem.kr:9000/api/removeNoti
 }
 
 //QnA 가져오기
+board_type : 1:QnA 게시판, 2: 도전건강 수기공모, 
 http://aurasystem.kr:9000/api/getBoardList
 {
-    "member_id" : 31,
+    "member_id" : 31, //앱에서만 존재, 웹에서는 미존재
     "board_type" : 1
 }
 결과
@@ -308,8 +309,8 @@ http://aurasystem.kr:9000/api/getBoardList
     }]
 }
 
-//QnA 추가하기
-http://aurasystem.kr:9000/api/addBoard
+//QnA 추가하기 (앱)
+http://aurasystem.kr:9000/api/addBoard 
 {
     "member_id" : 31,
     "board_type" : 1,
@@ -368,4 +369,42 @@ http://aurasystem.kr:9000/api/getHomeList
         "home_id": "aura"
     }],
     "total": 26
+}
+
+* 결제정보 가져오기--------------------------------------------------------------------------------
+http://aurasystem.kr:9000/api/getPayList
+{
+	"member_id" : 31
+}
+결과
+{
+    "result": 0,
+    "msg": "success",
+    "data": [{
+        "member_id": 31,
+        "pay_date": "2015-07-21 00:00:00.0"
+    }, {
+        "member_id": 31,
+        "pay_date": "2015-06-21 00:00:00.0"
+    }, {
+        "member_id": 31,
+        "pay_date": "2015-05-21 00:00:00.0"
+    }]
+}
+* 결제 정보 추가하기
+http://aurasystem.kr:9000/api/addPay
+{
+	"member_id" : 31,
+	"pay_date" : "2015-05-13"
+}
+* 결제 정보 삭제하기
+http://aurasystem.kr:9000/api/removePay
+{
+	"pay_id" : 6
+}
+* 결제 정보 수정하기
+http://aurasystem.kr:9000/api/modifyPay
+{
+	"pay_id" : 6,
+	"pay_date" : "2015-05-01"
 }
