@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
+import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
@@ -69,6 +70,10 @@ public interface MobileMapper {
 	public long insertArea(AreaVO area) throws PersistenceException;
 	public AreaVO selectArea(AreaVO area);
 	public List<AreaVO> selectAreaList();
+	
+	//활동량
+	public long insertActivity(ActivityVO activity) throws PersistenceException;
+	public List<ActivityVO> selectActivityList(ActivityVO inActivity);
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember(SearchVO search);

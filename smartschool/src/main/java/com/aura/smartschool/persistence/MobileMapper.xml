@@ -652,7 +652,7 @@ select
 <select id="selectConsultList" parameterType="SessionVO" resultType="ConsultVO">
 	SELECT * FROM consult
 	WHERE session_id = #{session_id}
-	ORDER BY created desc
+	ORDER BY created asc
 </select>
 
 
@@ -702,5 +702,20 @@ select
 	DELETE FROM board
 	WHERE board_id = #{board_id}
 </delete>
+
+<insert id="insertActivity" parameterType="ActivityVO">
+	INSERT INTO
+		activity(member_id, activity_date, step, calory, distance, time)
+	VALUES(#{member_id}, #{activity_date}, #{step}, #{calory}, #{distance}, #{time});
+</insert>
+
+<select id="selectActivityList" parameterType="ActivityVO" resultType="ActivityVO">
+	SELECT 
+		activity_id, member_id,
+		date_format(activity_date, '%Y-%m-%d') as 'activity_date',
+		step, calory, distance, time
+	FROM activity
+	WHERE member_id = #{member_id}
+</select>
 
 </mapper>

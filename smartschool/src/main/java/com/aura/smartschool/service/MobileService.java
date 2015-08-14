@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
+import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
@@ -49,6 +50,10 @@ public interface MobileService {
 	public long addArea(AreaVO area) throws PersistenceException;
 	public AreaVO getArea(AreaVO area);
 	public List<AreaVO> getAreaList();
+	
+	//활동량
+	public long addActivity(ActivityVO activity) throws PersistenceException;
+	public List<ActivityVO> getActivityList(ActivityVO inActivity);
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> getSchoolListOfMember(SearchVO search);

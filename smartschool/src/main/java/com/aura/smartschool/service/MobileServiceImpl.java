@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aura.smartschool.Constant;
+import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
@@ -490,5 +491,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long addPay(PayVO pay) throws PersistenceException {
 		return mobileMapper.insertPay(pay);
+	}
+
+	@Override
+	public long addActivity(ActivityVO activity) throws PersistenceException {
+		return mobileMapper.insertActivity(activity);
+	}
+
+	@Override
+	public List<ActivityVO> getActivityList(ActivityVO inActivity) {
+		return mobileMapper.selectActivityList(inActivity);
 	}
 }

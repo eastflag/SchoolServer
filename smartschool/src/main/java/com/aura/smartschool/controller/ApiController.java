@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
@@ -492,5 +493,30 @@ public class ApiController {
 		} else {
 			return new Result(100, "delete failed");
 		}
+	}
+	
+	//활동량
+	@RequestMapping("/api/getActivityList")
+    public ResultData<List<ActivityVO>> getActivityList(@RequestBody ActivityVO inActivity) {
+		logger.debug("/api/getActivityList--------------------------------------------------");
+		List<ActivityVO> activityList = mobileService.getActivityList(inActivity);
+		
+		return new ResultData<List<ActivityVO>>(0, "success", activityList);
+	}
+	
+	@RequestMapping("/api/addActivity")
+    public Result addActivity(@RequestBody ActivityVO inActivity) {
+		logger.debug("/api/addActivity-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addActivity(inActivity);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
 	}
 }
