@@ -253,6 +253,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		$scope.gugun = school.gugun;
 		$scope.lat = school.lat;
 		$scope.lng = school.lng;
+		$scope.code = school.code;
 	}
 	
 	$scope.modifySchool = function() {
@@ -268,7 +269,8 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 				sido:$scope.sido,
 				gugun:$scope.gugun,
 				lat:$scope.lat,
-				lng:$scope.lng};
+				lng:$scope.lng,
+				code:$scope.code};
 		SchoolSvc.modifySchool(school)
 		.success(function(result){
 			$scope.school_name = null;
@@ -283,6 +285,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 			$scope.gugun = null;
 			$scope.lat = null;
 			$scope.lng = null;
+			$scope.code = null;
 			
 			$scope.getSchoolList();
 			//SchoolSvc.getSchoolList()
