@@ -104,7 +104,21 @@ app.directive('calendar', function () {
             });
         }
     };
-})
+});
+
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 
 app.filter('changeCategoryName', function() {
 	return function(categoryNo) {
@@ -132,6 +146,7 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.pay;
+	$scope.pay_date = new Date();
 	
 	$scope.currentPageHome = 1;
 	$scope.totalHomeListCount = 0;
@@ -214,7 +229,6 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 	$scope.schoolPageChanged = function() {
 		$scope.getSchoolList();
-		$scope.clearSchool();
 		$scope.notis = [];
 		$scope.clearNoti();
 	};
@@ -231,7 +245,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		SchoolSvc.getSchoolList(search_query)
 		.success(function(schools) {
 			$scope.schools = schools.data;
-			$scope.totalSchoolLists = schools.total;
+			$scope.totalSchoolListCount = schools.total;
 		});
 	}
 
@@ -376,10 +390,16 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 
 	$scope.clearNoti = function() {
 		$scope.noti_seq = null;
-		$scope.category = null;
 		$scope.title = null;
 		$scope.content = null;
 		$scope.noti_date = null;
+
+		$scope.noti_mode = "";
+		$scope.noti_mode_text = "알림장 추가";
+	}
+
+	$scope.clickNewNoti = function(){
+		$scope.clearNoti();
 
 		$scope.noti_mode = "";
 		$scope.noti_mode_text = "알림장 추가";
