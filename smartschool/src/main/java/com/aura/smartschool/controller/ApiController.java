@@ -522,7 +522,7 @@ public class ApiController {
 		} 
 	}
 	
-	//비디오리스트 가져오기: 신장, 체중, BMI
+	//비디오리스트 가져오기: 키, 체중, BMI
 	@RequestMapping("/api/getVideoListByMasterGradeId")
     public ResultData<List<VideoVO>> getVideoListByMasterGradeId(@RequestBody VideoTypeVO type) {
 		logger.debug("/api/getVideoListByMasterGradeId--------------------------------------------------");
@@ -530,7 +530,7 @@ public class ApiController {
 		
 		return new ResultData<List<VideoVO>>(0, "success", videoList);
 	}
-	//비디오리스트 가져오기: PT 화면,
+	//비디오리스트 가져오기: PT 화면
 	@RequestMapping("/api/getVideoListByInfoType")
     public ResultData<List<VideoVO>> getVideoListByInfoType(@RequestBody VideoTypeVO type) {
 		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");

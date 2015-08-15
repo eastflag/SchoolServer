@@ -122,7 +122,6 @@ public class MobileServiceImpl implements MobileService {
 				gradeVO.setSex(member.getSex());
 				gradeVO.setYear("2012");
 				String schoolGradeId = CommonUtil.getGradeId(member.getSchool_grade(), school.getGubun2());
-				System.out.println("schoolGradeId:" + schoolGradeId);
 				gradeVO.setSchoolGradeId(schoolGradeId);
 				
 				//get height desc
@@ -131,6 +130,7 @@ public class MobileServiceImpl implements MobileService {
 				BodyMeasureGrade heightVO = mobileMapper.selectGradeBySection(gradeVO);
 				if (heightVO != null) {
 					summaryVO.setHeightStatus(heightVO.getGradeDesc());
+					summaryVO.setHeightGradeId(heightVO.getGradeId());
 				}
 				
 				//get Weight desc
@@ -139,6 +139,7 @@ public class MobileServiceImpl implements MobileService {
 				BodyMeasureGrade weightVO = mobileMapper.selectGradeBySection(gradeVO);
 				if (weightVO != null) {
 					summaryVO.setWeightStatus(weightVO.getGradeDesc());
+					summaryVO.setWeightGradeId(weightVO.getGradeId());
 				}
 				
 				//get BMI desc

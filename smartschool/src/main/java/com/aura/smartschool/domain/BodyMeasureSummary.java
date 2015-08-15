@@ -9,9 +9,11 @@ public class BodyMeasureSummary {
 	
 	String height;
 	String heightStatus;
+	String heightGradeId;
 	
 	String weight;
 	String weightStatus;
+	String weightGradeId;
 	
 	String fat;
 	String muscle; 
@@ -19,6 +21,7 @@ public class BodyMeasureSummary {
 	String skeletal;
 	String weight_control;
 	String fat_control;
+	String muscle_control;
 	
 	String bmi;
 	String bmiStatus;
@@ -182,6 +185,30 @@ public class BodyMeasureSummary {
 
 	public void setFat_control(String fat_control) {
 		this.fat_control = fat_control;
+	}
+
+	public String getHeightGradeId() {
+		return heightGradeId;
+	}
+
+	public void setHeightGradeId(String heightGradeId) {
+		this.heightGradeId = heightGradeId;
+	}
+
+	public String getWeightGradeId() {
+		return weightGradeId;
+	}
+
+	public void setWeightGradeId(String weightGradeId) {
+		this.weightGradeId = weightGradeId;
+	}
+
+	public String getMuscle_control() {
+		return muscle_control;
+	}
+
+	public void setMuscle_control(String muscle_control) {
+		this.muscle_control = muscle_control;
 	}
 
 	
