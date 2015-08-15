@@ -26,6 +26,8 @@ import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.VideoTypeVO;
+import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
@@ -518,5 +520,22 @@ public class ApiController {
 		} catch (PersistenceException e) {
 			return new Result(100, "insert failed");
 		} 
+	}
+	
+	//비디오리스트 가져오기: 신장, 체중, BMI
+	@RequestMapping("/api/getVideoListByMasterGradeId")
+    public ResultData<List<VideoVO>> getVideoListByMasterGradeId(@RequestBody VideoTypeVO type) {
+		logger.debug("/api/getVideoListByMasterGradeId--------------------------------------------------");
+		List<VideoVO> videoList = mobileService.getVideoListByMasterGradeId(type);
+		
+		return new ResultData<List<VideoVO>>(0, "success", videoList);
+	}
+	//비디오리스트 가져오기: PT 화면,
+	@RequestMapping("/api/getVideoListByInfoType")
+    public ResultData<List<VideoVO>> getVideoListByInfoType(@RequestBody VideoTypeVO type) {
+		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
+		List<VideoVO> videoList = mobileService.getVideoListByInfoType(type);
+		
+		return new ResultData<List<VideoVO>>(0, "success", videoList);
 	}
 }

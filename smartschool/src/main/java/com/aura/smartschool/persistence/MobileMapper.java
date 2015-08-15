@@ -22,6 +22,8 @@ import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
+import com.aura.smartschool.domain.VideoTypeVO;
+import com.aura.smartschool.domain.VideoVO;
 
 public interface MobileMapper {
 	public int countHome(HomeVO home);
@@ -74,6 +76,10 @@ public interface MobileMapper {
 	//활동량
 	public long insertActivity(ActivityVO activity) throws PersistenceException;
 	public List<ActivityVO> selectActivityList(ActivityVO inActivity);
+	
+	//비디오 리스트 
+	public List<VideoVO> selectVideoListByMasterGradeId(VideoTypeVO type);
+	public List<VideoVO> selectVideoListByInfoType(VideoTypeVO type);
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember(SearchVO search);

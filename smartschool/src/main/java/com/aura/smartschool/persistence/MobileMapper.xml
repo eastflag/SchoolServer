@@ -560,7 +560,8 @@ select
 		<if test="sido != null">sido=#{sido},</if>
 		<if test="gugun != null">gugun=#{gugun},</if>
 		<if test="lat != null">lat=#{lat},</if>
-		<if test="lng != null">lng=#{lng}</if>
+		<if test="lng != null">lng=#{lng},</if>
+		<if test="code != null">code=#{code}</if>
 	</set>
 	WHERE school_id = #{school_id} 
 </update>
@@ -716,6 +717,37 @@ select
 		step, calory, distance, time
 	FROM activity
 	WHERE member_id = #{member_id}
+</select>
+
+<select id="selectVideoListByMasterGradeId" parameterType="string" resultType="VideoVO">
+		select 
+			HC.CT_NAME AS title,
+			concat('http://210.127.55.205/contents/', HC.ct_url) AS videoUrl,
+			concat('http://210.127.55.205/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
+			HC.ct_duration AS duration
+		from
+		    healthcare_gwangmyeong.ms_grade_data MGD,
+		    healthcare_gwangmyeong.contents_category CC,
+		    healthcare_gwangmyeong.healthcare_contents HC
+		where
+		    MGD.Ms_Grade_ID = #{masterGradeId}
+		        and MGD.Ms_Grade_ID = CC.MS_Grade_ID
+		        and CC.CT_ID = HC.CT_ID;
+</select>
+
+<select id="selectVideoListByInfoType" parameterType="string" resultType="VideoVO">
+	select 
+		CT_NAME AS title,
+		concat('http://210.127.55.205/contents/', ct_url) AS videoUrl,
+		concat('http://210.127.55.205/contents/', CT_URL_THUM) AS thumbnailUrl,
+		ct_duration AS duration
+	from
+	    healthcare_gwangmyeong.healthcare_contents
+	where
+	    ct_info = #{infoType}
+	    <if test = "section != null">
+	    	 and ct_section = #{section}
+	    </if>
 </select>
 
 </mapper>
