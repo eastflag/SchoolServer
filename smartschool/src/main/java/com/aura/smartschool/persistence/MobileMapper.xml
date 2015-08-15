@@ -229,7 +229,7 @@ group by member_id;
 			measure_info.smoke_seq,
 			truncate(inbody_info.HEIGHT, 1) AS height,
 			truncate(inbody_info.Weight, 1) AS weight,
-			truncate(inbody_info.BMI, 2) AS bmi,
+			truncate(inbody_info.BMI, 1) AS bmi,
 			inbody_info.Percent_Body_Fat AS fat,
 			truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
 			truncate(inbody_info.Skeletal_Muscle_Mass, 1) AS skeletal,
