@@ -16,6 +16,7 @@ import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
@@ -378,7 +379,7 @@ public class ApiController {
 		return result;
 	}
 	
-	//get consult list
+	//실시간 상담====================================================================================
 	@RequestMapping("/api/getConsultList")
     public ResultData<List<ConsultVO>> getConsultList(@RequestBody SessionVO inSession) {
 		logger.debug("/api/getConsultList--------------------------------------------------");
@@ -392,8 +393,30 @@ public class ApiController {
 			return new ResultData<List<ConsultVO>>(0, "success", consultList);
 		}
 	}
-	
+	//상담 평가하고 종료하기
+	@RequestMapping("/api/rateConsult")
+    public Result rateConsult(@RequestBody SessionVO session) {
+		logger.debug("/api/rateConsult----------------------------------------------------------");
+		
+		long resultCount = mobileService.updateSession(session);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	//상담 기록 가져오기(모바일, 학부모)
+	@RequestMapping("/api/getConsultHistory")
+    public Result getConsultHistory(@RequestBody SessionVO session) {
+		logger.debug("/api/getConsultHistory---------------------------------------------------------");
+		
+		ConsultHistoryVO history = mobileService.getConsultHistory(session);
+		
+		return new ResultData<ConsultHistoryVO>(0, "success", history);
 
+	}
+	
+	//학교 공지사항=============================================================================
 	@RequestMapping("/api/getNotiList")
     public ResultData<List<NotiVO>> getNotiList() {
 		logger.debug("/api/getNotiList--------------------------------------------------");
@@ -446,6 +469,7 @@ public class ApiController {
 		}
 	}
 	
+	//학교 게시판(FaQ)==========================================================================
 	@RequestMapping("/api/getBoardList")
     public ResultData<List<BoardVO>> getBoardList(@RequestBody BoardVO inBoard) {
 		logger.debug("/api/getBoardList--------------------------------------------------");
@@ -498,7 +522,7 @@ public class ApiController {
 		}
 	}
 	
-	//활동량
+	//활동량=====================================================================================
 	@RequestMapping("/api/getActivityList")
     public ResultData<List<ActivityVO>> getActivityList(@RequestBody ActivityVO inActivity) {
 		logger.debug("/api/getActivityList--------------------------------------------------");
@@ -523,7 +547,7 @@ public class ApiController {
 		} 
 	}
 	
-	//비디오리스트 가져오기: 키, 체중, BMI
+	//비디오리스트 가져오기: 키, 체중, BMI================================================================
 	@RequestMapping("/api/getVideoListByMasterGradeId")
     public ResultData<List<VideoVO>> getVideoListByMasterGradeId(@RequestBody VideoTypeVO type) {
 		logger.debug("/api/getVideoListByMasterGradeId--------------------------------------------------");

@@ -114,6 +114,8 @@ public class AdminController {
 		return new ResultDataTotal<List<SchoolNoti>>(0, "success", notiList, total);
 	}
 	
+	
+	
 	//add session and consult
 	@RequestMapping("/admin/api/addConsult")
     public Result addConsult(@RequestBody SessionVO inSession) {

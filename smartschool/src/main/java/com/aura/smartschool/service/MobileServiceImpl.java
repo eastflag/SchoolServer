@@ -16,6 +16,7 @@ import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
@@ -545,5 +546,10 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<ManagerVO> getManagerList(SearchVO search) {
 		return mobileMapper.selectManagerList(search);
+	}
+
+	@Override
+	public ConsultHistoryVO getConsultHistory(SessionVO session) {
+		return mobileMapper.selectConsultHistory(session);
 	}
 }

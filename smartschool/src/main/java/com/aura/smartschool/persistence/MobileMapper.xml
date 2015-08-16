@@ -625,7 +625,7 @@ select
 </insert>
 <update id="updateSession" parameterType="SessionVO">
 	UPDATE session
-		rate = #{rate}, ended=now();
+		SET rate = #{rate}, ended=now()
 	WHERE session_id = #{session_id} 
 </update>
 <select id="selectSessionOngoingList" parameterType="SessionVO" resultType="SessionVO">
@@ -657,6 +657,16 @@ select
 	SELECT * FROM consult
 	WHERE session_id = #{session_id}
 	ORDER BY created asc
+</select>
+<select id="selectConsultHistory" parameterType="SessionVO" resultType="ConsultHistoryVO">
+	select (
+		select count(*) from session
+		where member_id = #{member_id} and rate >0
+	) as 'complete',
+		(
+		select count(*)  from session
+		where member_id = #{member_id} and rate = 0
+	) as 'progress'
 </select>
 
 
