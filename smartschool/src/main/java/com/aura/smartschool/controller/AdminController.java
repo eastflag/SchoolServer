@@ -2,6 +2,7 @@ package com.aura.smartschool.controller;
 
 import java.util.List;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.SchoolNoti;
 import com.aura.smartschool.domain.SchoolVO;
@@ -173,5 +175,69 @@ public class AdminController {
 		List<ConsultVO> consultList = mobileService.selectConsultList(inSession);
 
 		return new ResultData<List<ConsultVO>>(0, "success", consultList);
+	}
+	
+	//관리자화면: 사용자 관리=====================================================================
+	@RequestMapping("/admin/api/addManager")
+    public Result addManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/addManager-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addManager(manager);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	
+	@RequestMapping("/admin/api/modifyManager")
+    public Result modifyManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/modifyManager----------------------------------------------------------");
+		
+		long resultCount = mobileService.modifyManager(manager);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	
+	@RequestMapping("/admin/api/removeManager")
+    public Result removeManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/removeManager----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeManager(manager);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "delete failed");
+		}
+	}
+	
+	@RequestMapping("/admin/api/getManager")
+    public ResultData<ManagerVO> getManager(@RequestBody ManagerVO inManager) {
+		logger.debug("/api/getManager--------------------------------------------------");
+		ManagerVO manager = mobileService.getManager(inManager);
+		
+		if(manager == null) {
+			return new ResultData<ManagerVO>(100, "fail", manager);
+		} else {
+			manager.setPass("");
+			return new ResultData<ManagerVO>(0, "success", manager);
+		}
+	}
+	
+	@RequestMapping("/admin/api/getManagerList")
+    public ResultData<List<ManagerVO>> getManagerList(@RequestBody SearchVO search) {
+		logger.debug("/api/getManagerList--------------------------------------------------");
+		List<ManagerVO> managerList = mobileService.getManagerList(search);
+		
+		int total = mobileService.countManager(search);
+		
+		return new ResultDataTotal<List<ManagerVO>>(0, "success", managerList, total);
 	}
 }
