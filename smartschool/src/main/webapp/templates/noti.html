@@ -11,7 +11,7 @@
                 <div class="panel-heading">
                     <i class="fa fa-list fa-lg"></i> 공지사항 목록
                     <div class="pull-right">
-                        <button type="button" class="btn btn-default btn-xs">공지 추가</button>
+                        <button type="button" class="btn btn-default btn-xs" ng-click="initNoti()">공지 추가</button>
                     </div>
                 </div>
                 <!-- /.panel-heading -->
@@ -35,6 +35,11 @@
 							    </td>
 							    <td>{{ noti.title }}</td>
 						    </tr>
+						    <tr>
+						    	<td colspan="2" style="text-align:center">
+						    		<pagination boundary-links="true" total-items="totalNotiListCount" ng-model="currentPageNoti" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="notiListPageChanged()"></pagination>
+						    	</td>
+						    </tr>
 					    </tbody>
 				    </table>
                 </div>
@@ -45,7 +50,7 @@
     	<div class="col-lg-6">
 			<div class="panel panel-info">
                 <div class="panel-heading">
-                    <i class="fa fa-list fa-lg"></i> 공지 추가
+                    <i class="fa fa-list fa-lg"></i> {{noti_mode_text}}
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
@@ -60,11 +65,17 @@
                 </div>
                 <!-- /.panel-body -->
                 <div class="panel-footer">
-					<div class="row">
-						<div class="col-lg-6">
+					<div class="row" ng-switch="noti_mode">
+						<div class="col-lg-6" ng-switch-when="edit">
 				      		<button type="button" ng-click="modifyNoti()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Edit</button>
 				    	</div>
-				    	<div class="col-lg-6">
+				    	<div class="col-lg-6" ng-switch-when="edit">
+				      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+				    	</div>
+				    	<div class="col-lg-6" ng-switch-when="">
+				      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Edit</button>
+				    	</div>
+				    	<div class="col-lg-6" ng-switch-when="">
 				      		<button type="button" ng-click="addNoti()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 				    	</div>
 				   	</div>

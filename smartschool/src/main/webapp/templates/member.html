@@ -69,7 +69,13 @@
 							<div class="col-lg-6" ng-switch-when="edit">
 					      		<button type="button" ng-click="modifyHome()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
 					    	</div>
-					    	<div class="col-lg-6" ng-switch-default>
+					    	<div class="col-lg-6" ng-switch-when="edit">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
 					      		<button type="button" ng-click="addHome()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 					    	</div>
 					   	</div>
@@ -90,7 +96,7 @@
 				<table class="table table-striped">
 					<thead>
 			    		<tr>
-			    			<td>EDIT</td>
+			    			<td>편집</td>
 			    			<td>이름</td>
 			    			<td>관계</td>
 			    			<td>전화번호</td>
@@ -114,6 +120,11 @@
 						    <td>{{ member.is_parent}}</td>
 						    <td>{{ member.pay_date}}</td>
 					    </tr>
+					    <tr>
+					    	<td colspan="6" style="text-align:center">
+					    		<pagination boundary-links="true" total-items="totalMemberListCount" ng-model="currentPageMember" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="memberListPageChanged(member)"></pagination>
+					    	</td>
+					    </tr>
 				    </tbody>
 			    </table>
 			</div>
@@ -121,7 +132,7 @@
 		<div class="col-lg-4">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<i class="fa fa-edit fa-lg"></i> 멤버 추가
+					<i class="fa fa-edit fa-lg"></i> {{member_mode_text}}
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal">
@@ -144,11 +155,17 @@
 					    	</div>
 					  	</div>
 					</form> 
-					<div class="row">
-							<div class="col-lg-6">
+					<div class="row" ng-switch="member_mode">
+							<div class="col-lg-6" ng-switch-when="edit">
 					      		<button type="button" ng-click="modifyMember()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
 					    	</div>
-					    	<div class="col-lg-6">
+					    	<div class="col-lg-6" ng-switch-when="edit">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
 					      		<button type="button" ng-click="addMember()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 					    	</div>
 					   	</div>
@@ -169,7 +186,7 @@
 				<table class="table table-striped">
 					<thead>
 			    		<tr>
-			    			<td>EDIT</td>
+			    			<td>편집</td>
 			    			<td>결제일</td>
 			    		</tr>
 			    	</thead>
@@ -189,7 +206,7 @@
 		<div class="col-lg-4">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<i class="fa fa-edit fa-lg"></i> 결제일 추가
+					<i class="fa fa-edit fa-lg"></i> {{pay_mode_text}}
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal">
@@ -200,11 +217,17 @@
 					    	</div>
 					  	</div>
 					</form> 
-					<div class="row">
-						<div class="col-lg-6">
+					<div class="row" ng-switch="pay_mode">
+						<div class="col-lg-6" ng-switch-when="edit">
 				      		<button type="button" ng-click="modifyPay()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
 				    	</div>
-				    	<div class="col-lg-6">
+				    	<div class="col-lg-6" ng-switch-when="edit">
+				      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+				    	</div>
+				    	<div class="col-lg-6" ng-switch-when="">
+				      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+				    	</div>
+				    	<div class="col-lg-6" ng-switch-when="">
 				      		<button type="button" ng-click="addPay()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 				    	</div>
 				   	</div>

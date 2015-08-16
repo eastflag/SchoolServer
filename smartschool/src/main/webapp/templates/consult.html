@@ -80,8 +80,8 @@
                 </div>
                 <div class="panel-footer">
                     <div class="input-group margin-bottom-sm">
-                        <input type="text" class="form-control" id="add_consult_msg" ng-model="consultMessage" />
-                        <span class="input-group-addon" ng-click="addConsultMessage()"><i class="fa fa-send fa-fw"></i>전송</button></span>
+                        <input type="text" class="form-control" id="add_consult_msg" ng-model="consultMessage" ng-enter="addConsultMessage()" />
+                        <span class="input-group-addon" ng-click="addConsultMessage()" style="cursor:pointer"><i class="fa fa-send fa-fw"></i>전송</button></span>
                     </div>
                 </div>
             </div>   

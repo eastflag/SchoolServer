@@ -22,8 +22,8 @@ app.service('MemberSvc', function($http) {
 	this.getHomeList = function(search) {
 		return $http.post('/api/getHomeList', search);
 	}
-	this.getMemberList = function(home) {
-		return $http.post('/api/getMemberList', home);
+	this.getMemberList = function(member) {
+		return $http.post('/api/getMemberList', member);
 	}
 	this.getPayList = function(member) {
 		return $http.post('/api/getPayList', member);
@@ -146,14 +146,20 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.pay;
-	$scope.pay_date = new Date();
-	
+
 	$scope.currentPageHome = 1;
 	$scope.totalHomeListCount = 0;
+
+	$scope.currentPageMember = 1;
+	$scope.totalMemberListCount = 0;
 
 	$scope.search_value = "";
 	$scope.home_mode = "";
 	$scope.home_mode_text = "홈아이디 추가";
+	$scope.member_mode = "";
+	$scope.member_mode_text = "멤버 추가";
+	$scope.pay_mode = "";
+	$scope.pay_mode_text = "결제일 추가";
 
 	$scope.getHomeList = function() {
 		var search_query = "";
@@ -168,6 +174,8 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		.success(function(homes) {
 			$scope.homes = homes.data;
 			$scope.totalHomeListCount = homes.total;
+
+			$scope.clearHome();
 		});
 	}
 
@@ -179,16 +187,48 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 
 	$scope.editHome = function(home) {
 		$scope.home_mode = "edit";
+		$scope.home_mode_text = "홈아이디 수정";
 
 		$scope.home_id = home.home_id;
 	}
 
-	$scope.getMemberList = function(home) {
-		MemberSvc.getMemberList(home)
+	$scope.clearHome = function() {
+		$scope.home_mode = "";
+		$scope.home_mode_text = "홈아이디 추가";
+
+		$scope.home_id = "";
+	}
+
+	$scope.getMemberList = function(member) {
+		MemberSvc.getMemberList(member)
 		.success(function(memberList) {
 			$scope.members = memberList.data;
+
+			$scope.clearMember();
 		})
 	}
+
+	$scope.editMember = function(member) {
+		$scope.member_mode = "edit";
+		$scope.member_mode_text = "멤버 수정";
+
+		$scope.name = member.name;
+		$scope.relation = member.relation;
+		$scope.mdn = member.mdn;
+	}
+
+	$scope.clearMember = function() {
+		$scope.member_mode = "";
+		$scope.member_mode_text = "멤버 추가";
+
+		$scope.name = "";
+		$scope.relation = "";
+		$scope.mdn = "";
+	}
+
+	$scope.memberListPageChanged = function(member) {
+		$scope.getMemberList(member);
+	};
 
 	$scope.getPayList = function(member) {
 		$scope.pay = {member_id:member.member_id};
@@ -205,6 +245,25 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 			$scope.getPayList({member_id: $scope.pay.member_id});
 		})
 	}
+
+	$scope.getToday = function() {
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth() + 1;
+		var yyyy = today.getFullYear();
+
+		if(dd < 10) {
+		    dd = "0" + dd;
+		} 
+
+		if(mm < 10) {
+		    mm = "0" + mm;
+		} 
+
+		$scope.pay_date = yyyy + "-" + mm + "-" + dd;
+	}
+
+	$scope.getToday();
 });
 
 app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
@@ -476,6 +535,11 @@ app.controller('NotiCtrl', function ($scope, NotiSvc) {
 	$scope.noti;
 	$scope.notis = [];
 
+	$scope.noti_mode = "";
+	$scope.noti_mode_text = "공지 추가";
+	$scope.currentPageNoti = 1;
+	$scope.totalNotiListCount = 0;
+
 	$scope.getNotiList = function() {
 		NotiSvc.getNotiList()
 		.success(function(notis) {
@@ -485,13 +549,42 @@ app.controller('NotiCtrl', function ($scope, NotiSvc) {
 
 	$scope.editNoti = function(noti) {
 		$scope.noti = noti;
+
+		$scope.noti_mode = "edit";
+		$scope.noti_mode_text = "공지 수정";
+	}
+
+	$scope.modifyNoti = function(){
+		NotiSvc.modifyNoti($scope.noti)
+		.success(function(result) {
+			$scope.getNotiList();
+
+			$scope.clearNoti();
+		});
 	}
 
 	$scope.addNoti = function() {
 		NotiSvc.addNoti($scope.noti)
 		.success(function(result) {
 			$scope.getNotiList();
+
+			$scope.clearNoti();
 		});
+	}
+
+	$scope.notiListPageChanged = function() {
+		$scope.getNotiList();
+	};
+
+	$scope.initNoti = function() {
+		$scope.clearNoti();
+	}
+
+	$scope.clearNoti = function(){
+		$scope.noti_mode = "";
+		$scope.noti_mode_text = "공지 추가";
+
+		$scope.noti = null;
 	}
 
 	$scope.getNotiList();
@@ -501,10 +594,15 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 	$scope.board;
 	$scope.boards = [];
 
+	$scope.currentPageBoard = 1;
+	$scope.totalBoardListCount = 0;
+
 	$scope.getBoardList = function() {
 		BoardSvc.getBoardList({board_type:1})
 		.success(function(boards) {
 			$scope.boards = boards.data;
+
+			$scope.clearBoard();
 		});
 	}
 
@@ -516,8 +614,18 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 		BoardSvc.answerBoard({board_id:$scope.board.board_id, answer:$scope.board.answer})
 		.success(function(result) {
 			$scope.getBoardList({board_type:1});
+
+			$scope.clearBoard();
 		});
 	}
+
+	$scope.clearBoard = function(){
+		$scope.board = null;
+	}
+
+	$scope.boardListPageChanged = function() {
+		$scope.getBoardList();
+	};
 
 	$scope.getBoardList();
 })
