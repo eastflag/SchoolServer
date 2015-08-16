@@ -720,7 +720,7 @@ select
 	WHERE member_id = #{member_id}
 </select>
 
-<select id="selectVideoListByMasterGradeId" parameterType="string" resultType="VideoVO">
+<select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
 		select 
 			HC.CT_NAME AS title,
 			concat('http://210.127.55.205/contents/', HC.ct_url) AS videoUrl,
@@ -736,7 +736,7 @@ select
 		        and CC.CT_ID = HC.CT_ID;
 </select>
 
-<select id="selectVideoListByInfoType" parameterType="string" resultType="VideoVO">
+<select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
 		concat('http://210.127.55.205/contents/', ct_url) AS videoUrl,
@@ -749,6 +749,50 @@ select
 	    <if test = "section != null">
 	    	 and ct_section = #{section}
 	    </if>
+</select>
+
+<insert id="insertManager" parameterType="ManagerVO">
+	INSERT INTO manager(id, pass, name, role_id)
+		VALUES(#{id}, password(#{pass}), #{name}, #{role_id});
+</insert>
+
+<update id="updateManager" parameterType="ManagerVO">
+	UPDATE manager
+	<set>
+		<if test="id != null">id=#{id},</if>
+		<if test="pass != null">pass=password(#{pass}),</if>
+		<if test="name != null">name=#{name},</if>
+		<if test="role_id != null">role_id=#{role_id}</if>
+	</set>
+	WHERE manager_id = #{manager_id}
+</update>
+
+<delete id="deleteManager" parameterType="ManagerVO">
+	DELETE FROM manager
+	WHERE manager_id = #{manager_id}
+</delete>
+
+<select id="countManager" parameterType="SearchVO">
+	SELECT count(*) FROM manager
+	WHERE 1=1
+		<if test="search_value != null">AND search_value = #{search_value}</if>
+</select>
+
+<select id="selectManager" parameterType="ManagerVO" resultType="ManagerVO">
+	SELECT * FROM manager
+	WHERE 1=1
+		<if test="id != null"> AND id=#{id}</if>
+		<if test="pass != null"> AND pass=password(#{id})</if>
+		<if test="manager_id != null"> AND manager_id=#{manager_id}</if>
+	Limit 1
+</select>
+
+<select id="selectManagerList" parameterType="SearchVO" resultType="ManagerVO">
+	SELECT * FROM manager
+	WHERE 1=1
+		<if test="id != search_value"> AND search_value = #{search_value}</if>
+		<if test="id != start_index"> AND start_index = #{start_index}</if>
+		<if test="id != page_size"> AND page_size = #{page_size}</if>
 </select>
 
 </mapper>
