@@ -12,6 +12,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
@@ -90,4 +91,12 @@ public interface MobileService {
 	public long addBoard(BoardVO board) throws PersistenceException;
 	public long modifyBoard(BoardVO board) throws PersistenceException;
 	public long removeBoard(BoardVO board) throws PersistenceException;
+	
+	//관리자 화면 사용자 관리
+	public long addManager(ManagerVO manager) throws PersistenceException;
+	public long modifyManager(ManagerVO manager) throws PersistenceException;
+	public long removeManager(ManagerVO manager) throws PersistenceException;
+	public int countManager(SearchVO search);
+	public ManagerVO getManager(ManagerVO manager);
+	public List<ManagerVO> getManagerList(SearchVO search);
 }

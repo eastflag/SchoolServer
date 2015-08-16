@@ -19,6 +19,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
@@ -514,5 +515,35 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<VideoVO> getVideoListByInfoType(VideoTypeVO type) {
 		return mobileMapper.selectVideoListByInfoType(type);
+	}
+
+	@Override
+	public long addManager(ManagerVO manager) throws PersistenceException {
+		return mobileMapper.insertManager(manager);
+	}
+
+	@Override
+	public long modifyManager(ManagerVO manager) throws PersistenceException {
+		return mobileMapper.updateManager(manager);
+	}
+
+	@Override
+	public long removeManager(ManagerVO manager) throws PersistenceException {
+		return mobileMapper.deleteManager(manager);
+	}
+
+	@Override
+	public int countManager(SearchVO search) {
+		return mobileMapper.countManager(search);
+	}
+
+	@Override
+	public ManagerVO getManager(ManagerVO manager) {
+		return mobileMapper.selectManager(manager);
+	}
+
+	@Override
+	public List<ManagerVO> getManagerList(SearchVO search) {
+		return mobileMapper.selectManagerList(search);
 	}
 }

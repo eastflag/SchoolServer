@@ -14,6 +14,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
@@ -110,4 +111,12 @@ public interface MobileMapper {
 	public long insertBoard(BoardVO board) throws PersistenceException;
 	public long updateBoard(BoardVO board) throws PersistenceException;
 	public long deleteBoard(BoardVO board) throws PersistenceException;
+	
+	//관리자 화면 사용자 관리
+	public long insertManager(ManagerVO manager) throws PersistenceException;
+	public long updateManager(ManagerVO manager) throws PersistenceException;
+	public long deleteManager(ManagerVO manager) throws PersistenceException;
+	public int countManager(SearchVO search);
+	public ManagerVO selectManager(ManagerVO manager);
+	public List<ManagerVO> selectManagerList(SearchVO search);
 }

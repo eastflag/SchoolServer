@@ -41,12 +41,14 @@
 		M.member_id, M.home_id, M.mdn, M.gcm_id, M.is_parent, M.name, M.relation, M.photo, M.school_grade, M.school_class,
 		M.birth_date, M.sex,
 		S.school_id, S.School_name, 
-		CAST(AES_DECRYPT(unhex(S.address), 'aura') AS CHAR(500)) as 'address', 
-		CAST(AES_DECRYPT(unhex(S.new_address), 'aura') AS CHAR(500)) as 'new_address', 
-		CAST(AES_DECRYPT(unhex(S.lat), 'aura') AS CHAR(20)) as 'lat', 
-		CAST(AES_DECRYPT(unhex(S.lng), 'aura') AS CHAR(20)) as 'lng',
+		S.address,
+		S.lat,
+		S.lng,
 		S.homepage,
+		S.address,
 		S.contact,
+		S.sido,
+		S.gubun1,
 		S.gubun2,
 		S.code,
 		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
@@ -229,7 +231,7 @@ group by member_id;
 			measure_info.smoke_seq,
 			truncate(inbody_info.HEIGHT, 1) AS height,
 			truncate(inbody_info.Weight, 1) AS weight,
-			truncate(inbody_info.BMI, 2) AS bmi,
+			truncate(inbody_info.BMI, 1) AS bmi,
 			inbody_info.Percent_Body_Fat AS fat,
 			truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
 			truncate(inbody_info.Skeletal_Muscle_Mass, 1) AS skeletal,
@@ -720,7 +722,7 @@ select
 	WHERE member_id = #{member_id}
 </select>
 
-<select id="selectVideoListByMasterGradeId" parameterType="string" resultType="VideoVO">
+<select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
 		select 
 			HC.CT_NAME AS title,
 			concat('http://210.127.55.205/contents/', HC.ct_url) AS videoUrl,
@@ -736,7 +738,7 @@ select
 		        and CC.CT_ID = HC.CT_ID;
 </select>
 
-<select id="selectVideoListByInfoType" parameterType="string" resultType="VideoVO">
+<select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
 		concat('http://210.127.55.205/contents/', ct_url) AS videoUrl,
@@ -749,6 +751,50 @@ select
 	    <if test = "section != null">
 	    	 and ct_section = #{section}
 	    </if>
+</select>
+
+<insert id="insertManager" parameterType="ManagerVO">
+	INSERT INTO manager(id, pass, name, role_id)
+		VALUES(#{id}, password(#{pass}), #{name}, #{role_id});
+</insert>
+
+<update id="updateManager" parameterType="ManagerVO">
+	UPDATE manager
+	<set>
+		<if test="id != null">id=#{id},</if>
+		<if test="pass != null">pass=password(#{pass}),</if>
+		<if test="name != null">name=#{name},</if>
+		<if test="role_id != null">role_id=#{role_id}</if>
+	</set>
+	WHERE manager_id = #{manager_id}
+</update>
+
+<delete id="deleteManager" parameterType="ManagerVO">
+	DELETE FROM manager
+	WHERE manager_id = #{manager_id}
+</delete>
+
+<select id="countManager" parameterType="SearchVO">
+	SELECT count(*) FROM manager
+	WHERE 1=1
+		<if test="search_value != null">AND search_value = #{search_value}</if>
+</select>
+
+<select id="selectManager" parameterType="ManagerVO" resultType="ManagerVO">
+	SELECT * FROM manager
+	WHERE 1=1
+		<if test="id != null"> AND id=#{id}</if>
+		<if test="pass != null"> AND pass=password(#{id})</if>
+		<if test="manager_id != null"> AND manager_id=#{manager_id}</if>
+	Limit 1
+</select>
+
+<select id="selectManagerList" parameterType="SearchVO" resultType="ManagerVO">
+	SELECT * FROM manager
+	WHERE 1=1
+		<if test="id != search_value"> AND search_value = #{search_value}</if>
+		<if test="id != start_index"> AND start_index = #{start_index}</if>
+		<if test="id != page_size"> AND page_size = #{page_size}</if>
 </select>
 
 </mapper>

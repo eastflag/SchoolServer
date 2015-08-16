@@ -19,6 +19,7 @@ import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
@@ -537,5 +538,69 @@ public class ApiController {
 		List<VideoVO> videoList = mobileService.getVideoListByInfoType(type);
 		
 		return new ResultData<List<VideoVO>>(0, "success", videoList);
+	}
+	
+	//관리자화면: 사용자 관리=====================================================================
+	@RequestMapping("/api/addManager")
+    public Result addManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/addManager-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addManager(manager);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	
+	@RequestMapping("/api/modifyManager")
+    public Result modifyManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/modifyManager----------------------------------------------------------");
+		
+		long resultCount = mobileService.modifyManager(manager);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	
+	@RequestMapping("/api/removeManager")
+    public Result removeManager(@RequestBody ManagerVO manager) {
+		logger.debug("/api/removeManager----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeManager(manager);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "delete failed");
+		}
+	}
+	
+	@RequestMapping("/api/getManager")
+    public ResultData<ManagerVO> getManager(@RequestBody ManagerVO inManager) {
+		logger.debug("/api/getManager--------------------------------------------------");
+		ManagerVO manager = mobileService.getManager(inManager);
+		
+		if(manager == null) {
+			return new ResultData<ManagerVO>(100, "fail", manager);
+		} else {
+			manager.setPass("");
+			return new ResultData<ManagerVO>(0, "success", manager);
+		}
+	}
+	
+	@RequestMapping("/api/getManagerList")
+    public ResultData<List<ManagerVO>> getManagerList(@RequestBody SearchVO search) {
+		logger.debug("/api/getManagerList--------------------------------------------------");
+		List<ManagerVO> managerList = mobileService.getManagerList(search);
+		
+		int total = mobileService.countManager(search);
+		
+		return new ResultDataTotal<List<ManagerVO>>(0, "success", managerList, total);
 	}
 }
