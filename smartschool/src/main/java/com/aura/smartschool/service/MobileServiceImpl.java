@@ -254,18 +254,17 @@ public class MobileServiceImpl implements MobileService {
 				heightVO.setBeforeRank(String.valueOf(beforeOrder));
 				
 				
-				//랭킹 구하기,
+				//키, 몸무게 등급 구하기
 				BodyMeasureGrade gradeVO = mobileMapper.selectGradeBySection(heightVO);
 				
 				if(gradeVO != null) {
-					//get ranking
-					BodyMeasureGrade rankingVO = mobileMapper.selectGradeRankingBySection(heightVO);
-					
 					heightVO.setGradeId(gradeVO.getGradeId());
 					heightVO.setGradeDesc(gradeVO.getGradeDesc());
 					
-					heightVO.setSchoolGrade(rankingVO.getSchoolGrade()); //rank in school
-					heightVO.setTotalNumberOfStudent(rankingVO.getTotalNumberOfStudent());//total
+					//학교에서 랭킹 구하기 => schoolGradeId: 학교등수, totalStudent: 학교 학생수
+					BodyMeasureGrade rankingVO = mobileMapper.selectGradeRankingBySection(heightVO);
+					heightVO.setSchoolGrade(rankingVO.getSchoolGrade()); //schoolGradeId: 학교등수
+					heightVO.setTotalNumberOfStudent(rankingVO.getTotalNumberOfStudent());//totalStudent: 학교 학생수
 					
 					BodyMeasureGrade beforeRankingVO = mobileMapper.selectBeforeGradeRankingBySection(heightVO);
 					
@@ -301,21 +300,28 @@ public class MobileServiceImpl implements MobileService {
 					param.setMeasureDate(heightVO.getMeasureDate());
 					System.out.println("school grade id:" + heightVO.getSchoolGradeId());
 
-					AverageItem item = mobileMapper.selectAveragePerSchool(param);
-					if (item != null) {
-						heightVO.setAverageOfSchool(item.getValue());
+					//학교 평균 구하기
+					AverageItem schoolItem = mobileMapper.selectAveragePerSchool(param);
+					if (schoolItem != null) {
+						heightVO.setAverageOfSchool(schoolItem.getValue());
 					}
 					
-					item = mobileMapper.selectAveragePerLocal(param);
-					if(item != null){
-						heightVO.setAverageOfLocal(item.getValue());
+					//지역 평균 구하기 :광명데이터로 구하고 없다면 학교 평균으로 대체
+					AverageItem localItem = mobileMapper.selectAveragePerLocal(param);
+					if(localItem != null){
+						heightVO.setAverageOfLocal(localItem.getValue());
+					} else {
+						heightVO.setAverageOfLocal(schoolItem.getValue());
 					}
 
+					//전국 평균 구하기
 					param.setMeasureDate(this.standardDate);
-					item = mobileMapper.selectAveragePerNation(param);
-					System.out.println("Average of nation:" + item.getValue());
-					if (item != null) {
-						heightVO.setAverageOfNation(item.getValue());
+					AverageItem nationItem = mobileMapper.selectAveragePerNation(param);
+					System.out.println("Average of nation:" + nationItem.getValue());
+					if (nationItem != null) {
+						heightVO.setAverageOfNation(nationItem.getValue());
+					} else {
+						heightVO.setAverageOfNation(schoolItem.getValue());
 					}
 
 					return heightVO;
