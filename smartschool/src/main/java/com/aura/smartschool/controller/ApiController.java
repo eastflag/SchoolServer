@@ -25,6 +25,7 @@ import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -378,6 +379,55 @@ public class ApiController {
 		
 		return result;
 	}
+	
+	//학교 알리미 (공지사항, 가정통신문)
+	//즐겨찾기 등록
+	@RequestMapping("/api/addNotiBookmark")
+    public Result addNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
+		logger.debug("/api/addNotiBookmark-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addNotiBookmark(inNoti);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	//즐겨찾기 삭제
+	@RequestMapping("/api/removeNotiBookmark")
+    public Result removeNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
+		logger.debug("/api/removeNotiBookmark-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.removeNotiBookmark(inNoti);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	//공지사항, 가정통신문 가져오기 (모바일, 자기 학교, 카테고리에 해당하는 목록만 가져오기)
+	@RequestMapping("/api/getSchoolNotiListByMember")
+    public ResultData<List<SchoolNotiVO>> getSchoolNotiListByMember(@RequestBody SchoolNotiVO inNoti) {
+		logger.debug("/api/getSchoolNotiListByMember--------------------------------------------------");
+		
+		List<SchoolNotiVO> notiList = mobileService.getSchoolNotiListByMember(inNoti);
+		
+		if(notiList == null) {
+			return new ResultData<List<SchoolNotiVO>>(100, "data does not exist", null);
+		} else {
+			return new ResultData<List<SchoolNotiVO>>(0, "success", notiList);
+		}
+	}
+	
+
 	
 	//실시간 상담====================================================================================
 	@RequestMapping("/api/getConsultList")

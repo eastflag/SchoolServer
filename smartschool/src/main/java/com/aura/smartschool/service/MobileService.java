@@ -17,7 +17,7 @@ import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
-import com.aura.smartschool.domain.SchoolNoti;
+import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -67,12 +67,12 @@ public interface MobileService {
 	public List<SchoolVO> getSchoolListOfMember(SearchVO search);
 	public int countSchoolListOfMember(SearchVO search);
 	public long updateSchool(SchoolVO school) throws PersistenceException;
-	public long addSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long addSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
 	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
-	public long modifySchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public long removeSchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti);
-	public int countSchoolNotiList(SchoolNoti noti);
+	public long modifySchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public long removeSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public List<SchoolNotiVO> getSchoolNotiList(SchoolNotiVO noti);
+	public int countSchoolNotiList(SchoolNotiVO noti);
 	
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
@@ -83,6 +83,9 @@ public interface MobileService {
 	public SessionVO selectLastSession();
 	public List<ConsultVO> selectConsultList(SessionVO session);
 	public ConsultHistoryVO getConsultHistory(SessionVO session);
+	public long addNotiBookmark(SchoolNotiVO noti);
+	public long removeNotiBookmark(SchoolNotiVO noti);
+	public List<SchoolNotiVO> getSchoolNotiListByMember(SchoolNotiVO noti);
 	
 	//board, noti
 	public List<NotiVO> getNotiList();

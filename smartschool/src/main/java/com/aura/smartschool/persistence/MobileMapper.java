@@ -19,7 +19,7 @@ import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
-import com.aura.smartschool.domain.SchoolNoti;
+import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -83,18 +83,21 @@ public interface MobileMapper {
 	public List<VideoVO> selectVideoListByMasterGradeId(VideoTypeVO type);
 	public List<VideoVO> selectVideoListByInfoType(VideoTypeVO type);
 	
-	//admin----------------------------------------------------
+	//학교 공지사항, 가정통신문----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember(SearchVO search);
 	public int countSchoolListOfMember(SearchVO search);
 	public long updateSchool(SchoolVO school) throws PersistenceException; 
-	public long insertSchoolNoti(SchoolNoti noti) throws PersistenceException;
+	public long insertSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
 	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
-	public long updateSchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public long deleteSchoolNoti(SchoolNoti noti) throws PersistenceException;
-	public List<SchoolNoti> selectSchoolNotiList(SchoolNoti noti);
-	public int countSchoolNotiList(SchoolNoti noti);
+	public long updateSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public long deleteSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public List<SchoolNotiVO> selectSchoolNotiList(SchoolNotiVO noti);
+	public int countSchoolNotiList(SchoolNotiVO noti);
+	public long insertNotiBookmark(SchoolNotiVO noti);
+	public long deleteNotiBookmark(SchoolNotiVO noti);
+	public List<SchoolNotiVO> selectSchoolNotiListByMember(SchoolNotiVO noti);
 	
-	//session, consult
+	//실시간상담 session, consult
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
 	public long updateSession(SessionVO session) throws PersistenceException;

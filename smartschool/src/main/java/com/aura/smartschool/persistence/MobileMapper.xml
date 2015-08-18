@@ -569,7 +569,7 @@ select
 	WHERE school_id = #{school_id} 
 </update>
 
-<insert id="insertSchoolNoti" parameterType="SchoolNoti">
+<insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
 	INSERT INTO 
 		school_noti(school_id, category, title, content, noti_date) 
 		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
@@ -580,7 +580,7 @@ select
 	WHERE home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
 </select>
 
-<update id="updateSchoolNoti" parameterType="SchoolNoti">
+<update id="updateSchoolNoti" parameterType="SchoolNotiVO">
 	UPDATE school_noti
 	<set>
 		<if test="category != null">category=#{category},</if>
@@ -591,12 +591,12 @@ select
 	WHERE noti_seq = #{noti_seq} 
 </update>
 
-<delete id="deleteSchoolNoti" parameterType="SchoolNoti">
+<delete id="deleteSchoolNoti" parameterType="SchoolNotiVO">
 	Delete From school_noti
 	Where noti_seq = #{noti_seq}
 </delete>
 
-<select id="selectSchoolNotiList" parameterType="SchoolNoti" resultType="SchoolNoti">
+<select id="selectSchoolNotiList" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
 	SELECT noti_seq, school_id, category, title, content,
 		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date' FROM SCHOOL_NOTI
 	WHERE school_id = #{school_id} 
@@ -606,11 +606,29 @@ select
 	</if>
 </select>
 
-<select id="countSchoolNotiList" parameterType="SchoolNoti" resultType="Integer">
+<select id="countSchoolNotiList" parameterType="SchoolNotiVO" resultType="Integer">
 	SELECT count(*) FROM SCHOOL_NOTI
 	WHERE school_id = #{school_id} 
 </select>
 
+<insert id="insertNotiBookmark" parameterType="SchoolNotiVO">
+	INSERT INTO noti_bookmark(noti_seq, member_id)
+	values(#{noti_seq}, #{member_id})
+</insert>
+
+<delete id="deleteNotiBookmark" parameterType="SchoolNotiVO">
+	DELETE FROM noti_bookmark
+	WHERE noti_seq = #{noti_seq} AND member_id=#{member_id}
+</delete>
+
+<select id="selectSchoolNotiListByMember" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
+	SELECT noti_seq, school_id, category, title, content,
+		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date',
+		(select member_id from noti_bookmark where member_id=#{member_id} and noti_seq = N.noti_seq) as member_id
+	FROM SCHOOL_NOTI N
+	WHERE school_id = #{school_id} and category=#{category}
+	Order By noti_date desc	
+</select>
 
 
 <insert id="insertSession" parameterType="SessionVO">

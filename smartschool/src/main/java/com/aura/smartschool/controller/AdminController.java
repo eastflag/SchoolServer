@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
-import com.aura.smartschool.domain.SchoolNoti;
+import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -56,7 +56,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/addSchoolNoti")
-    public Result addSchoolNoti(@RequestBody SchoolNoti noti) {
+    public Result addSchoolNoti(@RequestBody SchoolNotiVO noti) {
 		logger.debug("/admin/api/addSchoolNoti---------------------------------------------------");
 		long resultCount = mobileService.addSchoolNoti(noti);
 		if(resultCount > 0) {
@@ -87,7 +87,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/modifySchoolNoti")
-    public Result modifySchoolNoti(@RequestBody SchoolNoti noti) {
+    public Result modifySchoolNoti(@RequestBody SchoolNotiVO noti) {
 		logger.debug("/admin/api/modifySchoolNoti------------------------------------------------");
 		long resultCount = mobileService.modifySchoolNoti(noti);
 		if(resultCount > 0) {
@@ -98,7 +98,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/removeSchoolNoti")
-    public Result removeSchoolNoti(@RequestBody SchoolNoti noti) {
+    public Result removeSchoolNoti(@RequestBody SchoolNotiVO noti) {
 		logger.debug("/admin/api/removeSchoolNoti------------------------------------------------");
 		long resultCount = mobileService.removeSchoolNoti(noti);
 		if(resultCount > 0) {
@@ -109,11 +109,11 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/getSchoolNotiList")
-    public ResultData<List<SchoolNoti>> getSchoolNotiList(@RequestBody SchoolNoti noti) {
+    public ResultData<List<SchoolNotiVO>> getSchoolNotiList(@RequestBody SchoolNotiVO noti) {
 		logger.debug("/admin/api/getSchoolNotiList-----------------------------------------------");
-		List<SchoolNoti> notiList = mobileService.getSchoolNotiList(noti);
+		List<SchoolNotiVO> notiList = mobileService.getSchoolNotiList(noti);
 		int total = mobileService.countSchoolNotiList(noti);
-		return new ResultDataTotal<List<SchoolNoti>>(0, "success", notiList, total);
+		return new ResultDataTotal<List<SchoolNotiVO>>(0, "success", notiList, total);
 	}
 	
 	

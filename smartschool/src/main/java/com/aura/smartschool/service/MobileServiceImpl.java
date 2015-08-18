@@ -24,7 +24,7 @@ import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PayVO;
-import com.aura.smartschool.domain.SchoolNoti;
+import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
@@ -339,22 +339,22 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public long addSchoolNoti(SchoolNoti noti) throws PersistenceException {
+	public long addSchoolNoti(SchoolNotiVO noti) throws PersistenceException {
 		return mobileMapper.insertSchoolNoti(noti);
 	}
 
 	@Override
-	public long modifySchoolNoti(SchoolNoti noti) throws PersistenceException {
+	public long modifySchoolNoti(SchoolNotiVO noti) throws PersistenceException {
 		return mobileMapper.updateSchoolNoti(noti);
 	}
 
 	@Override
-	public long removeSchoolNoti(SchoolNoti noti) throws PersistenceException {
+	public long removeSchoolNoti(SchoolNotiVO noti) throws PersistenceException {
 		return mobileMapper.deleteSchoolNoti(noti);
 	}
 
 	@Override
-	public List<SchoolNoti> getSchoolNotiList(SchoolNoti noti) {
+	public List<SchoolNotiVO> getSchoolNotiList(SchoolNotiVO noti) {
 		return mobileMapper.selectSchoolNotiList(noti);
 	}
 
@@ -379,7 +379,7 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int countSchoolNotiList(SchoolNoti noti) {
+	public int countSchoolNotiList(SchoolNotiVO noti) {
 		return mobileMapper.countSchoolNotiList(noti);
 	}
 
@@ -551,5 +551,20 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public ConsultHistoryVO getConsultHistory(SessionVO session) {
 		return mobileMapper.selectConsultHistory(session);
+	}
+
+	@Override
+	public long addNotiBookmark(SchoolNotiVO noti) {
+		return mobileMapper.insertNotiBookmark(noti);
+	}
+
+	@Override
+	public List<SchoolNotiVO> getSchoolNotiListByMember(SchoolNotiVO noti) {
+		return mobileMapper.selectSchoolNotiListByMember(noti);
+	}
+
+	@Override
+	public long removeNotiBookmark(SchoolNotiVO noti) {
+		return mobileMapper.deleteNotiBookmark(noti);
 	}
 }
