@@ -112,6 +112,11 @@
 	WHERE member_id = #{member_id} 
 </update>
 
+<delete id="deleteMember" parameterType="MemberVO">
+	DELETE FROM MEMBER
+	WHERE member_id = #{member_id}
+</delete>
+
 <update id="updateGcmId" parameterType="MemberVO">
 	UPDATE MEMBER
 		set gcm_id = #{gcm_id}
@@ -835,6 +840,12 @@ select
 		<if test="id != search_value"> AND search_value = #{search_value}</if>
 		<if test="id != start_index"> AND start_index = #{start_index}</if>
 		<if test="id != page_size"> AND page_size = #{page_size}</if>
+</select>
+
+<select id="selectOsInfo" parameterType="OsInfoVO" resultType="OsInfoVO">
+	SELECT * FROM os_info
+	WHERE os_name = #{os_name}
+	Limit 1
 </select>
 
 </mapper>

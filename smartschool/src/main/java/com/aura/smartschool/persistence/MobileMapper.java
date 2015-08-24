@@ -18,6 +18,7 @@ import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
@@ -38,6 +39,7 @@ public interface MobileMapper {
 	public long insertHome(HomeVO home) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;
+	public long deleteMember(MemberVO member) throws PersistenceException;
 	public long updateGcmId(MemberVO member) throws PersistenceException;
 	
 	public List<PayVO> selectPayList(MemberVO member);
@@ -125,4 +127,7 @@ public interface MobileMapper {
 	public int countManager(SearchVO search);
 	public ManagerVO selectManager(ManagerVO manager);
 	public List<ManagerVO> selectManagerList(SearchVO search);
+	
+	//os version
+	public OsInfoVO selectOsInfo(OsInfoVO inOsInfo);
 }

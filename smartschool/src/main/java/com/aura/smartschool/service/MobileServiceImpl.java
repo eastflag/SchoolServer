@@ -23,6 +23,7 @@ import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
@@ -572,5 +573,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long removeNotiBookmark(SchoolNotiVO noti) {
 		return mobileMapper.deleteNotiBookmark(noti);
+	}
+
+	@Override
+	public OsInfoVO getOsInfo(OsInfoVO inOsInfo) {
+		return mobileMapper.selectOsInfo(inOsInfo);
+	}
+
+	@Override
+	public long removeMember(MemberVO member) throws PersistenceException {
+		return mobileMapper.deleteMember(member);
 	}
 }

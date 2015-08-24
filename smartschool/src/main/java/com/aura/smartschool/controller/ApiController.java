@@ -20,10 +20,10 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
-import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
@@ -139,7 +139,19 @@ public class ApiController {
 		} else {
 			return new Result(100, "update failed");
 		}
-
+	}
+	
+	//가족 멤버 수정
+	@RequestMapping("/api/removeMember")
+    public Result removeMember(@RequestBody MemberVO member) {
+		logger.debug("/api/removeMember----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeMember(member);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "remove failed");
+		}
 	}
 	
 	//가족 멤버 리스트 가져오기
@@ -614,4 +626,12 @@ public class ApiController {
 		return new ResultData<List<VideoVO>>(0, "success", videoList);
 	}
 	
+	
+	@RequestMapping("/api/getOsInfo")
+    public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {
+		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
+		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
+		
+		return new ResultData<OsInfoVO>(0, "success", osInfo);
+	}
 }
