@@ -141,7 +141,7 @@ public class ApiController {
     public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
-		if(mobileService.selectMember(member) != null) {
+		if(member.getMdn() != null && mobileService.selectMember(member) != null) {
 			return new Result(100, "등록된 전화번호입니다");
 		} else {
 			long resultCount = mobileService.updateMember(member);
