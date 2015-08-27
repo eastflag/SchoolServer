@@ -35,6 +35,10 @@ import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
+import com.aura.smartschool.util.NetworkUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 @RestController
 public class ApiController {
@@ -91,10 +95,10 @@ public class ApiController {
 			//home_id 가 존재하는지 체크
 			if(mobileService.countHome(home) > 0) {
 				result = 100;
-				msg = "home_id exists";
+				msg = "홈아이디가 이미 존재합니다";
 			} else if (mobileService.selectMember(member) != null) {
 				result = 200;
-				msg = "phone number already registered";
+				msg = "등록된 전화번호입니다";
 			} else {
 				long insertCount = mobileService.insertHome(home);
 				logger.debug("insertCount:" + insertCount);
@@ -117,11 +121,15 @@ public class ApiController {
 		logger.debug("/api/addMember-------------------------------------------------------------");
 		
 		try {
-			long resultCount = mobileService.insertMember(member);
-			if(resultCount > 0) {
-				return new Result(0, "success");
+			if(member.getMdn() != null && mobileService.selectMember(member) != null) {
+				return new Result(100, "등록된 전화번호입니다");
 			} else {
-				return new Result(100, "insert failed");
+				long resultCount = mobileService.insertMember(member);
+				if(resultCount > 0) {
+					return new Result(0, "success");
+				} else {
+					return new Result(100, "insert failed");
+				}
 			}
 		} catch (PersistenceException e) {
 			return new Result(100, "insert failed");
@@ -133,11 +141,15 @@ public class ApiController {
     public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
-		long resultCount = mobileService.updateMember(member);
-		if(resultCount > 0) {
-			return new Result(0, "success");
+		if(mobileService.selectMember(member) != null) {
+			return new Result(100, "등록된 전화번호입니다");
 		} else {
-			return new Result(100, "update failed");
+			long resultCount = mobileService.updateMember(member);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "update failed");
+			}
 		}
 	}
 	
@@ -565,7 +577,27 @@ public class ApiController {
 		logger.debug("/api/modifyBoard----------------------------------------------------------");
 		
 		long resultCount = mobileService.modifyBoard(inBoard);
+		
 		if(resultCount > 0) {
+			//send gcm
+			//check answer 
+			if(inBoard.getAnswer() != null || inBoard.getAnswer() != "") {
+				JsonArray array = new JsonArray(); //get gcm_id
+				MemberVO member = mobileService.getBoardGcm(inBoard);
+				array.add(new JsonPrimitive(member.getGcm_id()));
+				
+				JsonObject data = new JsonObject();
+				JsonObject value = new JsonObject();
+				value.addProperty("title", inBoard.getTitle());
+				value.addProperty("content", inBoard.getContent());
+				value.addProperty("answer", inBoard.getAnswer());
+				
+				data.addProperty("command", "qna");
+				data.addProperty("value", value.toString());
+				
+				NetworkUtil.requestGCM(array, data);
+			}
+			
 			return new Result(0, "success");
 		} else {
 			return new Result(100, "update failed");

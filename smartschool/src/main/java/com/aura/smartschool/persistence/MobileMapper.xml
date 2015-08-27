@@ -25,21 +25,32 @@
 </select>
 
 <select id="selectMember" parameterType="MemberVO" resultType="MemberVO">
-	SELECT * FROM MEMBER
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
 	WHERE  1=1
-		<if test="mdn != null">and mdn=#{mdn}</if>
-		<if test="member_id != null">and member_id=#{member_id}</if>
+		<if test="mdn != null">and mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
+		<if test="member_id != 0">and member_id=#{member_id}</if>
+	Limit 1
 </select>
 
 <select id="signIn" parameterType="MemberVO" resultType="MemberVO">
-	SELECT * FROM member
-	WHERE mdn=#{mdn} and home_id=#{home_id};
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	WHERE mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')) and home_id=#{home_id};
 </select>
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
 	SELECT 
-		M.member_id, M.home_id, M.mdn, M.gcm_id, M.is_parent, M.name, M.relation, M.photo, M.school_grade, M.school_class,
-		M.birth_date, M.sex,
+		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex,
+		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
 		S.school_id, S.School_name, 
 		S.address,
 		S.lat,
@@ -83,23 +94,32 @@
 <insert id="insertMember" parameterType="MemberVO">
 	INSERT INTO 
 		MEMBER(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
-		values(#{home_id}, #{mdn}, #{gcm_id}, #{is_parent}, #{name}, #{relation}, #{photo}, 
-		<choose>                                                                                                  
-			<when test="school_id == 0">                                                                     
-				null,                                                                                  
-			</when>                                                                                               
-			<otherwise>                                                                     
-				#{school_id},                                                                                
-			</otherwise>                                                                                               
-		</choose> 
-		#{school_grade}, #{school_class}, #{sex}, #{birth_date});
+		VALUES(#{home_id}, 
+			HEX(AES_ENCRYPT(#{mdn}, 'aura')),
+			#{gcm_id}, 
+			#{is_parent}, 
+			HEX(AES_ENCRYPT(#{name}, 'aura')),
+			#{relation}, 
+			#{photo}, 
+			<choose>                                                                                                  
+				<when test="school_id == 0">                                                                     
+					null,                                                                                  
+				</when>                                                                                               
+				<otherwise>                                                                     
+					#{school_id},                                                                                
+				</otherwise>                                                                                               
+			</choose> 
+			#{school_grade}, 
+			#{school_class}, 
+			#{sex}, 
+			HEX(AES_ENCRYPT(#{birth_date}, 'aura')));
 </insert>
 
 <update id="updateMember" parameterType="MemberVO">
 	UPDATE MEMBER
 	<set>
-		<if test="mdn != null">mdn=#{mdn},</if>
-		<if test="name != null">name=#{name},</if>
+		<if test="mdn != null">mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')),</if>
+		<if test="name != null">name=HEX(AES_ENCRYPT(#{name}, 'aura')),</if>
 		<if test="relation != null">relation=#{relation},</if>
 		<if test="photo != null">photo=#{photo},</if>
 		<if test="school_id != null">school_id=#{school_id},</if>
@@ -107,7 +127,7 @@
 		<if test="school_grade != null">school_grade=#{school_grade},</if>
 		<if test="school_class != null">school_class=#{school_class},</if>
 		<if test="sex != null">sex=#{sex},</if>
-		<if test="birth_date != null">birth_date=#{birth_date}</if>
+		<if test="birth_date != null">birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura'))</if>
 	</set>
 	WHERE member_id = #{member_id} 
 </update>
@@ -120,7 +140,7 @@
 <update id="updateGcmId" parameterType="MemberVO">
 	UPDATE MEMBER
 		set gcm_id = #{gcm_id}
-	WHERE home_id = #{home_id} and mdn = #{mdn}
+	WHERE home_id = #{home_id} and mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
 </update>
 
 <insert id="insertLocation" parameterType="LocationVO">
@@ -150,7 +170,7 @@
 	SELECT location_id, member_id, lat, lng, created_date 
 	from lat
 	(select * from location
-	where member_id in (select member_id from home where home_id = '길동이네집')
+	where member_id in (select member_id from home where home_id = #{home_id})
 	order by created_date desc ) A
 group by member_id;
 </select>
@@ -721,6 +741,12 @@ select
 		board(member_id, board_type, title, content) 
 	VALUES(#{member_id}, #{board_type}, #{title}, #{content});
 </insert>
+<select id="selectBoardGcm" parameterType="BoardVO" resultType="MemberVO">
+	SELECT gcm_id FROM Board B inner join Member M
+		ON B.member_id = M.member_id
+	Where B.board_id = #{board_id} 
+</select>
+
 <select id="selectBoardList" parameterType="BoardVO" resultType="BoardVO">
 	SELECT * FROM board
 	WHERE board_type = #{board_type}
@@ -758,7 +784,7 @@ select
 <select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
 		select 
 			HC.CT_NAME AS title,
-			concat('http://210.127.55.205/contents/', HC.ct_url) AS videoUrl,
+			concat('http://210.127.55.205/contents/', HC.ct_url_eng) AS videoUrl,
 			concat('http://210.127.55.205/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
 			HC.ct_duration AS duration
 		from
@@ -774,7 +800,7 @@ select
 <select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
-		concat('http://210.127.55.205/contents/', ct_url) AS videoUrl,
+		concat('http://210.127.55.205/contents/', ct_url_eng) AS videoUrl,
 		concat('http://210.127.55.205/contents/', CT_URL_THUM) AS thumbnailUrl,
 		ct_duration AS duration
 	from

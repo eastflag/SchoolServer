@@ -116,6 +116,7 @@ public interface MobileMapper {
 	public long updateNoti(NotiVO noti) throws PersistenceException;
 	public long deleteNoti(NotiVO noti) throws PersistenceException;
 	public List<BoardVO> selectBoardList(BoardVO board);
+	public MemberVO selectBoardGcm(BoardVO board);
 	public long insertBoard(BoardVO board) throws PersistenceException;
 	public long updateBoard(BoardVO board) throws PersistenceException;
 	public long deleteBoard(BoardVO board) throws PersistenceException;

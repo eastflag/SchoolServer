@@ -584,4 +584,9 @@ public class MobileServiceImpl implements MobileService {
 	public long removeMember(MemberVO member) throws PersistenceException {
 		return mobileMapper.deleteMember(member);
 	}
+
+	@Override
+	public MemberVO getBoardGcm(BoardVO board) {
+		return mobileMapper.selectBoardGcm(board);
+	}
 }

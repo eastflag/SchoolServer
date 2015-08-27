@@ -95,6 +95,7 @@ public interface MobileService {
 	public long modifyNoti(NotiVO noti) throws PersistenceException;
 	public long removeNoti(NotiVO noti) throws PersistenceException;
 	public List<BoardVO> getBoardList(BoardVO board);
+	public MemberVO getBoardGcm(BoardVO board);
 	public long addBoard(BoardVO board) throws PersistenceException;
 	public long modifyBoard(BoardVO board) throws PersistenceException;
 	public long removeBoard(BoardVO board) throws PersistenceException;
