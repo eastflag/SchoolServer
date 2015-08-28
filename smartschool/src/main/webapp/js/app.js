@@ -241,16 +241,16 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		$scope.member_mode = "";
 		$scope.member_mode_text = "멤버 추가";
 
-		$scope.name = "";
-		$scope.relation = "";
-		$scope.mdn = "";
-		$scope.birth_date = "";
-		$scope.sex = "";
-		$scope.school_id = "";
-		$scope.school_grade = "";
-		$scope.school_class = "";
-		$scope.is_parent = "";
-		$scope.member_use_yn = "";
+		$scope.name = null;
+		$scope.relation = null;
+		$scope.mdn = null;
+		$scope.birth_date = null;
+		$scope.sex = null;
+		$scope.school_id = null;
+		$scope.school_grade = null;
+		$scope.school_class = null;
+		$scope.is_parent = null;
+		$scope.member_use_yn = null;
 	}
 
 	$scope.modifyMember = function() {
@@ -269,18 +269,9 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		}
 		MemberSvc.modifyMember(member)
 		.success(function(result){
-			$scope.name = null;
-			$scope.relation = null;
-			$scope.mdn = null;
-			$scope.birth_date = null;
-			$scope.sex = null;
-			$scope.school_id = null;
-			$scope.school_grade = null;
-			$scope.school_class = null;
-			$scope.is_parent = null;
-			$scope.member_use_yn = null;
+			$scope.clearMember();
 			
-			$scope.getMemberList();
+			$scope.getMemberList({home_id:$scope.home_id});
 		})
 
 	}
