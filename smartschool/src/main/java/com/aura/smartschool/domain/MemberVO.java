@@ -14,6 +14,7 @@ public class MemberVO {
 	private String school_class;
 	private String sex;
 	private String birth_date;
+	private int use_yn; //1:사용, 0: 삭제
 	
 	//school infomation
 	private String school_name;
@@ -179,6 +180,12 @@ public class MemberVO {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public int getUse_yn() {
+		return use_yn;
+	}
+	public void setUse_yn(int use_yn) {
+		this.use_yn = use_yn;
 	}
 	
 }

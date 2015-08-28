@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
@@ -32,6 +33,30 @@ public class AdminController {
 	
 	@Autowired
 	private MobileService mobileService;
+	
+	//가족 리스트 가져오기 (관리자, 페이징)
+	@RequestMapping("/admin/api/getHomeList")
+	public Result getHomeList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getHomeList-----------------------------------------------------");
+		
+		List<HomeVO> homeList = mobileService.selectHomeList(search);
+		int total = mobileService.countHomeList(search);
+		
+		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
+	}
+	
+	//가족 삭제
+	@RequestMapping("/admin/api/removeHome")
+    public Result removeHome(@RequestBody HomeVO home) {
+		logger.debug("/api/removeHome------------------------------------------------------------");
+		
+		long resultCount = mobileService.removeHome(home);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "remove failed");
+		}
+	}
     
 	//get school list of member
 	@RequestMapping("/admin/api/getSchoolListOfMember")

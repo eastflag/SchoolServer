@@ -54,8 +54,13 @@ public class MobileServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public MemberVO signIn(MemberVO member) {
-		return mobileMapper.signIn(member);
+	public MemberVO signInOfMobile(MemberVO member) {
+		return mobileMapper.signInOfMobile(member);
+	}
+	
+	@Override
+	public MemberVO signInOfWeb(MemberVO member) {
+		return mobileMapper.signInOfWeb(member);
 	}
 	
 	@Override
@@ -588,5 +593,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public MemberVO getBoardGcm(BoardVO board) {
 		return mobileMapper.selectBoardGcm(board);
+	}
+
+	@Override
+	public int checkMemberExistInHome(MemberVO member) {
+		return mobileMapper.checkMemberExistInHome(member);
+	}
+
+	@Override
+	public long removeHome(HomeVO home) throws PersistenceException {
+		return mobileMapper.deleteHome(home);
 	}
 }

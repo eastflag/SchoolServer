@@ -48,13 +48,13 @@ public class ApiController {
 	@Autowired
 	private MobileService mobileService;
     
-	//로그인하기 :home_id, mdn
-	@RequestMapping("/api/signIn")
-    public ResultData<List<MemberVO>> signIn(@RequestBody MemberVO member) {
-		logger.debug("/api/signIn----------------------------------------------------------------");
+	//로그인하기 (모바일 home_id, mdn)
+	@RequestMapping("/api/signInOfMobile")
+    public ResultData<List<MemberVO>> signInOfMobile(@RequestBody MemberVO member) {
+		logger.debug("/api/signInOfMobile--------------------------------------------------------");
 		
 		//home_id 존재하는지 체크, 
-		MemberVO myInfo = mobileService.signIn(member);
+		MemberVO myInfo = mobileService.signInOfMobile(member);
 		//존재한다면 구성원 리스트를 리턴
 		if(myInfo != null) {
 			HomeVO home = new HomeVO();
@@ -70,17 +70,27 @@ public class ApiController {
 		}
     }
 	
-	@RequestMapping("/api/getHomeList")
-	public Result getHomeList(@RequestBody SearchVO search) {
-		logger.debug("/api/getHomeList-----------------------------------------------------------");
+	//로그인하기  (웹 home_id, name)
+	@RequestMapping("/api/signInOfWeb")
+    public ResultData<List<MemberVO>> signInOfWeb(@RequestBody MemberVO member) {
+		logger.debug("/api/signInOfWeb-----------------------------------------------------------");
 		
-		List<HomeVO> homeList = mobileService.selectHomeList(search);
-		int total = mobileService.countHomeList(search);
-		
-		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
-	}
+		//home_id 존재하는지 체크, 
+		MemberVO myInfo = mobileService.signInOfWeb(member);
+		//존재한다면 구성원 리스트를 리턴
+		if(myInfo != null) {
+			HomeVO home = new HomeVO();
+			home.setHome_id(member.getHome_id());
+			List<MemberVO> memberList = mobileService.getMemberList(home); 
+			ResultData<List<MemberVO>> result = new ResultData<List<MemberVO>>(0, "success", memberList);
+			
+			return result;
+		} else {
+			return new ResultData<List<MemberVO>>(100, "login failed", null);
+		}
+    }
 	
-	//회원가입
+	//회원가입 (모바일)
 	@Transactional
 	@RequestMapping("/api/signUp")
     public Result signUp(@RequestBody MemberVO member) {
@@ -96,12 +106,8 @@ public class ApiController {
 			if(mobileService.countHome(home) > 0) {
 				result = 100;
 				msg = "홈아이디가 이미 존재합니다";
-			} else if (mobileService.selectMember(member) != null) {
-				result = 200;
-				msg = "등록된 전화번호입니다";
 			} else {
 				long insertCount = mobileService.insertHome(home);
-				logger.debug("insertCount:" + insertCount);
 				if(insertCount > 0) {
 					mobileService.insertMember(member);
 				}
@@ -121,8 +127,8 @@ public class ApiController {
 		logger.debug("/api/addMember-------------------------------------------------------------");
 		
 		try {
-			if(member.getMdn() != null && mobileService.selectMember(member) != null) {
-				return new Result(100, "등록된 전화번호입니다");
+			if(mobileService.checkMemberExistInHome(member) > 0) {
+				return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
 			} else {
 				long resultCount = mobileService.insertMember(member);
 				if(resultCount > 0) {
@@ -141,8 +147,8 @@ public class ApiController {
     public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
-		if(member.getMdn() != null && mobileService.selectMember(member) != null) {
-			return new Result(100, "등록된 전화번호입니다");
+		if(mobileService.checkMemberExistInHome(member) > 0) {
+			return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
 		} else {
 			long resultCount = mobileService.updateMember(member);
 			if(resultCount > 0) {
@@ -153,7 +159,7 @@ public class ApiController {
 		}
 	}
 	
-	//가족 멤버 수정
+	//가족 멤버 삭제
 	@RequestMapping("/api/removeMember")
     public Result removeMember(@RequestBody MemberVO member) {
 		logger.debug("/api/removeMember----------------------------------------------------------");

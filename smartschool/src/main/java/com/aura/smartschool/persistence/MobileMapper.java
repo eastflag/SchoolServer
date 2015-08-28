@@ -33,10 +33,13 @@ public interface MobileMapper {
 	public List<HomeVO> selectHomeList(SearchVO search);
 	public int countHomeList(SearchVO search);
 	public MemberVO selectMember(MemberVO member);
-	public MemberVO signIn(MemberVO member);
+	public MemberVO signInOfMobile(MemberVO member);
+	public MemberVO signInOfWeb(MemberVO member);
 	public List<MemberVO> selectMemberList(HomeVO home);
+	public int checkMemberExistInHome(MemberVO member);
 
 	public long insertHome(HomeVO home) throws PersistenceException;
+	public long deleteHome(HomeVO home) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;
 	public long deleteMember(MemberVO member) throws PersistenceException;
