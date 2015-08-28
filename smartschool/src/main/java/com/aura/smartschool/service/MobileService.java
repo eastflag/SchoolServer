@@ -33,6 +33,7 @@ public interface MobileService {
 	public MemberVO signInOfMobile(MemberVO member);
 	public MemberVO signInOfWeb(MemberVO member);
 	public List<MemberVO> getMemberList(HomeVO home);
+	public List<MemberVO> getAllMember(HomeVO home);
 	public int checkMemberExistInHome(MemberVO member);
 	public long insertHome(HomeVO home) throws PersistenceException;
 	public long removeHome(HomeVO home) throws PersistenceException;

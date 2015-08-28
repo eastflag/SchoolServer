@@ -23,7 +23,7 @@
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
 	SELECT 
-		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex,
+		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
 		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
@@ -40,6 +40,27 @@
 		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id} and M.use_yn=1
+</select>
+
+<select id="selectAllMember" parameterType="HomeVO" resultType="MemberVO">
+	SELECT 
+		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
+		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
+		S.school_id, S.School_name, 
+		S.address,
+		S.lat,
+		S.lng,
+		S.homepage,
+		S.contact,
+		S.sido,
+		S.gubun1,
+		S.gubun2,
+		S.code,
+		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
+	FROM member M left join school S on M.school_id = S.school_id
+	WHERE M.home_id = #{home_id}
 </select>
 
 <select id="countHome" parameterType="HomeVO" resultType="Integer">
@@ -77,8 +98,10 @@
 <select id="checkMemberExistInHome" parameterType="MemberVO" resultType="Integer">
 	SELECT count(*)
 	FROM member
-	WHERE  home_id=#{home_id} and 
-		   ( mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')) or name=HEX(AES_ENCRYPT(#{name}, 'aura')) )
+	WHERE  home_id=#{home_id} and (
+		      name=HEX(AES_ENCRYPT(#{name}, 'aura'))
+			  <if test ="mdn != null">or mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
+		   )
 	Limit 1
 </select>
 
@@ -124,11 +147,12 @@
 		<if test="relation != null">relation=#{relation},</if>
 		<if test="photo != null">photo=#{photo},</if>
 		<if test="school_id != null">school_id=#{school_id},</if>
-		<if test="school_name != null">school_name=#{school_name},</if>
 		<if test="school_grade != null">school_grade=#{school_grade},</if>
 		<if test="school_class != null">school_class=#{school_class},</if>
 		<if test="sex != null">sex=#{sex},</if>
-		<if test="birth_date != null">birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura'))</if>
+		<if test="birth_date != null">birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura')),</if>
+		<if test="is_parent != null">is_parent=#{parent},</if>
+		<if test="use_yn != null">use_yn = #{use_yn}</if>
 	</set>
 	WHERE member_id = #{member_id} 
 </update>

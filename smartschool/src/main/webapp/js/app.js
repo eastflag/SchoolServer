@@ -22,8 +22,11 @@ app.service('MemberSvc', function($http) {
 	this.getHomeList = function(search) {
 		return $http.post('/admin/api/getHomeList', search);
 	}
-	this.getMemberList = function(member) {
-		return $http.post('/api/getMemberList', member);
+	this.getMemberList = function(home) {
+		return $http.post('/admin/api/getAllMember', home);
+	}
+	this.modifyMember = function(member) {
+		return $http.post('/admin/api/modifyMember', member);
 	}
 	this.getPayList = function(member) {
 		return $http.post('/api/getPayList', member);
@@ -145,6 +148,8 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
+	$scope.home_id = "";
+	$scope.member_id = "";
 	$scope.pay;
 
 	$scope.currentPageHome = 1;
@@ -190,6 +195,9 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		$scope.home_mode_text = "홈아이디 수정";
 
 		$scope.home_id = home.home_id;
+		$scope.home_use_yn = home.use_yn;
+
+		$scope.getMemberList(home);
 	}
 
 	$scope.clearHome = function() {
@@ -197,10 +205,11 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		$scope.home_mode_text = "홈아이디 추가";
 
 		$scope.home_id = "";
+		$scope.home_use_yn = "";
 	}
 
-	$scope.getMemberList = function(member) {
-		MemberSvc.getMemberList(member)
+	$scope.getMemberList = function(home) {
+		MemberSvc.getMemberList(home)
 		.success(function(memberList) {
 			$scope.members = memberList.data;
 
@@ -209,21 +218,71 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	}
 
 	$scope.editMember = function(member) {
+		$scope.member_id = member.member_id;
 		$scope.member_mode = "edit";
 		$scope.member_mode_text = "멤버 수정";
 
 		$scope.name = member.name;
 		$scope.relation = member.relation;
 		$scope.mdn = member.mdn;
+		$scope.birth_date = member.birth_date;
+		$scope.sex = member.sex;
+		$scope.school_id = member.school_id;
+		$scope.school_grade = member.school_grade;
+		$scope.school_class = member.school_class;
+		$scope.is_parent = member.is_parent;
+		$scope.member_use_yn = member.use_yn;
+
+		$scope.getPayList(member);
 	}
 
 	$scope.clearMember = function() {
+		$scope.member_id = "";
 		$scope.member_mode = "";
 		$scope.member_mode_text = "멤버 추가";
 
 		$scope.name = "";
 		$scope.relation = "";
 		$scope.mdn = "";
+		$scope.birth_date = "";
+		$scope.sex = "";
+		$scope.school_id = "";
+		$scope.school_grade = "";
+		$scope.school_class = "";
+		$scope.is_parent = "";
+		$scope.member_use_yn = "";
+	}
+
+	$scope.modifyMember = function() {
+		var member = {
+			member_id : $scope.member_id,
+			name : $scope.name,
+			relation : $scope.relation,
+			mdn: $scope.mdn,
+			birth_date : $scope.birth_date,
+			sex : $scope.sex,
+			school_id : $scope.school_id,
+			school_grade : $scope.school_grade,
+			school_class : $scope.school_class,
+			is_parent : $scope.is_parent,
+			use_yn : $scope.member_use_yn
+		}
+		MemberSvc.modifyMember(member)
+		.success(function(result){
+			$scope.name = null;
+			$scope.relation = null;
+			$scope.mdn = null;
+			$scope.birth_date = null;
+			$scope.sex = null;
+			$scope.school_id = null;
+			$scope.school_grade = null;
+			$scope.school_class = null;
+			$scope.is_parent = null;
+			$scope.member_use_yn = null;
+			
+			$scope.getMemberList();
+		})
+
 	}
 
 	$scope.memberListPageChanged = function(member) {

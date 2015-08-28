@@ -34,7 +34,7 @@ public class AdminController {
 	@Autowired
 	private MobileService mobileService;
 	
-	//가족 리스트 가져오기 (관리자, 페이징)
+	//홈 아이디 리스트 가져오기 (관리자, 페이징)
 	@RequestMapping("/admin/api/getHomeList")
 	public Result getHomeList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getHomeList-----------------------------------------------------");
@@ -45,7 +45,7 @@ public class AdminController {
 		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
 	}
 	
-	//가족 삭제
+	//홈 삭제
 	@RequestMapping("/admin/api/removeHome")
     public Result removeHome(@RequestBody HomeVO home) {
 		logger.debug("/api/removeHome------------------------------------------------------------");
@@ -55,6 +55,29 @@ public class AdminController {
 			return new Result(0, "success");
 		} else {
 			return new Result(100, "remove failed");
+		}
+	}
+	
+	//가족 모든 구성원 (삭제포함) 리스트 가져오기
+	@RequestMapping("/admin/api/getAllMember")
+    public Result getAllMember(@RequestBody HomeVO home) {
+		logger.debug("/admin/api/getAllMember---------------------------------------------------------");
+		
+		List<MemberVO> memberList = mobileService.getAllMember(home);
+		
+		return new ResultData<List<MemberVO>>(0, "success", memberList);
+	}
+	
+	//가족 멤버 수정
+	@RequestMapping("/admin/api/modifyMember")
+    public Result modifyMember(@RequestBody MemberVO member) {
+		logger.debug("/admin/api/modifyMember----------------------------------------------------------");
+		
+		long resultCount = mobileService.updateMember(member);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
 		}
 	}
     

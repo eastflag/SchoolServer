@@ -604,4 +604,9 @@ public class MobileServiceImpl implements MobileService {
 	public long removeHome(HomeVO home) throws PersistenceException {
 		return mobileMapper.deleteHome(home);
 	}
+
+	@Override
+	public List<MemberVO> getAllMember(HomeVO home) {
+		return mobileMapper.selectAllMember(home);
+	}
 }
