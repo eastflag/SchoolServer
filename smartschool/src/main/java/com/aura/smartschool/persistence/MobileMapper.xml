@@ -32,7 +32,6 @@
 		S.lat,
 		S.lng,
 		S.homepage,
-		S.address,
 		S.contact,
 		S.sido,
 		S.gubun1,

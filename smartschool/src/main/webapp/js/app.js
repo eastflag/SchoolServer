@@ -20,7 +20,7 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 
 app.service('MemberSvc', function($http) {
 	this.getHomeList = function(search) {
-		return $http.post('/api/getHomeList', search);
+		return $http.post('/admin/api/getHomeList', search);
 	}
 	this.getMemberList = function(member) {
 		return $http.post('/api/getMemberList', member);
