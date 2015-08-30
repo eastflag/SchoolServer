@@ -27,13 +27,11 @@ import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
-import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
-import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.JsonArray;
@@ -107,7 +105,7 @@ public class ApiController {
 				result = 100;
 				msg = "홈아이디가 이미 존재합니다";
 			} else {
-				long insertCount = mobileService.insertHome(home);
+				long insertCount = mobileService.addHome(home);
 				if(insertCount > 0) {
 					mobileService.insertMember(member);
 				}

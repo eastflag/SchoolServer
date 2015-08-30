@@ -22,6 +22,12 @@ app.service('MemberSvc', function($http) {
 	this.getHomeList = function(search) {
 		return $http.post('/admin/api/getHomeList', search);
 	}
+	this.addHome = function(home) {
+		return $http.post('/admin/api/addHome', home);
+	}
+	this.modifyHome = function(home) {
+		return $http.post('/admin/api/modifyHome', home);
+	}
 	this.getMemberList = function(home) {
 		return $http.post('/admin/api/getAllMember', home);
 	}
@@ -206,6 +212,29 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 
 		$scope.home_id = "";
 		$scope.home_use_yn = "";
+	}
+
+	$scope.addHome = function(home) {
+		var home = {
+			home_id: $scope.home_id
+		}
+		MemberSvc.addHome(home)
+		.success(function(data){
+			$scope.clearHome();
+			$scope.getHomeList();
+		});
+	}
+
+	$scope.modifyHome = function() {
+		var home = {
+			home_id: $scope.home_id,
+			use_yn: $scope.home_use_yn
+		}
+		MemberSvc.modifyHome(home) 
+		.success(function(data) {
+			$scope.clearHome();
+			$scope.getHomeList();
+		});
 	}
 
 	$scope.getMemberList = function(home) {

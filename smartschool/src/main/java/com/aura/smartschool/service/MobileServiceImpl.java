@@ -3,8 +3,6 @@ package com.aura.smartschool.service;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.text.DefaultEditorKit.InsertBreakAction;
-
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,7 +67,7 @@ public class MobileServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public long insertHome(HomeVO home) throws PersistenceException {
+	public long addHome(HomeVO home) throws PersistenceException {
 		return mobileMapper.insertHome(home);
 	}
 
@@ -601,8 +599,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public long removeHome(HomeVO home) throws PersistenceException {
-		return mobileMapper.deleteHome(home);
+	public long modifyHome(HomeVO home) throws PersistenceException {
+		return mobileMapper.updateHome(home);
 	}
 
 	@Override

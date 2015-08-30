@@ -9,7 +9,8 @@
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
 	FROM member
-	WHERE mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')) and home_id=#{home_id} and use_yn = 1;
+	WHERE mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')) and home_id=#{home_id} and use_yn = 1
+	Limit 1;
 </select>
 
 <select id="signInOfWeb" parameterType="MemberVO" resultType="MemberVO">
@@ -18,7 +19,8 @@
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
 	FROM member
-	WHERE name=HEX(AES_ENCRYPT(#{name}, 'aura')) and home_id=#{home_id} and use_yn = 1;
+	WHERE name=HEX(AES_ENCRYPT(#{name}, 'aura')) and home_id=#{home_id} and use_yn = 1
+	Limit 1;
 </select>
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
@@ -109,9 +111,10 @@
 	INSERT INTO home(home_id) values(#{home_id});
 </insert>
 
-<update id="deleteHome" parameterType="HomeVO">
+<update id="updateHome" parameterType="HomeVO">
 	UPDATE HOME
-		SET use_yn = 0
+	SET home_id = #{home_id},
+		use_yn=#{use_yn}
 	WHERE home_id = #{home_id}
 </update>
 

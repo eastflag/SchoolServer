@@ -45,12 +45,25 @@ public class AdminController {
 		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
 	}
 	
-	//홈 삭제
-	@RequestMapping("/admin/api/removeHome")
+	//홈 아이디 수정
+	@RequestMapping("/admin/api/modifyHome")
     public Result removeHome(@RequestBody HomeVO home) {
-		logger.debug("/api/removeHome------------------------------------------------------------");
+		logger.debug("/admin/api/modifyHome------------------------------------------------------------");
 		
-		long resultCount = mobileService.removeHome(home);
+		long resultCount = mobileService.modifyHome(home);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "remove failed");
+		}
+	}
+	
+	//홈 아이디 수정
+	@RequestMapping("/admin/api/addHome")
+    public Result addHome(@RequestBody HomeVO home) {
+		logger.debug("/admin/api/addHome------------------------------------------------------------");
+		
+		long resultCount = mobileService.addHome(home);
 		if(resultCount > 0) {
 			return new Result(0, "success");
 		} else {
