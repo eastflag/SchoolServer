@@ -92,7 +92,7 @@
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
 	FROM member
-	WHERE  use_yn = 1
+	WHERE  use_yn = 1 and
 		member_id=#{member_id}
 	Limit 1
 </select>
