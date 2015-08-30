@@ -122,8 +122,7 @@ public class AdminController {
 		long resultCount = mobileService.addSchoolNoti(noti);
 		if(resultCount > 0) {
 			//send gcm
-			SchoolVO school = new SchoolVO();
-			school.setSchool_id(noti.getSchool_id());;
+			SchoolVO school = mobileService.getSchoolById(noti.getSchool_id());
 			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
 			JsonArray array = new JsonArray(); //get gcm_id
 			for(MemberVO m : memberList) {
@@ -132,6 +131,8 @@ public class AdminController {
 			
 			JsonObject data = new JsonObject();
 			JsonObject value = new JsonObject();
+			value.addProperty("school_id", school.getSchool_id());
+			value.addProperty("school_name", school.getSchool_name());
 			value.addProperty("category", noti.getCategory());
 			value.addProperty("title", noti.getTitle());
 			value.addProperty("content", noti.getContent());

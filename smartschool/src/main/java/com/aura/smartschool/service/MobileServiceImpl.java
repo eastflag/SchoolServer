@@ -607,4 +607,9 @@ public class MobileServiceImpl implements MobileService {
 	public List<MemberVO> getAllMember(HomeVO home) {
 		return mobileMapper.selectAllMember(home);
 	}
+
+	@Override
+	public SchoolVO getSchoolById(int school_id) {
+		return mobileMapper.selectSchoolById(school_id);
+	}
 }

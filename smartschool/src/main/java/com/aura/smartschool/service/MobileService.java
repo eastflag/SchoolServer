@@ -79,6 +79,7 @@ public interface MobileService {
 	public long removeSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
 	public List<SchoolNotiVO> getSchoolNotiList(SchoolNotiVO noti);
 	public int countSchoolNotiList(SchoolNotiVO noti);
+	public SchoolVO getSchoolById(int school_id);
 	
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
