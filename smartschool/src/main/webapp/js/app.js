@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload'
 ]);
 
 app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -179,9 +179,9 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		var search_query = "";
 
 		if ($scope.search_value == "") {
-			search_query = {start_index:$scope.currentPageHome - 1, page_size:10};
+			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10};
 		} else {
-			search_query = {start_index:$scope.currentPageHome - 1, page_size:10, search_value:$scope.search_value};
+			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10, search_value:$scope.search_value};
 		}
 
 		MemberSvc.getHomeList(search_query)
@@ -348,7 +348,7 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.getToday();
 });
 
-app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
+app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, Upload, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
 	$scope.noti_mode = "";
 	$scope.school_id;
@@ -378,9 +378,9 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		var search_query = "";
 
 		if ($scope.search_value == "") {
-			search_query = {start_index:$scope.currentPageSchool - 1, page_size:10};
+			search_query = {start_index:($scope.currentPageSchool - 1) * 10, page_size:10};
 		} else {
-			search_query = {start_index:$scope.currentPageSchool - 1, page_size:10, search_value:$scope.search_value};
+			search_query = {start_index:($scope.currentPageSchool - 1) * 10, page_size:10, search_value:$scope.search_value};
 		}
 
 		SchoolSvc.getSchoolList(search_query)
@@ -477,7 +477,7 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		$scope.mode = "noti";
 		$scope.school_id = school.school_id;
 		
-		var noti = {school_id:school.school_id, start_index:$scope.currentPageNoti - 1, page_size:$scope.itemPerNotiPage};
+		var noti = {school_id:school.school_id, start_index:($scope.currentPageNoti - 1) * $scope.itemPerNotiPage, page_size:$scope.itemPerNotiPage};
 		
 		SchoolSvc.getSchoolNotiList(noti)
 		.success(function(notiList) {
@@ -545,7 +545,30 @@ app.controller('SchoolCtrl', function ($scope, SchoolSvc) {
 		$scope.noti_mode = "";
 		$scope.noti_mode_text = "알림장 추가";
 	}
-})
+
+    $scope.uploadFiles = function(file) {
+        $scope.f = file;
+        if (file && !file.$error) {
+            file.upload = Upload.upload({
+                url: '/admin/upload',   
+                file: file
+            });
+
+            file.upload.then(function (response) {
+                $timeout(function () {
+                    file.result = response.data;
+                });
+            }, function (response) {
+                if (response.status > 0)
+                    $scope.errorMsg = response.status + ': ' + response.data;
+            });
+
+            file.upload.progress(function (evt) {
+                file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+            });
+        }   
+    }
+}]); 
 
 app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	$scope.selectedCategoryNo = 0;
@@ -616,7 +639,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
     $scope.getSessionList($scope.selectedCategoryNo);
 })
 
-app.controller('NotiCtrl', function ($scope, NotiSvc) {
+app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $window, NotiSvc) {
 	$scope.noti;
 	$scope.notis = [];
 
@@ -637,6 +660,17 @@ app.controller('NotiCtrl', function ($scope, NotiSvc) {
 
 		$scope.noti_mode = "edit";
 		$scope.noti_mode_text = "공지 수정";
+	}
+
+	$scope.deleteConfirm = function(noti) {
+		if ($window.confirm("삭제하시겠습니까?")) {	
+			NotiSvc.removeNoti(noti)
+			.success(function(result) {
+				$scope.getNotiList();
+
+				$scope.clearNoti();
+			});
+		};
 	}
 
 	$scope.modifyNoti = function(){
@@ -673,7 +707,7 @@ app.controller('NotiCtrl', function ($scope, NotiSvc) {
 	}
 
 	$scope.getNotiList();
-})
+}]);
 
 app.controller('BoardCtrl', function ($scope, BoardSvc) {
 	$scope.board;
