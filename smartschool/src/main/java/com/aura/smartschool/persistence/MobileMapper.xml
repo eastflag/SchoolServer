@@ -837,8 +837,8 @@ select
 <select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
 		select 
 			HC.CT_NAME AS title,
-			concat('http://210.127.55.205/contents/', HC.ct_url_eng) AS videoUrl,
-			concat('http://210.127.55.205/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
+			concat('http://aurasystem.kr/contents/eng_filename/', HC.ct_url_eng) AS videoUrl,
+			concat('http://aurasystem.kr/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
 			HC.ct_duration AS duration
 		from
 		    healthcare_gwangmyeong.ms_grade_data MGD,
@@ -853,8 +853,8 @@ select
 <select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
-		concat('http://210.127.55.205/contents/eng_filename', ct_url_eng) AS videoUrl,
-		concat('http://210.127.55.205/contents/', CT_URL_THUM) AS thumbnailUrl,
+		concat('http://aurasystem.kr/contents/eng_filename/', ct_url_eng) AS videoUrl,
+		concat('http://aurasystem.kr/contents/', CT_URL_THUM) AS thumbnailUrl,
 		ct_duration AS duration
 	from
 	    healthcare_gwangmyeong.healthcare_contents
