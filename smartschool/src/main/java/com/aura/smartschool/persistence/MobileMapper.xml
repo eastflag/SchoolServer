@@ -725,7 +725,9 @@ select
 <select id="selectSessionOngoingList" parameterType="SessionVO" resultType="SessionVO">
 	SELECT S.session_id, S.member_id, S.category, 
 		(SELECT who FROM consult WHERE session_id = S.session_id order by session_id desc limit 1) as who,
-		C.school_name, M.name, M.school_class, S.created
+		C.school_name, 
+		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
+		M.school_class, S.created
 	FROM session S, member M, school C 
 	WHERE rate = 0 AND 
 		S.member_id = M.member_id and M.school_id = C.school_id
@@ -851,7 +853,7 @@ select
 <select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
-		concat('http://210.127.55.205/contents/', ct_url_eng) AS videoUrl,
+		concat('http://210.127.55.205/contents/eng_filename', ct_url_eng) AS videoUrl,
 		concat('http://210.127.55.205/contents/', CT_URL_THUM) AS thumbnailUrl,
 		ct_duration AS duration
 	from
