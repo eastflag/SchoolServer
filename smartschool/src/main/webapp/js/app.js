@@ -140,6 +140,9 @@ app.filter('changeCategoryName', function() {
 			case 4 : categoryName = "심리상담"; break;
 			case 5 : categoryName = "성장상담"; break;
 			case 6 : categoryName = "흡연상담"; break;
+			case 7 : categoryName = "학교폭력"; break;
+			case 8 : categoryName = "친구관계"; break;
+			case 9 : categoryName = "가정폭력"; break;
 		}
 
 		return categoryName;
@@ -559,7 +562,10 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 		{code: 3, name: "진로상담"},
 		{code: 4, name: "심리상담"},
 		{code: 5, name: "성장상담"},
-		{code: 6, name: "흡연상담"}
+		{code: 6, name: "흡연상담"},
+		{code: 7, name: "학교폭력"},
+		{code: 8, name: "친구관계"},
+		{code: 9, name: "가정폭력"}
 	];
 
 	$scope.getSessionList = function(categoryNo) {
