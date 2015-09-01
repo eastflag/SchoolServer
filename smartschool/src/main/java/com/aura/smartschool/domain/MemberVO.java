@@ -14,7 +14,7 @@ public class MemberVO {
 	private String school_class;
 	private String sex;
 	private String birth_date;
-	private int use_yn; //1:사용, 0: 삭제
+	private int use_yn = -1; //1:사용, 0: 삭제, -1:no assign
 	
 	//school infomation
 	private String school_name;
