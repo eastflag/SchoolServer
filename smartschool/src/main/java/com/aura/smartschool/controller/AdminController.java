@@ -126,7 +126,9 @@ public class AdminController {
 			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
 			JsonArray array = new JsonArray(); //get gcm_id
 			for(MemberVO m : memberList) {
-				array.add(new JsonPrimitive(m.getGcm_id()));
+				if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
+					array.add(new JsonPrimitive(m.getGcm_id()));
+				}
 			}
 			
 			JsonObject data = new JsonObject();
