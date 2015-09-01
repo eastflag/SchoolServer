@@ -13,6 +13,7 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 	.when('/consult', {templateUrl: 'templates/consult.html'})
 	.when('/noti', {templateUrl: 'templates/noti.html'})
 	.when('/qna', {templateUrl: 'templates/qna.html'})
+	.when('/admin', {templateUrl: 'templates/admin.html'})
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -96,6 +97,21 @@ app.service('BoardSvc', function($http) {
 	}
 	this.removeBoard = function(board) {
 		return $http.post('/api/removeBoard', board);
+	}
+});
+
+app.service('AdminSvc', function($http) {
+	this.getManagerList = function(admin) {
+		return $http.post('/admin/api/getManagerList', admin);
+	}
+	this.addManager = function(admin) {
+		return $http.post('/admin/api/addManager', admin);
+	}
+	this.modifyManager = function(admin) {
+		return $http.post('/admin/api/modifyManager', admin);
+	}
+	this.removeManager = function(admin) {
+		return $http.post('/admin/api/removeManager', admin);
 	}
 });
 
@@ -748,3 +764,87 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 
 	$scope.getBoardList();
 })
+
+app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, $window, AdminSvc) {
+	$scope.admins = [];
+	
+	$scope.currentPageAdmin = 1;
+	$scope.totalAdminListCount = 0;
+
+	$scope.admin_mode = "";
+	$scope.admin_mode_text = "관리자 추가";
+
+	$scope.getManagerList = function(){
+		AdminSvc.getManagerList({start_index:($scope.currentPageAdmin - 1) * 10, page_size:10})
+		.success(function(admins) {
+			$scope.homes = admins.data;
+			$scope.totalAdminListCount = admins.total;
+
+			$scope.clearAdmin();
+		});
+	}
+
+	$scope.getManagerList();
+
+	$scope.clearAdmin = function() {
+		$scope.admin_mode = "";
+		$scope.admin_mode_text = "관리자 추가";
+	}
+
+	$scope.adminListPageChanged = function() {
+		$scope.getManagerList();
+	};
+
+	$scope.editAdmin = function(admin) {
+		$scope.manager_id = admin.manager_id;
+		$scope.admin_mode = "edit";
+		$scope.admin_mode_text = "관리자 수정";
+
+		$scope.id = member.id;
+		$scope.pass = member.pass;
+		$scope.name = member.name;
+		$scope.role_id = member.role_id;
+		$scope.token = member.token;
+	}
+
+	$scope.addAdmin = function() {
+		var admin = {
+			id: $scope.id,
+			pass: $scope.pass,
+			name: $scope.name,
+			role_id: $scope.role_id
+		}
+
+		AdminSvc.addManager(admin)
+		.success(function(data){
+			$scope.clearAdmin();
+			$scope.getManagerList();
+		});
+	}
+
+	$scope.modifyAdmin = function() {
+		var admin = {
+			manager_id: $scope.manager_id,
+			name: $scope.name,
+			role_id: $scope.role_id
+		}
+		
+		AdminSvc.modifyManager(admin)
+		.success(function(data){
+			$scope.clearAdmin();
+			$scope.getManagerList();
+		});
+	}
+
+	$scope.deleteAdmin = function(admin) {
+		if ($window.confirm("삭제하시겠습니까?")) {	
+			AdminSvc.removeManager(admin)
+			.success(function(result) {
+				$scope.currentPageAdmin = 1;
+				
+				$scope.clearAdmin();
+				$scope.getManagerList();
+			});
+		};
+	}
+}]);
