@@ -6,7 +6,9 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +20,12 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.TokenVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
+import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -33,6 +37,37 @@ public class AdminController {
 	
 	@Autowired
 	private MobileService mobileService;
+	
+	private boolean isAuthenticate(String jwt) {
+		 TokenVO tokenVO = CommonUtil.parseJWT(jwt);
+		 return tokenVO.isExpired();
+	}
+	
+	@RequestMapping("/admin/api/authenticate")
+	public void getLogin(@RequestBody ManagerVO inManager,  @RequestHeader HttpHeaders headers) {
+		logger.debug("/admin/api/authenticate----------------------------------------------------");
+		
+		String auth = headers.getFirst("X-Auth");
+		
+		System.out.println("auth:" + auth);
+	}
+	
+	//관리자 페이지 로그인
+	@RequestMapping("/admin/api/getLogin")
+	public Result getLogin(@RequestBody ManagerVO inManager) {
+		logger.debug("/admin/api/getLogin--------------------------------------------------------");
+		
+		//토큰 생성
+		ManagerVO manager = mobileService.getManager(inManager);
+		String token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000); 
+		manager.setToken(token);
+		
+		if(manager != null && manager.getRole_id() < 3) {
+			return new ResultData<ManagerVO>(0, "success", manager);
+		} else {
+			return new ResultData<ManagerVO>(0, "fail", manager);
+		}
+	}
 	
 	//홈 아이디 리스트 가져오기 (관리자, 페이징)
 	@RequestMapping("/admin/api/getHomeList")
@@ -48,7 +83,7 @@ public class AdminController {
 	//홈 아이디 수정
 	@RequestMapping("/admin/api/modifyHome")
     public Result removeHome(@RequestBody HomeVO home) {
-		logger.debug("/admin/api/modifyHome------------------------------------------------------------");
+		logger.debug("/admin/api/modifyHome------------------------------------------------------");
 		
 		long resultCount = mobileService.modifyHome(home);
 		if(resultCount > 0) {
@@ -244,7 +279,7 @@ public class AdminController {
 	//관리자화면: 사용자 관리=====================================================================
 	@RequestMapping("/admin/api/addManager")
     public Result addManager(@RequestBody ManagerVO manager) {
-		logger.debug("/api/addManager-------------------------------------------------------------");
+		logger.debug("/api/addManager------------------------------------------------------------");
 		
 		try {
 			long resultCount = mobileService.addManager(manager);
@@ -296,7 +331,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/getManagerList")
-    public ResultData<List<ManagerVO>> getManagerList(@RequestBody SearchVO search) {
+    public ResultDataTotal<List<ManagerVO>> getManagerList(@RequestBody SearchVO search) {
 		logger.debug("/api/getManagerList--------------------------------------------------");
 		List<ManagerVO> managerList = mobileService.getManagerList(search);
 		

@@ -865,6 +865,13 @@ select
 	    </if>
 </select>
 
+<select id="selectOsInfo" parameterType="OsInfoVO" resultType="OsInfoVO">
+	SELECT * FROM os_info
+	WHERE os_name = #{os_name}
+	Limit 1
+</select>
+
+
 <insert id="insertManager" parameterType="ManagerVO">
 	INSERT INTO manager(id, pass, name, role_id)
 		VALUES(HEX(AES_ENCRYPT(#{id}, 'aura')), password(#{pass}), HEX(AES_ENCRYPT(#{name}, 'aura')), #{role_id});
@@ -875,8 +882,8 @@ select
 	<set>
 		<if test="id != null">id=HEX(AES_ENCRYPT(#{id}, 'aura')),</if>
 		<if test="pass != null">pass=password(#{pass}),</if>
-		<if test="name != null">HEX(AES_ENCRYPT(#{name}, 'aura')),</if>
-		<if test="role_id != null">role_id=#{role_id}</if>
+		<if test="name != null">name=HEX(AES_ENCRYPT(#{name}, 'aura')),</if>
+		<if test="role_id != 0">role_id=#{role_id}</if>
 	</set>
 	WHERE manager_id = #{manager_id}
 </update>
@@ -886,18 +893,16 @@ select
 	WHERE manager_id = #{manager_id}
 </delete>
 
-<select id="countManager" parameterType="SearchVO">
+<select id="countManager" parameterType="SearchVO" resultType="Integer">
 	SELECT count(*) FROM manager
-	WHERE 1=1
-		<if test="search_value != null">AND search_value = #{search_value}</if>
 </select>
 
 <select id="selectManager" parameterType="ManagerVO" resultType="ManagerVO">
 	SELECT 
 		manager_id,
-		CAST(AES_DECRYPT(unhex(id), 'aura') AS CHAR(20)) as 'id',
+		CAST(AES_DECRYPT(unhex(id), 'aura') AS CHAR(100)) as 'id',
 		pass,
-		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(20)) as 'name',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		role_id 
 	FROM manager
 	WHERE 1=1
@@ -915,16 +920,11 @@ select
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(20)) as 'name',
 		role_id
 	FROM manager
-	WHERE 1=1
-		<if test="id != search_value"> AND search_value = #{search_value}</if>
-		<if test="id != start_index"> AND start_index = #{start_index}</if>
-		<if test="id != page_size"> AND page_size = #{page_size}</if>
+	ORDER BY name
+	<if test="page_size != 0">
+		LIMIT #{start_index}, #{page_size}
+	</if>
 </select>
 
-<select id="selectOsInfo" parameterType="OsInfoVO" resultType="OsInfoVO">
-	SELECT * FROM os_info
-	WHERE os_name = #{os_name}
-	Limit 1
-</select>
 
 </mapper>

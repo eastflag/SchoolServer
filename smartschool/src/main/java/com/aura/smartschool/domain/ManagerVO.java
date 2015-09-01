@@ -6,6 +6,9 @@ public class ManagerVO {
 	private String pass;
 	private String name;
 	private int role_id;
+	
+	private String token;
+	
 	public int getManager_id() {
 		return manager_id;
 	}
@@ -36,4 +39,11 @@ public class ManagerVO {
 	public void setRole_id(int role_id) {
 		this.role_id = role_id;
 	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 }
