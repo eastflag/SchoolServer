@@ -185,6 +185,21 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	$scope.pay_mode = "";
 	$scope.pay_mode_text = "결제일 추가";
 
+	$scope.leaves = [
+		{code: 0, name: "탈퇴"},
+		{code: 1, name: "사용중"}
+	];
+
+	$scope.deletes = [
+		{code: 0, name: "삭제"},
+		{code: 1, name: "사용중"}
+	];
+
+	$scope.parents = [
+		{code: 0, name: "자녀"},
+		{code: 1, name: "부모"}
+	];
+
 	$scope.getHomeList = function() {
 		var search_query = "";
 
@@ -292,7 +307,7 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		$scope.school_grade = null;
 		$scope.school_class = null;
 		$scope.is_parent = null;
-		$scope.member_use_yn = null;
+		$scope.member_use_yn = "";
 	}
 
 	$scope.modifyMember = function() {
@@ -783,10 +798,17 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 	$scope.admin_mode = "";
 	$scope.admin_mode_text = "관리자 추가";
 
+	$scope.roles = [
+		{code: 1, name: "슈퍼관리자"},
+		{code: 2, name: "상담사"},
+		{code: 3, name: "측정관리자"}
+	];
+
+
 	$scope.getManagerList = function(){
 		AdminSvc.getManagerList({start_index:($scope.currentPageAdmin - 1) * 10, page_size:10})
 		.success(function(admins) {
-			$scope.homes = admins.data;
+			$scope.admins = admins.data;
 			$scope.totalAdminListCount = admins.total;
 
 			$scope.clearAdmin();
@@ -798,6 +820,11 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 	$scope.clearAdmin = function() {
 		$scope.admin_mode = "";
 		$scope.admin_mode_text = "관리자 추가";
+
+		$scope.id = null;
+		$scope.pass = null;
+		$scope.name = null;
+		$scope.role_id = "";
 	}
 
 	$scope.adminListPageChanged = function() {
@@ -809,11 +836,10 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 		$scope.admin_mode = "edit";
 		$scope.admin_mode_text = "관리자 수정";
 
-		$scope.id = member.id;
-		$scope.pass = member.pass;
-		$scope.name = member.name;
-		$scope.role_id = member.role_id;
-		$scope.token = member.token;
+		$scope.id = admin.id;
+		$scope.pass = admin.pass;
+		$scope.name = admin.name;
+		$scope.role_id = admin.role_id;
 	}
 
 	$scope.addAdmin = function() {
