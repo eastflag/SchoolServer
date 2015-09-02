@@ -198,7 +198,7 @@ public class AdminController {
 		long resultCount = mobileService.addSchoolNoti(notiVO);
 		if(resultCount > 0) {
 			//send gcm
-/*			SchoolVO school = mobileService.getSchoolById(noti.getSchool_id());
+			SchoolVO school = mobileService.getSchoolById(notiVO.getSchool_id());
 			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
 			JsonArray array = new JsonArray(); //get gcm_id
 			for(MemberVO m : memberList) {
@@ -207,18 +207,18 @@ public class AdminController {
 				}
 			}
 			
-			JsonObject data = new JsonObject();
+			JsonObject jsonData = new JsonObject();
 			JsonObject value = new JsonObject();
 			value.addProperty("school_id", school.getSchool_id());
 			value.addProperty("school_name", school.getSchool_name());
-			value.addProperty("category", noti.getCategory());
-			value.addProperty("title", noti.getTitle());
-			value.addProperty("content", noti.getContent());
-			value.addProperty("noti_date", noti.getNoti_date());
-			data.addProperty("command", "school");
-			data.addProperty("value", value.toString());
+			value.addProperty("category", notiVO.getCategory());
+			value.addProperty("title", notiVO.getTitle());
+			value.addProperty("content", notiVO.getContent());
+			value.addProperty("noti_date",notiVO.getNoti_date());
+			jsonData.addProperty("command", "school");
+			jsonData.addProperty("value", value.toString());
 			
-			NetworkUtil.requestGCM(array, data);*/
+			NetworkUtil.requestGCM(array, jsonData);
 			
 			return new Result(0, "success");
 		} else {
@@ -227,9 +227,41 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/modifySchoolNoti")
-    public Result modifySchoolNoti(@RequestBody SchoolNotiVO noti) {
+    public Result modifySchoolNoti(HttpServletRequest request, @RequestParam("data") String data, @RequestParam(value="file", required=false) MultipartFile file) {
 		logger.debug("/admin/api/modifySchoolNoti------------------------------------------------");
-		long resultCount = mobileService.modifySchoolNoti(noti);
+		
+		String path = request.getServletContext().getRealPath("/upload");
+		Gson gson = new Gson();
+		SchoolNotiVO notiVO = gson.fromJson(data, SchoolNotiVO.class);
+		
+		System.out.println("path:" + path);
+		System.out.println("data:" + data);
+		System.out.println("data:" + notiVO.getSchool_id());
+
+		//파일 처리
+		if (file != null && !file.isEmpty()) {
+			//파일 중복 체크
+			String filename = file.getOriginalFilename();
+			SchoolNotiVO noti = mobileService.getFilenameOfSchoolNoti(filename);
+			if(noti != null) {
+				return new Result(100, "파일명이 중복입니다.");
+			} else {
+				notiVO.setFilename(filename);
+			}
+		
+			//파일 저장
+            try {
+                byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(path + notiVO.getFilename())));
+                stream.write(bytes);
+                stream.close();
+                System.out.println("success: " + path + notiVO.getFilename());
+            } catch (Exception e) {
+            	System.out.println("You failed to upload ");
+            }
+        } 
+		
+		long resultCount = mobileService.modifySchoolNoti(notiVO);
 		if(resultCount > 0) {
 			return new Result(0, "success");
 		} else {

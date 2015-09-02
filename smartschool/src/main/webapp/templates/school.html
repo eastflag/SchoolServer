@@ -27,10 +27,7 @@
 					    <tr ng-repeat="school in schools | orderBy:'school_name'">
 					    	<td>
 					    		<button class="btn btn-default btn-xs" ng-click="editSchool(school)">
-						          <span class="glyphicon glyphicon-pencil"></span> 수 정
-						        </button>
-						        <button class="btn btn-default btn-xs" ng-click="getNoti(school)">
-						          <span class="glyphicon glyphicon-envelope"></span> 알리미
+						          <span class="glyphicon glyphicon-pencil"></span> 수 정 & 알리미
 						        </button>
 						    </td>
 						    <td>{{ school.school_name}}</td>
@@ -143,13 +140,11 @@
 						    <td>{{ noti.noti_date}}</td>
 						    <td>{{ noti.filename}}</td>
 					    </tr>
-					    <tr>
-					    	<td colspan="4" style="text-align:center">
-					    		<pagination boundary-links="true" total-items="totalNotiListCount" ng-model="currentPageNoti" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="notiPageChanged()" items-per-page="itemPerNotiPage"></pagination>
-					    	</td>
-					    </tr>
 				    </tbody>
 			    </table>
+				<div class="panel-footer" style="text-align:center">
+					<pagination boundary-links="true" total-items="totalNotiListCount" ng-model="currentPageNoti" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="notiPageChanged()" items-per-page="itemPerNotiPage"></pagination>
+			    </div>
 			</div>
 		</div>
 		<div class="col-lg-4">

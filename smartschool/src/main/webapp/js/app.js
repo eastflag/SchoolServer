@@ -53,12 +53,6 @@ app.service('SchoolSvc', function($http) {
 	this.getSchoolNotiList = function(school) {
 		return $http.post('/admin/api/getSchoolNotiList', school);
 	}
-	this.addSchoolNoti = function(noti) {
-		return $http.post('/admin/api/addSchoolNoti', noti);
-	}
-	this.modifySchoolNoti = function(noti) {
-		return $http.post('/admin/api/modifySchoolNoti', noti);
-	}
 });
 
 app.service('ConsultSvc', function($http) {
@@ -424,6 +418,8 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 		$scope.lat = school.lat;
 		$scope.lng = school.lng;
 		$scope.code = school.code;
+
+		$scope.getNoti(school);
 	}
 	
 	$scope.modifySchool = function() {
@@ -519,11 +515,18 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			content: $scope.content
 		}
 
-		SchoolSvc.modifySchoolNoti(noti)
-		.success(function(result){
+    	$scope.upload = Upload.upload({
+        	url: '/admin/api/modifySchoolNoti',
+        	method: 'POST',
+        	file:$scope.f,
+        	//data 속성으로 별도의 데이터를 보냄.
+        	data : JSON.stringify(noti),
+        	fileFormDataName : 'file',
+    	}).success(function(data, status, headers, config) {
+    		console.log('data: ' + data + "," + data.result);
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
-		});
+    	})
 	}
 	//알리미 신규 글 등록
 	$scope.addNoti = function() {
