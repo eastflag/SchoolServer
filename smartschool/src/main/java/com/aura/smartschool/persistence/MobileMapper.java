@@ -102,6 +102,7 @@ public interface MobileMapper {
 	public long insertNotiBookmark(SchoolNotiVO noti);
 	public long deleteNotiBookmark(SchoolNotiVO noti);
 	public List<SchoolNotiVO> selectSchoolNotiListByMember(SchoolNotiVO noti);
+	public SchoolNotiVO selectFilenameOfSchoolNoti(String filename);
 	
 	//실시간상담 session, consult
 	public long insertSession(SessionVO session) throws PersistenceException;

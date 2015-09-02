@@ -43,6 +43,13 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.7</version>
+		    <scope>test</scope>
+		</dependency>
+		
 		<!-- MySql Connector -->
 		<dependency>
 			<groupId>mysql</groupId>

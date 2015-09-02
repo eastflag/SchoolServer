@@ -1,6 +1,11 @@
 package com.aura.smartschool.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
@@ -10,7 +15,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
@@ -27,6 +34,7 @@ import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.NetworkUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -34,6 +42,7 @@ import com.google.gson.JsonPrimitive;
 @RestController
 public class AdminController {
 	private static Logger logger = LoggerFactory.getLogger(AdminController.class);
+	private final String path = "c:\\";
 	
 	@Autowired
 	private MobileService mobileService;
@@ -152,12 +161,44 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/addSchoolNoti")
-    public Result addSchoolNoti(@RequestBody SchoolNotiVO noti) {
+    public Result addSchoolNoti(HttpServletRequest request, @RequestParam("data") String data, @RequestParam(value="file", required=false) MultipartFile file) {
 		logger.debug("/admin/api/addSchoolNoti---------------------------------------------------");
-		long resultCount = mobileService.addSchoolNoti(noti);
+		
+		String path = request.getServletContext().getRealPath("/upload");
+		Gson gson = new Gson();
+		SchoolNotiVO notiVO = gson.fromJson(data, SchoolNotiVO.class);
+		
+		System.out.println("path:" + path);
+		System.out.println("data:" + data);
+		System.out.println("data:" + notiVO.getSchool_id());
+
+		//파일 처리
+		if (file != null && !file.isEmpty()) {
+			//파일 중복 체크
+			String filename = file.getOriginalFilename();
+			SchoolNotiVO noti = mobileService.getFilenameOfSchoolNoti(filename);
+			if(noti != null) {
+				return new Result(100, "파일명이 중복입니다.");
+			} else {
+				notiVO.setFilename(filename);
+			}
+		
+			//파일 저장
+            try {
+                byte[] bytes = file.getBytes();
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(path + notiVO.getFilename())));
+                stream.write(bytes);
+                stream.close();
+                System.out.println("success: " + path + notiVO.getFilename());
+            } catch (Exception e) {
+            	System.out.println("You failed to upload ");
+            }
+        } 
+		
+		long resultCount = mobileService.addSchoolNoti(notiVO);
 		if(resultCount > 0) {
 			//send gcm
-			SchoolVO school = mobileService.getSchoolById(noti.getSchool_id());
+/*			SchoolVO school = mobileService.getSchoolById(noti.getSchool_id());
 			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
 			JsonArray array = new JsonArray(); //get gcm_id
 			for(MemberVO m : memberList) {
@@ -177,7 +218,7 @@ public class AdminController {
 			data.addProperty("command", "school");
 			data.addProperty("value", value.toString());
 			
-			NetworkUtil.requestGCM(array, data);
+			NetworkUtil.requestGCM(array, data);*/
 			
 			return new Result(0, "success");
 		} else {
@@ -275,6 +316,7 @@ public class AdminController {
 
 		return new ResultData<List<ConsultVO>>(0, "success", consultList);
 	}
+	
 	
 	//관리자화면: 사용자 관리=====================================================================
 	@RequestMapping("/admin/api/addManager")

@@ -645,16 +645,16 @@ select
 	WHERE school_id = #{school_id} 
 </update>
 
-<insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
-	INSERT INTO 
-		school_noti(school_id, category, title, content, noti_date) 
-		values(#{school_id}, #{category}, #{title}, #{content}, #{noti_date});
-</insert>
-
 <select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="MemberVO">
 	SELECT * FROM member
 	WHERE use_yn = 1 and home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
 </select>
+
+<insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
+	INSERT INTO 
+		school_noti(school_id, category, title, content, filename) 
+		values(#{school_id}, #{category}, #{title}, #{content}, #{filename});
+</insert>
 
 <update id="updateSchoolNoti" parameterType="SchoolNotiVO">
 	UPDATE school_noti
@@ -662,10 +662,16 @@ select
 		<if test="category != null">category=#{category},</if>
 		<if test="title != null">title=#{title},</if>
 		<if test="content != null">content=#{content},</if>
-		<if test="noti_date != null">noti_date=#{noti_date}</if>
+		<if test="filename != null">filename=#{filename}</if>
 	</set>
 	WHERE noti_seq = #{noti_seq} 
 </update>
+
+<select id="selectFilenameOfSchoolNoti" parameterType="String" resultType="SchoolNotiVO">
+	SELECT * FROM school_noti
+	WHERE filename = #{filename}
+	Limit 1;
+</select>
 
 <delete id="deleteSchoolNoti" parameterType="SchoolNotiVO">
 	Delete From school_noti
@@ -674,7 +680,7 @@ select
 
 <select id="selectSchoolNotiList" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
 	SELECT noti_seq, school_id, category, title, content,
-		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date' FROM SCHOOL_NOTI
+		DATE_FORMAT(noti_date, '%Y-%m-%d %h:%i %p') as 'noti_date', filename FROM SCHOOL_NOTI
 	WHERE school_id = #{school_id} 
 	Order By noti_date desc
 	<if test="page_size != 0">

@@ -7,6 +7,7 @@ public class SchoolNotiVO {
 	private String title;
 	private String content;
 	private String noti_date;
+	private String filename;
 	
 	private int start_index;
 	private int page_size;
@@ -67,6 +68,12 @@ public class SchoolNotiVO {
 	}
 	public void setMember_id(int member_id) {
 		this.member_id = member_id;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	

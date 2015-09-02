@@ -612,4 +612,9 @@ public class MobileServiceImpl implements MobileService {
 	public SchoolVO getSchoolById(int school_id) {
 		return mobileMapper.selectSchoolById(school_id);
 	}
+
+	@Override
+	public SchoolNotiVO getFilenameOfSchoolNoti(String filename) {
+		return mobileMapper.selectFilenameOfSchoolNoti(filename);
+	}
 }

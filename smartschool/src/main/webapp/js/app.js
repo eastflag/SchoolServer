@@ -372,8 +372,7 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 
 	$scope.categories = [
 		{code: 1, name: "가정통신문"},
-		{code: 2, name: "공지사항"},
-		{code: 3, name: "일정"}
+		{code: 2, name: "공지사항"}
 	];
 
 	$scope.schools = [];
@@ -510,7 +509,6 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 		$scope.category = noti.category;
 		$scope.title = noti.title;
 		$scope.content = noti.content;
-		$scope.noti_date = noti.noti_date;
 	}
 	//알리미  글 수정
 	$scope.modifyNoti = function() {
@@ -518,8 +516,7 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			noti_seq: $scope.noti_seq,
 			category: $scope.category,
 			title: $scope.title,
-			content: $scope.content,
-			noti_date: $scope.noti_date
+			content: $scope.content
 		}
 
 		SchoolSvc.modifySchoolNoti(noti)
@@ -534,22 +531,30 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 				school_id: $scope.school_id,
 				category: $scope.category,
 				title: $scope.title,
-				content: $scope.content,
-				noti_date: $scope.noti_date
+				content: $scope.content
 		}
 
-		SchoolSvc.addSchoolNoti(noti)
-		.success(function(result){
+    	$scope.upload = Upload.upload({
+        	url: '/admin/api/addSchoolNoti',
+        	method: 'POST',
+        	file:$scope.f,
+        	//data 속성으로 별도의 데이터를 보냄.
+        	data : JSON.stringify(noti),
+        	fileFormDataName : 'file',
+    	}).success(function(data, status, headers, config) {
+    		console.log('data: ' + data + "," + data.result);
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
-		});
+    	})
+
 	}
 
 	$scope.clearNoti = function() {
+		$scope.category = "";
 		$scope.noti_seq = null;
 		$scope.title = null;
 		$scope.content = null;
-		$scope.noti_date = null;
+		$scope.f = null;
 
 		$scope.noti_mode = "";
 		$scope.noti_mode_text = "알림장 추가";
@@ -563,8 +568,9 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 	}
 
     $scope.uploadFiles = function(file) {
+    	console.log('file selected');
         $scope.f = file;
-        if (file && !file.$error) {
+/*        if (file && !file.$error) {
             file.upload = Upload.upload({
                 url: '/admin/upload',   
                 file: file
@@ -582,7 +588,7 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
             file.upload.progress(function (evt) {
                 file.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
             });
-        }   
+        }  */ 
     }
 }]); 
 

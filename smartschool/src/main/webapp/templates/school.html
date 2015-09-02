@@ -128,6 +128,7 @@
 			    			<td>category</td>
 			    			<td>title</td>
 			    			<td>date</td>
+			    			<td>첨부화일</td>
 			    		</tr>
 			    	</thead>
 			    	<tbody>
@@ -140,6 +141,7 @@
 						    <td>{{ categories[noti.category-1].name}}</td>
 						    <td>{{ noti.title}}</td>
 						    <td>{{ noti.noti_date}}</td>
+						    <td>{{ noti.filename}}</td>
 					    </tr>
 					    <tr>
 					    	<td colspan="4" style="text-align:center">
@@ -161,7 +163,8 @@
 						<div class="form-group">
 					    	<label for="categorySelect" class="col-sm-4 control-label">카테고리</label>
 					    	<div class="col-sm-8">
-					      		<select class="form-control" id="categorySelect" ng-model="category">
+					      		<select class="form-control" name="singleSelect" ng-model="category">
+					      			<option value="">Select category-------</option> <!-- not selected / blank option -->
 					      			<option ng-repeat="c in categories" value="{{c.code}}">
 						        		{{c.name}}
 						    		</option>
@@ -177,19 +180,14 @@
 					  	<div class="form-group">
 					    	<label for="contentText" class="col-sm-4 control-label">content</label>
 					    	<div class="col-sm-8">
-					      		<input type="text" class="form-control" id="contentText" ng-model="content">
-					    	</div>
-					  	</div>
-					  	<div class="form-group">
-					    	<label for="noti_dateText" class="col-sm-4 control-label">noti_date</label>
-					    	<div class="col-sm-8">
-					      		<input class="form-control" calendar ng-model="noti_date" />
+					      		<textarea class="form-control" rows="6" ng-model="content"></textarea>
 					    	</div>
 					  	</div>
 					  	<div class="form-group">
 					    	<label for="noti_dateText" class="col-sm-4 control-label">첨부파일</label>
 					    	<div class="col-sm-8">
-					      		<button type="file" ngf-select="uploadFiles($file)" ngf-max-height="1000" ngf-max-size="1MB">Select File</button>
+					      		<button type="file" ngf-select="uploadFiles($file)">Select File</button>
+					      		<span>{{f.name}} {{f.$error}} {{f.$errorParam}}</span>
 					    	</div>
 					  	</div>
 					</form> 
