@@ -243,6 +243,16 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	}
 
 	$scope.addHome = function(home) {
+		if ($scope.home_id == "") {
+			alert("홈아이디를 입력하세요.");
+			return;
+		};
+
+		if ($scope.home_use_yn == "") {
+			alert("탈퇴여부를 선택하세요.");
+			return;
+		};
+
 		var home = {
 			home_id: $scope.home_id
 		}
@@ -311,6 +321,46 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	}
 
 	$scope.modifyMember = function() {
+		if ($scope.name == "") {
+			alert("멤버 이름을 입력하세요.");
+			return;
+		};
+
+		if ($scope.relation == "") {
+			alert("멤버 관계를 입력하세요.");
+			return;
+		};
+
+		if ($scope.is_parent == "") {
+			alert("멤버의 부모여부를 선택하세요.");
+			return;
+		} else if ($scope.is_parent == "0") {
+			if ($scope.birth_date == "") {
+				alert("생년월일을 입력하세요.");
+				return;
+			};
+
+			if ($scope.sex == "") {
+				alert("성별을 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_id == "") {
+				alert("학교id를 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_grade == "") {
+				alert("학년을 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_class == "") {
+				alert("반을 입력하세요.");
+				return;
+			};
+		}
+
 		var member = {
 			member_id : $scope.member_id,
 			name : $scope.name,
@@ -520,9 +570,25 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 		$scope.category = noti.category;
 		$scope.title = noti.title;
 		$scope.content = noti.content;
+		$scope.attachedfile = noti.filename;
 	}
 	//알리미  글 수정
 	$scope.modifyNoti = function() {
+		if ($scope.category == "") {
+			alert("알림장 카테고리를 선택하세요.");
+			return;
+		};
+
+		if ($scope.title == "") {
+			alert("알림장 제목을 입력하세요.");
+			return;
+		};
+
+		if ($scope.title == "") {
+			alert("알림장 본문을 입력하세요.");
+			return;
+		};
+
 		var noti = {
 			noti_seq: $scope.noti_seq,
 			category: $scope.category,
@@ -680,7 +746,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 })
 
 app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $window, NotiSvc) {
-	$scope.noti;
+	$scope.noti = {title : "", content : "" };
 	$scope.notis = [];
 
 	$scope.noti_mode = "";
@@ -723,6 +789,16 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 	}
 
 	$scope.addNoti = function() {
+		if ($scope.noti.title == "") {
+			alert("공지 제목을 입력하세요.");
+			return;
+		};
+
+		if ($scope.noti.content == "") {
+			alert("공지 내용을 입력하세요.");
+			return;
+		};
+
 		NotiSvc.addNoti($scope.noti)
 		.success(function(result) {
 			$scope.getNotiList();
@@ -770,6 +846,11 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 	}
 
 	$scope.answerBoard = function() {
+		if ($scope.board.answer == "") {
+			alert("답변을 입력하세요.");
+			return;
+		};
+
 		BoardSvc.answerBoard({board_id:$scope.board.board_id, answer:$scope.board.answer})
 		.success(function(result) {
 			$scope.getBoardList({board_type:1});

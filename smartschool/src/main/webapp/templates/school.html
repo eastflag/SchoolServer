@@ -183,6 +183,7 @@
 					    	<div class="col-sm-8">
 					      		<button type="file" ngf-select="uploadFiles($file)">Select File</button>
 					      		<span>{{f.name}} {{f.$error}} {{f.$errorParam}}</span>
+					      		<span ng-show="attachedfile != ''">{{attachedfile}}</span>
 					    	</div>
 					  	</div>
 					</form> 
