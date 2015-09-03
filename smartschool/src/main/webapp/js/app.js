@@ -6,7 +6,7 @@ var app = angular.module('app', [
     'ngRoute', 'ui.bootstrap', 'ngFileUpload'
 ]);
 
-app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
 	.when('/member', {templateUrl: 'templates/member.html'})
 	.when('/school', {templateUrl: 'templates/school.html'})
@@ -17,6 +17,8 @@ app.config( ['$routeProvider', '$locationProvider', function ($routeProvider, $l
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
+
+	$httpProvider.defaults.headers.post['X-Auth'] = '';
 }]);
 
 app.service('MemberSvc', function($http) {
@@ -163,7 +165,7 @@ app.controller('ApplicationCtrl', function ($scope) {
 
 })
 
-app.controller('MemberCtrl', function ($scope, MemberSvc) {
+app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, $http, MemberSvc) {
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
@@ -215,6 +217,15 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 			$scope.totalHomeListCount = homes.total;
 
 			$scope.clearHome();
+
+			// neostyx : 이와 같은 식으로 헤더에 토큰값을 할당하면 됨
+			$http.defaults.headers.post['X-Auth'] = "assgintokenafterlogin";
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -260,6 +271,12 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		.success(function(data){
 			$scope.clearHome();
 			$scope.getHomeList();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -272,6 +289,12 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		.success(function(data) {
 			$scope.clearHome();
 			$scope.getHomeList();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -281,7 +304,13 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 			$scope.members = memberList.data;
 
 			$scope.clearMember();
-		})
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 
 	$scope.editMember = function(member) {
@@ -379,8 +408,13 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 			$scope.clearMember();
 			
 			$scope.getMemberList({home_id:$scope.home_id});
-		})
-
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 
 	$scope.memberListPageChanged = function(member) {
@@ -393,14 +427,26 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 		MemberSvc.getPayList({member_id:member.member_id})
 		.success(function(payList){
 			$scope.pays = payList.data;
-		})
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 
 	$scope.addPay = function() {
 		MemberSvc.addPay({member_id: $scope.pay.member_id, pay_date:$scope.pay_date})
 		.success(function(){
 			$scope.getPayList({member_id: $scope.pay.member_id});
-		})
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 
 	$scope.getToday = function() {
@@ -421,7 +467,7 @@ app.controller('MemberCtrl', function ($scope, MemberSvc) {
 	}
 
 	$scope.getToday();
-});
+}]);
 
 app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, Upload, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
@@ -461,6 +507,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 		.success(function(schools) {
 			$scope.schools = schools.data;
 			$scope.totalSchoolListCount = schools.total;
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -523,7 +575,13 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			//.success(function(schools) {
 			//	$scope.schools = schools.data;
 			//})
-		})
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 	
 	//알리미 버튼 클릭-----------------------------------------------------
@@ -559,7 +617,13 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 		.success(function(notiList) {
 			$scope.notis = notiList.data;
 			$scope.totalNotiListCount = notiList.total;	
-		})
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 	
 	$scope.clickEditNoti = function(noti) {
@@ -607,7 +671,13 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
     		console.log('data: ' + data + "," + data.result);
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
-    	})
+    	}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	}
 	//알리미 신규 글 등록
 	$scope.addNoti = function() {
@@ -629,7 +699,13 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
     		console.log('data: ' + data + "," + data.result);
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
-    	})
+    	}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 
 	}
 
@@ -699,9 +775,15 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 
 	$scope.getSessionList = function(categoryNo) {
 		ConsultSvc.getSessionList({ category : categoryNo})
-			.success(function(sessions) {
+		.success(function(sessions) {
 				$scope.sessions = sessions.data;
-			});
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
 	};
 
 	$scope.getSelectedCategoryData = function() {
@@ -717,10 +799,15 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 		$scope.consultListCategoryNo = category_no;
 
 	 	ConsultSvc.getConsultList({ session_id : session_id})
-			.success(function(lists) {
+		.success(function(lists) {
 				$scope.consultLists = lists.data;
-
-			});
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
+		});
     }
 
     $scope.addConsultMessage = function(){
@@ -733,12 +820,18 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 			}
 
     		ConsultSvc.addConsult(consult)
-    			.success(function(result) {
+    		.success(function(result) {
     				$scope.showConsultList($scope.session_id, $scope.member_id, $scope.consultListCategoryNo);
     				$scope.consultMessage = "";
 
     				$scope.getSessionList($scope.selectedCategoryNo);
-    			});
+    		}).error(function(data, status) {
+				if (status == 601) {
+					location.href = "login.html";
+				} else {
+					alert("error : " + data);
+				}
+			});
     	};
     }
 
@@ -758,6 +851,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 		NotiSvc.getNotiList()
 		.success(function(notis) {
 			$scope.notis = notis.data;
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -775,6 +874,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 				$scope.getNotiList();
 
 				$scope.clearNoti();
+			}).error(function(data, status) {
+				if (status == 601) {
+					location.href = "login.html";
+				} else {
+					alert("error : " + data);
+				}
 			});
 		};
 	}
@@ -804,6 +909,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 			$scope.getNotiList();
 
 			$scope.clearNoti();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -838,6 +949,12 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 			$scope.boards = boards.data;
 
 			$scope.clearBoard();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -856,6 +973,12 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 			$scope.getBoardList({board_type:1});
 
 			$scope.clearBoard();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -893,6 +1016,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 			$scope.totalAdminListCount = admins.total;
 
 			$scope.clearAdmin();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -935,6 +1064,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 		.success(function(data){
 			$scope.clearAdmin();
 			$scope.getManagerList();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -949,6 +1084,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 		.success(function(data){
 			$scope.clearAdmin();
 			$scope.getManagerList();
+		}).error(function(data, status) {
+			if (status == 601) {
+				location.href = "login.html";
+			} else {
+				alert("error : " + data);
+			}
 		});
 	}
 
@@ -960,6 +1101,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 				
 				$scope.clearAdmin();
 				$scope.getManagerList();
+			}).error(function(data, status) {
+				if (status == 601) {
+					location.href = "login.html";
+				} else {
+					alert("error : " + data);
+				}
 			});
 		};
 	}
