@@ -83,6 +83,8 @@ public interface MobileMapper {
 	
 	//활동량
 	public long insertActivity(ActivityVO activity) throws PersistenceException;
+	public long updateActivity(ActivityVO activity) throws PersistenceException;
+	public ActivityVO selectActivity(ActivityVO activity);
 	public List<ActivityVO> selectActivityList(ActivityVO inActivity);
 	
 	//비디오 리스트 

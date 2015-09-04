@@ -63,6 +63,8 @@ public interface MobileService {
 	
 	//활동량
 	public long addActivity(ActivityVO activity) throws PersistenceException;
+	public long modifyActivity(ActivityVO activity) throws PersistenceException;
+	public ActivityVO getActivity(ActivityVO activity);
 	public List<ActivityVO> getActivityList(ActivityVO inActivity);
 	
 	//비디오 리스트 

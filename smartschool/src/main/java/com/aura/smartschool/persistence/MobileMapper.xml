@@ -831,6 +831,23 @@ select
 	VALUES(#{member_id}, #{activity_date}, #{step}, #{calory}, #{distance}, #{time});
 </insert>
 
+<update id="updateActivity" parameterType="ActivityVO">
+	UPDATE activity
+	SET member_id=#{member_id}, 
+		activity_date=#{activity_date},
+		step = #{step},
+		calory = #{calory},
+		distance = #{distance},
+		time = #{time}
+	WHERE activity_id = #{activity_id}
+</update>
+
+<select id="selectActivity" parameterType="ActivityVO" resultType="ActivityVO">
+	SELECT * FROM activity
+	WHERE member_id = #{member_id} and activity_date = #{activity_date}
+	Limit 1;
+</select>
+
 <select id="selectActivityList" parameterType="ActivityVO" resultType="ActivityVO">
 	SELECT 
 		activity_id, member_id,

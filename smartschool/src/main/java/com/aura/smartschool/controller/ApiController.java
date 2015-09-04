@@ -629,20 +629,26 @@ public class ApiController {
 		return new ResultData<List<ActivityVO>>(0, "success", activityList);
 	}
 	
+	//활동량을 update or insert 한다.
 	@RequestMapping("/api/addActivity")
-    public Result addActivity(@RequestBody ActivityVO inActivity) {
+    public Result saveActivity(@RequestBody ActivityVO inActivity) {
 		logger.debug("/api/addActivity-------------------------------------------------------------");
 		
-		try {
-			long resultCount = mobileService.addActivity(inActivity);
-			if(resultCount > 0) {
-				return new Result(0, "success");
-			} else {
-				return new Result(100, "insert failed");
-			}
-		} catch (PersistenceException e) {
-			return new Result(100, "insert failed");
-		} 
+		ActivityVO activity = mobileService.getActivity(inActivity);
+		long resultCount = 0;
+		
+		if(activity == null) {
+			resultCount = mobileService.addActivity(inActivity);
+		} else {
+			inActivity.setActivity_id(activity.getActivity_id());;
+			resultCount = mobileService.modifyActivity(inActivity);
+		}
+		
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "insert or update failed");
+		}
 	}
 	
 	//비디오리스트 가져오기: 키, 체중, BMI================================================================

@@ -617,4 +617,14 @@ public class MobileServiceImpl implements MobileService {
 	public SchoolNotiVO getFilenameOfSchoolNoti(String filename) {
 		return mobileMapper.selectFilenameOfSchoolNoti(filename);
 	}
+
+	@Override
+	public long modifyActivity(ActivityVO activity) throws PersistenceException {
+		return mobileMapper.updateActivity(activity);
+	}
+
+	@Override
+	public ActivityVO getActivity(ActivityVO activity) {
+		return mobileMapper.selectActivity(activity);
+	}
 }
