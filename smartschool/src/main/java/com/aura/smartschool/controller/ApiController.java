@@ -343,21 +343,25 @@ public class ApiController {
 		
 		BodyMeasureGrade bodyMeasureGrade = mobileService.getMeasureGrade(m, "Height");
 		if(bodyMeasureGrade != null) {
+			vo.setMeasure_date(bodyMeasureGrade.getMeasureDate());
 			vo.setValue(bodyMeasureGrade.getValue());
 			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
 			vo.setGradeId(bodyMeasureGrade.getGradeId());
 			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
-			vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
-			vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
-			vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
-			vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+			//vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
+			//vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
+			//vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
+			//vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
 			//전국 평균은 향후 데이터가 많아지면 추출 예정
 			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfLocal());
 			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfNation());
+			//랭킹 세팅하기
 			vo.setRank(bodyMeasureGrade.getRank());
 			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
+			vo.setTotal(bodyMeasureGrade.getTotal());
+			vo.setBeforeTotal(bodyMeasureGrade.getBeforeTotal());
 			
 			result.setResult(0);
 			result.setMsg("success");
@@ -380,21 +384,25 @@ public class ApiController {
 		
 		BodyMeasureGrade bodyMeasureGrade = mobileService.getMeasureGrade(m, "Weight");
 		if(bodyMeasureGrade != null) {
+			vo.setMeasure_date(bodyMeasureGrade.getMeasureDate());
 			vo.setValue(bodyMeasureGrade.getValue());
 			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
 			vo.setGradeId(bodyMeasureGrade.getGradeId());
 			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
-			vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
-			vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
-			vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
-			vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+			//vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
+			//vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
+			//vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
+			//vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
 			//전국 평균은 향후 데이터가 많아지면 추출 예정
 			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfLocal());
 			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfNation());
+			//랭킹 세팅하기
 			vo.setRank(bodyMeasureGrade.getRank());
 			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
+			vo.setTotal(bodyMeasureGrade.getTotal());
+			vo.setBeforeTotal(bodyMeasureGrade.getBeforeTotal());
 			
 			result.setResult(0);
 			result.setMsg("success");

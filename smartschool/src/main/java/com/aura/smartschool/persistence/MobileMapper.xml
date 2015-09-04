@@ -92,7 +92,7 @@
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
 	FROM member
-	WHERE  use_yn = 1 and
+	WHERE 
 		member_id=#{member_id}
 	Limit 1
 </select>
@@ -359,93 +359,39 @@ where
 	and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int);
 </select>
 
-<select id="selectBeforeMeasureDate" parameterType="BodyMeasureGrade" resultType="string">
-	select 
-	    measure_Date AS beforeMeasureDate
-	from
-	    measure_info
-	where
-	    member_id = #{member_id}
-		and measure_date &#60; str_to_date(#{measureDate}, '%Y-%m-%d%')
-	group by measure_date
-	order by measure_date desc
-	limit 1;
-</select>
-
 <select id="selectGradeRankingBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
-SELECT  T.ROWNUM AS SCHOOLGRADE, 
-        @ROWNUM AS TOTALNUMBEROFSTUDENT           
-FROM                                                                                                              
-	(SELECT (@ROWNUM:=@ROWNUM + 1) AS ROWNUM, 
-             A.*    
-                                                                    
-        FROM 
-              (SELECT M.MEMBER_ID AS member_id,      
-                      M.SEX,  
-                      MI.SCHOOL_GRADE_ID,     
-                      MI.SCHOOL_ID,                                                                   
-                      MI.MEASURE_DATE AS MEASUREDATE,                                                                                                                             
-     						TRUNCATE(II.HEIGHT, 1) AS VALUE                                                                                                         
-              
-                 FROM MEMBER M, 
-                      measure_info MI, 
-                      (SELECT SCHOOL_ID, 
-                              SCHOOL_GRADE_ID
-                       FROM measure_info
-                       WHERE MEMBER_ID = #{member_id}
-                          AND DATE_FORMAT(MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')) BB,
-                      INBODY_INFO II                                             
-     
-         	     WHERE 1 = 1                                                                                                     
-           		   	  AND M.SEX   = #{sex}                                                                  
-           		      AND MI.SCHOOL_ID = BB.SCHOOL_ID                                                           
-           			  AND MI.SCHOOL_GRADE_ID  = BB.SCHOOL_GRADE_ID                                                      
-           		      AND DATE_FORMAT(MI.MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')   
-           		      AND M.MEMBER_ID = MI.MEMBER_ID                                            
-           		      AND MI.INBODY_SEQ = II.INBODY_SEQ                                                                                                                                                                     
- 						ORDER BY II.HEIGHT  DESC                                                                                    
-  				  ) A, 
-              (SELECT @ROWNUM:=0) RNUM
-     ) T                                                                      
-  WHERE T.member_id = #{member_id}; 
-</select>
-
-<select id="selectBeforeGradeRankingBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
-SELECT  T.ROWNUM AS BEFORESCHOOLGRADE, 
-        @ROWNUM AS BEFOREVALUE           
-FROM                                                                                                              
-	(SELECT (@ROWNUM:=@ROWNUM + 1) AS ROWNUM, 
-             A.*    
-                                                                    
-        FROM 
-              (SELECT M.MEMBER_ID AS member_id,      
-                      M.SEX,  
-                      MI.SCHOOL_GRADE_ID,     
-                      MI.SCHOOL_ID,                                                                   
-                      MI.MEASURE_DATE AS MEASUREDATE,                                                                                                                             
-     						TRUNCATE(II.HEIGHT, 1) AS VALUE                                                                                                         
-              
-                 FROM MEMBER M, 
-                      measure_info MI, 
-                      (SELECT SCHOOL_ID, 
-                              SCHOOL_GRADE_ID
-                       FROM measure_info
-                       WHERE MEMBER_ID = #{member_id}
-                          AND DATE_FORMAT(MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')) BB,
-                      INBODY_INFO II                                             
-     
-         	     WHERE 1 = 1                                                                                                     
-           		   	  AND M.SEX   = #{sex}                                                                  
-           		      AND MI.SCHOOL_ID = BB.SCHOOL_ID                                                           
-           			  AND MI.SCHOOL_GRADE_ID  = BB.SCHOOL_GRADE_ID                                                      
-           		      AND DATE_FORMAT(MI.MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')   
-           		      AND M.MEMBER_ID = MI.MEMBER_ID                                            
-           		      AND MI.INBODY_SEQ = II.INBODY_SEQ                                                                                                                                                                     
- 						ORDER BY II.HEIGHT  DESC                                                                                    
-  				  ) A, 
-              (SELECT @ROWNUM:=0) RNUM
-     ) T                                                                      
-  WHERE T.member_id = #{member_id}; 
+	SELECT  T.ROWNUM AS rank, @ROWNUM AS total           
+	FROM                                                                                                              
+		(SELECT 
+			(@ROWNUM:=@ROWNUM + 1) AS ROWNUM, A.*                                                             
+         FROM 
+              (SELECT member.member_id, member.SEX,  measure_info.SCHOOL_GRADE_ID, measure_info.SCHOOL_ID, measure_info.MEASURE_DATE,
+                <choose>                                                                                                  
+	       			<when test="section == 'Height'">        
+						TRUNCATE(inbody_info.height, 1) AS VALUE
+					</when>
+					<when test="section == 'Weight'">  
+						TRUNCATE(inbody_info.weight, 1) AS VALUE
+					</when>
+				</choose>                                                                                                                                                                                                                                  
+				FROM member inner join school on member.school_id = school.school_id
+					inner join measure_info on member.member_id = measure_info.member_id
+					inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq   
+				WHERE measure_info.school_grade_id = (select school_grade_id from measure_info where member_id = #{member_id}  AND DATE_FORMAT(MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m'))  
+					AND	member.sex= #{sex} 																												
+					AND DATE_FORMAT(measure_info.MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')                                                                                                                                                                      
+				ORDER BY 
+				 <choose>                                                                                                  
+	       			<when test="section == 'Height'">        
+						inbody_info.height  DESC
+					</when>
+					<when test="section == 'Weight'">  
+						inbody_info.weight  DESC
+					</when>
+				</choose>  
+				) A, (SELECT @ROWNUM:=0) RNUM
+    	 ) T                                                                      
+	WHERE T.member_id = #{member_id}; 
 </select>
 
 <select id="selectRankInGwangmyeong" parameterType="BodyMeasureGrade" resultType="java.util.Map">

@@ -42,9 +42,11 @@ public class BodyMeasureGrade {
 	// 이전 학교내 학년별 순위
 	String beforeSchoolGrade = "0";
 	
-	//100명 중에 등수
-	String rank;
-	String beforeRank;
+	//랭킹 구하기
+	int rank;  //전국 등수
+	int total; //전국 학생수
+	int beforeRank;  //기존 전국 등수
+	int beforeTotal; //기존 전국 학생수
 	
 	// 학교내 학년별 전체 학생 수
 	String totalNumberOfStudent = "0";
@@ -67,6 +69,14 @@ public class BodyMeasureGrade {
 
 	public void setMember_id(int member_id) {
 		this.member_id = member_id;
+	}
+
+	public String getGradeId() {
+		return gradeId;
+	}
+
+	public void setGradeId(String gradeId) {
+		this.gradeId = gradeId;
 	}
 
 	public String getGradeDesc() {
@@ -99,6 +109,14 @@ public class BodyMeasureGrade {
 
 	public void setBeforeValue(String beforeValue) {
 		this.beforeValue = beforeValue;
+	}
+
+	public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
 	}
 
 	public String getSchoolGradeId() {
@@ -157,6 +175,38 @@ public class BodyMeasureGrade {
 		this.beforeSchoolGrade = beforeSchoolGrade;
 	}
 
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public int getBeforeRank() {
+		return beforeRank;
+	}
+
+	public void setBeforeRank(int beforeRank) {
+		this.beforeRank = beforeRank;
+	}
+
+	public int getBeforeTotal() {
+		return beforeTotal;
+	}
+
+	public void setBeforeTotal(int beforeTotal) {
+		this.beforeTotal = beforeTotal;
+	}
+
 	public String getTotalNumberOfStudent() {
 		return totalNumberOfStudent;
 	}
@@ -197,36 +247,6 @@ public class BodyMeasureGrade {
 		this.averageOfClass = averageOfClass;
 	}
 
-	public String getGradeId() {
-		return gradeId;
-	}
-
-	public void setGradeId(String gradeId) {
-		this.gradeId = gradeId;
-	}
-
-	public int getSchoolId() {
-		return schoolId;
-	}
-
-	public void setSchoolId(int schoolId) {
-		this.schoolId = schoolId;
-	}
-
-	public String getRank() {
-		return rank;
-	}
-
-	public void setRank(String rank) {
-		this.rank = rank;
-	}
-
-	public String getBeforeRank() {
-		return beforeRank;
-	}
-
-	public void setBeforeRank(String beforeRank) {
-		this.beforeRank = beforeRank;
-	}
+	
 
 }

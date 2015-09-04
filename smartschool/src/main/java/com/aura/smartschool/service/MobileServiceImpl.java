@@ -214,7 +214,7 @@ public class MobileServiceImpl implements MobileService {
 				}
 				
 				//temp by many data, 광명시에서 랭킹 구하기-------------------------------------------
-				HashMap<String, Long> rankVO = mobileMapper.selectRankInGwangmyeong(heightVO);
+				/*HashMap<String, Long> rankVO = mobileMapper.selectRankInGwangmyeong(heightVO);
 				long total = rankVO.get("total");
 				long rank = rankVO.get("rank");
 				int order;
@@ -224,39 +224,28 @@ public class MobileServiceImpl implements MobileService {
 				} else {
 					order = (int) (rank * 100/total);
 					order = order == 0 ? 1 : order;
-				}
-
+				}*/
 				
-				long beforeTotal;
-				long beforeRank;
-				int beforeOrder;
-				//이전 데이터가 없다면 최신데이터 값이 들어갑니다.
+				//전국 등수와 전체 학생수 구하기--------------------------------------------------------
+				BodyMeasureGrade ranking = mobileMapper.selectGradeRankingBySection(heightVO);
+				heightVO.setRank(ranking.getRank());
+				heightVO.setTotal(ranking.getTotal());
+
+				//이전 등수와 전체 학생수 : 이전 데이터가 없다면 최신데이터 값이 들어감.
 				if(list.size()>1) {
-					HashMap<String, Long> beforeRankVO = mobileMapper.selectBeforeRankInGwangmyeong(heightVO);
-					beforeTotal = beforeRankVO.get("total");
-					beforeRank = beforeRankVO.get("rank");
-					//if before data does not exit,,
-					if (beforeTotal == 0) {
-						beforeTotal = total;
-						beforeRank = rank;
-						beforeOrder= order;
-					} else {
-						beforeOrder = (int) (beforeRank * 100/beforeTotal);
-						beforeOrder = beforeOrder == 0 ? 1 : beforeOrder;
-					}
+					heightVO.setMeasureDate(list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
+					BodyMeasureGrade beforeRanking = mobileMapper.selectGradeRankingBySection(heightVO);
+					heightVO.setBeforeRank(beforeRanking.getRank());
+					heightVO.setBeforeTotal(beforeRanking.getTotal());
+					heightVO.setMeasureDate(list.get(0).getMeasure_date()); //이전 측정월을 원복
 				} else {
-					beforeTotal = total;
-					beforeRank = rank;
-					beforeOrder= order;
+					heightVO.setBeforeRank(ranking.getRank());
+					heightVO.setBeforeTotal(ranking.getTotal());
 				}
-
-				System.out.println("total:" + total);
-				System.out.println("rank:" + rank);
-				System.out.println("beforetotal:" + beforeTotal);
-				System.out.println("beforerank:" + beforeRank);
-				heightVO.setRank(String.valueOf(order));
-				heightVO.setBeforeRank(String.valueOf(beforeOrder));
-				
+				System.out.println("rank:" + heightVO.getRank());
+				System.out.println("total:" + heightVO.getTotal());
+				System.out.println("before rank:" + heightVO.getBeforeRank());
+				System.out.println("before total:" + heightVO.getBeforeTotal());
 				
 				//키, 몸무게 등급 구하기
 				BodyMeasureGrade gradeVO = mobileMapper.selectGradeBySection(heightVO);
@@ -266,18 +255,19 @@ public class MobileServiceImpl implements MobileService {
 					heightVO.setGradeDesc(gradeVO.getGradeDesc());
 					
 					//학교에서 랭킹 구하기 => schoolGradeId: 학교등수, totalStudent: 학교 학생수
-					BodyMeasureGrade rankingVO = mobileMapper.selectGradeRankingBySection(heightVO);
+					//학교 랭킹은 사용하지 않고 전국 등수로 대체함.
+/*					BodyMeasureGrade rankingVO = mobileMapper.selectGradeRankingBySection(heightVO);
 					heightVO.setSchoolGrade(rankingVO.getSchoolGrade()); //schoolGradeId: 학교등수
 					heightVO.setTotalNumberOfStudent(rankingVO.getTotalNumberOfStudent());//totalStudent: 학교 학생수
 					
 					BodyMeasureGrade beforeRankingVO = mobileMapper.selectBeforeGradeRankingBySection(heightVO);
 					
-					/*
+					
 					 * 이전 측정값 : beforeValue
 					 * 이전 학교내 학년별 순위 : beforeSchoolGrade
 					 * 
 					 * 이전 데이터가 없다면 최신데이터 값이 들어갑니다.
-					 * */
+					 * 
 					if(beforeRankingVO != null){
 						if(beforeRankingVO.getBeforeSchoolGrade() == null || "".equals(beforeRankingVO.getBeforeSchoolGrade())){
 							heightVO.setBeforeSchoolGrade(heightVO.getSchoolGrade());
@@ -285,51 +275,53 @@ public class MobileServiceImpl implements MobileService {
 							heightVO.setBeforeSchoolGrade(beforeRankingVO.getBeforeSchoolGrade());
 						}
 						
-						/*if(beforeRankingVO.getBeforeValue() == null  || "".equals(beforeRankingVO.getBeforeValue())){
+						if(beforeRankingVO.getBeforeValue() == null  || "".equals(beforeRankingVO.getBeforeValue())){
 							heightVO.setBeforeValue(heightVO.getValue());
 						}else{
 							heightVO.setBeforeValue(beforeRankingVO.getBeforeValue());
-						}*/
+						}
 					}else{
 						heightVO.setBeforeSchoolGrade(heightVO.getSchoolGrade());
 						heightVO.setBeforeValue(heightVO.getValue());
-					}
-					
-					StatisticsParam param = new StatisticsParam();
-					param.setSex(heightVO.getSex());
-					param.setSchoolId(heightVO.getSchoolId());
-					param.setSchoolGradeId(heightVO.getSchoolGradeId());
-					//param.setClassNumber(heightVO.getClassNumber());
-					param.setSection(heightVO.getSection());
-					param.setMeasureDate(heightVO.getMeasureDate());
-					System.out.println("school grade id:" + heightVO.getSchoolGradeId());
+					}*/
+				}			
 
-					//학교 평균 구하기
-					AverageItem schoolItem = mobileMapper.selectAveragePerSchool(param);
-					if (schoolItem != null) {
-						heightVO.setAverageOfSchool(schoolItem.getValue());
-					}
-					
-					//지역 평균 구하기 :광명데이터로 구하고 없다면 학교 평균으로 대체
-					AverageItem localItem = mobileMapper.selectAveragePerLocal(param);
-					if(localItem != null){
-						heightVO.setAverageOfLocal(localItem.getValue());
-					} else {
-						heightVO.setAverageOfLocal(schoolItem.getValue());
-					}
+				
+				//평균 구하기---------------------------------------------------------------------
+				StatisticsParam param = new StatisticsParam();
+				param.setSex(heightVO.getSex());
+				param.setSchoolId(heightVO.getSchoolId());
+				param.setSchoolGradeId(heightVO.getSchoolGradeId());
+				//param.setClassNumber(heightVO.getClassNumber());
+				param.setSection(heightVO.getSection());
+				param.setMeasureDate(heightVO.getMeasureDate());
+				System.out.println("school grade id:" + heightVO.getSchoolGradeId());
 
-					//전국 평균 구하기
-					param.setMeasureDate(this.standardDate);
-					AverageItem nationItem = mobileMapper.selectAveragePerNation(param);
-					System.out.println("Average of nation:" + nationItem.getValue());
-					if (nationItem != null) {
-						heightVO.setAverageOfNation(nationItem.getValue());
-					} else {
-						heightVO.setAverageOfNation(schoolItem.getValue());
-					}
-
-					return heightVO;
+				//학교 평균 구하기
+				AverageItem schoolItem = mobileMapper.selectAveragePerSchool(param);
+				if (schoolItem != null) {
+					heightVO.setAverageOfSchool(schoolItem.getValue());
 				}
+				
+				//지역 평균 구하기 :광명데이터로 구하고 없다면 학교 평균으로 대체
+				AverageItem localItem = mobileMapper.selectAveragePerLocal(param);
+				if(localItem != null){
+					heightVO.setAverageOfLocal(localItem.getValue());
+				} else {
+					heightVO.setAverageOfLocal(schoolItem.getValue());
+				}
+
+				//전국 평균 구하기
+				param.setMeasureDate(this.standardDate);
+				AverageItem nationItem = mobileMapper.selectAveragePerNation(param);
+				System.out.println("Average of nation:" + nationItem.getValue());
+				if (nationItem != null) {
+					heightVO.setAverageOfNation(nationItem.getValue());
+				} else {
+					heightVO.setAverageOfNation(schoolItem.getValue());
+				}
+
+				return heightVO;
 			}
 		}
 		
