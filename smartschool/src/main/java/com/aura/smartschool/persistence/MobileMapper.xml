@@ -593,7 +593,7 @@ select
 
 <select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="MemberVO">
 	SELECT * FROM member
-	WHERE use_yn = 1 and home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
+	WHERE use_yn = 1 and is_parent = 1 and home_id in (SELECT home_id FROM member WHERE school_id = #{school_id})
 </select>
 
 <insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
