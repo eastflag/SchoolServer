@@ -168,7 +168,7 @@
 
 <update id="updateGcmId" parameterType="MemberVO">
 	UPDATE MEMBER
-		set gcm_id = #{gcm_id}
+		set gcm_id = #{gcm_id}, access_date = now()
 	WHERE home_id = #{home_id} and mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
 </update>
 
