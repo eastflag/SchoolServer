@@ -5,14 +5,20 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.Date;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.TokenVO;
@@ -77,10 +83,14 @@ public class CommonUtil {
 		return builder.compact();
 	}
 	
-	public static TokenVO parseJWT(String jwt) {
+	public static Claims parseJWT(String jwt) throws IOException {
+		Resource resource = new ClassPathResource("/app.properties");
+        Properties props = PropertiesLoaderUtils.loadProperties(resource);
+		String key = props.getProperty("auth.key");
+		
 		//This line will throw an exception if it is not a signed JWS (as expected)
 		Claims claims = Jwts.parser()         
-		   .setSigningKey(DatatypeConverter.parseBase64Binary("superKey"))
+		   .setSigningKey(DatatypeConverter.parseBase64Binary(key))
 		   .parseClaimsJws(jwt).getBody();
 		
 		//System.out.println("ID: " + claims.getId());
@@ -88,7 +98,9 @@ public class CommonUtil {
 		//System.out.println("Issuer: " + claims.getIssuer());
 		//System.out.println("Expiration: " + claims.getExpiration());
 		
-		boolean isExpired = System.currentTimeMillis() > claims.getExpiration().getTime() ? true : false;
+
+		
+/*		boolean isExpired = System.currentTimeMillis() > claims.getExpiration().getTime() ? true : false;
 		System.out.println("expired:" + isExpired);
 		
 		TokenVO tokenVO = new TokenVO();
@@ -96,9 +108,9 @@ public class CommonUtil {
 		tokenVO.setIssuer(claims.getIssuer());
 		tokenVO.setSubject(claims.getSubject());
 		tokenVO.setIssuedAt(claims.getIssuedAt());
-		tokenVO.setExpired(isExpired);
+		tokenVO.setExpired(isExpired);*/
 		
-		return tokenVO;
+		return claims;
 
 	}
 }

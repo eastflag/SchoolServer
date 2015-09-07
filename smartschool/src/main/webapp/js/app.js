@@ -21,6 +21,12 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	$httpProvider.defaults.headers.post['X-Auth'] = '';
 }]);
 
+app.service('MainSvc', function($http) {
+	this.getLogin = function(login) {
+		return $http.post('/api/getLogin', login);
+	}
+})
+
 app.service('MemberSvc', function($http) {
 	this.getHomeList = function(search) {
 		return $http.post('/admin/api/getHomeList', search);
@@ -161,9 +167,31 @@ app.filter('changeCategoryName', function() {
 	}
 });
 
-app.controller('ApplicationCtrl', function ($scope) {
+app.controller('MainCtrl', ['$scope', '$http', 'MainSvc', function ($scope, $http, MainSvc) {
+	$scope.token = null;
+	$scope.error = null;
+	$scope.role_id = null;
 
-})
+	$scope.login = function() {
+		$scope.error = null;
+		MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
+		.success(function(value){
+			if(value.result == 0) {
+				$scope.token = value.token;
+				$scope.role_id = value.role_id;
+			} else {
+				alert('입력정보를 확인하세요');
+			}
+		})
+		.error(function(error) {
+			$scope.error = error;
+		})
+	}
+
+	$scope.loggedIn = function() {
+        return $scope.token !== null;
+    }
+}]);
 
 app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, $http, MemberSvc) {
 	$scope.homes = [];
@@ -221,8 +249,8 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 			// neostyx : 이와 같은 식으로 헤더에 토큰값을 할당하면 됨
 			$http.defaults.headers.post['X-Auth'] = "assgintokenafterlogin";
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				location.href = "index.html";
 			} else {
 				alert("error : " + data);
 			}

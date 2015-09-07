@@ -46,11 +46,7 @@ public class AdminController {
 	
 	@Autowired
 	private MobileService mobileService;
-	
-	private boolean isAuthenticate(String jwt) {
-		 TokenVO tokenVO = CommonUtil.parseJWT(jwt);
-		 return tokenVO.isExpired();
-	}
+
 	
 	@RequestMapping("/admin/api/authenticate")
 	public void getLogin(@RequestBody ManagerVO inManager,  @RequestHeader HttpHeaders headers) {
@@ -62,19 +58,19 @@ public class AdminController {
 	}
 	
 	//관리자 페이지 로그인
-	@RequestMapping("/admin/api/getLogin")
+	@RequestMapping("/api/getLogin")
 	public Result getLogin(@RequestBody ManagerVO inManager) {
 		logger.debug("/admin/api/getLogin--------------------------------------------------------");
 		
 		//토큰 생성
 		ManagerVO manager = mobileService.getManager(inManager);
-		String token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000); 
-		manager.setToken(token);
 		
 		if(manager != null && manager.getRole_id() < 3) {
+			String token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000); 
+			manager.setToken(token);
 			return new ResultData<ManagerVO>(0, "success", manager);
 		} else {
-			return new ResultData<ManagerVO>(0, "fail", manager);
+			return new ResultData<ManagerVO>(100, "fail", manager);
 		}
 	}
 	
