@@ -650,8 +650,7 @@ select
 </delete>
 
 <select id="selectSchoolNotiListByMember" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
-	SELECT noti_seq, school_id, category, title, content,
-		DATE_FORMAT(noti_date, '%Y-%m-%d') as 'noti_date',
+	SELECT noti_seq, school_id, category, title, content, noti_date, filename,
 		(select member_id from noti_bookmark where member_id=#{member_id} and noti_seq = N.noti_seq) as member_id
 	FROM SCHOOL_NOTI N
 	WHERE school_id = #{school_id} and category=#{category}
