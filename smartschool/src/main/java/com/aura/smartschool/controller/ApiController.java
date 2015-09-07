@@ -348,10 +348,7 @@ public class ApiController {
 			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
 			vo.setGradeId(bodyMeasureGrade.getGradeId());
 			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
-			//vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
-			//vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
-			//vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
-			//vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+
 			//평균 세팅
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
@@ -389,15 +386,12 @@ public class ApiController {
 			vo.setBeforeValue(bodyMeasureGrade.getBeforeValue());
 			vo.setGradeId(bodyMeasureGrade.getGradeId());
 			vo.setGradeString(bodyMeasureGrade.getGradeDesc());
-			//vo.setSchoolGrade(bodyMeasureGrade.getSchoolGrade());
-			//vo.setBeforeSchoolGrade(bodyMeasureGrade.getBeforeSchoolGrade());
-			//vo.setTotalNumberOfStudent(bodyMeasureGrade.getTotalNumberOfStudent());
-			//vo.setAverageOfClass(bodyMeasureGrade.getAverageOfClass());
+
+			//평균 세팅
 			vo.setAverageOfSchool(bodyMeasureGrade.getAverageOfSchool());
 			vo.setAverageOfLocal(bodyMeasureGrade.getAverageOfLocal());
-			//전국 평균은 향후 데이터가 많아지면 추출 예정
-			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfLocal());
-			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfNation());
+			vo.setAverageOfNation(bodyMeasureGrade.getAverageOfNation());
+			vo.setAverageOfStandard(bodyMeasureGrade.getAverageOfStandard());
 			//랭킹 세팅하기
 			vo.setRank(bodyMeasureGrade.getRank());
 			vo.setBeforeRank(bodyMeasureGrade.getBeforeRank());
