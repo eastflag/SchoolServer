@@ -300,11 +300,9 @@ group by member_id;
 </select> 
 
 <select id="selectBodySummary" parameterType="MemberVO" resultType="BodyMeasureSummary">
-	select member_id, measure_date, height, weight, bmi, muscle, skeletal, weight_Control, fat_Control, muscle_control, fat, waist, growthGrade, ppm, cohd from 
-		(select 
+	select 
 			measure_info.member_id,
 			measure_info.measure_date,
-			measure_info.smoke_seq,
 			truncate(inbody_info.HEIGHT, 1) AS height,
 			truncate(inbody_info.Weight, 1) AS weight,
 			truncate(inbody_info.BMI, 1) AS bmi,
@@ -315,31 +313,32 @@ group by member_id;
 			truncate(inbody_info.fat_Control, 1) AS fat_Control,
 			truncate(inbody_info.muscle_control, 1) AS muscle_control,
 			truncate(inbody_info.Waist_Hip_Ratio, 3) AS waist,
-			truncate(inbody_info.Fitness_Score, 0) AS growthGrade
+			truncate(inbody_info.Fitness_Score, 0) AS growthGrade,
+			smoke_info.ppm, smoke_info.cohd,
+			member.sex, measure_info.school_id, measure_info.school_grade_id
 		FROM 
-			measure_info, inbody_info
+			member inner join measure_info on member.member_id = measure_info.member_id
+			inner join inbody_info on measure_info.inbody_seq = inbody_info.Inbody_seq
+			left outer join smoke_info on measure_info.smoke_seq = smoke_info.smoke_seq
 		where
-			measure_info.member_id = #{member_id} and
-			measure_info.inbody_seq = inbody_info.inbody_seq) inbody 
-		LEFT OUTER JOIN smoke_info 
-		ON inbody.smoke_seq = smoke_info.smoke_seq
-	ORDER BY measure_date desc;
+			measure_info.member_id = #{member_id}
+	ORDER BY measure_info.measure_date desc;
 </select>
 
 <select id="selectGradeBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
-select 
-	ms_grade_data.Ms_Grade_ID as gradeId,
-	ms_grade_data.Srandard_Grade as gradeDesc,
-	ms_grade_data.Section as section,
-	#{value} as value,
-	ms_grade_data.Grade_ID as schoolGradeId,
-	ms_grade_data.sex as sex,
-	standard_data.Year as year
-from
-	healthcare_gwangmyeong.ms_grade_data,
-	healthcare_gwangmyeong.standard_data
-where
-	healthcare_gwangmyeong.ms_grade_data.Grade_ID = #{schoolGradeId}
+	select 
+		ms_grade_data.Ms_Grade_ID as gradeId,
+		ms_grade_data.Srandard_Grade as gradeDesc,
+		ms_grade_data.Section as section,
+		#{value} as value,
+		ms_grade_data.Grade_ID as schoolGradeId,
+		ms_grade_data.sex as sex,
+		standard_data.Year as year
+	from
+		healthcare_gwangmyeong.ms_grade_data,
+		healthcare_gwangmyeong.standard_data
+	where
+		healthcare_gwangmyeong.ms_grade_data.Grade_ID = #{schoolGradeId}
 		and healthcare_gwangmyeong.ms_grade_data.sex = #{sex}
 		and healthcare_gwangmyeong.ms_grade_data.Section = #{section}
 		and healthcare_gwangmyeong.standard_data.Year = #{year}
@@ -349,14 +348,14 @@ where
 </select>
 
 <select id="selectSmokerGrade" parameterType="string" resultType="BodyMeasureGrade">
-select 
-	smoke_data.Smoke_Data_ID as gradeId,
-	smoke_data.DISCRIPTION as gradeDesc
-from
-	healthcare_gwangmyeong.smoke_data
-where
-	1 = 1
-	and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int);
+	select 
+		smoke_data.Smoke_Data_ID as gradeId,
+		smoke_data.DISCRIPTION as gradeDesc
+	from
+		healthcare_gwangmyeong.smoke_data
+	where
+		1 = 1
+		and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int);
 </select>
 
 <select id="selectGradeRankingBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
@@ -470,39 +469,33 @@ select
 	) rank
 </select>
 
-<select id="selectAveragePerSchool" parameterType="StatisticsParam" resultType="AverageItem">
-	select 
-		DATE_FORMAT(MI.Measure_Date, '%Y%m') AS measureDate,
-	    S.School_Name AS name,
+<select id="selectAveragePerSchool" parameterType="StatisticsParam" resultType="AverageItem">		
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    school.school_name AS name,
 	    <choose>
 			<when test="section == 'Height'">
-				truncate(avg(II.Height), 1) AS value
+				truncate(avg(inbody_info.Height), 1) AS value
 			</when>
 			<when test="section == 'Weight'">
-				truncate(avg(II.Weight), 1) AS value
+				truncate(avg(inbody_info.Weight), 1) AS value
 			</when>
 			<when test="section == 'BMI'">
-				truncate(avg(II.BMI), 2) AS value
+				truncate(avg(Iinbody_info.BMI), 2) AS value
 			</when>
 		</choose>
-		from
-			MEMBER M, 
-			measure_info MI, 
-			school S,
-            INBODY_INFO II  
-		where
-			M.MEMBER_ID = MI.MEMBER_ID 
-			AND MI.school_id = S.school_id
-			AND MI.INBODY_SEQ = II.INBODY_SEQ 
-			AND M.SEX   = #{sex}                                                                 
-			AND MI.SCHOOL_ID =  #{schoolId}                                                        
-           	AND MI.SCHOOL_GRADE_ID  = #{schoolGradeId}                                        
-			AND DATE_FORMAT(MI.MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')   
- 
-		group by MI.school_id	
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_id = #{schoolId}
+		and measure_info.school_grade_id = #{schoolGradeId}                       
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')   	
 </select>
 
-<!-- 광명시 통계, 아직 통계데이터가 많지 않으므로 local 통계는 광명시 데이터로 대신한다. -->
+<!-- 광명시 통계, 아직 통계데이터가 많지 않으므로 local 통계는 광명시 데이터로 대신한다. 
 <select id="selectAveragePerLocal" parameterType="StatisticsParam" resultType="AverageItem">
 	select 
 		DATE_FORMAT(BP.Measure_Date, '%Y%m') AS measureDate,
@@ -528,12 +521,64 @@ select
 		and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
 		and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
 	group by BP.Measure_Date
+</select>-->
+
+<!-- 지역 평균 : 17개 시도 평균 -->
+<select id="selectAveragePerLocal" parameterType="StatisticsParam" resultType="AverageItem">
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    school.sido AS name,
+	    <choose>
+			<when test="section == 'Height'">
+				truncate(avg(inbody_info.Height), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+				truncate(avg(inbody_info.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+				truncate(avg(Iinbody_info.BMI), 2) AS value
+			</when>
+		</choose>
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_grade_id = #{schoolGradeId}   
+		and school.sido = (select sido from school where school_id = #{schoolId})                   
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')  
 </select>
 
 <select id="selectAveragePerNation" parameterType="StatisticsParam" resultType="AverageItem">
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    'nation average' AS name,
+	    <choose>
+			<when test="section == 'Height'">
+				truncate(avg(inbody_info.Height), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+				truncate(avg(inbody_info.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+				truncate(avg(Iinbody_info.BMI), 2) AS value
+			</when>
+		</choose>
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_grade_id = #{schoolGradeId}                       
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')  
+</select>
+
+<select id="selectAveragePerStandard" parameterType="StatisticsParam" resultType="AverageItem">
 	select
 		standard_data.Year AS measureDate, 
-	    'nation average' as name,
+	    'standard average' as name,
 	    standard_data.value 
 		from
 		    healthcare_gwangmyeong.ms_grade_data,

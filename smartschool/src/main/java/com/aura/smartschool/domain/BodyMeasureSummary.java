@@ -3,6 +3,9 @@ package com.aura.smartschool.domain;
 public class BodyMeasureSummary {
 	//사용자 구별 ID
 	int member_id;
+	int school_id;
+	String school_grade_id;
+	String sex;
 	
 	// 측정 정보
 	String measure_date;
@@ -209,6 +212,30 @@ public class BodyMeasureSummary {
 
 	public void setMuscle_control(String muscle_control) {
 		this.muscle_control = muscle_control;
+	}
+
+	public int getSchool_id() {
+		return school_id;
+	}
+
+	public void setSchool_id(int school_id) {
+		this.school_id = school_id;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getSchool_grade_id() {
+		return school_grade_id;
+	}
+
+	public void setSchool_grade_id(String school_grade_id) {
+		this.school_grade_id = school_grade_id;
 	}
 
 	

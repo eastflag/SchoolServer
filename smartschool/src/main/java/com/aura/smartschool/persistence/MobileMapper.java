@@ -74,8 +74,10 @@ public interface MobileMapper {
 	public AverageItem selectAveragePerSchool(StatisticsParam param);
 	//지역 평균, 현재는 데이터가 없어서 광명시 평균으로 대체
 	public AverageItem selectAveragePerLocal(StatisticsParam param);
-	//전국 평균, 2012년 데이터
+	//전국 평균
 	public AverageItem selectAveragePerNation(StatisticsParam param);
+	//표준 평균, 2012-01-01 데이터
+	public AverageItem selectAveragePerStandard(StatisticsParam param);
 	//area_info
 	public long insertArea(AreaVO area) throws PersistenceException;
 	public AreaVO selectArea(AreaVO area);

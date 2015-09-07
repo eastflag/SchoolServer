@@ -51,7 +51,10 @@ public class BodyMeasureGrade {
 	// 학교내 학년별 전체 학생 수
 	String totalNumberOfStudent = "0";
 	
-	// 나라 평균 ( 표준 평균)
+	//표준 평균
+	String averageOfStandard;
+	
+	// 전국 평균
 	String averageOfNation;
 	
 	// 지역 평균
@@ -245,6 +248,14 @@ public class BodyMeasureGrade {
 
 	public void setAverageOfClass(String averageOfClass) {
 		this.averageOfClass = averageOfClass;
+	}
+
+	public String getAverageOfStandard() {
+		return averageOfStandard;
+	}
+
+	public void setAverageOfStandard(String averageOfStandard) {
+		this.averageOfStandard = averageOfStandard;
 	}
 
 	
