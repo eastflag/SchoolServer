@@ -1,6 +1,6 @@
 package com.aura.smartschool.domain;
 
-public class SessionVO {
+public class SessionVO extends SearchVO{
 	private int session_id;
 	private int member_id;
 	private int category;
@@ -11,6 +11,7 @@ public class SessionVO {
 	private String school_name;
 	private String name;
 	private String school_class;
+	private String school_grade;
 	
 	private String content;
 	private int who;
@@ -80,6 +81,12 @@ public class SessionVO {
 	}
 	public void setSchool_class(String school_class) {
 		this.school_class = school_class;
+	}
+	public String getSchool_grade() {
+		return school_grade;
+	}
+	public void setSchool_grade(String school_grade) {
+		this.school_grade = school_grade;
 	}
 	
 	

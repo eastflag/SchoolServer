@@ -719,15 +719,19 @@ select
 	WHERE session_id = #{session_id} 
 </update>
 <select id="selectSessionOngoingList" parameterType="SessionVO" resultType="SessionVO">
-	SELECT S.session_id, S.member_id, S.category, 
-		(SELECT who FROM consult WHERE session_id = S.session_id order by session_id desc limit 1) as who,
-		C.school_name, 
-		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
-		M.school_class, S.created
-	FROM session S, member M, school C 
-	WHERE rate = 0 AND 
-		S.member_id = M.member_id and M.school_id = C.school_id
-		<if test="category != 0">AND category = #{category}</if>
+	SELECT session.session_id, session.member_id, session.category, 
+		consult.who, school.school_name, 
+		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
+		member.school_grade, consult.created
+	FROM session inner join member on session.member_id = member.member_id
+		 inner join school on member.school_id = school.school_id
+		 inner join (select * from consult where consult_id in (SELECT max(consult_id) FROM consult group by session_id)) consult
+			on session.session_id = consult.session_id
+	WHERE session.rate = 0 
+		<if test="category != 0">AND session.category = #{category}</if>
+	ORDER BY consult.who asc, created desc
+		
+	Limit #{start_index}, #{page_size} 
 </select>
 <select id="countSessionOngoingList" parameterType="SessionVO" resultType="Integer">
 	SELECT count(*) FROM session

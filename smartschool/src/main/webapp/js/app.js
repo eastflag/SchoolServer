@@ -788,6 +788,9 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	$scope.consultLists = [];
 	$scope.consultListCategoryNo = 0;
 
+	$scope.currentPageSession = 1;
+	$scope.totalSessionListCount = 0;
+
 	$scope.categories = [
 		{code: 0, name: "전체"},
 		{code: 1, name: "성상담"},
@@ -801,12 +804,18 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 		{code: 9, name: "가정폭력"}
 	];
 
+	$scope.sessionPageChanged = function() {
+		$scope.getSessionList();
+	};
+
 	$scope.getSessionList = function(categoryNo) {
-		ConsultSvc.getSessionList({ category : categoryNo})
+		var search = {category: categoryNo, start_index:($scope.currentPageSession - 1) * 10, page_size:10};
+		ConsultSvc.getSessionList(search)
 		.success(function(sessions) {
-				$scope.sessions = sessions.data;
+			$scope.sessions = sessions.data;
+			$scope.totalSessionListCount = sessions.total;
 		}).error(function(data, status) {
-			if (status == 601) {
+			if (status == 401) {
 				location.href = "login.html";
 			} else {
 				alert("error : " + data);
@@ -817,6 +826,7 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 	$scope.getSelectedCategoryData = function() {
 		if ($scope.selectedCategoryInfo != null) {
 			$scope.selectedCategoryNo = $scope.selectedCategoryInfo["code"];
+			$scope.currentPageSession = 1;
 			$scope.getSessionList($scope.selectedCategoryNo);
 		};
 	}

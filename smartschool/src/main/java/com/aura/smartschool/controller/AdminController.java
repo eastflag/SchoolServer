@@ -332,8 +332,9 @@ public class AdminController {
     public ResultData<List<SessionVO>> getSessionList(@RequestBody SessionVO inSession) {
 		logger.debug("/admin/api/getSessionList--------------------------------------------------");
 		List<SessionVO> sessionList = mobileService.selectSessionOngoingList(inSession);
-
-		return new ResultData<List<SessionVO>>(0, "success", sessionList);
+		int total = mobileService.countSessionOngoingList(inSession);
+		
+		return new ResultDataTotal<List<SessionVO>>(0, "success", sessionList, total);
 	}
 	
 	//get consult list
