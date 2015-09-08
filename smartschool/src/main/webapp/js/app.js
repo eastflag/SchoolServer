@@ -9,6 +9,7 @@ var app = angular.module('app', [
 app.run(['$rootScope', function($rootScope) {
   	$rootScope.auth_token = null;
   	$rootScope.role_id = 0;
+  	$rootScope.login_url = "https://aurasystem.kr:9000";
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -178,32 +179,32 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 	$scope.role_id = null;
 
 	$scope.login = function() {
-		$scope.token = "abc";
-		$scope.role_id = 2;
-
-		$rootScope.auth_token = $scope.token;
-		$rootScope.role_id = $scope.role_id;
-
-		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-
-		//$scope.error = null;
-		//MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
-		//.success(function(value){
-		//	if(value.result == 0) {
-		//		$scope.token = value.token;
-		//		$scope.role_id = value.role_id;
+		//$scope.token = "ddd";
+		//		$scope.role_id = 1;
 
 		//		$rootScope.auth_token = $scope.token;
 		//		$rootScope.role_id = $scope.role_id;
 
 		//		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-		//	} else {
-		//		alert('입력정보를 확인하세요');
-		//	}
-		//})
-		//.error(function(error) {
-		//	$scope.error = error;
-		//})
+
+		$scope.error = null;
+		MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
+		.success(function(value){
+			if(value.result == 0) {
+				$scope.token = value.token;
+				$scope.role_id = value.role_id;
+
+				$rootScope.auth_token = $scope.token;
+				$rootScope.role_id = $scope.role_id;
+
+				$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+			} else {
+				alert('입력정보를 확인하세요');
+			}
+		})
+		.error(function(error) {
+			$scope.error = error;
+		})
 	}
 
 	$scope.loggedIn = function() {
@@ -216,7 +217,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 
 		$http.defaults.headers.post['X-Auth'] = "";
 
-		location.href = "index.html";
+		location.href = $rootScope.login_url;
     }
 }]);
 
@@ -273,10 +274,10 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 
 			$scope.clearHome();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status == 500) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -329,7 +330,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -349,7 +350,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -366,7 +367,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -472,7 +473,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -493,7 +494,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -508,7 +509,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -577,7 +578,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -647,7 +648,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -691,7 +692,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -747,7 +748,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -777,7 +778,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -866,7 +867,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -893,7 +894,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -919,7 +920,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 				if (status == 401) {
 					$rootScope.auth_token = null;
 
-					location.href = "index.html";
+					location.href = $rootScope.login_url;
 				} else {
 					alert("error : " + data.message);
 				}
@@ -947,7 +948,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -972,7 +973,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 				if (status == 401) {
 					$rootScope.auth_token = null;
 
-					location.href = "index.html";
+					location.href = $rootScope.login_url;
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1009,7 +1010,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1051,7 +1052,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scop
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1077,7 +1078,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scop
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1122,7 +1123,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1172,7 +1173,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1194,7 +1195,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 			if (status == 401) {
 				$rootScope.auth_token = null;
 
-				location.href = "index.html";
+				location.href = $rootScope.login_url;
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1213,7 +1214,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 				if (status == 401) {
 					$rootScope.auth_token = null;
 
-					location.href = "index.html";
+					location.href = $rootScope.login_url;
 				} else {
 					alert("error : " + data.message);
 				}
