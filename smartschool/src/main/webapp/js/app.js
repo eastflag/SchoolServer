@@ -6,6 +6,11 @@ var app = angular.module('app', [
     'ngRoute', 'ui.bootstrap', 'ngFileUpload'
 ]);
 
+app.run(['$rootScope', function($rootScope) {
+  	$rootScope.auth_token = null;
+  	$rootScope.role_id = 0;
+}]);
+
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
 	.when('/member', {templateUrl: 'templates/member.html'})
@@ -18,7 +23,7 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
 
-	$httpProvider.defaults.headers.post['X-Auth'] = '';
+	$httpProvider.defaults.headers.post['X-Auth'] = "";
 }]);
 
 app.service('MainSvc', function($http) {
@@ -167,33 +172,55 @@ app.filter('changeCategoryName', function() {
 	}
 });
 
-app.controller('MainCtrl', ['$scope', '$http', 'MainSvc', function ($scope, $http, MainSvc) {
+app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function ($scope, $http, $rootScope, MainSvc) {
 	$scope.token = null;
 	$scope.error = null;
 	$scope.role_id = null;
 
 	$scope.login = function() {
-		$scope.error = null;
-		MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
-		.success(function(value){
-			if(value.result == 0) {
-				$scope.token = value.token;
-				$scope.role_id = value.role_id;
-			} else {
-				alert('입력정보를 확인하세요');
-			}
-		})
-		.error(function(error) {
-			$scope.error = error;
-		})
+		$scope.token = "abc";
+		$scope.role_id = 2;
+
+		$rootScope.auth_token = $scope.token;
+		$rootScope.role_id = $scope.role_id;
+
+		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+
+		//$scope.error = null;
+		//MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
+		//.success(function(value){
+		//	if(value.result == 0) {
+		//		$scope.token = value.token;
+		//		$scope.role_id = value.role_id;
+
+		//		$rootScope.auth_token = $scope.token;
+		//		$rootScope.role_id = $scope.role_id;
+
+		//		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+		//	} else {
+		//		alert('입력정보를 확인하세요');
+		//	}
+		//})
+		//.error(function(error) {
+		//	$scope.error = error;
+		//})
 	}
 
 	$scope.loggedIn = function() {
-        return $scope.token !== null;
+        return $rootScope.auth_token !== null;
+    }
+
+    $scope.logOut = function() {
+    	$rootScope.auth_token = null;
+		$rootScope.role_id = 0;
+
+		$http.defaults.headers.post['X-Auth'] = "";
+
+		location.href = "index.html";
     }
 }]);
 
-app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, $http, MemberSvc) {
+app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', function ($scope, $http, $rootScope, MemberSvc) {
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
@@ -245,14 +272,13 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 			$scope.totalHomeListCount = homes.total;
 
 			$scope.clearHome();
-
-			// neostyx : 이와 같은 식으로 헤더에 토큰값을 할당하면 됨
-			$http.defaults.headers.post['X-Auth'] = "assgintokenafterlogin";
 		}).error(function(data, status) {
 			if (status == 401) {
+				$rootScope.auth_token = null;
+
 				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -300,10 +326,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 			$scope.clearHome();
 			$scope.getHomeList();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -318,10 +346,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 			$scope.clearHome();
 			$scope.getHomeList();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -333,10 +363,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 
 			$scope.clearMember();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -437,10 +469,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 			
 			$scope.getMemberList({home_id:$scope.home_id});
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -456,10 +490,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 		.success(function(payList){
 			$scope.pays = payList.data;
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -469,10 +505,12 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 		.success(function(){
 			$scope.getPayList({member_id: $scope.pay.member_id});
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -497,7 +535,7 @@ app.controller('MemberCtrl', ['$scope', '$http', 'MemberSvc', function ($scope, 
 	$scope.getToday();
 }]);
 
-app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, Upload, SchoolSvc) {
+app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', function ($scope, $rootScope, Upload, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
 	$scope.noti_mode = "";
 	$scope.school_id;
@@ -536,10 +574,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			$scope.schools = schools.data;
 			$scope.totalSchoolListCount = schools.total;
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -604,10 +644,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			//	$scope.schools = schools.data;
 			//})
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -646,10 +688,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			$scope.notis = notiList.data;
 			$scope.totalNotiListCount = notiList.total;	
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -700,10 +744,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
     	}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -728,10 +774,12 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
     	}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 
@@ -780,7 +828,7 @@ app.controller('SchoolCtrl', ['$scope','Upload', 'SchoolSvc', function ($scope, 
     }
 }]); 
 
-app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
+app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($scope, $rootScope, ConsultSvc) {
 	$scope.selectedCategoryNo = 0;
 	$scope.selectedCategoryInfo = "";
 	$scope.consultMessage = "";
@@ -816,9 +864,11 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 			$scope.totalSessionListCount = sessions.total;
 		}).error(function(data, status) {
 			if (status == 401) {
-				location.href = "login.html";
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	};
@@ -840,10 +890,12 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 		.success(function(lists) {
 				$scope.consultLists = lists.data;
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
     }
@@ -864,19 +916,21 @@ app.controller('ConsultCtrl', function ($scope, ConsultSvc) {
 
     				$scope.getSessionList($scope.selectedCategoryNo);
     		}).error(function(data, status) {
-				if (status == 601) {
-					location.href = "login.html";
+				if (status == 401) {
+					$rootScope.auth_token = null;
+
+					location.href = "index.html";
 				} else {
-					alert("error : " + data);
+					alert("error : " + data.message);
 				}
 			});
     	};
     }
 
     $scope.getSessionList($scope.selectedCategoryNo);
-})
+}])
 
-app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $window, NotiSvc) {
+app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', function ($scope, $rootScope, $window, NotiSvc) {
 	$scope.noti = {title : "", content : "" };
 	$scope.notis = [];
 
@@ -890,10 +944,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 		.success(function(notis) {
 			$scope.notis = notis.data;
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -913,10 +969,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 
 				$scope.clearNoti();
 			}).error(function(data, status) {
-				if (status == 601) {
-					location.href = "login.html";
+				if (status == 401) {
+					$rootScope.auth_token = null;
+
+					location.href = "index.html";
 				} else {
-					alert("error : " + data);
+					alert("error : " + data.message);
 				}
 			});
 		};
@@ -948,10 +1006,12 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 
 			$scope.clearNoti();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -974,7 +1034,7 @@ app.controller('NotiCtrl', ['$scope', '$window', 'NotiSvc', function ($scope, $w
 	$scope.getNotiList();
 }]);
 
-app.controller('BoardCtrl', function ($scope, BoardSvc) {
+app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scope, $rootScope, BoardSvc) {
 	$scope.board;
 	$scope.boards = [];
 
@@ -988,10 +1048,12 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -1012,10 +1074,12 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -1029,9 +1093,9 @@ app.controller('BoardCtrl', function ($scope, BoardSvc) {
 	};
 
 	$scope.getBoardList();
-})
+}])
 
-app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, $window, AdminSvc) {
+app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', function ($scope, $rootScope, $window, AdminSvc) {
 	$scope.admins = [];
 	
 	$scope.currentPageAdmin = 1;
@@ -1055,10 +1119,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 
 			$scope.clearAdmin();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -1103,10 +1169,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -1123,10 +1191,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status == 601) {
-				location.href = "login.html";
+			if (status == 401) {
+				$rootScope.auth_token = null;
+
+				location.href = "index.html";
 			} else {
-				alert("error : " + data);
+				alert("error : " + data.message);
 			}
 		});
 	}
@@ -1140,10 +1210,12 @@ app.controller('AdminCtrl', ['$scope', '$window', 'AdminSvc', function ($scope, 
 				$scope.clearAdmin();
 				$scope.getManagerList();
 			}).error(function(data, status) {
-				if (status == 601) {
-					location.href = "login.html";
+				if (status == 401) {
+					$rootScope.auth_token = null;
+
+					location.href = "index.html";
 				} else {
-					alert("error : " + data);
+					alert("error : " + data.message);
 				}
 			});
 		};

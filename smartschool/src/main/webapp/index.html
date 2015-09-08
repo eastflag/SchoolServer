@@ -85,7 +85,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="#" ng-click="logOut()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -99,7 +99,7 @@
                     <ul class="nav" id="side-menu">
                         <li style="line-height:50px;">
                         </li>
-                        <li>
+                        <li ng-show="role_id == 1">
                             <a href="#"><i class="fa fa-dashboard fa-fw"></i> 사용자관리<span class="fa arrow"></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -110,13 +110,13 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <li ng-show="role_id == 1">
                             <a href="#!/school"><i class="fa fa-table fa-fw"></i> 학교관리</a>
                         </li>
-                        <li>
+                        <li ng-show="role_id == 1 || role_id == 2">
                             <a href="#!/consult"><i class="fa fa-wrench fa-fw"></i> 상담관리</a>
                         </li>
-                        <li>
+                        <li ng-show="role_id == 1">
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> 사이트관리<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
