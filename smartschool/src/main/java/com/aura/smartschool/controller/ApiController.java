@@ -28,6 +28,7 @@ import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
@@ -670,6 +671,19 @@ public class ApiController {
 		return new ResultData<List<VideoVO>>(0, "success", videoList);
 	}
 	
+	//비디오 최초 접속 시간 가져오기
+	@RequestMapping("/api/getVideoTimeOfMember")
+    public ResultData<VideoTimeVO> getVideoTimeOfMember(@RequestBody VideoTimeVO inVideoTime) {
+		logger.debug("/api/getVideoTimeOfMember--------------------------------------------------");
+		VideoTimeVO videoTime = mobileService.getVideoTimeOfMember(inVideoTime);
+		
+		if(videoTime == null) {
+			mobileService.addVideoTime(inVideoTime);
+			videoTime = mobileService.getVideoTimeOfMember(inVideoTime);
+		}
+		
+		return new ResultData<VideoTimeVO>(0, "success", videoTime);
+	}
 	
 	@RequestMapping("/api/getOsInfo")
     public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {

@@ -28,6 +28,7 @@ import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
+import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.persistence.MobileMapper;
@@ -567,5 +568,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public ActivityVO getActivity(ActivityVO activity) {
 		return mobileMapper.selectActivity(activity);
+	}
+
+	@Override
+	public VideoTimeVO getVideoTimeOfMember(VideoTimeVO time) {
+		return mobileMapper.selectVideoTimeOfMember(time);
+	}
+
+	@Override
+	public long addVideoTime(VideoTimeVO time) {
+		return mobileMapper.insertVideoTime(time);
 	}
 }

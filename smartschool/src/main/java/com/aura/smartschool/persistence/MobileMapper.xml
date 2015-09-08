@@ -878,6 +878,17 @@ select
 	    </if>
 </select>
 
+<select id="selectVideoTimeOfMember" parameterType="VideoTimeVO" resultType="VideoTimeVO">
+	SELECT * FROM VIDEO_TIME
+	WHERE member_id = #{member_id}
+	Limit 1;
+</select>
+
+<insert id="insertVideoTime" parameterType="VideoTimeVO">
+	INSERT INTO VIDEO_TIME(member_id, access_time)
+	VALUES(#{member_id}, now());
+</insert>
+
 <select id="selectOsInfo" parameterType="OsInfoVO" resultType="OsInfoVO">
 	SELECT * FROM os_info
 	WHERE os_name = #{os_name}

@@ -22,6 +22,7 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 
@@ -70,6 +71,8 @@ public interface MobileService {
 	//비디오 리스트 
 	public List<VideoVO> getVideoListByMasterGradeId(VideoTypeVO type);
 	public List<VideoVO> getVideoListByInfoType(VideoTypeVO type);
+	public VideoTimeVO getVideoTimeOfMember(VideoTimeVO time);
+	public long addVideoTime(VideoTimeVO time);
 	
 	//admin----------------------------------------------------
 	public List<SchoolVO> getSchoolListOfMember(SearchVO search);

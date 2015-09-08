@@ -25,6 +25,7 @@ import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.StatisticsParam;
+import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 
@@ -92,6 +93,8 @@ public interface MobileMapper {
 	//비디오 리스트 
 	public List<VideoVO> selectVideoListByMasterGradeId(VideoTypeVO type);
 	public List<VideoVO> selectVideoListByInfoType(VideoTypeVO type);
+	public VideoTimeVO selectVideoTimeOfMember(VideoTimeVO time);
+	public long insertVideoTime(VideoTimeVO time);
 	
 	//학교 공지사항, 가정통신문----------------------------------------------------
 	public List<SchoolVO> selectSchoolListOfMember(SearchVO search);
