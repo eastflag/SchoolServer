@@ -25,7 +25,7 @@
 
 <select id="selectAllMemberOfGcm" resultType="MemberVO">
 	SELECT gcm_id FROM member
-	WHERE use_yn=1 and home_id in (select home_id from home where use_yn=1)
+	WHERE use_yn=1 and gcm_id != "" and home_id in (select home_id from home where use_yn=1)
 </select>
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
