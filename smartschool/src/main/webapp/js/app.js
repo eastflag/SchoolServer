@@ -969,9 +969,11 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 	$scope.totalNotiListCount = 0;
 
 	$scope.getNotiList = function() {
-		NotiSvc.getNotiList()
+		NotiSvc.getNotiList({start_index:($scope.currentPageNoti - 1) * 10, page_size:10})
 		.success(function(notis) {
 			$scope.notis = notis.data;
+			$scope.totalNotiListCount = notis.total;
+
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
@@ -1075,7 +1077,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scop
 		.success(function(boards) {
 			$scope.boards = boards.data;
 			$scope.totalBoardListCount = boards.total;
-			
+
 			$scope.clearBoard();
 		}).error(function(data, status) {
 			if (status >= 400) {
