@@ -417,10 +417,12 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 			return;
 		};
 
-		if ($scope.is_parent == "") {
+		if ($scope.is_parent != "0" && $scope.is_parent != "1") {
 			alert("멤버의 부모여부를 선택하세요.");
 			return;
-		} else if ($scope.is_parent == "0") {
+		} 
+
+		if ($scope.is_parent == "0") {
 			if ($scope.birth_date == "") {
 				alert("생년월일을 입력하세요.");
 				return;
