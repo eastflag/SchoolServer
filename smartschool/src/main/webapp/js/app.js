@@ -82,8 +82,8 @@ app.service('ConsultSvc', function($http) {
 });
 
 app.service('NotiSvc', function($http) {
-	this.getNotiList = function() {
-		return $http.post('/admin/api/getNotiList');
+	this.getNotiList = function(noti) {
+		return $http.post('/admin/api/getNotiList', noti);
 	}
 	this.addNoti = function(noti) {
 		return $http.post('/api/addNoti', noti);
