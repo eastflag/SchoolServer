@@ -67,9 +67,8 @@ app.service('SchoolSvc', function($http) {
 	this.getSchoolNotiList = function(school) {
 		return $http.post('/admin/api/getSchoolNotiList', school);
 	}
-	this.removeSchoolNoti = function(noti_seq) {
-		alert("G");
-		return $http.post('/admin/api/removeSchoolNoti', noti_seq);
+	this.removeSchoolNoti = function(noti) {
+		return $http.post('/admin/api/removeSchoolNoti', noti);
 	}
 });
 
@@ -229,7 +228,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
     	$rootScope.auth_token = null;
 		$rootScope.role_id = 0;
 		$scope.role_id = 0;
-		
+
 		$http.defaults.headers.post['X-Auth'] = "";
 
 		$cookieStore.remove("auth_info");
@@ -468,6 +467,10 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 				return;
 			};
 		}
+
+		if ($scope.school_id == "0") {
+			$scope.school_id = null;
+		};
 
 		var member = {
 			member_id : $scope.member_id,
@@ -737,7 +740,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window','Upload', 'Schoo
 		};
 
 		SchoolSvc.removeSchoolNoti({noti_seq : noti.noti_seq})
-		.success(function() {
+		.success(function(result) {
 			$scope.getNoti($scope.selected_school);
 		}).error(function(data, status) {
 			if (status >= 400) {
