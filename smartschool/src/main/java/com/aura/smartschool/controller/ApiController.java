@@ -497,6 +497,46 @@ public class ApiController {
 		return new ResultData<ConsultHistoryVO>(0, "success", history);
 
 	}
+	//상담 입력하기 (add session and consult)
+	@RequestMapping("/api/addConsult")
+    public Result addConsult(@RequestBody SessionVO inSession) {
+		logger.debug("/api/addConsult----------------------------------------------------");
+		SessionVO outSession = mobileService.selectSession(inSession);
+		
+		int session_id;
+		if(outSession == null) {
+			mobileService.insertSession(inSession);
+			SessionVO session = mobileService.selectLastSession();
+			session_id = session.getSession_id();
+		} else {
+			session_id = outSession.getSession_id();
+		}
+		ConsultVO consult = new ConsultVO();
+		consult.setSession_id(session_id);
+		consult.setContent(inSession.getContent());
+		consult.setWho(inSession.getWho());
+		mobileService.insertConsult(consult);
+		
+		//if who is 1, send gcm : member_id = > gcm id, content
+		if(inSession.getWho() == 1) {
+			JsonArray array = new JsonArray(); //get gcm_id
+			MemberVO m = new MemberVO();
+			m.setMember_id(inSession.getMember_id());
+			MemberVO member = mobileService.selectMember(m);
+			array.add(new JsonPrimitive(member.getGcm_id()));
+			
+			JsonObject data = new JsonObject();
+			JsonObject value = new JsonObject();
+			value.addProperty("category", inSession.getCategory());
+			value.addProperty("content", inSession.getContent());
+			data.addProperty("command", "consult");
+			data.addProperty("value", value.toString());
+			
+			NetworkUtil.requestGCM(array, data);
+		}
+		
+		return new Result(0, "success");
+	}
 	
 	//앱 공지사항 가져오기=============================================================================
 	@RequestMapping("/api/getNotiList")
