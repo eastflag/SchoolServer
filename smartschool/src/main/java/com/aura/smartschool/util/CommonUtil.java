@@ -54,7 +54,11 @@ public class CommonUtil {
 		return m.find();
 	}
 	
-	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis) throws IOException {
+		Resource resource = new ClassPathResource("/app.properties");
+        Properties props = PropertiesLoaderUtils.loadProperties(resource);
+		String key = props.getProperty("auth.key");
+		
 		//The JWT signature algorithm we will be using to sign the token
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -62,7 +66,7 @@ public class CommonUtil {
 		Date now = new Date(nowMillis);
 
 		//We will sign our JWT with our ApiKey secret
-		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary("superKey");
+		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(key);
 		Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
 		  //Let's set the JWT Claims

@@ -39,6 +39,11 @@ body {
 
 .offset-btm-10{margin-bottom: 10px;}
 
+.navbar-loginout{
+    margin-top:8px;
+    margin-right:25px;
+}
+
 #wrapper {
     width: 100%;
 }

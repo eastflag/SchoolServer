@@ -3,6 +3,7 @@ package com.aura.smartschool.controller;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,11 +67,17 @@ public class AdminController {
 		ManagerVO manager = mobileService.getManager(inManager);
 		
 		if(manager != null && manager.getRole_id() < 3) {
-			String token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000); 
-			manager.setToken(token);
-			return new ResultData<ManagerVO>(0, "success", manager);
+			String token;
+			try {
+				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000);
+				manager.setToken(token);
+				return new ResultData<ManagerVO>(0, "success", manager);
+			} catch (IOException e) {
+				return new ResultData<ManagerVO>(200, "서버오류가 발생하였습니다. 잠시후에 시도하세요.", manager);
+			} 
+			
 		} else {
-			return new ResultData<ManagerVO>(100, "fail", manager);
+			return new ResultData<ManagerVO>(100, "아이디나 패스워드를 확인하세요.", manager);
 		}
 	}
 	

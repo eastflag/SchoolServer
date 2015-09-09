@@ -9,7 +9,7 @@ var app = angular.module('app', [
 app.run(['$rootScope', function($rootScope) {
   	$rootScope.auth_token = null;
   	$rootScope.role_id = 0;
-  	$rootScope.login_url = "https://aurasystem.kr:9000";
+  	$rootScope.login_url = "/index.html";
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -191,15 +191,15 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 		MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
 		.success(function(value){
 			if(value.result == 0) {
-				$scope.token = value.token;
-				$scope.role_id = value.role_id;
+				$scope.token = value.data.token;
+				$scope.role_id = value.data.role_id;
 
 				$rootScope.auth_token = $scope.token;
 				$rootScope.role_id = $scope.role_id;
 
 				$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 			} else {
-				alert('입력정보를 확인하세요');
+				alert(value.msg);
 			}
 		})
 		.error(function(error) {
@@ -274,7 +274,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 
 			$scope.clearHome();
 		}).error(function(data, status) {
-			if (status == 500) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 
 				location.href = $rootScope.login_url;
