@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies'
 ]);
 
 app.run(['$rootScope', function($rootScope) {
@@ -66,6 +66,9 @@ app.service('SchoolSvc', function($http) {
 	}
 	this.getSchoolNotiList = function(school) {
 		return $http.post('/admin/api/getSchoolNotiList', school);
+	}
+	this.removeSchoolNoti = function(noti_seq) {
+		return $http.post('/admin/api/removeSchoolNoti', noti_seq);
 	}
 });
 
@@ -173,7 +176,7 @@ app.filter('changeCategoryName', function() {
 	}
 });
 
-app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function ($scope, $http, $rootScope, MainSvc) {
+app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MainSvc', function ($scope, $http, $rootScope, $cookieStore, MainSvc) {
 	$scope.token = null;
 	$scope.error = null;
 	$scope.role_id = null;
@@ -191,6 +194,8 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 
 				$rootScope.auth_token = $scope.token;
 				$rootScope.role_id = $scope.role_id;
+
+				$cookieStore.auth_token = "";
 
 				$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 				console.log('rootScope token:' + $rootScope.auth_token);
@@ -716,16 +721,10 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window','Upload', 'Schoo
 			return;
 		};
 
-		$scope.upload = Upload.upload({
-        	url: '/admin/api/removeSchoolNoti',
-        	method: 'POST',
-        	dataType: 'json',
-        	data : { noti_seq : noti.noti_seq }
-    	}).success(function(data, status, headers, config) {
-    		console.log('data: ' + data + "," + data.result);
+		SchoolSvc.removeSchoolNoti({noti_seq : noti.noti_seq})
+		.success(function() {
 			$scope.getNoti($scope.selected_school);
-			$scope.clearNoti();
-    	}).error(function(data, status) {
+		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
 			} else {
