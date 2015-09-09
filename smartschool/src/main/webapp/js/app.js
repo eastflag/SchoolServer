@@ -68,6 +68,7 @@ app.service('SchoolSvc', function($http) {
 		return $http.post('/admin/api/getSchoolNotiList', school);
 	}
 	this.removeSchoolNoti = function(noti_seq) {
+		alert("G");
 		return $http.post('/admin/api/removeSchoolNoti', noti_seq);
 	}
 });
@@ -195,7 +196,9 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
 				$rootScope.auth_token = $scope.token;
 				$rootScope.role_id = $scope.role_id;
 
-				$cookieStore.auth_token = "";
+				var auth_info = {auth_token : $rootScope.auth_token, role_id : $rootScope.role_id};
+
+				$cookieStore.put("auth_info", auth_info);
 
 				$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 				console.log('rootScope token:' + $rootScope.auth_token);
@@ -209,15 +212,27 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
 	}
 
 	$scope.loggedIn = function() {
+		if ($cookieStore.get("auth_info") != null && $cookieStore.get("auth_info") != undefined) {
+			var auth_info = $cookieStore.get("auth_info");
+
+			$rootScope.auth_token = auth_info.auth_token;
+			$rootScope.role_id = auth_info.role_id;
+			$scope.role_id = auth_info.role_id;
+
+			$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+		};
+
         return $rootScope.auth_token !== null;
     }
 
     $scope.logOut = function() {
     	$rootScope.auth_token = null;
 		$rootScope.role_id = 0;
-
+		$scope.role_id = 0;
+		
 		$http.defaults.headers.post['X-Auth'] = "";
 
+		$cookieStore.remove("auth_info");
 		//location.href = $rootScope.login_url;
     }
 }]);
