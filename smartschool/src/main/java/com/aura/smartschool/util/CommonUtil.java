@@ -87,7 +87,7 @@ public class CommonUtil {
 		return builder.compact();
 	}
 	
-	public static Claims parseJWT(String jwt) throws IOException {
+	public static Claims parseJWT(String jwt) throws IOException, Exception {
 		Resource resource = new ClassPathResource("/app.properties");
         Properties props = PropertiesLoaderUtils.loadProperties(resource);
 		String key = props.getProperty("auth.key");

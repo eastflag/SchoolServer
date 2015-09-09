@@ -47,6 +47,16 @@ public class JwtFilter extends GenericFilterBean {
         	System.out.println("parse error");
         	response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         	return;
+        } catch (IOException e) {
+            //throw new ServletException("Invalid token.");
+        	System.out.println("IOException error");
+        	response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        	return;
+        } catch (Exception e) {
+            //throw new ServletException("Invalid token.");
+        	System.out.println("expire error");
+        	response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT);
+        	return;
         }
 
         chain.doFilter(req, res);
