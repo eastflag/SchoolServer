@@ -83,7 +83,7 @@ app.service('ConsultSvc', function($http) {
 
 app.service('NotiSvc', function($http) {
 	this.getNotiList = function() {
-		return $http.post('/api/getNotiList');
+		return $http.post('/admin/api/getNotiList');
 	}
 	this.addNoti = function(noti) {
 		return $http.post('/api/addNoti', noti);
@@ -98,7 +98,7 @@ app.service('NotiSvc', function($http) {
 
 app.service('BoardSvc', function($http) {
 	this.getBoardList = function(board) {
-		return $http.post('/api/getBoardList', board);
+		return $http.post('/admin/api/getBoardList', board);
 	}
 	this.answerBoard = function(board) {
 		return $http.post('/api/modifyBoard', board);
@@ -179,14 +179,6 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 	$scope.role_id = null;
 
 	$scope.login = function() {
-		//$scope.token = "ddd";
-		//		$scope.role_id = 1;
-
-		//		$rootScope.auth_token = $scope.token;
-		//		$rootScope.role_id = $scope.role_id;
-
-		//		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-
 		$scope.error = null;
 		MainSvc.getLogin({id:$scope.id, pass:$scope.pass})
 		.success(function(value){
@@ -510,7 +502,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 		.success(function(){
 			$scope.getPayList({member_id: $scope.pay.member_id});
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -540,7 +532,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', 'MemberSvc', func
 	$scope.getToday();
 }]);
 
-app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', function ($scope, $rootScope, Upload, SchoolSvc) {
+app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window','Upload', 'SchoolSvc', function ($scope, $rootScope, $window, Upload, SchoolSvc) {
 	$scope.mode = ""; //edit or noti
 	$scope.noti_mode = "";
 	$scope.school_id;
@@ -579,7 +571,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			$scope.schools = schools.data;
 			$scope.totalSchoolListCount = schools.total;
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -649,7 +641,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			//	$scope.schools = schools.data;
 			//})
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -693,7 +685,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			$scope.notis = notiList.data;
 			$scope.totalNotiListCount = notiList.total;	
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -707,12 +699,40 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 		$scope.noti_mode = "edit";
 		$scope.noti_mode_text = "알림장 수정";
 
+		$scope.f = null;
+
 		$scope.noti_seq = noti.noti_seq;
 		$scope.category = noti.category;
 		$scope.title = noti.title;
 		$scope.content = noti.content;
-		$scope.attachedfile = noti.filename;
+		$scope.filename = noti.filename;
 	}
+
+	// 알리미 글 삭제
+	$scope.removeNoti = function(noti) {
+		if (! $window.confirm("정말 삭제하시겠습니까?")) {
+			return;
+		};
+
+		$scope.upload = Upload.upload({
+        	url: '/admin/api/removeSchoolNoti',
+        	method: 'POST',
+        	dataType: 'json',
+        	data : { noti_seq : noti.noti_seq }
+    	}).success(function(data, status, headers, config) {
+    		console.log('data: ' + data + "," + data.result);
+			$scope.getNoti($scope.selected_school);
+			$scope.clearNoti();
+    	}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+
 	//알리미  글 수정
 	$scope.modifyNoti = function() {
 		if ($scope.category == "") {
@@ -725,7 +745,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			return;
 		};
 
-		if ($scope.title == "") {
+		if ($scope.content == "") {
 			alert("알림장 본문을 입력하세요.");
 			return;
 		};
@@ -749,7 +769,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
     	}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -783,7 +803,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
 				alert(data.msg);
 			}
     	}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -872,7 +892,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 			$scope.sessions = sessions.data;
 			$scope.totalSessionListCount = sessions.total;
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -899,7 +919,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 		.success(function(lists) {
 				$scope.consultLists = lists.data;
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -925,7 +945,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', 'ConsultSvc', function ($
 
     				$scope.getSessionList($scope.selectedCategoryNo);
     		}).error(function(data, status) {
-				if (status == 401) {
+				if (status >= 400) {
 					$rootScope.auth_token = null;
 
 					//location.href = $rootScope.login_url;
@@ -953,7 +973,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 		.success(function(notis) {
 			$scope.notis = notis.data;
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -978,7 +998,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 
 				$scope.clearNoti();
 			}).error(function(data, status) {
-				if (status == 401) {
+				if (status >= 400) {
 					$rootScope.auth_token = null;
 
 					//location.href = $rootScope.login_url;
@@ -1015,7 +1035,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', 'NotiSvc', functi
 
 			$scope.clearNoti();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1051,13 +1071,14 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scop
 	$scope.totalBoardListCount = 0;
 
 	$scope.getBoardList = function() {
-		BoardSvc.getBoardList({board_type:1})
+		BoardSvc.getBoardList({board_type:1, start_index:($scope.currentPageBoard - 1) * 10, page_size:10})
 		.success(function(boards) {
 			$scope.boards = boards.data;
-
+			$scope.totalBoardListCount = boards.total;
+			
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1083,7 +1104,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', 'BoardSvc', function ($scop
 
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1128,7 +1149,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 
 			$scope.clearAdmin();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1178,7 +1199,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1200,7 +1221,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status == 401) {
+			if (status >= 400) {
 				$rootScope.auth_token = null;
 
 				//location.href = $rootScope.login_url;
@@ -1219,7 +1240,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', 'AdminSvc', func
 				$scope.clearAdmin();
 				$scope.getManagerList();
 			}).error(function(data, status) {
-				if (status == 401) {
+				if (status >= 400) {
 					$rootScope.auth_token = null;
 
 					//location.href = $rootScope.login_url;

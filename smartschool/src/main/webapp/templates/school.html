@@ -134,6 +134,9 @@
 					    		<button class="btn btn-default btn-xs" ng-click="clickEditNoti(noti)">
 						        	<span class="glyphicon glyphicon-pencil"></span> 수 정
 						        </button>
+						        <button class="btn btn-default btn-xs" ng-click="removeNoti(noti)">
+						        	<span class="glyphicon glyphicon-remove-circle"></span> 삭 제
+						        </button>
 						    </td>
 						    <td>{{ categories[noti.category-1].name}}</td>
 						    <td>{{ noti.title}}</td>
@@ -183,7 +186,7 @@
 					    	<div class="col-sm-8">
 					      		<button type="file" ngf-select="uploadFiles($file)">Select File</button>
 					      		<span>{{f.name}} {{f.$error}} {{f.$errorParam}}</span>
-					      		<span ng-show="attachedfile != ''">{{attachedfile}}</span>
+					      		<span ng-show="attachedfile != ''">{{filename}}</span>
 					    	</div>
 					  	</div>
 					</form> 
