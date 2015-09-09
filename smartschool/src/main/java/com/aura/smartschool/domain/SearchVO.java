@@ -6,6 +6,10 @@ public class SearchVO {
 	private int page_size;
 	private int total_count;
 	
+	private int category;
+	private int member_id;
+	private int board_type;
+	
 	public String getSearch_value() {
 		return search_value;
 	}
@@ -30,4 +34,23 @@ public class SearchVO {
 	public void setTotal_count(int total_count) {
 		this.total_count = total_count;
 	}
+	public int getCategory() {
+		return category;
+	}
+	public void setCategory(int category) {
+		this.category = category;
+	}
+	public int getMember_id() {
+		return member_id;
+	}
+	public void setMember_id(int member_id) {
+		this.member_id = member_id;
+	}
+	public int getBoard_type() {
+		return board_type;
+	}
+	public void setBoard_type(int board_type) {
+		this.board_type = board_type;
+	}
+	
 }

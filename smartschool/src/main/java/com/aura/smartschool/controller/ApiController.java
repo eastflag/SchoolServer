@@ -27,6 +27,7 @@ import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
+import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
@@ -497,11 +498,11 @@ public class ApiController {
 
 	}
 	
-	//학교 공지사항=============================================================================
+	//학교 공지사항 가져오기=============================================================================
 	@RequestMapping("/api/getNotiList")
     public ResultData<List<NotiVO>> getNotiList() {
 		logger.debug("/api/getNotiList--------------------------------------------------");
-		List<NotiVO> notiList = mobileService.getNotiList();
+		List<NotiVO> notiList = mobileService.getNotiList(new SearchVO());
 		
 		if(notiList == null) {
 			return new ResultData<List<NotiVO>>(100, "data does not exist", null);
@@ -552,9 +553,9 @@ public class ApiController {
 	
 	//학교 게시판(FaQ)==========================================================================
 	@RequestMapping("/api/getBoardList")
-    public ResultData<List<BoardVO>> getBoardList(@RequestBody BoardVO inBoard) {
+    public ResultData<List<BoardVO>> getBoardList(@RequestBody SearchVO search) {
 		logger.debug("/api/getBoardList--------------------------------------------------");
-		List<BoardVO> boardList = mobileService.getBoardList(inBoard);
+		List<BoardVO> boardList = mobileService.getBoardList(search);
 		
 		if(boardList == null) {
 			return new ResultData<List<BoardVO>>(100, "data does not exist", null);

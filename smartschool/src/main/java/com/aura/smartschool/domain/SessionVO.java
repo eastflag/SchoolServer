@@ -1,6 +1,6 @@
 package com.aura.smartschool.domain;
 
-public class SessionVO extends SearchVO{
+public class SessionVO {
 	private int session_id;
 	private int member_id;
 	private int category;

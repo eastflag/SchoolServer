@@ -718,7 +718,7 @@ select
 		SET rate = #{rate}, ended=now()
 	WHERE session_id = #{session_id} 
 </update>
-<select id="selectSessionOngoingList" parameterType="SessionVO" resultType="SessionVO">
+<select id="selectSessionOngoingList" parameterType="SearchVO" resultType="SessionVO">
 	SELECT session.session_id, session.member_id, session.category, 
 		consult.who, school.school_name, 
 		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
@@ -733,7 +733,7 @@ select
 		
 	Limit #{start_index}, #{page_size} 
 </select>
-<select id="countSessionOngoingList" parameterType="SessionVO" resultType="Integer">
+<select id="countSessionOngoingList" parameterType="SearchVO" resultType="Integer">
 	SELECT count(*) FROM session
 	WHERE rate = 0
 		<if test="category != 0">AND category = #{category}</if>
@@ -771,9 +771,15 @@ select
 		noti(title, content) 
 	VALUES(#{title}, #{content});
 </insert>
-<select id="selectNotiList" resultType="NotiVO">
+<select id="selectNotiList" parameterType="SearchVO" resultType="NotiVO">
 	SELECT * FROM noti
 	ORDER BY noti_id desc
+	<if test="page_size!=0">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+<select id="countNotiList" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) FROM noti
 </select>
 <update id="updateNoti" parameterType="NotiVO">
 	UPDATE noti
@@ -800,14 +806,25 @@ select
 	Where B.board_id = #{board_id} 
 </select>
 
-<select id="selectBoardList" parameterType="BoardVO" resultType="BoardVO">
+<select id="selectBoardList" parameterType="SearchVO" resultType="BoardVO">
 	SELECT * FROM board
 	WHERE board_type = #{board_type}
 		<if test="member_id != 0">
 			AND member_id = #{member_id}
 		</if>
 	ORDER BY board_id desc
+	<if test="page_size != 0">
+		Limit #{start_index}, #{page_size}
+	</if>
 </select>
+<select id="countBoardList" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) from board
+	WHERE board_type = #{board_type}
+	<if test="member_id != 0">
+		AND member_id = #{member_id}
+	</if>
+</select>
+
 <update id="updateBoard" parameterType="BoardVO">
 	UPDATE board
 		SET updated = now()

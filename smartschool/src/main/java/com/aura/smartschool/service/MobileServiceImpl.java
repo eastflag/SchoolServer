@@ -351,13 +351,13 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<SessionVO> selectSessionOngoingList(SessionVO session) {
-		return mobileMapper.selectSessionOngoingList(session);
+	public List<SessionVO> selectSessionOngoingList(SearchVO search) {
+		return mobileMapper.selectSessionOngoingList(search);
 	}
 
 	@Override
-	public int countSessionOngoingList(SessionVO session) {
-		return mobileMapper.countSessionOngoingList(session);
+	public int countSessionOngoingList(SearchVO search) {
+		return mobileMapper.countSessionOngoingList(search);
 	}
 
 	@Override
@@ -381,8 +381,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<NotiVO> getNotiList() {
-		return mobileMapper.selectNotiList();
+	public List<NotiVO> getNotiList(SearchVO search) {
+		return mobileMapper.selectNotiList(search);
 	}
 
 	@Override
@@ -396,8 +396,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<BoardVO> getBoardList(BoardVO board) {
-		return mobileMapper.selectBoardList(board);
+	public List<BoardVO> getBoardList(SearchVO search) {
+		return mobileMapper.selectBoardList(search);
 	}
 
 	@Override
@@ -578,5 +578,15 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long addVideoTime(VideoTimeVO time) {
 		return mobileMapper.insertVideoTime(time);
+	}
+
+	@Override
+	public int countBoardList(SearchVO search) {
+		return mobileMapper.countBoardList(search);
+	}
+
+	@Override
+	public int countNotiList(SearchVO search) {
+		return mobileMapper.countNotiList(search);
 	}
 }

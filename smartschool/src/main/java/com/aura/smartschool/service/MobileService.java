@@ -90,8 +90,8 @@ public interface MobileService {
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
 	public long updateSession(SessionVO session) throws PersistenceException;
-	public List<SessionVO> selectSessionOngoingList(SessionVO session);
-	public int countSessionOngoingList(SessionVO session);
+	public List<SessionVO> selectSessionOngoingList(SearchVO search);
+	public int countSessionOngoingList(SearchVO search);
 	public SessionVO selectSession(SessionVO session);
 	public SessionVO selectLastSession();
 	public List<ConsultVO> selectConsultList(SessionVO session);
@@ -101,11 +101,13 @@ public interface MobileService {
 	public List<SchoolNotiVO> getSchoolNotiListByMember(SchoolNotiVO noti);
 	
 	//board, noti
-	public List<NotiVO> getNotiList();
+	public List<NotiVO> getNotiList(SearchVO search);
+	public int countNotiList(SearchVO search);
 	public long addNoti(NotiVO noti) throws PersistenceException;
 	public long modifyNoti(NotiVO noti) throws PersistenceException;
 	public long removeNoti(NotiVO noti) throws PersistenceException;
-	public List<BoardVO> getBoardList(BoardVO board);
+	public List<BoardVO> getBoardList(SearchVO board);
+	public int countBoardList(SearchVO search);
 	public MemberVO getBoardGcm(BoardVO board);
 	public long addBoard(BoardVO board) throws PersistenceException;
 	public long modifyBoard(BoardVO board) throws PersistenceException;

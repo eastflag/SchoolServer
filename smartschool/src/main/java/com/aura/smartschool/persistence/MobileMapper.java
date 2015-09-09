@@ -115,19 +115,21 @@ public interface MobileMapper {
 	public long insertSession(SessionVO session) throws PersistenceException;
 	public long insertConsult(ConsultVO consult) throws PersistenceException;
 	public long updateSession(SessionVO session) throws PersistenceException;
-	public List<SessionVO> selectSessionOngoingList(SessionVO session);
-	public int countSessionOngoingList(SessionVO session);
+	public List<SessionVO> selectSessionOngoingList(SearchVO search);
+	public int countSessionOngoingList(SearchVO search);
 	public SessionVO selectSession(SessionVO session);
 	public SessionVO selectLastSession();
 	public List<ConsultVO> selectConsultList(SessionVO session);
 	public ConsultHistoryVO selectConsultHistory(SessionVO session);
 	
 	//board, noti
-	public List<NotiVO> selectNotiList();
+	public List<NotiVO> selectNotiList(SearchVO search);
+	public int countNotiList(SearchVO search);
 	public long insertNoti(NotiVO noti) throws PersistenceException;
 	public long updateNoti(NotiVO noti) throws PersistenceException;
 	public long deleteNoti(NotiVO noti) throws PersistenceException;
-	public List<BoardVO> selectBoardList(BoardVO board);
+	public List<BoardVO> selectBoardList(SearchVO search);
+	public int countBoardList(SearchVO search);
 	public MemberVO selectBoardGcm(BoardVO board);
 	public long insertBoard(BoardVO board) throws PersistenceException;
 	public long updateBoard(BoardVO board) throws PersistenceException;

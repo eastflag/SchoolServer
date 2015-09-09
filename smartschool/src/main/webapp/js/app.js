@@ -193,7 +193,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', 'MainSvc', function
 			if(value.result == 0) {
 				$scope.id = null;
 				$scope.pass = null;
-				
+
 				$scope.token = value.data.token;
 				$scope.role_id = value.data.role_id;
 
@@ -776,8 +776,12 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope','Upload', 'SchoolSvc', func
         	fileFormDataName : 'file',
     	}).success(function(data, status, headers, config) {
     		console.log('data: ' + data + "," + data.result);
-			$scope.getNoti($scope.selected_school);
-			$scope.clearNoti();
+    		if(data.result == 0) {
+				$scope.getNoti($scope.selected_school);
+				$scope.clearNoti();
+			} else {
+				alert(data.msg);
+			}
     	}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.auth_token = null;

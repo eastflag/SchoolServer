@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
+import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -161,6 +163,26 @@ public class AdminController {
 		} else {
 			return new Result(100, "update failed");
 		}
+	}
+	
+	//앱 공지사항 가져오기=============================================================================
+	@RequestMapping("/admin/api/getNotiList")
+    public ResultData<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getNotiList--------------------------------------------------");
+		List<NotiVO> notiList = mobileService.getNotiList(search);
+		int total = mobileService.countNotiList(search);
+		
+		return new ResultDataTotal<List<NotiVO>>(0, "success", notiList, total);
+	}
+	
+	//학교 게시판(QnA) 가져오기==========================================================================
+	@RequestMapping("/admin/api/getBoardList")
+    public ResultData<List<BoardVO>> getBoardList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getBoardList--------------------------------------------------");
+		List<BoardVO> boardList = mobileService.getBoardList(search);
+		int total = mobileService.countBoardList(search);
+		
+		return new ResultDataTotal<List<BoardVO>>(0, "success", boardList, total);
 	}
 	
 	@RequestMapping("/admin/api/addSchoolNoti")
@@ -336,10 +358,10 @@ public class AdminController {
 	
 	//get current session
 	@RequestMapping("/admin/api/getSessionList")
-    public ResultData<List<SessionVO>> getSessionList(@RequestBody SessionVO inSession) {
+    public ResultData<List<SessionVO>> getSessionList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getSessionList--------------------------------------------------");
-		List<SessionVO> sessionList = mobileService.selectSessionOngoingList(inSession);
-		int total = mobileService.countSessionOngoingList(inSession);
+		List<SessionVO> sessionList = mobileService.selectSessionOngoingList(search);
+		int total = mobileService.countSessionOngoingList(search);
 		
 		return new ResultDataTotal<List<SessionVO>>(0, "success", sessionList, total);
 	}
