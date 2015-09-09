@@ -23,6 +23,11 @@
 	Limit 1;
 </select>
 
+<select id="selectAllMemberOfGcm" resultType="MemberVO">
+	SELECT gcm_id FROM member
+	WHERE use_yn=1 and home_id in (select home_id from home where use_yn=1)
+</select>
+
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
 	SELECT 
 		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,

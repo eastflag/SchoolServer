@@ -175,6 +175,63 @@ public class AdminController {
 		return new ResultDataTotal<List<NotiVO>>(0, "success", notiList, total);
 	}
 	
+	@RequestMapping("/admin/api/addNoti")
+    public Result addNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/admin/api/addNoti-------------------------------------------------------------");
+		
+		try {
+			long resultCount = mobileService.addNoti(inNoti);
+			if(resultCount > 0) {
+				//send gcm
+				List<MemberVO> memberList = mobileService.getAllMemberOfGcm();
+				JsonArray array = new JsonArray(); //get gcm_id
+				for(MemberVO m : memberList) {
+					if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
+						array.add(new JsonPrimitive(m.getGcm_id()));
+					}
+				}
+				
+				JsonObject jsonData = new JsonObject();
+				JsonObject value = new JsonObject();
+				value.addProperty("title", inNoti.getTitle());
+				value.addProperty("content", inNoti.getContent());
+				jsonData.addProperty("command", "appNoti");
+				jsonData.addProperty("value", value.toString());
+				
+				NetworkUtil.requestGCM(array, jsonData);
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert failed");
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
+	}
+	
+	@RequestMapping("/admin/api/modifyNoti")
+    public Result modifyNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/admin/api/modifyNoti----------------------------------------------------------");
+		
+		long resultCount = mobileService.modifyNoti(inNoti);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "update failed");
+		}
+	}
+	
+	@RequestMapping("/admin/api/removeNoti")
+    public Result removeNoti(@RequestBody NotiVO inNoti) {
+		logger.debug("/admin/api/removeNoti----------------------------------------------------------");
+		
+		long resultCount = mobileService.removeNoti(inNoti);
+		if(resultCount > 0) {
+			return new Result(0, "success");
+		} else {
+			return new Result(100, "delete failed");
+		}
+	}
+	
 	//학교 게시판(QnA) 가져오기==========================================================================
 	@RequestMapping("/admin/api/getBoardList")
     public ResultData<List<BoardVO>> getBoardList(@RequestBody SearchVO search) {

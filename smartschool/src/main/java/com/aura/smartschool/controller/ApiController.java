@@ -498,7 +498,7 @@ public class ApiController {
 
 	}
 	
-	//학교 공지사항 가져오기=============================================================================
+	//앱 공지사항 가져오기=============================================================================
 	@RequestMapping("/api/getNotiList")
     public ResultData<List<NotiVO>> getNotiList() {
 		logger.debug("/api/getNotiList--------------------------------------------------");
@@ -511,45 +511,7 @@ public class ApiController {
 		}
 	}
 	
-	@RequestMapping("/api/addNoti")
-    public Result addNoti(@RequestBody NotiVO inNoti) {
-		logger.debug("/api/addNoti-------------------------------------------------------------");
-		
-		try {
-			long resultCount = mobileService.addNoti(inNoti);
-			if(resultCount > 0) {
-				return new Result(0, "success");
-			} else {
-				return new Result(100, "insert failed");
-			}
-		} catch (PersistenceException e) {
-			return new Result(100, "insert failed");
-		} 
-	}
 	
-	@RequestMapping("/api/modifyNoti")
-    public Result modifyNoti(@RequestBody NotiVO inNoti) {
-		logger.debug("/api/modifyNoti----------------------------------------------------------");
-		
-		long resultCount = mobileService.modifyNoti(inNoti);
-		if(resultCount > 0) {
-			return new Result(0, "success");
-		} else {
-			return new Result(100, "update failed");
-		}
-	}
-	
-	@RequestMapping("/api/removeNoti")
-    public Result removeNoti(@RequestBody NotiVO inNoti) {
-		logger.debug("/api/removeNoti----------------------------------------------------------");
-		
-		long resultCount = mobileService.removeNoti(inNoti);
-		if(resultCount > 0) {
-			return new Result(0, "success");
-		} else {
-			return new Result(100, "delete failed");
-		}
-	}
 	
 	//학교 게시판(FaQ)==========================================================================
 	@RequestMapping("/api/getBoardList")

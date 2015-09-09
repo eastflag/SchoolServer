@@ -89,13 +89,13 @@ app.service('NotiSvc', function($http) {
 		return $http.post('/admin/api/getNotiList', noti);
 	}
 	this.addNoti = function(noti) {
-		return $http.post('/api/addNoti', noti);
+		return $http.post('/admin/api/addNoti', noti);
 	}
 	this.modifyNoti = function(noti) {
-		return $http.post('/api/modifyNoti', noti);
+		return $http.post('/admin/api/modifyNoti', noti);
 	}
 	this.removeNoti = function(noti) {
-		return $http.post('/api/removeNoti', noti);
+		return $http.post('/admin/api/removeNoti', noti);
 	}
 });
 

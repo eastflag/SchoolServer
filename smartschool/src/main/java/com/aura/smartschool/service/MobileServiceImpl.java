@@ -594,4 +594,9 @@ public class MobileServiceImpl implements MobileService {
 	public SchoolNotiVO getSchoolNoti(SchoolNotiVO noti) {
 		return mobileMapper.selectSchoolNoti(noti);
 	}
+
+	@Override
+	public List<MemberVO> getAllMemberOfGcm() {
+		return mobileMapper.selectAllMemberOfGcm();
+	}
 }
