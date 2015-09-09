@@ -144,31 +144,29 @@
 
 <update id="updateMember" parameterType="MemberVO">
 	UPDATE MEMBER
-	<set>
-		<if test="mdn != null">mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
-		<if test="name != null"> name=HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
-		<if test="relation != null">relation=#{relation}</if>
-		<if test="photo != null">photo=#{photo}</if>
-		<if test="is_parent != null">is_parent=#{is_parent}</if>
-		<if test="use_yn != -1">use_yn = #{use_yn}</if>
-		
-		<choose>
-			<when test="is_parent==0">
-				<if test="school_id != 0">school_id=#{school_id}</if>
-				<if test="school_grade != null">school_grade=#{school_grade}</if>
-				<if test="school_class != null">school_class=#{school_class}</if>
-				<if test="sex != null">sex=#{sex}</if>
-				<if test="birth_date != null">birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura'))</if>
-			</when>
-			<when test="is_parent==1">
-				<if test="school_id != null">school_id=null</if>
-				<if test="school_grade != null">school_grade=null</if>
-				<if test="school_class != null">school_class=null</if>
-				<if test="sex != null">sex=null</if>
-				<if test="birth_date != null">birth_date=null</if>
-			</when>
-		</choose>
-	</set>
+	SET is_parent=#{is_parent}
+	<if test="mdn != null">, mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
+	<if test="name != null">, name=HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
+	<if test="relation != null">, relation=#{relation}</if>
+	<if test="photo != null">, photo=#{photo}</if>
+	<if test="use_yn != -1">, use_yn = #{use_yn}</if>
+	
+	<choose>
+		<when test="is_parent==0">
+			<if test="school_id != 0">, school_id=#{school_id}</if>
+			<if test="school_grade != null">, school_grade=#{school_grade}</if>
+			<if test="school_class != null">, school_class=#{school_class}</if>
+			<if test="sex != null">, sex=#{sex}</if>
+			<if test="birth_date != null">, birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura'))</if>
+		</when>
+		<when test="is_parent==1">
+			, school_id=null
+			, school_grade=null
+			, school_class=null
+			, sex=null
+			,birth_date=null
+		</when>
+	</choose>
 
 	WHERE member_id = #{member_id} 
 </update>
