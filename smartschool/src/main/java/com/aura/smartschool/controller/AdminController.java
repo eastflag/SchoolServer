@@ -295,9 +295,20 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/admin/api/removeSchoolNoti")
-    public Result removeSchoolNoti(@RequestBody SchoolNotiVO noti) {
+    public Result removeSchoolNoti(HttpServletRequest request, @RequestBody SchoolNotiVO inNoti) {
 		logger.debug("/admin/api/removeSchoolNoti------------------------------------------------");
-		long resultCount = mobileService.removeSchoolNoti(noti);
+		long resultCount = mobileService.removeSchoolNoti(inNoti);
+		SchoolNotiVO noti = mobileService.getSchoolNoti(inNoti);
+		
+		//첨부파일이 있다면 첨부화일도 지우다.
+		if(noti.getFilename() != null && !noti.getFilename().isEmpty()) {
+			String path = request.getServletContext().getRealPath("/upload");
+			File f = new File(path + noti.getFilename());
+			if(f != null) {
+				f.delete();
+			}
+		}
+		
 		if(resultCount > 0) {
 			return new Result(0, "success");
 		} else {

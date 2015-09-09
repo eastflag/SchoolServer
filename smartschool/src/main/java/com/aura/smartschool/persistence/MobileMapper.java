@@ -104,6 +104,7 @@ public interface MobileMapper {
 	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
 	public long updateSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
 	public long deleteSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public SchoolNotiVO selectSchoolNoti(SchoolNotiVO noti);
 	public List<SchoolNotiVO> selectSchoolNotiList(SchoolNotiVO noti);
 	public int countSchoolNotiList(SchoolNotiVO noti);
 	public long insertNotiBookmark(SchoolNotiVO noti);

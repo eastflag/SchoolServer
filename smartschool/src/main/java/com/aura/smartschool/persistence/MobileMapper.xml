@@ -669,6 +669,12 @@ select
 	Where noti_seq = #{noti_seq}
 </delete>
 
+<select id="selectSchoolNoti" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
+	SELECT * FROM school_noti
+	WHERE noti_seq = #{noti_seq}
+	LIMIT 1;
+</select>
+
 <select id="selectSchoolNotiList" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
 	SELECT noti_seq, school_id, category, title, content,
 		DATE_FORMAT(noti_date, '%Y-%m-%d %h:%i %p') as 'noti_date', filename FROM SCHOOL_NOTI

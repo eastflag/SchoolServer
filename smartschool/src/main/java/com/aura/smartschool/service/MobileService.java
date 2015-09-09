@@ -82,6 +82,7 @@ public interface MobileService {
 	public List<MemberVO> selectMemberOfSchool(SchoolVO school);
 	public long modifySchoolNoti(SchoolNotiVO noti) throws PersistenceException;
 	public long removeSchoolNoti(SchoolNotiVO noti) throws PersistenceException;
+	public SchoolNotiVO getSchoolNoti(SchoolNotiVO noti);
 	public List<SchoolNotiVO> getSchoolNotiList(SchoolNotiVO noti);
 	public int countSchoolNotiList(SchoolNotiVO noti);
 	public SchoolVO getSchoolById(int school_id);

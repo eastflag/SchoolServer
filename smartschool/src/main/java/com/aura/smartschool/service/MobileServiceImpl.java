@@ -589,4 +589,9 @@ public class MobileServiceImpl implements MobileService {
 	public int countNotiList(SearchVO search) {
 		return mobileMapper.countNotiList(search);
 	}
+
+	@Override
+	public SchoolNotiVO getSchoolNoti(SchoolNotiVO noti) {
+		return mobileMapper.selectSchoolNoti(noti);
+	}
 }
