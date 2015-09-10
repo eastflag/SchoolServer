@@ -105,7 +105,7 @@
 <select id="checkMemberExistInHome" parameterType="MemberVO" resultType="Integer">
 	SELECT count(*)
 	FROM member
-	WHERE  home_id=#{home_id} and (
+	WHERE use_yn=1 and  home_id=#{home_id} and (
 		      name=HEX(AES_ENCRYPT(#{name}, 'aura'))
 			  <if test ="mdn != null">or mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
 		   )
