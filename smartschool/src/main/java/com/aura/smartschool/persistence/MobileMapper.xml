@@ -64,7 +64,8 @@
 		S.sido,
 		S.gubun1,
 		S.gubun2,
-		S.code,
+		S.code, 
+		S.school_name,
 		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id}
