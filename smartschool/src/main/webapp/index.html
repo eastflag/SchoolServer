@@ -31,6 +31,23 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <base href="/">
+    <script type="text/javascript">
+        window.onbeforeunload = function (event) {
+            getAuthInfoCookie();
+        };
+
+        function getAuthInfoCookie() {
+            var cookie = document.cookie;
+            var name = "auth_info=";
+            var idx = cookie.indexOf(name);
+
+            if (cookie && idx >= 0) {        
+                var today = new Date();
+                today.setDate(today.getDate() - 1);
+                document.cookie = name + ";path=/; expires=" + today.toGMTString() + ";";
+            }
+        }
+    </script>
   </head>
   
   <body ng-app="app" ng-controller="MainCtrl">
