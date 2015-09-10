@@ -282,12 +282,6 @@ public class AdminController {
 			//send gcm
 			SchoolVO school = mobileService.getSchoolById(notiVO.getSchool_id());
 			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
-			JsonArray array = new JsonArray(); //get gcm_id
-			for(MemberVO m : memberList) {
-				if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
-					array.add(new JsonPrimitive(m.getGcm_id()));
-				}
-			}
 			
 			JsonObject jsonData = new JsonObject();
 			JsonObject value = new JsonObject();
@@ -300,8 +294,17 @@ public class AdminController {
 			jsonData.addProperty("command", "school");
 			jsonData.addProperty("value", value.toString());
 			
-			NetworkUtil.requestGCM(array, jsonData);
-			
+			//100건 단위로 나눠서 보낸다.
+			int loop = memberList.size()/100 + 1;
+			for( int i=0; i < loop ; ++i) {
+				JsonArray array = new JsonArray();
+				for(int k=0; k < 100 ; ++k) {
+					if(k+100*i <= memberList.size()) break;
+					array.add(new JsonPrimitive(memberList.get(k + 100 * i).getGcm_id()));
+				}
+				NetworkUtil.requestGCM(array, jsonData);
+			}
+
 			return new Result(0, "success");
 		} else {
 			return new Result(100, "update failed");

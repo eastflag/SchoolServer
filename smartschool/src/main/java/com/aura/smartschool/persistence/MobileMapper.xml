@@ -25,7 +25,7 @@
 
 <select id="selectAllMemberOfGcm" resultType="MemberVO">
 	SELECT gcm_id FROM member
-	WHERE use_yn=1 and gcm_id != "" and home_id in (select home_id from home where use_yn=1)
+	WHERE use_yn=1 and gcm_id is not null and home_id in (select home_id from home where use_yn=1)
 </select>
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
@@ -655,7 +655,7 @@ select
 
 <select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="MemberVO">
 	SELECT * FROM member
-	WHERE use_yn=1 and ( school_id = #{school_id} or ( is_parent = 1 and home_id in (SELECT distinct(home_id) FROM member WHERE school_id = #{school_id})))
+	WHERE use_yn=1 and gcm_id is not null and ( school_id = #{school_id} or ( is_parent = 1 and home_id in (SELECT distinct(home_id) FROM member WHERE school_id = #{school_id})))
 </select>
 
 <insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
