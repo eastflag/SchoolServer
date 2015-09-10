@@ -756,8 +756,8 @@ select
 	Limit #{start_index}, #{page_size} 
 </select>
 <select id="countSessionOngoingList" parameterType="SearchVO" resultType="Integer">
-	SELECT count(*) FROM session
-	WHERE rate = 0
+	SELECT count(*) FROM session inner join member on session.member_id = member.member_id
+	WHERE session.rate = 0 AND member.is_parent=0
 		<if test="category != 0">AND category = #{category}</if>
 </select>
 <select id="selectSession" parameterType="SessionVO" resultType="SessionVO">
