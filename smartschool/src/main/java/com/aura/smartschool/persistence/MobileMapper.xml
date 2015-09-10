@@ -263,7 +263,7 @@ group by member_id;
 <select id="selectSchoolList" parameterType="SchoolVO" resultType="SchoolVO">
 	SELECT *
 	FROM school
-	WHERE school_name like CONCAT(#{school_name},'%')
+	WHERE school_name like CONCAT('%', #{school_name}, '%')
 	order by school_name asc
 </select>
 
