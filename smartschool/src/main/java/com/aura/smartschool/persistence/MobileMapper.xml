@@ -834,7 +834,7 @@ select
 	    CAST(AES_DECRYPT(unhex(member.mdn), 'aura') AS CHAR(100)) as 'mdn',
 		school.school_name
 	FROM board inner join member on board.member_id = member.member_id
-		inner join school on member.school_id = school.school_id
+		left outer join school on member.school_id = school.school_id
 	WHERE board.board_type = #{board_type}
 		<if test="member_id != 0">
 			AND member.member_id = #{member_id}
