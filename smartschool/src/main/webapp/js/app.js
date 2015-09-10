@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService'
 ]);
 
 app.run(['$rootScope', function($rootScope) {
@@ -54,6 +54,9 @@ app.service('MemberSvc', function($http) {
 	}
 	this.addPay = function(pay) {
 		return $http.post('/api/addPay', pay);
+	}
+	this.getSearchSchoolList = function(school) {
+		return $http.post('/api/getSchoolList', school);
 	}
 });
 
@@ -235,7 +238,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
     }
 }]);
 
-app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MemberSvc', function ($scope, $http, $rootScope, $cookieStore, MemberSvc) {
+app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MemberSvc', 'ModalService', function ($scope, $http, $rootScope, $cookieStore, MemberSvc, ModalService) {
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
@@ -395,6 +398,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.birth_date = member.birth_date;
 		$scope.sex = member.sex;
 		$scope.school_id = member.school_id;
+		$scope.school_name = member.school_name;
 		$scope.school_grade = member.school_grade;
 		$scope.school_class = member.school_class;
 		$scope.is_parent = member.is_parent;
@@ -414,6 +418,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.birth_date = null;
 		$scope.sex = null;
 		$scope.school_id = null;
+		$scope.school_name = null;
 		$scope.school_grade = null;
 		$scope.school_class = null;
 		$scope.is_parent = null;
@@ -547,6 +552,56 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.getToday();
+
+	$scope.searchSchool = function() {
+        ModalService.showModal({
+            templateUrl: 'searchSchoolModal.html',
+            controller: "SearchSchoolCtrl"
+        }).then(function(modal) {
+            modal.element.modal();
+            modal.close.then(function(result) {
+            	if (result.selected_yn == "Y") {
+            		$scope.school_id = result.school_id;
+            		$scope.school_name = result.school_name;
+            	};
+            });
+        });
+    };
+}]);
+
+app.controller('SearchSchoolCtrl', ['$scope', 'MemberSvc', 'close', function ($scope, MemberSvc, close) {
+	$scope.school_name = "";
+	$scope.school_lists = [];
+	$scope.selected_school = { selected_yn : "N", school_id : "0", school_name : "" };
+
+	$scope.getSearchSchoolList = function() {
+		$scope.selected_school = { selected_yn : "N", school_id : "0", school_name : "" };
+
+		MemberSvc.getSearchSchoolList({school_name:$scope.school_name})
+		.success(function(schoolLists){
+			$scope.school_lists = schoolLists.data;
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.selectSchool = function(school_list) {
+		$scope.selected_school = { selected_yn : "Y", school_id : school_list.school_id, school_name : school_list.school_name };
+	}
+
+ 	$scope.closePopup = function(result) {
+ 		if (result == "Y" && $scope.selected_school.selected_yn == "Y") {
+ 			close($scope.selected_school, 500);
+ 		} else {
+ 			$scope.selected_school.selected_yn = "N";
+ 			close($scope.selected_school, 500);
+ 		}	 	
+ 	};
 }]);
 
 app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore','Upload', 'SchoolSvc', function ($scope, $rootScope, $window, $cookieStore, Upload, SchoolSvc) {
