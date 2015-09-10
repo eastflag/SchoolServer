@@ -829,12 +829,17 @@ select
 </select>
 
 <select id="selectBoardList" parameterType="SearchVO" resultType="BoardVO">
-	SELECT * FROM board
-	WHERE board_type = #{board_type}
+	SELECT board.*, member.home_id, 
+		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
+	    CAST(AES_DECRYPT(unhex(member.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		school.school_name
+	FROM board inner join member on board.member_id = member.member_id
+		inner join school on member.school_id = school.school_id
+	WHERE board.board_type = #{board_type}
 		<if test="member_id != 0">
-			AND member_id = #{member_id}
+			AND member.member_id = #{member_id}
 		</if>
-	ORDER BY board_id desc
+	ORDER BY board.board_id desc
 	<if test="page_size != 0">
 		Limit #{start_index}, #{page_size}
 	</if>
