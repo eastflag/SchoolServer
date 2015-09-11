@@ -184,12 +184,6 @@ public class AdminController {
 			if(resultCount > 0) {
 				//send gcm
 				List<MemberVO> memberList = mobileService.getAllMemberOfGcm();
-				JsonArray array = new JsonArray(); //get gcm_id
-				for(MemberVO m : memberList) {
-					if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
-						array.add(new JsonPrimitive(m.getGcm_id()));
-					}
-				}
 				
 				JsonObject jsonData = new JsonObject();
 				JsonObject value = new JsonObject();
@@ -198,7 +192,26 @@ public class AdminController {
 				jsonData.addProperty("command", "appNoti");
 				jsonData.addProperty("value", value.toString());
 				
-				NetworkUtil.requestGCM(array, jsonData);
+				/*JsonArray array = new JsonArray(); //get gcm_id
+				for(MemberVO m : memberList) {
+					if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
+						array.add(new JsonPrimitive(m.getGcm_id()));
+					}
+				}*/
+				
+				//100건 단위로 나눠서 보낸다.
+				int loop = memberList.size()/100 + 1;
+				for( int i=0; i < loop ; ++i) {
+					JsonArray array = new JsonArray();
+					for(int k=0; k < 100 ; ++k) {
+						if(k+100*i >= memberList.size()) break;
+						array.add(new JsonPrimitive(memberList.get(k + 100 * i).getGcm_id()));
+					}
+					NetworkUtil.requestGCM(array, jsonData);
+				}
+				
+				//NetworkUtil.requestGCM(array, jsonData);
+				
 				return new Result(0, "success");
 			} else {
 				return new Result(100, "insert failed");
