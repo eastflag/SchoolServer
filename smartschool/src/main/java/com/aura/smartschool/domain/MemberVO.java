@@ -15,6 +15,7 @@ public class MemberVO {
 	private String sex;
 	private String birth_date;
 	private int use_yn = -1; //1:사용, 0: 삭제, -1:no assign
+	private String access_date; //마지막접속날짜
 	
 	//school infomation
 	private String school_name;
@@ -186,6 +187,12 @@ public class MemberVO {
 	}
 	public void setUse_yn(int use_yn) {
 		this.use_yn = use_yn;
+	}
+	public String getAccess_date() {
+		return access_date;
+	}
+	public void setAccess_date(String access_date) {
+		this.access_date = access_date;
 	}
 	
 }

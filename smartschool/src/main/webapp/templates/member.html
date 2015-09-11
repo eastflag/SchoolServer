@@ -119,6 +119,7 @@
 			    			<td>부모여부</td>
 			    			<td>삭제여부</td>
 			    			<td>결제일</td>
+			    			<td>마지막접속</td>
 			    		</tr>
 			    	</thead>
 			    	<tbody>
@@ -133,14 +134,13 @@
 						    <td>{{ parents[member.is_parent].name}}</td>
 						    <td>{{ deletes[member.use_yn].name}}</td>
 						    <td>{{ member.pay_date}}</td>
-					    </tr>
-					    <tr>
-					    	<td colspan="6" style="text-align:center">
-					    		<pagination boundary-links="true" total-items="totalMemberListCount" ng-model="currentPageMember" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="memberListPageChanged(member)"></pagination>
-					    	</td>
+						    <td>{{ member.access_date}}</td>
 					    </tr>
 				    </tbody>
 			    </table>
+			    <div class="panel-footer" style="text-align:center">
+					<pagination boundary-links="true" total-items="totalMemberListCount" ng-model="currentPageMember" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="memberListPageChanged(member)"></pagination>
+			    </div>
 			</div>
 		</div>
 		<div class="col-lg-4">
