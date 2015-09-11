@@ -44,6 +44,11 @@ body {
     margin-right:25px;
 }
 
+.modal .modal-body {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
 #wrapper {
     width: 100%;
 }
