@@ -147,7 +147,7 @@ public class ApiController {
     public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
-		if(mobileService.checkMemberExistInHome(member) > 0) {
+		if(mobileService.checkMemberExistInHome(member) > 1) {
 			return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
 		} else {
 			long resultCount = mobileService.updateMember(member);

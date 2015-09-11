@@ -105,12 +105,17 @@
 
 <select id="checkMemberExistInHome" parameterType="MemberVO" resultType="Integer">
 	SELECT count(*)
-	FROM member
-	WHERE use_yn=1 and  home_id=#{home_id} and (
-		      name=HEX(AES_ENCRYPT(#{name}, 'aura'))
-			  <if test ="mdn != null">or mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
-		   )
-	Limit 1
+	FROM member inner join home on member.home_id = home.home_id
+	WHERE 
+		member.use_yn=1 and home.use_yn=1
+		<choose>
+			<when test="mdn != null"> 
+				 and member.mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+			</when>
+			<otherwise>
+				 and member.home_id=(select home_id from member where member_id = #{member_id}) and member.name=HEX(AES_ENCRYPT(#{name}, 'aura'))
+			</otherwise>
+		</choose>
 </select>
 
 <insert id="insertHome" parameterType="HomeVO">
