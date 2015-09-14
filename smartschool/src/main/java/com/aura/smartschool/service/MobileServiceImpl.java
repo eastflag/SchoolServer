@@ -546,8 +546,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<MemberVO> getAllMember(HomeVO home) {
-		return mobileMapper.selectAllMember(home);
+	public List<MemberVO> getAllMember(SearchVO search) {
+		return mobileMapper.selectAllMember(search);
 	}
 
 	@Override
@@ -598,5 +598,10 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<MemberVO> getAllMemberOfGcm() {
 		return mobileMapper.selectAllMemberOfGcm();
+	}
+
+	@Override
+	public int countAllMember(SearchVO search) {
+		return mobileMapper.countAllMember(search);
 	}
 }

@@ -6,6 +6,8 @@ public class SearchVO {
 	private int page_size;
 	private int total_count;
 	
+	private String home_id;
+	private String name;
 	private int category;
 	private int member_id;
 	private int board_type;
@@ -51,6 +53,18 @@ public class SearchVO {
 	}
 	public void setBoard_type(int board_type) {
 		this.board_type = board_type;
+	}
+	public String getHome_id() {
+		return home_id;
+	}
+	public void setHome_id(String home_id) {
+		this.home_id = home_id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

@@ -35,7 +35,8 @@ public interface MobileService {
 	public MemberVO signInOfMobile(MemberVO member);
 	public MemberVO signInOfWeb(MemberVO member);
 	public List<MemberVO> getMemberList(HomeVO home);
-	public List<MemberVO> getAllMember(HomeVO home);
+	public List<MemberVO> getAllMember(SearchVO search);
+	public int countAllMember(SearchVO search);
 	public int checkMemberExistInHome(MemberVO member);
 	public long addHome(HomeVO home) throws PersistenceException;
 	public long modifyHome(HomeVO home) throws PersistenceException;

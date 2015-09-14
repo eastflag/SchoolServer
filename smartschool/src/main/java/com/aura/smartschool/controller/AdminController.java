@@ -71,7 +71,7 @@ public class AdminController {
 		if(manager != null && manager.getRole_id() < 3) {
 			String token;
 			try {
-				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 30 * 60 * 1000);
+				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 600 * 60 * 1000);
 				manager.setToken(token);
 				return new ResultData<ManagerVO>(0, "success", manager);
 			} catch (IOException e) {
@@ -107,7 +107,7 @@ public class AdminController {
 		}
 	}
 	
-	//홈 아이디 수정
+	//홈 아이디 추가
 	@RequestMapping("/admin/api/addHome")
     public Result addHome(@RequestBody HomeVO home) {
 		logger.debug("/admin/api/addHome------------------------------------------------------------");
@@ -122,12 +122,34 @@ public class AdminController {
 	
 	//가족 모든 구성원 (삭제포함) 리스트 가져오기
 	@RequestMapping("/admin/api/getAllMember")
-    public Result getAllMember(@RequestBody HomeVO home) {
-		logger.debug("/admin/api/getAllMember---------------------------------------------------------");
+    public Result getAllMember(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getAllMember----------------------------------------------------");
 		
-		List<MemberVO> memberList = mobileService.getAllMember(home);
+		List<MemberVO> memberList = mobileService.getAllMember(search);
+		int total = mobileService.countAllMember(search);
 		
-		return new ResultData<List<MemberVO>>(0, "success", memberList);
+		return new ResultDataTotal<List<MemberVO>>(0, "success", memberList, total);
+	}
+	
+	//가족 멤버 등록
+	@RequestMapping("/admin/api/addMember")
+    public Result addMember(@RequestBody MemberVO member) {
+		logger.debug("/admin/api/addMember-------------------------------------------------------");
+		
+		try {
+			if(mobileService.checkMemberExistInHome(member) > 0) {
+				return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
+			} else {
+				long resultCount = mobileService.insertMember(member);
+				if(resultCount > 0) {
+					return new Result(0, "success");
+				} else {
+					return new Result(100, "insert failed");
+				}
+			}
+		} catch (PersistenceException e) {
+			return new Result(100, "insert failed");
+		} 
 	}
 	
 	//가족 멤버 수정
@@ -135,11 +157,15 @@ public class AdminController {
     public Result modifyMember(@RequestBody MemberVO member) {
 		logger.debug("/admin/api/modifyMember----------------------------------------------------------");
 		
-		long resultCount = mobileService.updateMember(member);
-		if(resultCount > 0) {
-			return new Result(0, "success");
+		if(mobileService.checkMemberExistInHome(member) > 1) {
+			return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
 		} else {
-			return new Result(100, "update failed");
+			long resultCount = mobileService.updateMember(member);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "update failed");
+			}
 		}
 	}
     

@@ -47,7 +47,7 @@
                 </div>
                 <!-- /.panel-body -->
                 <div class="panel-footer" style="text-align:center">
-					<pagination boundary-links="true" total-items="totalHomeListCount" ng-model="currentPageHome" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="homeListPageChanged()"></pagination>
+					<pagination boundary-links="true" total-items="totalHomeListCount" ng-model="currentPageHome" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="homeListPageChanged()" max-size="10"></pagination>
                 </div>
             </div>
         </div>
@@ -110,6 +110,10 @@
                         <button type="button" class="btn btn-default btn-xs" ng-click="clearMember()">멤버추가</button>
                     </div>
 				</div>
+				<div class="input-group margin-bottom-sm">
+                    <input type="text" class="form-control" placeholder="홈아이디" ng-model="search_value_name" ng-enter="getMemberList()" />
+                    <span class="input-group-addon" ng-click="getMemberList()" style="cursor:pointer"><i class="fa fa-send fa-fw"></i>검색</span>
+                </div>
 				<table class="table table-striped">
 					<thead>
 			    		<tr>
@@ -139,7 +143,7 @@
 				    </tbody>
 			    </table>
 			    <div class="panel-footer" style="text-align:center">
-					<pagination boundary-links="true" total-items="totalMemberListCount" ng-model="currentPageMember" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="memberListPageChanged(member)"></pagination>
+					<pagination boundary-links="true" total-items="totalMemberListCount" ng-model="currentPageMember" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="memberListPageChanged(member)" max-size="10"></pagination>
 			    </div>
 			</div>
 		</div>

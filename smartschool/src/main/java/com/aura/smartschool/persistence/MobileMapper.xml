@@ -49,7 +49,7 @@
 	WHERE M.home_id = #{home_id} and M.use_yn=1
 </select>
 
-<select id="selectAllMember" parameterType="HomeVO" resultType="MemberVO">
+<select id="selectAllMember" parameterType="SearchVO" resultType="MemberVO">
 	SELECT 
 		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
 		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
@@ -69,6 +69,16 @@
 		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE M.home_id = #{home_id}
+		<if test="name != null">AND M.name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
+	Limit #{start_index}, #{page_size}
+</select>
+
+<select id="countAllMember" parameterType="SearchVO" resultType="Integer">
+	select count(*) from member
+	WHERE home_id = #{home_id}
+	<if test="name != null">
+		AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))
+	</if>
 </select>
 
 <select id="countHome" parameterType="HomeVO" resultType="Integer">

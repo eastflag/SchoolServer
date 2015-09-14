@@ -46,6 +46,9 @@ app.service('MemberSvc', function($http) {
 	this.getMemberList = function(home) {
 		return $http.post('/admin/api/getAllMember', home);
 	}
+	this.addMember = function(member) {
+		return $http.post('/api/addMember', member);
+	}
 	this.modifyMember = function(member) {
 		return $http.post('/admin/api/modifyMember', member);
 	}
@@ -253,6 +256,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.totalMemberListCount = 0;
 
 	$scope.search_value = "";
+	$scope.search_value_name = "";
 	$scope.home_mode = "";
 	$scope.home_mode_text = "홈아이디 추가";
 	$scope.member_mode = "";
@@ -372,13 +376,22 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.getMemberList = function(home) {
-		MemberSvc.getMemberList(home)
+		var search_query_name = "";
+
+		if ($scope.search_value_name == "") {
+			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10};
+		} else {
+			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10, name:$scope.search_value_name};
+		}
+		search_query_name.home_id = $scope.home_id;
+
+		MemberSvc.getMemberList(search_query_name)
 		.success(function(memberList) {
 			$scope.members = memberList.data;
-
+			$scope.totalMemberListCount = memberList.total;
 			$scope.clearMember();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status >= 400 && status < 500) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -423,6 +436,87 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.school_class = null;
 		$scope.is_parent = null;
 		$scope.member_use_yn = "";
+	}
+
+	$scope.addMember = function() {
+		if ($scope.name == "") {
+			alert("멤버 이름을 입력하세요.");
+			return;
+		};
+
+		if ($scope.relation == "") {
+			alert("멤버 관계를 입력하세요.");
+			return;
+		};
+
+		if ($scope.is_parent != "0" && $scope.is_parent != "1") {
+			alert("멤버의 부모여부를 선택하세요.");
+			return;
+		} 
+
+		if ($scope.is_parent == "0") {
+			if ($scope.birth_date == "") {
+				alert("생년월일을 입력하세요.");
+				return;
+			};
+
+			if ($scope.sex == "") {
+				alert("성별을 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_id == "") {
+				alert("학교id를 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_grade == "") {
+				alert("학년을 입력하세요.");
+				return;
+			};
+
+			if ($scope.school_class == "") {
+				alert("반을 입력하세요.");
+				return;
+			};
+		}
+
+		if ($scope.school_id == "0") {
+			$scope.school_id = null;
+		};
+
+		if($scope.mdn == "") {
+			$scope.mdn = null;
+		}
+
+		var member = {
+			home_id: $scope.home_id,
+			name : $scope.name,
+			relation : $scope.relation,
+			mdn: $scope.mdn,
+			birth_date : $scope.birth_date,
+			sex : $scope.sex,
+			school_id : $scope.school_id,
+			school_grade : $scope.school_grade,
+			school_class : $scope.school_class,
+			is_parent : $scope.is_parent
+		}
+		MemberSvc.addMember(member)
+		.success(function(result){
+			if(result.result == 0) {
+				$scope.clearMember();
+				$scope.getMemberList({home_id:$scope.home_id});
+			} else {
+				alert(result.msg);
+			}
+		}).error(function(data, status) {
+			if (status >= 400 && status < 500) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
 	}
 
 	$scope.modifyMember = function() {
