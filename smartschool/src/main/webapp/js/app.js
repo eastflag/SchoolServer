@@ -246,6 +246,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.home_id = "";
+	$scope.new_home_id = "";
 	$scope.member_id = "";
 	$scope.pay;
 
@@ -278,6 +279,14 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		{code: 0, name: "자녀"},
 		{code: 1, name: "부모"}
 	];
+
+	$scope.isEdit = function() {
+		if($scope.home_mode == "edit") {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	$scope.getHomeList = function() {
 		var search_query = "";
@@ -315,6 +324,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.home_mode_text = "홈아이디 수정";
 
 		$scope.home_id = home.home_id;
+		$scope.new_home_id = home.home_id;
 		$scope.home_use_yn = home.use_yn;
 
 		$scope.getMemberList(home);
@@ -325,22 +335,20 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.home_mode_text = "홈아이디 추가";
 
 		$scope.home_id = "";
+		$scope.new_home_id = "";
 		$scope.home_use_yn = "";
 	}
 
 	$scope.addHome = function(home) {
-		if ($scope.home_id == "") {
+		console.log('home_id:' + $scope.home_id);
+		console.log('new_home_id:' + $scope.new_home_id);
+		if ($scope.new_home_id == "") {
 			alert("홈아이디를 입력하세요.");
 			return;
 		};
 
-		if ($scope.home_use_yn == "") {
-			alert("탈퇴여부를 선택하세요.");
-			return;
-		};
-
 		var home = {
-			home_id: $scope.home_id
+			home_id: $scope.new_home_id
 		}
 		MemberSvc.addHome(home)
 		.success(function(data){
@@ -357,8 +365,16 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.modifyHome = function() {
+		console.log('home_id:' + $scope.home_id);
+		console.log('new_home_id:' + $scope.new_home_id);
+		if ($scope.new_home_id == "") {
+			alert("홈아이디를 입력하세요.");
+			return;
+		};
+
 		var home = {
 			home_id: $scope.home_id,
+			new_home_id: $scope.new_home_id,
 			use_yn: $scope.home_use_yn
 		}
 		MemberSvc.modifyHome(home) 

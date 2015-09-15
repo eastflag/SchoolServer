@@ -43,7 +43,7 @@ public interface MobileMapper {
 	public int checkMemberExistInHome(MemberVO member);
 
 	public long insertHome(HomeVO home) throws PersistenceException;
-	public long updateHome(HomeVO home) throws PersistenceException;
+	public long updateHome(SearchVO search) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;
 	public long deleteMember(MemberVO member) throws PersistenceException;

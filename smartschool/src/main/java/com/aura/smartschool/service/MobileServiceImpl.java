@@ -541,8 +541,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public long modifyHome(HomeVO home) throws PersistenceException {
-		return mobileMapper.updateHome(home);
+	public long modifyHome(SearchVO search) throws PersistenceException {
+		return mobileMapper.updateHome(search);
 	}
 
 	@Override

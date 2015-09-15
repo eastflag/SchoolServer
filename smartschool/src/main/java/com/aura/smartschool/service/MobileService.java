@@ -1,5 +1,6 @@
 package com.aura.smartschool.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -39,7 +40,7 @@ public interface MobileService {
 	public int countAllMember(SearchVO search);
 	public int checkMemberExistInHome(MemberVO member);
 	public long addHome(HomeVO home) throws PersistenceException;
-	public long modifyHome(HomeVO home) throws PersistenceException;
+	public long modifyHome(SearchVO searc) throws PersistenceException;
 	public long insertMember(MemberVO member) throws PersistenceException;
 	public long updateMember(MemberVO member) throws PersistenceException;
 	public long removeMember(MemberVO member) throws PersistenceException;

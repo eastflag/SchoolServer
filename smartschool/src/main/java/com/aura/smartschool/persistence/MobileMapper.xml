@@ -132,9 +132,9 @@
 	INSERT INTO home(home_id) values(#{home_id});
 </insert>
 
-<update id="updateHome" parameterType="HomeVO">
+<update id="updateHome" parameterType="SearchVO">
 	UPDATE HOME
-	SET home_id = #{home_id},
+	SET home_id = #{new_home_id},
 		use_yn=#{use_yn}
 	WHERE home_id = #{home_id}
 </update>

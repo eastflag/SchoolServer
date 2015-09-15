@@ -6,11 +6,13 @@ public class SearchVO {
 	private int page_size;
 	private int total_count;
 	
+	private String new_home_id;
 	private String home_id;
 	private String name;
 	private int category;
 	private int member_id;
 	private int board_type;
+	private int use_yn;
 	
 	public String getSearch_value() {
 		return search_value;
@@ -65,6 +67,18 @@ public class SearchVO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getNew_home_id() {
+		return new_home_id;
+	}
+	public void setNew_home_id(String new_home_id) {
+		this.new_home_id = new_home_id;
+	}
+	public int getUse_yn() {
+		return use_yn;
+	}
+	public void setUse_yn(int use_yn) {
+		this.use_yn = use_yn;
 	}
 	
 }

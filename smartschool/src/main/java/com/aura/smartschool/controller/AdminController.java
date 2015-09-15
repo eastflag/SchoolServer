@@ -96,10 +96,10 @@ public class AdminController {
 	
 	//홈 아이디 수정
 	@RequestMapping("/admin/api/modifyHome")
-    public Result removeHome(@RequestBody HomeVO home) {
+    public Result removeHome(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/modifyHome------------------------------------------------------");
 		
-		long resultCount = mobileService.modifyHome(home);
+		long resultCount = mobileService.modifyHome(search);
 		if(resultCount > 0) {
 			return new Result(0, "success");
 		} else {
