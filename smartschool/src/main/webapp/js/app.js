@@ -280,8 +280,8 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		{code: 1, name: "부모"}
 	];
 
-	$scope.isEdit = function() {
-		if($scope.home_mode == "edit") {
+	$scope.isMemberEdit = function() {
+		if($scope.member_mode == "edit") {
 			return true;
 		} else {
 			return false;
@@ -421,6 +421,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.member_mode = "edit";
 		$scope.member_mode_text = "멤버 수정";
 
+		$scope.new_home_id_2 = member.home_id;
 		$scope.name = member.name;
 		$scope.relation = member.relation;
 		$scope.mdn = member.mdn;
@@ -441,6 +442,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.member_mode = "";
 		$scope.member_mode_text = "멤버 추가";
 
+		$scope.new_home_id_2 = null;
 		$scope.name = null;
 		$scope.relation = null;
 		$scope.mdn = null;
@@ -536,6 +538,11 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.modifyMember = function() {
+		if ($scope.new_home_id_2 == "") {
+			alert("홈아이디를 입력하세요.");
+			return;
+		};
+
 		if ($scope.name == "") {
 			alert("멤버 이름을 입력하세요.");
 			return;
@@ -584,6 +591,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 
 		var member = {
 			member_id : $scope.member_id,
+			home_id : $scope.new_home_id_2,
 			name : $scope.name,
 			relation : $scope.relation,
 			mdn: $scope.mdn,

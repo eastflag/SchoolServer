@@ -166,6 +166,7 @@
 <update id="updateMember" parameterType="MemberVO">
 	UPDATE MEMBER
 	SET is_parent=#{is_parent}
+	<if test="home_id != null">, home_id=#{home_id}</if>
 	<if test="mdn != null">, mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
 	<if test="name != null">, name=HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
 	<if test="relation != null">, relation=#{relation}</if>
