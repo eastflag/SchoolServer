@@ -128,7 +128,7 @@ public class ApiController {
 		
 		try {
 			if(mobileService.checkMemberExistInHome(member) > 0) {
-				return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
+				return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
 			} else {
 				long resultCount = mobileService.insertMember(member);
 				if(resultCount > 0) {
@@ -148,7 +148,7 @@ public class ApiController {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
 		if(mobileService.checkMemberExistInHome(member) > 1) {
-			return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
+			return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
 		} else {
 			long resultCount = mobileService.updateMember(member);
 			if(resultCount > 0) {

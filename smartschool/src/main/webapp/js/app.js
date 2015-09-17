@@ -47,7 +47,7 @@ app.service('MemberSvc', function($http) {
 		return $http.post('/admin/api/getAllMember', home);
 	}
 	this.addMember = function(member) {
-		return $http.post('/api/addMember', member);
+		return $http.post('/admin/api/addMember', member);
 	}
 	this.modifyMember = function(member) {
 		return $http.post('/admin/api/modifyMember', member);
@@ -246,8 +246,8 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.home_id = null;
-	$scope.new_home_id = "";
-	$scope.member_id = "";
+	$scope.new_home_id = null;
+	$scope.member_id = null;
 	$scope.pay;
 
 	$scope.currentPageHome = 1;
@@ -257,7 +257,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.totalMemberListCount = 0;
 
 	$scope.search_value = null;
-	$scope.search_value_name = "";
+	$scope.search_value_name = null;
 	$scope.home_mode = "";
 	$scope.home_mode_text = "홈아이디 추가";
 	$scope.member_mode = "";
@@ -336,14 +336,14 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.home_mode_text = "홈아이디 추가";
 
 		$scope.home_id = null;
-		$scope.new_home_id = "";
-		$scope.home_use_yn = "";
+		$scope.new_home_id = null;
+		$scope.home_use_yn = null;
 	}
 
 	$scope.addHome = function(home) {
 		console.log('home_id:' + $scope.home_id);
 		console.log('new_home_id:' + $scope.new_home_id);
-		if ($scope.new_home_id == "") {
+		if ($scope.new_home_id == null) {
 			alert("홈아이디를 입력하세요.");
 			return;
 		};
@@ -353,8 +353,12 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		}
 		MemberSvc.addHome(home)
 		.success(function(data){
-			$scope.clearHome();
-			$scope.getHomeList();
+			if(data.result == 0) {
+				$scope.clearHome();
+				$scope.getHomeList();
+			} else {
+				alert(data.msg);
+			}
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
@@ -368,7 +372,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.modifyHome = function() {
 		console.log('home_id:' + $scope.home_id);
 		console.log('new_home_id:' + $scope.new_home_id);
-		if ($scope.new_home_id == "") {
+		if ($scope.new_home_id == null) {
 			alert("홈아이디를 입력하세요.");
 			return;
 		};
@@ -395,7 +399,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.getMemberList = function(home) {
 		var search_query_name = "";
 
-		if ($scope.search_value_name == "") {
+		if ($scope.search_value_name == null) {
 			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10};
 		} else {
 			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10, name:$scope.search_value_name};
@@ -454,16 +458,22 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.school_grade = null;
 		$scope.school_class = null;
 		$scope.is_parent = null;
-		$scope.member_use_yn = "";
+		$scope.member_use_yn = null;
 	}
 
 	$scope.addMember = function() {
-		if ($scope.name == "") {
+		console.log('name' + $scope.name);
+		if($scope.home_id == null) {
+			alert("추가할려는 홈을 선택하세요.");
+			return;
+		}
+
+		if ($scope.name == null) {
 			alert("멤버 이름을 입력하세요.");
 			return;
 		};
 
-		if ($scope.relation == "") {
+		if ($scope.relation == null) {
 			alert("멤버 관계를 입력하세요.");
 			return;
 		};
@@ -474,27 +484,27 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		} 
 
 		if ($scope.is_parent == "0") {
-			if ($scope.birth_date == "") {
+			if ($scope.birth_date == null) {
 				alert("생년월일을 입력하세요.");
 				return;
 			};
 
-			if ($scope.sex == "") {
+			if ($scope.sex == null) {
 				alert("성별을 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_id == "") {
+			if ($scope.school_id == null) {
 				alert("학교id를 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_grade == "") {
+			if ($scope.school_grade == null) {
 				alert("학년을 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_class == "") {
+			if ($scope.school_class == null) {
 				alert("반을 입력하세요.");
 				return;
 			};
@@ -539,17 +549,17 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.modifyMember = function() {
-		if ($scope.new_home_id_2 == "") {
+		if ($scope.new_home_id_2 == null) {
 			alert("홈아이디를 입력하세요.");
 			return;
 		};
 
-		if ($scope.name == "") {
+		if ($scope.name == null) {
 			alert("멤버 이름을 입력하세요.");
 			return;
 		};
 
-		if ($scope.relation == "") {
+		if ($scope.relation == null) {
 			alert("멤버 관계를 입력하세요.");
 			return;
 		};
@@ -565,22 +575,22 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 				return;
 			};
 
-			if ($scope.sex == "") {
+			if ($scope.sex == null) {
 				alert("성별을 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_id == "") {
+			if ($scope.school_id == null) {
 				alert("학교id를 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_grade == "") {
+			if ($scope.school_grade == null) {
 				alert("학년을 입력하세요.");
 				return;
 			};
 
-			if ($scope.school_class == "") {
+			if ($scope.school_class == null) {
 				alert("반을 입력하세요.");
 				return;
 			};
@@ -606,9 +616,12 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		}
 		MemberSvc.modifyMember(member)
 		.success(function(result){
-			$scope.clearMember();
-			
-			$scope.getMemberList({home_id:$scope.home_id});
+			if(result.result==0) {
+				$scope.clearMember();
+				$scope.getMemberList({home_id:$scope.home_id});
+			} else {
+				alert(result.msg);
+			}
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;

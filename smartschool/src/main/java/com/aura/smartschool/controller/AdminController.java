@@ -112,11 +112,16 @@ public class AdminController {
     public Result addHome(@RequestBody HomeVO home) {
 		logger.debug("/admin/api/addHome------------------------------------------------------------");
 		
-		long resultCount = mobileService.addHome(home);
-		if(resultCount > 0) {
-			return new Result(0, "success");
+		int count = mobileService.countHome(home);
+		if (count>0) {
+			return new Result(100, "동일한 가족명이 존재합니다.");
 		} else {
-			return new Result(100, "remove failed");
+			long resultCount = mobileService.addHome(home);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "remove failed");
+			}
 		}
 	}
 	
@@ -138,7 +143,7 @@ public class AdminController {
 		
 		try {
 			if(mobileService.checkMemberExistInHome(member) > 0) {
-				return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
+				return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
 			} else {
 				long resultCount = mobileService.insertMember(member);
 				if(resultCount > 0) {
@@ -158,7 +163,7 @@ public class AdminController {
 		logger.debug("/admin/api/modifyMember----------------------------------------------------------");
 		
 		if(mobileService.checkMemberExistInHome(member) > 1) {
-			return new Result(100, "중복된 전화번호나 이름이 존재합니다.");
+			return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
 		} else {
 			long resultCount = mobileService.updateMember(member);
 			if(resultCount > 0) {
