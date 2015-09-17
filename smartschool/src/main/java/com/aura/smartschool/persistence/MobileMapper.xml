@@ -72,6 +72,7 @@
 	WHERE 1=1
 		<if test="home_id != null">AND M.home_id = #{home_id}</if>
 		<if test="name != null">AND M.name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
+
 	Limit #{start_index}, #{page_size}
 </select>
 
@@ -128,7 +129,7 @@
 				and member.home_id = #{home_id}
 			</otherwise>
 		</choose>
-		OR member.mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+		<if test ="mdn != null"> OR member.mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
 </select>
 
 <insert id="insertHome" parameterType="HomeVO">
