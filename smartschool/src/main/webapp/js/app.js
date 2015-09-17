@@ -245,7 +245,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
-	$scope.home_id = "";
+	$scope.home_id = null;
 	$scope.new_home_id = "";
 	$scope.member_id = "";
 	$scope.pay;
@@ -256,7 +256,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.currentPageMember = 1;
 	$scope.totalMemberListCount = 0;
 
-	$scope.search_value = "";
+	$scope.search_value = null;
 	$scope.search_value_name = "";
 	$scope.home_mode = "";
 	$scope.home_mode_text = "홈아이디 추가";
@@ -291,7 +291,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.getHomeList = function() {
 		var search_query = "";
 
-		if ($scope.search_value == "") {
+		if ($scope.search_value == null) {
 			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10};
 		} else {
 			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10, search_value:$scope.search_value};
@@ -322,6 +322,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.editHome = function(home) {
 		$scope.home_mode = "edit";
 		$scope.home_mode_text = "홈아이디 수정";
+		$scope.search_value_name = null;
 
 		$scope.home_id = home.home_id;
 		$scope.new_home_id = home.home_id;
@@ -334,7 +335,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		$scope.home_mode = "";
 		$scope.home_mode_text = "홈아이디 추가";
 
-		$scope.home_id = "";
+		$scope.home_id = null;
 		$scope.new_home_id = "";
 		$scope.home_use_yn = "";
 	}

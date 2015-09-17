@@ -30,7 +30,9 @@ public class MemberVO {
 	private String gubun2;
 	private String code;
 	
+	//결제일과 측정일
 	private String pay_date;
+	private String measure_date;
 	
 	public String getHome_id() {
 		return home_id;
@@ -193,6 +195,12 @@ public class MemberVO {
 	}
 	public void setAccess_date(String access_date) {
 		this.access_date = access_date;
+	}
+	public String getMeasure_date() {
+		return measure_date;
+	}
+	public void setMeasure_date(String measure_date) {
+		this.measure_date = measure_date;
 	}
 	
 }

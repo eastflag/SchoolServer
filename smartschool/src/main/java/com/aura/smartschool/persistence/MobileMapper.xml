@@ -66,19 +66,20 @@
 		S.gubun2,
 		S.code, 
 		S.school_name, M.access_date,
-		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
+		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date',
+		(select measure_date from measure_info where member_id=M.member_id order by measure_id desc limit 1) as 'measure_date'
 	FROM member M left join school S on M.school_id = S.school_id
-	WHERE M.home_id = #{home_id}
+	WHERE 1=1
+		<if test="home_id != null">AND M.home_id = #{home_id}</if>
 		<if test="name != null">AND M.name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
 	Limit #{start_index}, #{page_size}
 </select>
 
 <select id="countAllMember" parameterType="SearchVO" resultType="Integer">
 	select count(*) from member
-	WHERE home_id = #{home_id}
-	<if test="name != null">
-		AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))
-	</if>
+	WHERE 1=1
+		<if test="home_id != null">AND home_id = #{home_id}</if>
+		<if test="name != null">AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
 </select>
 
 <select id="countHome" parameterType="HomeVO" resultType="Integer">
