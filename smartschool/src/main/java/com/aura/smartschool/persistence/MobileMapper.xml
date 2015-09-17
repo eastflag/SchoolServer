@@ -71,8 +71,19 @@
 	FROM member M left join school S on M.school_id = S.school_id
 	WHERE 1=1
 		<if test="home_id != null">AND M.home_id = #{home_id}</if>
-		<if test="name != null">AND M.name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
-
+		<choose>
+			<when test="search_key=='name'">
+				AND M.name = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='mdn'">
+				AND M.mdn = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='school_id'">
+				AND M.school_id = #{search_value}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
 	Limit #{start_index}, #{page_size}
 </select>
 
@@ -80,7 +91,19 @@
 	select count(*) from member
 	WHERE 1=1
 		<if test="home_id != null">AND home_id = #{home_id}</if>
-		<if test="name != null">AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
+		<choose>
+			<when test="search_key=='name'">
+				AND name = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='mdn'">
+				AND mdn = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='school_id'">
+				AND school_id = #{search_value}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
 </select>
 
 <select id="countHome" parameterType="HomeVO" resultType="Integer">

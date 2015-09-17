@@ -397,12 +397,20 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.getMemberList = function(home) {
-		var search_query_name = "";
+		var search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10};
 
-		if ($scope.search_value_name == null) {
-			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10};
-		} else {
-			search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10, name:$scope.search_value_name};
+		if ($scope.search_value_name != null) {
+			search_query_name.search_value = $scope.search_value_name;
+
+			if($scope.member_search_key == 'mdn') {
+				search_query_name.search_key = "mdn";
+			} else if($scope.member_search_key == 'school_id') {
+				search_query_name.search_key = "school_id";
+			} else {
+				search_query_name.search_key = "name";
+			}
+			//search_query_name = {start_index:($scope.currentPageMember - 1) * 10, page_size:10, name:$scope.search_value_name};
+			console.log('search_query_name:' + JSON.stringify(search_query_name));
 		}
 		search_query_name.home_id = $scope.home_id;
 

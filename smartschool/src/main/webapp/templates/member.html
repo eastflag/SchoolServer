@@ -113,9 +113,22 @@
                     </div>
 				</div>
 				<div class="panel-body">
-					<div class="input-group margin-bottom-sm">
-	                    <input type="text" class="form-control" placeholder="이름" ng-model="search_value_name" ng-enter="getMemberList()" />
-	                    <span class="input-group-addon" ng-click="getMemberList()" style="cursor:pointer"><i class="fa fa-send fa-fw"></i>검색</span>
+					<div class="row offset-btm-10">
+						<div class="col-lg-2" >
+							<select class="form-control" ng-model="member_search_key">
+				      			<option value="name" ng-selected="true">이름</option>
+				      			<option value="mdn">전화번호</option>
+				      			<option value="school_id">학교아이디</option>
+				      		</select>
+						</div>
+						<div class="col-lg-8">
+		                    <input type="text" class="form-control" ng-model="search_value_name" ng-enter="getMemberList()" />
+		                </div>
+		                <div class="col-lg-2">
+		                	<button type="button" class="btn btn-default btn-block" href ng-click="getMemberList()">
+				    			<i class="fa fa-search fa-lg"></i> 회원 검색
+				    		</button>
+		                </div>
 	                </div>
 					<table class="table table-striped">
 						<thead>

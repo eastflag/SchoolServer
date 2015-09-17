@@ -1,6 +1,7 @@
 package com.aura.smartschool.domain;
 
 public class SearchVO {
+	private String search_key;
 	private String search_value;
 	private int start_index;
 	private int page_size;
@@ -79,6 +80,12 @@ public class SearchVO {
 	}
 	public void setUse_yn(int use_yn) {
 		this.use_yn = use_yn;
+	}
+	public String getSearch_key() {
+		return search_key;
+	}
+	public void setSearch_key(String search_key) {
+		this.search_key = search_key;
 	}
 	
 }
