@@ -32,6 +32,7 @@ import com.aura.smartschool.domain.VideoVO;
 public interface MobileMapper {
 	public int countHome(HomeVO home);
 	public List<HomeVO> selectHomeList(SearchVO search);
+	public HomeVO selectHomeListByNumber(MemberVO member);
 	public int countHomeList(SearchVO search);
 	public List<MemberVO> selectAllMemberOfGcm();
 	public MemberVO selectMember(MemberVO member);

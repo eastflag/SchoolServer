@@ -105,7 +105,7 @@ public class ApiController {
 			//home_id 가 존재하는지 체크
 			if(mobileService.countHome(home) > 0) {
 				result = 100;
-				msg = "홈아이디가 이미 존재합니다";
+				msg = "가족명이 이미 존재합니다";
 			} else {
 				long insertCount = mobileService.addHome(home);
 				if(insertCount > 0) {
@@ -183,6 +183,42 @@ public class ApiController {
 			return new ResultData<List<MemberVO>>(0, "success", memberList);
 		} else {
 			return new ResultData<List<MemberVO>>(100, "home id does not exist", memberList);
+		}
+	}
+	
+	//홈아이디 변경하기
+	@RequestMapping("/api/modifyHome")
+    public Result modifyHome(@RequestBody SearchVO search) {
+		logger.debug("/api/modifyHome------------------------------------------------------");
+		
+		HomeVO home = new HomeVO();
+		home.setHome_id(search.getNew_home_id());
+		int count = mobileService.countHome(home);
+		
+		if (count>0) {
+			return new Result(100, "동일한 가족명이 존재합니다.");
+		} else {
+			search.setUse_yn(1);
+			long resultCount = mobileService.modifyHome(search);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "remove failed");
+			}
+		}
+	}
+	
+	//전화번호로 홈아이디 찾기
+	@RequestMapping("/api/getHomeByNumber")
+    public Result getHomeByNumber(@RequestBody MemberVO member) {
+		logger.debug("/api/getHomeByNumber-------------------------------------------------------");
+		
+		HomeVO home = mobileService.getHomeListByNumber(member);
+		
+		if(home == null) {
+			return new ResultData<HomeVO>(100, "등록된 가족명이 없습니다.", home);
+		} else {
+			return new ResultData<HomeVO>(0, "success", home);
 		}
 	}
 	

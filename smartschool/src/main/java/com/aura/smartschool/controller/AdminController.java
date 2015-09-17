@@ -94,16 +94,24 @@ public class AdminController {
 		return new ResultDataTotal<List<HomeVO>>(0, "success", homeList, total);
 	}
 	
-	//홈 아이디 수정
+	//홈 아이디 변경
 	@RequestMapping("/admin/api/modifyHome")
-    public Result removeHome(@RequestBody SearchVO search) {
+    public Result modifyHome(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/modifyHome------------------------------------------------------");
 		
-		long resultCount = mobileService.modifyHome(search);
-		if(resultCount > 0) {
-			return new Result(0, "success");
+		HomeVO home = new HomeVO();
+		home.setHome_id(search.getNew_home_id());
+		int count = mobileService.countHome(home);
+		
+		if (count>0) {
+			return new Result(100, "동일한 가족명이 존재합니다.");
 		} else {
-			return new Result(100, "remove failed");
+			long resultCount = mobileService.modifyHome(search);
+			if(resultCount > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "remove failed");
+			}
 		}
 	}
 	

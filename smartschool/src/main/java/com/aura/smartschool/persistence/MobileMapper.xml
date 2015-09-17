@@ -127,6 +127,12 @@
 	</if>
 </select>
 
+<select id="selectHomeListByNumber" parameterType="MemberVO" resultType="HomeVO">
+	select home_id from member
+	where mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+	Limit 1;
+</select> 
+
 <select id="selectMember" parameterType="MemberVO" resultType="MemberVO">
 	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',

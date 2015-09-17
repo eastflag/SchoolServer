@@ -604,4 +604,9 @@ public class MobileServiceImpl implements MobileService {
 	public int countAllMember(SearchVO search) {
 		return mobileMapper.countAllMember(search);
 	}
+
+	@Override
+	public HomeVO getHomeListByNumber(MemberVO member) {
+		return mobileMapper.selectHomeListByNumber(member);
+	}
 }
