@@ -109,7 +109,7 @@ public class ApiController {
 			} else {
 				//멤버 전화번호 중복 체크후 중복이 없을시 홈아이디와 멤버 생성
 				if(mobileService.checkMemberExistInHome(member) > 0) {
-					return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
+					return new Result(100, "해당 전화번호는 이미 등록된 가족명을 가지고 있습니다.");
 				} else {
 					//홈아이디 생성
 					mobileService.addHome(home);
