@@ -107,9 +107,16 @@ public class ApiController {
 				result = 100;
 				msg = "가족명이 이미 존재합니다";
 			} else {
-				long insertCount = mobileService.addHome(home);
-				if(insertCount > 0) {
+				//멤버 전화번호 중복 체크후 중복이 없을시 홈아이디와 멤버 생성
+				if(mobileService.checkMemberExistInHome(member) > 0) {
+					return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
+				} else {
+					//홈아이디 생성
+					mobileService.addHome(home);
+					//멤버 생성
 					mobileService.insertMember(member);
+
+					return new Result(0, "success");
 				}
 			}
 		} catch (PersistenceException e) {
