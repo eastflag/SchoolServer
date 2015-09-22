@@ -943,6 +943,7 @@ select
 		step, calory, distance, time
 	FROM activity
 	WHERE member_id = #{member_id}
+	Order by activity_id desc
 </select>
 
 <select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
