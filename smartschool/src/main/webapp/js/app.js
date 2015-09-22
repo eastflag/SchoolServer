@@ -925,6 +925,9 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 
 		SchoolSvc.removeSchoolNoti({noti_seq : noti.noti_seq})
 		.success(function(result) {
+			$scope.f = null;
+			$scope.filename = "";
+
 			$scope.getNoti($scope.selected_school);
 		}).error(function(data, status) {
 			if (status >= 400) {
@@ -961,6 +964,13 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			content: $scope.content
 		}
 
+		if ($scope.f.$error != null && $scope.f.$error != undefined) {
+			alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+			$scope.f.$error = null;
+			$scope.f.$errorParam = "";
+			return;
+		}
+
     	$scope.upload = Upload.upload({
         	url: '/admin/api/modifySchoolNoti',
         	method: 'POST',
@@ -970,6 +980,9 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
         	fileFormDataName : 'file',
     	}).success(function(data, status, headers, config) {
     		console.log('data: ' + data + "," + data.result);
+    		$scope.f = null;
+			$scope.filename = "";
+			
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
     	}).error(function(data, status) {
@@ -988,6 +1001,13 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 				category: $scope.category,
 				title: $scope.title,
 				content: $scope.content
+		}
+
+		if ($scope.f.$error != null && $scope.f.$error != undefined) {
+			alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+			$scope.f.$error = null;
+			$scope.f.$errorParam = "";
+			return;
 		}
 
     	$scope.upload = Upload.upload({
@@ -1032,11 +1052,18 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 
 		$scope.noti_mode = "";
 		$scope.noti_mode_text = "알림장 추가";
+
+		$scope.filename = "";
 	}
 
     $scope.uploadFiles = function(file) {
     	console.log('file selected');
         $scope.f = file;
+
+        if ($scope.f != null && $scope.f.name != null) {
+        	$scope.filename = $scope.f.name;
+        };
+
 /*        if (file && !file.$error) {
             file.upload = Upload.upload({
                 url: '/admin/upload',   

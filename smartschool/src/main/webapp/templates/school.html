@@ -184,8 +184,7 @@
 					  	<div class="form-group">
 					    	<label for="noti_dateText" class="col-sm-4 control-label">첨부파일</label>
 					    	<div class="col-sm-8">
-					      		<button type="file" ngf-select="uploadFiles($file)">Select File</button>
-					      		<span>{{f.name}} {{f.$error}} {{f.$errorParam}}</span>
+					      		<button type="file" ngf-select="uploadFiles($file)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
 					      		<span ng-show="attachedfile != ''">{{filename}}</span>
 					    	</div>
 					  	</div>
