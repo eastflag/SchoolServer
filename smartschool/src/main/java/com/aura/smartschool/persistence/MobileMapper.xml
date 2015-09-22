@@ -948,7 +948,7 @@ select
 <select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
 		select 
 			HC.CT_NAME AS title,
-			concat('http://aurasystem.kr/contents/eng_filename/', HC.ct_url_eng) AS videoUrl,
+			concat('http://aurasystem.kr/contents/eng_total/', HC.ct_url_eng) AS videoUrl,
 			concat('http://aurasystem.kr/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
 			HC.ct_duration AS duration
 		from
@@ -964,7 +964,7 @@ select
 <select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
 	select 
 		CT_NAME AS title,
-		concat('http://aurasystem.kr/contents/eng_filename/', ct_url_eng) AS videoUrl,
+		concat('http://aurasystem.kr/contents/eng_total/', ct_url_eng) AS videoUrl,
 		concat('http://aurasystem.kr/contents/', CT_URL_THUM) AS thumbnailUrl,
 		ct_duration AS duration
 	from
