@@ -53,10 +53,16 @@ app.service('MemberSvc', function($http) {
 		return $http.post('/admin/api/modifyMember', member);
 	}
 	this.getPayList = function(member) {
-		return $http.post('/api/getPayList', member);
+		return $http.post('/admin/api/getPayList', member);
 	}
 	this.addPay = function(pay) {
-		return $http.post('/api/addPay', pay);
+		return $http.post('/admin/api/addPay', pay);
+	}
+	this.modifyPay = function(pay) {
+		return $http.post('/admin/api/modifyPay', pay);
+	}
+	this.removePay = function(pay) {
+		return $http.post('/admin/api/removePay', pay);
 	}
 	this.getSearchSchoolList = function(school) {
 		return $http.post('/api/getSchoolList', school);
@@ -241,14 +247,14 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
     }
 }]);
 
-app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MemberSvc', 'ModalService', function ($scope, $http, $rootScope, $cookieStore, MemberSvc, ModalService) {
+app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cookieStore', 'MemberSvc', 'ModalService', function ($scope, $http, $rootScope, $window, $cookieStore, MemberSvc, ModalService) {
 	$scope.homes = [];
 	$scope.members = [];
 	$scope.pays = [];
 	$scope.home_id = null;
 	$scope.new_home_id = null;
 	$scope.member_id = null;
-	$scope.pay;
+	$scope.pay_id = null;
 
 	$scope.currentPageHome = 1;
 	$scope.totalHomeListCount = 0;
@@ -642,8 +648,6 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	};
 
 	$scope.getPayList = function(member) {
-		$scope.pay = {member_id:member.member_id};
-
 		MemberSvc.getPayList({member_id:member.member_id})
 		.success(function(payList){
 			$scope.pays = payList.data;
@@ -657,10 +661,26 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 		});
 	}
 
+	$scope.editPay = function(pay) {
+		$scope.pay_mode = "edit";
+		$scope.pay_mode_text = "결제 수정";
+
+		$scope.pay_id = pay.pay_id;
+		$scope.pay_date = pay.pay_date;
+	}
+
+	$scope.clearPay = function() {
+		$scope.pay_mode = "";
+		$scope.pay_mode_text = "결제 수정";
+
+		$scope.pay_id = null;
+		$scope.pay_date = null;
+	}
+
 	$scope.addPay = function() {
-		MemberSvc.addPay({member_id: $scope.pay.member_id, pay_date:$scope.pay_date})
+		MemberSvc.addPay({member_id: $scope.member_id, pay_date:$scope.pay_date})
 		.success(function(){
-			$scope.getPayList({member_id: $scope.pay.member_id});
+			$scope.getPayList({member_id: $scope.member_id});
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
@@ -669,6 +689,39 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 				alert("error : " + data.message);
 			}
 		});
+	}
+
+	$scope.modifyPay = function() {
+		MemberSvc.modifyPay({pay_id: $scope.pay_id, pay_date:$scope.pay_date})
+		.success(function(){
+			$scope.clearPay();
+			$scope.getPayList({member_id: $scope.member_id});
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.confirmTodeletePay = function(pay) {
+		if ($window.confirm("삭제하시겠습니까?")) {	
+			MemberSvc.removePay(pay)
+			.success(function(result) {
+				$scope.getPayList({member_id:$scope.member_id});
+
+				$scope.clearPay();
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		};
 	}
 
 	$scope.getToday = function() {

@@ -249,6 +249,7 @@
 <select id="selectPayList" parameterType="MemberVO" resultType="PayVO">
 	SELECT * FROM PAY_INFO
 	WHERE member_id = #{member_id}
+	ORDER BY pay_date desc
 </select>
 
 <update id="updatePay" parameterType="PayVO">

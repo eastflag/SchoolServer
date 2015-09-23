@@ -26,6 +26,7 @@ import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -558,5 +559,43 @@ public class AdminController {
 		int total = mobileService.countManager(search);
 		
 		return new ResultDataTotal<List<ManagerVO>>(0, "success", managerList, total);
+	}
+	
+	//결제관련--------------------------------------------------------------------------------------
+	@RequestMapping("/admin/api/getPayList")
+    public Result getPayList(@RequestBody MemberVO member) {
+		logger.debug("/api/getPayList---------------------------------------------------------");
+		
+		List<PayVO> payList = mobileService.getPayList(member);
+		
+		return new ResultData<List<PayVO>>(0, "success", payList);
+
+	}
+	
+	@RequestMapping("/admin/api/addPay")
+    public Result addPay(@RequestBody PayVO pay) {
+		logger.debug("/api/addPay---------------------------------------------------------");
+		
+		long result = mobileService.addPay(pay);
+		
+		return new Result(0, "success");
+	}
+	
+	@RequestMapping("/admin/api/modifyPay")
+    public Result modifyPay(@RequestBody PayVO pay) {
+		logger.debug("/api/modifyPay---------------------------------------------------------");
+		
+		long result = mobileService.modifyPay(pay);
+		
+		return new Result(0, "success");
+	}
+	
+	@RequestMapping("/admin/api/removePay")
+    public Result removePay(@RequestBody PayVO pay) {
+		logger.debug("/api/removePay---------------------------------------------------------");
+		
+		long result = mobileService.removePay(pay);
+		
+		return new Result(0, "success");
 	}
 }

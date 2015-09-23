@@ -310,7 +310,7 @@
 				<div class="panel-heading">
 					<i class="fa fa-list fa-lg"></i><span style="font-weight:bold;color: #FF0000">{{name}}</span> 결제 목록
 					<div class="pull-right">
-                        <button type="button" class="btn btn-default btn-xs">결제일 추가</button>
+                        <button type="button" class="btn btn-default btn-xs" ng-click="clearPay()">결제일 추가</button>
                     </div>
 				</div>
 				<table class="table table-striped">
@@ -326,6 +326,9 @@
 					    		<button class="btn btn-default btn-xs" ng-click="editPay(pay)">
 						        	<span class="glyphicon glyphicon-pencil"></span> 수 정
 						        </button>
+						        <button class="btn btn-default btn-xs" ng-click="confirmTodeletePay(pay)">
+							        <span class="glyphicon glyphicon-remove-circle"></span> 삭 제
+							    </button>
 						    </td>
 						    <td>{{ pay.pay_date}}</td>
 					    </tr>
