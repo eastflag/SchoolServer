@@ -6,6 +6,7 @@ public class SearchVO {
 	private int start_index;
 	private int page_size;
 	private int total_count;
+	private String order_key;
 	
 	private String new_home_id;
 	private String home_id;
@@ -86,6 +87,12 @@ public class SearchVO {
 	}
 	public void setSearch_key(String search_key) {
 		this.search_key = search_key;
+	}
+	public String getOrder_key() {
+		return order_key;
+	}
+	public void setOrder_key(String order_key) {
+		this.order_key = order_key;
 	}
 	
 }

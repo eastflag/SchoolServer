@@ -116,7 +116,15 @@
 	<if test="search_value != null">
 		where home_id like concat('%', #{search_value}, '%')
 	</if>
-	order by home_id asc
+	<choose>
+		<when test="order_key=='home_created'">
+			order by created desc
+		</when>
+		<when test="order_key=='home_name'">
+			order by home_id asc
+		</when>
+		<otherwise>order by created desc</otherwise>
+	</choose>
 	limit #{start_index}, #{page_size}
 </select> 
 

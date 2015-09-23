@@ -257,6 +257,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	$scope.totalMemberListCount = 0;
 
 	$scope.search_value = null;
+	$scope.home_order_key = null;
 	$scope.search_value_name = null;
 	$scope.home_mode = "";
 	$scope.home_mode_text = "홈아이디 추가";
@@ -289,13 +290,9 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '
 	}
 
 	$scope.getHomeList = function() {
-		var search_query = "";
-
-		if ($scope.search_value == null) {
-			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10};
-		} else {
-			search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10, search_value:$scope.search_value};
-		}
+		var search_query = {start_index:($scope.currentPageHome - 1) * 10, page_size:10};
+		search_query.search_value = $scope.search_value;
+		search_query.order_key = $scope.home_order_key;
 
 		MemberSvc.getHomeList(search_query)
 		.success(function(homes) {
