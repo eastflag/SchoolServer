@@ -1410,12 +1410,14 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 
 app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', function ($scope, $rootScope, $cookieStore, OsSvc) {
 	$scope.osInfoList = [];
-	$scope.osInfo = null;
+	$scope.tempList = []; //원본 데이터 유지
 
 	$scope.getOsInfoList = function() {
 		OsSvc.getOsInfoList()
 		.success(function(osinfos) {
 			$scope.osInfoList = osinfos.data;
+			$scope.tempList = angular.copy(osinfos.data);
+			console.log("$scope.tempList:" + $scope.tempList[0].os_name);
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
@@ -1427,20 +1429,23 @@ app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', funct
 	}
 
 	$scope.editOsInfo = function(osInfo) {
-		console.log("os version_code:" + osInfo.version_code);
-		$scope.osInfo = osInfo;
+		//var index = $scope.osInfoList.indexOf(osInfo);
+		//console.log("index:" + index);
+		//$scope.tempList[index] = osInfo;
 	}
 
 	$scope.clearOsInfo = function(index) {
-		console.log("index:" + index);
-		$scope.osInfoList[index] = $scope.osInfo;
-		$scope.osInfo = null;
+		console.log("index:" + index + $scope.osInfoList[index].version_code + "," + $scope.tempList[index].version_code);
+		$scope.osInfoList[index] = angular.copy($scope.tempList[index]);
 	}
 
 	$scope.modifyOsInfo = function(osInfo) {
 		OsSvc.modifyOsInfo(osInfo)
 		.success(function(data, status){
 			if (status == 200) {
+				//원본 데이터 유지
+				var index = $scope.osInfoList.indexOf(osInfo);
+				$scope.tempList[index] = angular.copy($scope.osInfoList[index]);
 				alert("변경되었습니다.");
 			} else {
 				alert("fail.");
