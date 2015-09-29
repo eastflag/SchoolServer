@@ -19,6 +19,7 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	.when('/consult', {templateUrl: 'templates/consult.html'})
 	.when('/noti', {templateUrl: 'templates/noti.html'})
 	.when('/qna', {templateUrl: 'templates/qna.html'})
+	.when('/os', {templateUrl: 'templates/os.html'})
 	.when('/admin', {templateUrl: 'templates/admin.html'})
 	
 	$locationProvider.html5Mode(false);
@@ -135,6 +136,15 @@ app.service('AdminSvc', function($http) {
 	}
 	this.removeManager = function(admin) {
 		return $http.post('/admin/api/removeManager', admin);
+	}
+});
+
+app.service('OsSvc', function($http) {
+	this.getOsInfoList = function() {
+		return $http.post('/admin/api/getOsInfoList');
+	}
+	this.modifyOsInfo = function(osInfo) {
+		return $http.post('/admin/api/modifyOsInfo', osInfo);
 	}
 });
 
@@ -1396,6 +1406,57 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 	};
 
 	$scope.getBoardList();
+}])
+
+app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', function ($scope, $rootScope, $cookieStore, OsSvc) {
+	$scope.osInfoList = [];
+	$scope.osInfo = null;
+
+	$scope.getOsInfoList = function() {
+		OsSvc.getOsInfoList()
+		.success(function(osinfos) {
+			$scope.osInfoList = osinfos.data;
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.editOsInfo = function(osInfo) {
+		console.log("os version_code:" + osInfo.version_code);
+		$scope.osInfo = osInfo;
+	}
+
+	$scope.clearOsInfo = function(index) {
+		console.log("index:" + index);
+		$scope.osInfoList[index] = $scope.osInfo;
+		$scope.osInfo = null;
+	}
+
+	$scope.modifyOsInfo = function(osInfo) {
+		OsSvc.modifyOsInfo(osInfo)
+		.success(function(data, status){
+			if (status == 200) {
+				alert("변경되었습니다.");
+			} else {
+				alert("fail.");
+			}
+		})
+		.error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.getOsInfoList();
 }])
 
 app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 'AdminSvc', function ($scope, $rootScope, $window, $cookieStore, AdminSvc) {

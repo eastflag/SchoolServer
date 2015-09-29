@@ -126,5 +126,8 @@ public interface MobileService {
 	public ManagerVO getManager(ManagerVO manager);
 	public List<ManagerVO> getManagerList(SearchVO search);
 	
+	//앱버전 관리
 	public OsInfoVO getOsInfo(OsInfoVO inOsInfo);
+	public List<OsInfoVO> getOsInfoList();
+	public long modifyOsInfo(OsInfoVO osInfo);
 }

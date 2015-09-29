@@ -1058,5 +1058,14 @@ select
 	</if>
 </select>
 
+<select id="selectOsInfoList" resultType="OsInfoVO">
+	SELECT * FROM os_info
+</select>
+
+<update id="updateOsInfo" parameterType="OsInfoVO">
+	UPDATE os_info
+	SET version_name = #{version_name}, version_code=#{version_code}
+	where os_name = #{os_name}
+</update>
 
 </mapper>

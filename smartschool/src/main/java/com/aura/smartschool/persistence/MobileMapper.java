@@ -149,4 +149,6 @@ public interface MobileMapper {
 	
 	//os version
 	public OsInfoVO selectOsInfo(OsInfoVO inOsInfo);
+	public List<OsInfoVO> selectOsInfoList();
+	public long updateOsInfo(OsInfoVO osInfo);
 }

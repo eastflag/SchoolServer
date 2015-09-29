@@ -609,4 +609,14 @@ public class MobileServiceImpl implements MobileService {
 	public HomeVO getHomeListByNumber(MemberVO member) {
 		return mobileMapper.selectHomeListByNumber(member);
 	}
+
+	@Override
+	public List<OsInfoVO> getOsInfoList() {
+		return mobileMapper.selectOsInfoList();
+	}
+
+	@Override
+	public long modifyOsInfo(OsInfoVO osInfo) {
+		return mobileMapper.updateOsInfo(osInfo);
+	}
 }

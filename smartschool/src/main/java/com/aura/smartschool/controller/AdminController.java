@@ -26,6 +26,7 @@ import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
@@ -564,7 +565,7 @@ public class AdminController {
 	//결제관련--------------------------------------------------------------------------------------
 	@RequestMapping("/admin/api/getPayList")
     public Result getPayList(@RequestBody MemberVO member) {
-		logger.debug("/api/getPayList---------------------------------------------------------");
+		logger.debug("/api/getPayList------------------------------------------------------------");
 		
 		List<PayVO> payList = mobileService.getPayList(member);
 		
@@ -572,29 +573,52 @@ public class AdminController {
 
 	}
 	
+	//결제정보 추가
 	@RequestMapping("/admin/api/addPay")
     public Result addPay(@RequestBody PayVO pay) {
-		logger.debug("/api/addPay---------------------------------------------------------");
+		logger.debug("/api/addPay----------------------------------------------------------------");
 		
 		long result = mobileService.addPay(pay);
 		
 		return new Result(0, "success");
 	}
 	
+	//결제정보 수정
 	@RequestMapping("/admin/api/modifyPay")
     public Result modifyPay(@RequestBody PayVO pay) {
-		logger.debug("/api/modifyPay---------------------------------------------------------");
+		logger.debug("/api/modifyPay-------------------------------------------------------------");
 		
 		long result = mobileService.modifyPay(pay);
 		
 		return new Result(0, "success");
 	}
 	
+	//결제정보 삭제
 	@RequestMapping("/admin/api/removePay")
     public Result removePay(@RequestBody PayVO pay) {
-		logger.debug("/api/removePay---------------------------------------------------------");
+		logger.debug("/api/removePay-------------------------------------------------------------");
 		
 		long result = mobileService.removePay(pay);
+		
+		return new Result(0, "success");
+	}
+	
+	//os 버전정보 모두 가져오기
+	@RequestMapping("/admin/api/getOsInfoList")
+    public Result getOsInfoList() {
+		logger.debug("/admin/api/getOsInfoList---------------------------------------------------");
+		
+		List<OsInfoVO> osInfoList = mobileService.getOsInfoList();
+		
+		return new ResultData<List<OsInfoVO>>(0, "success", osInfoList);
+	}
+	
+	//결제정보 수정
+	@RequestMapping("/admin/api/modifyOsInfo")
+    public Result modifyOsInfo(@RequestBody OsInfoVO osInfo) {
+		logger.debug("/admin/api/modifyOsInfo----------------------------------------------------");
+		
+		long result = mobileService.modifyOsInfo(osInfo);
 		
 		return new Result(0, "success");
 	}
