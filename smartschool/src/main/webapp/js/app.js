@@ -1470,7 +1470,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	$scope.currentPageAdmin = 1;
 	$scope.totalAdminListCount = 0;
 
-	$scope.admin_mode = "";
+	$scope.admin_mode = null;
 	$scope.admin_mode_text = "관리자 추가";
 
 	$scope.roles = [
@@ -1500,7 +1500,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	$scope.getManagerList();
 
 	$scope.clearAdmin = function() {
-		$scope.admin_mode = "";
+		$scope.admin_mode = null;
 		$scope.admin_mode_text = "관리자 추가";
 
 		$scope.id = null;
@@ -1519,7 +1519,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		$scope.admin_mode_text = "관리자 수정";
 
 		$scope.id = admin.id;
-		$scope.pass = admin.pass;
+		//$scope.pass = admin.pass;
 		$scope.name = admin.name;
 		$scope.role_id = admin.role_id;
 	}
@@ -1557,6 +1557,26 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		.success(function(data){
 			$scope.clearAdmin();
 			$scope.getManagerList();
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.modifyPassword = function() {
+		var admin = {
+			pass: $scope.pass
+		}
+		
+		AdminSvc.modifyManager(admin)
+		.success(function(data){
+			$scope.pass = null;
+			alert("변경되었습니다.");
+			//$scope.getManagerList();
 		}).error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
