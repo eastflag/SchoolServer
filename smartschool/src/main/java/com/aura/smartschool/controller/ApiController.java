@@ -1,7 +1,13 @@
 package com.aura.smartschool.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.ActivityVO;
@@ -18,6 +25,7 @@ import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MeasureItem;
@@ -34,6 +42,7 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
+import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.JsonArray;
@@ -737,5 +746,46 @@ public class ApiController {
 		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
 		
 		return new ResultData<OsInfoVO>(0, "success", osInfo);
+	}
+	
+	//급식 등록
+	@RequestMapping("/api/addDining")
+    public Result addDining(HttpServletRequest request, @RequestBody DiningVO dining) {
+		logger.debug("/api/addDining-------------------------------------------------------------");
+		
+		String path = request.getServletContext().getRealPath("/images/dining/");
+		String filename = path + String.format("%d_%s_%d.jpg", dining.getSchool_id(), dining.getDining_date(), dining.getCategory());
+		System.out.println("filename:" + filename);
+		
+		//convert base64 string to byte array
+		byte[] decoded = Base64.decodeBase64(dining.getImage());
+		//convert byte array to bitmap and save to file
+        
+        File file = new File(filename);
+        
+        try {
+		    FileOutputStream fileOuputStream = new FileOutputStream(file); 
+		    fileOuputStream.write(decoded);
+		    fileOuputStream.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+		
+        //db 저장, 기존에 저장된 값이 있으며 수정이므로 파일만 저장하고 db는 안한다.
+        DiningVO diningVO = mobileService.getDining(dining);
+        if(diningVO == null) {
+        	mobileService.addDining(dining);
+        }
+		
+		return new Result(0, "success");
+	}
+	
+	//급식 목록 가져오기 : 해당월 모두 가져오기
+	@RequestMapping("/api/getDiningList")
+    public Result getDiningList(@RequestBody DiningVO dining) {
+		logger.debug("/api/getDiningList---------------------------------------------------------");
+		
+		List<DiningVO> diningList = mobileService.getDiningList(dining.getDining_date());
+		return new ResultData<List<DiningVO>>(0, "success", diningList);
 	}
 }

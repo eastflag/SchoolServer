@@ -1068,4 +1068,19 @@ select
 	where os_name = #{os_name}
 </update>
 
+<insert id="insertDining" parameterType="DiningVO">
+	INSERT INTO DINING(school_id, dining_date, category)
+	VALUES(#{school_id}, #{dining_date}, #{category});
+</insert>
+
+<select id="selectDining" parameterType="DiningVO" resultType="DiningVO">
+	SELECT * FROM dining
+	WHERE school_id=#{school_id} and dining_date=#{dining_date} and category=#{category}
+</select>
+
+<select id="selectDiningOfMonth" parameterType="String" resultType="DiningVO">
+	SELECT * FROM dining
+	WHERE DATE_FORMAT(dining_date, '%Y-%m') = #{query_month}
+</select>
+
 </mapper>

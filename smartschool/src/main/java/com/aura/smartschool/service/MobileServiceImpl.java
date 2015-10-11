@@ -16,6 +16,7 @@ import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.ManagerVO;
@@ -618,5 +619,20 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public long modifyOsInfo(OsInfoVO osInfo) {
 		return mobileMapper.updateOsInfo(osInfo);
+	}
+
+	@Override
+	public long addDining(DiningVO dining) {
+		return mobileMapper.insertDining(dining);
+	}
+
+	@Override
+	public DiningVO getDining(DiningVO dining) {
+		return mobileMapper.selectDining(dining);
+	}
+
+	@Override
+	public List<DiningVO> getDiningList(String query_month) {
+		return mobileMapper.selectDiningOfMonth(query_month);
 	}
 }

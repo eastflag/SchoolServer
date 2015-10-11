@@ -13,6 +13,7 @@ import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.ManagerVO;
@@ -151,4 +152,9 @@ public interface MobileMapper {
 	public OsInfoVO selectOsInfo(OsInfoVO inOsInfo);
 	public List<OsInfoVO> selectOsInfoList();
 	public long updateOsInfo(OsInfoVO osInfo);
+	
+	//학교 급식
+	public long insertDining(DiningVO dining);
+	public DiningVO selectDining(DiningVO dining);
+	public List<DiningVO> selectDiningOfMonth(String query_month);
 }
