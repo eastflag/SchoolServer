@@ -41,6 +41,7 @@ import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.SmsUtil;
 
 @Controller
+@RequestMapping("/HealthCare")
 public class AuraHomeController {
 
 	private static Logger logger = LoggerFactory.getLogger(AuraHomeController.class);
@@ -64,7 +65,7 @@ public class AuraHomeController {
 		return sb.toString();
 	}
 	
-	@RequestMapping(value={"/aura/index","/aura/login","/aura/notice", "/aura/request","/aura/introduce","/aura/inquiry"}, method=RequestMethod.GET)
+	@RequestMapping(value={"/index","/login","/notice", "/request","/introduce","/inquiry"}, method=RequestMethod.GET)
 	public String aura(HttpServletRequest request){
 		
 		return "home/index";
@@ -76,7 +77,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/aura/api/getSmsCertifyKey", method=RequestMethod.POST)
+	@RequestMapping(value="/api/getSmsCertifyKey", method=RequestMethod.POST)
 	public Result requestSmsCertifyKey(
 			@RequestBody MemberVO in,
 			HttpSession session){
@@ -120,7 +121,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/aura/api/login", method=RequestMethod.POST)
+	@RequestMapping(value="/api/login", method=RequestMethod.POST)
 	public ResultData<Map<String,Object>> login(
 			@RequestBody MemberVO in,
 			HttpSession session){
@@ -168,7 +169,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("/aura/api/logout")
+	@RequestMapping("/api/logout")
 	public Result logout(HttpSession session){
 		session.removeAttribute("user");
 		session.invalidate();
@@ -182,9 +183,9 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("/aura/api/getNotiList")
+	@RequestMapping("/api/getNotiList")
 	public ResultData<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
-		logger.debug("Request URL : /aura/api/getNotiList");
+		logger.debug("Request URL : /api/getNotiList");
 		List<NotiVO> notiList = new ArrayList<NotiVO>();
 		int total = mobileService.countNotiList(search);
 		logger.debug("Total Count : "+total);
@@ -205,7 +206,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/aura/api/getMemberInfo", method=RequestMethod.POST)
+	@RequestMapping(value="/api/getMemberInfo", method=RequestMethod.POST)
 	public ResultData<MemberVO> getMemberInfo(@RequestBody MemberVO in){
 		
 		MemberVO member = mobileService.getMemberByMdn(in);
@@ -218,7 +219,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/aura/api/requestQnA", method=RequestMethod.POST)
+	@RequestMapping(value="/api/requestQnA", method=RequestMethod.POST)
 	public Result requestQnA(@RequestBody BoardVO in){
 		try {
 			in.setBoard_type(1);
@@ -233,7 +234,7 @@ public class AuraHomeController {
 		}
 	}
 	
-	@RequestMapping("/aura/download/doc")
+	@RequestMapping("/download/doc")
 	public View downloadDocument(
 			@RequestParam(value="g") String g){
 		
@@ -276,7 +277,7 @@ public class AuraHomeController {
 	 * @param page_size
 	 * @param model
 	 * @return
-	@RequestMapping("/aura/notice")
+	@RequestMapping("/notice")
 	public String noticeList(
 			@RequestParam(value="page",defaultValue="1") int page
 			,@RequestParam(value="page_size",defaultValue="10") int page_size
@@ -289,7 +290,7 @@ public class AuraHomeController {
 		int total = mobileService.countNotiList(search);
 		logger.info("Total : "+total);
 		model.addAttribute("total", total);
-		//model.addAttribute("pagination", paginagionRenderder("/aura/notice/list", page, page_size, total));
+		//model.addAttribute("pagination", paginagionRenderder("/notice/list", page, page_size, total));
 		if(total>0){
 			model.addAttribute("list", mobileService.getNotiList(search));
 		}
@@ -299,22 +300,22 @@ public class AuraHomeController {
 	 */
 	
 	/**
-	@RequestMapping(value="/aura/login", method=RequestMethod.POST)
+	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public String login(){
 		return "home/login";
 	}
 	
-	@RequestMapping(value="/aura/notice", method=RequestMethod.POST)
+	@RequestMapping(value="/notice", method=RequestMethod.POST)
 	public String login(){
 		return "home/notice";
 	}
 	
-	@RequestMapping(value="/aura/request", method=RequestMethod.POST)
+	@RequestMapping(value="/request", method=RequestMethod.POST)
 	public String login(){
 		return "home/request";
 	}
 	
-	@RequestMapping(value="/aura/customer", method=RequestMethod.GET)
+	@RequestMapping(value="/customer", method=RequestMethod.GET)
 	public String customer(){
 		
 		return "home/customer";

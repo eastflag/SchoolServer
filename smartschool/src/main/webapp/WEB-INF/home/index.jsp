@@ -7,13 +7,13 @@
 	<head>
 		<%@ include file="/WEB-INF/home/inc_head.jsp" %>
 		
-		<base href="/aura" />
+		<base href="/HealthCare" />
 		
 		<script type="text/javascript">
 		</script>
 	</head>
 	
-	<body ng-app="home" ng-controller="IndexCtrl">
+	<body ng-app="home">
 		<section id="wrapper">
 			<%@ include file="/WEB-INF/home/inc_body_header.jsp" %>
 			

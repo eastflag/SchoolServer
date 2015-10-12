@@ -4,19 +4,19 @@ app.run(['$rootScope', function($rootScope) {
 	$rootScope.auth_token = null;
 	$rootScope.member_id = null
 	$rootScope.mdn = null
-	$rootScope.index_url = "/aura/index";
+	$rootScope.index_url = "/HealthCare/index";
 	$rootScope.menu = 0;
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
-		.when('/aura/index', {templateUrl: 'home/templates/index.html'})
-		.when('/aura/login', {templateUrl: 'home/templates/login.html', controller:'IndexCtrl'})
-		.when('/aura/notice', {templateUrl: 'home/templates/notice.html', controller:'NotiCtrl'})
-		.when('/aura/request', {templateUrl: 'home/templates/request.html', controller:'ReqCtrl'})
-		.when('/aura/introduce', {templateUrl: 'home/templates/introduce.html', controller:'QnACtrl'})
-		.when('/aura/inquiry', {templateUrl: 'home/templates/inquiry.html', controller:'QnACtrl'})
-		.otherwise({redirectTo: '/aura/index'});
+		.when('/HealthCare/index', {templateUrl: 'home/templates/index.html', controller:'IndexCtrl'})
+		.when('/HealthCare/login', {templateUrl: 'home/templates/login.html', controller:'IndexCtrl'})
+		.when('/HealthCare/notice', {templateUrl: 'home/templates/notice.html', controller:'NotiCtrl'})
+		.when('/HealthCare/request', {templateUrl: 'home/templates/request.html', controller:'ReqCtrl'})
+		.when('/HealthCare/introduce', {templateUrl: 'home/templates/introduce.html', controller:'QnACtrl'})
+		.when('/HealthCare/inquiry', {templateUrl: 'home/templates/inquiry.html', controller:'QnACtrl'})
+		.otherwise({redirectTo: '/HealthCare/index'});
 	
 	$locationProvider.html5Mode(true);
 	//$locationProvider.hashPrefix('!');
@@ -26,13 +26,13 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 
 app.service('IndexSvc', function($http) {
 	this.requestCertification = function(data) {
-		return $http.post('/aura/api/getSmsCertifyKey', data);
+		return $http.post('/HealthCare/api/getSmsCertifyKey', data);
 	}
 	this.login = function(data){
-		return $http.post('/aura/api/login', data);
+		return $http.post('/HealthCare/api/login', data);
 	}
 	this.logout = function(){
-		return $http.get('/aura/api/logout');
+		return $http.get('/HealthCare/api/logout');
 	}
 });
 
@@ -52,13 +52,13 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 	
 	$scope.init = function(){
 		var curr_url = $location.path();
-		if(curr_url=='/aura/login'){
+		if(curr_url=='/HealthCare/login'){
 			if($rootScope.auth_token == null){
 				$rootScope.menu = 1;
 			}else{
-				$window.location.href = '/aura/index';
+				$window.location.href = '/HealthCare/index';
 			}
-		}else if(curr_url=='/aura/index'){
+		}else if(curr_url=='/HealthCare/index'){
 			$rootScope.menu = 0;
 		}
 		console.log('$rootScope.menu : '+$rootScope.menu);
@@ -148,7 +148,7 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 	
 						$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 						
-						$window.location.href = '/aura/index';
+						$window.location.href = '/HealthCare/index';
 					} else {
 						$window.alert(response.msg);
 					}
@@ -195,7 +195,7 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 					$rootScope.auth_token = null;
 					$http.defaults.headers.post['X-Auth'] = "";
 					$cookieStore.remove("auth_info");
-					$window.location.href = '/aura/index';
+					$window.location.href = '/HealthCare/index';
 				}
 			})
 			.error(function(response, state){
@@ -212,7 +212,7 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 
 app.service('NotiSvc', function($http) {
 	this.getNotiList = function(search) {
-		return $http.post('/aura/api/getNotiList', search);
+		return $http.post('/HealthCare/api/getNotiList', search);
 	}
 });
 app.controller('NotiCtrl', function ($scope, $rootScope, $window, $cookieStore, $window, NotiSvc) {
@@ -273,10 +273,10 @@ app.controller('NotiCtrl', function ($scope, $rootScope, $window, $cookieStore, 
 
 app.service('QnASvc', function($http) {
 	this.requestQnA = function(data) {
-		return $http.post('/aura/api/requestQnA', data);
+		return $http.post('/HealthCare/api/requestQnA', data);
 	}
 	this.getMemberInfo = function(data){
-		return $http.post('/aura/api/getMemberInfo', data);
+		return $http.post('/HealthCare/api/getMemberInfo', data);
 	}
 });
 app.controller('QnACtrl', function ($scope, $rootScope, $cookieStore, $window, $location, QnASvc) {
@@ -293,13 +293,13 @@ app.controller('QnACtrl', function ($scope, $rootScope, $cookieStore, $window, $
 		$rootScope.menu = 4;
 		
 		var curr_url = $location.path();
-		if($rootScope.auth_token == null && curr_url=='/aura/inquiry'){
+		if($rootScope.auth_token == null && curr_url=='/HealthCare/inquiry'){
 			if(confirm("로그인 후에 이용가능합니다.\n로그인 페이지로 이동하시겠습니까?")){
-				$window.location.href = '/aura/login';
+				$window.location.href = '/HealthCare/login';
 			}else{
-				$window.location.href = '/aura/index';
+				$window.location.href = '/HealthCare/index';
 			}
-		}else if($rootScope.auth_token !== null && curr_url=='/aura/inquiry'){
+		}else if($rootScope.auth_token !== null && curr_url=='/HealthCare/inquiry'){
 			var data = {member_id:$rootScope.member_id, mdn:$rootScope.mdn}
 			QnASvc.getMemberInfo(data)
 				.success(function(response){
@@ -353,7 +353,7 @@ app.controller('QnACtrl', function ($scope, $rootScope, $cookieStore, $window, $
 			.success(function(response) {
 				if(response.result == 0){
 					$window.alert('문의사항이 등록되었습니다.');
-					$window.location.href = '/aura/introduce';
+					$window.location.href = '/HealthCare/introduce';
 				}else{
 					$window.alert('오류가 발생하였습니다.\n잠시후에 시도하세요.');
 				}
@@ -370,7 +370,7 @@ app.controller('QnACtrl', function ($scope, $rootScope, $cookieStore, $window, $
 	
 	$scope.moveLogin = function(){
 		if(confirm("로그인 후에 이용가능합니다.\n로그인 페이지로 이동하시겠습니까?")){
-			$window.location.href = '/aura/login';
+			$window.location.href = '/HealthCare/login';
 			return true;
 		}else{
 			return false;
