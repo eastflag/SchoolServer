@@ -77,13 +77,13 @@ public class AuraHomeController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/aura/api/getSmsCertifyKey", method=RequestMethod.POST)
-	public ResultData<Map<String,Object>> requestSmsCertifyKey(
+	public Result requestSmsCertifyKey(
 			@RequestBody MemberVO in,
 			HttpSession session){
 		//회원여부 확인
 		MemberVO member = mobileService.getMemberByMdn(in);
 		if(member==null){
-			return new ResultData<Map<String,Object>>(100, "등록되지 않은 전화번호입니다.\n\n서비스를 이용하시려면\n고객센터 1544-1284로 연락바랍니다.", null);
+			return new Result(100, "Request failed!");
 		}else {
 			//전화번호 인증
 			//랜덤 6자리숫자 만들기
@@ -95,7 +95,7 @@ public class AuraHomeController {
 			sms.setMsg(msg);
 			sms.setRphone(member.getMdn());
 			sms.setSmsType("S");		//SMS 단문
-			sms.setTestflag("Y");	//테스트 요청 설정
+			//sms.setTestflag("Y");	//테스트 요청 설정
 			
 			//SMS 전송
 			try {
@@ -104,12 +104,11 @@ public class AuraHomeController {
 				session.setAttribute("certifyKey", certifyKey);
 				Map<String,Object> data = new HashMap<String,Object>();
 				data.put("rsCode", rMsg[0]);
-				data.put("certifyKey", certifyKey);
 				
-				return new ResultData<Map<String,Object>>(0, "success", data);
+				return new Result(0, rMsg[0]);
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new ResultData<Map<String,Object>>(100, "오류가 발생하였습니다.\n잠시 후에 다시 시도하세요.", null);
+				return new Result(200, e.getMessage());
 			}
 		}
 	}

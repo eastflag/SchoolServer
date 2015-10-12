@@ -83,7 +83,7 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 				IndexSvc.requestCertification(data)
 					.success(function(response) {
 						if(response.result == 0){
-							if(response.data.rsCode == 'success' || response.data.rsCode == 'Test Success!'){
+							if(response.msg == 'success' || response.msg == 'Test Success!'){
 								$window.alert("인증번호가 발송되었습니다.");
 								$scope.request = true;
 								$("#_txt_phone").prop("readonly",true);
@@ -93,11 +93,12 @@ app.controller('IndexCtrl', function ($scope, $http, $rootScope, $cookieStore, $
 								$window.alert("오류가 발생하였습니다.\n잠시후에 다시 시도하세요.");
 							}
 						} else if(response.result == 100){
-							$window.alert(response.msg);
+							$window.alert('등록되지 않은 전화번호입니다.\n\n서비스를 이용하시려면\n고객센터 1544-1284로 연락바랍니다.');
 						}
 					})
 					.error(function(response, state) {
-						$window.alert("error : " + response.message);
+						console.log(response.message);
+						$window.alert("오류가 발생하였습니다.\n잠시후에 다시 시도하세요.");
 					});
 			}
 		}

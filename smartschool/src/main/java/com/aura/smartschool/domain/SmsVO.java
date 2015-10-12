@@ -2,7 +2,7 @@ package com.aura.smartschool.domain;
 
 public class SmsVO {
 
-	private final String userId = "aurasystem ";
+	private final String userId = "aurasystem";
 	private final String source = "32c8990212758a346a50acbe6a106ee0 ";
 	
 	private final static String sphone1 = "070";
