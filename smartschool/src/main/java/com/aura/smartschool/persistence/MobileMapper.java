@@ -151,4 +151,7 @@ public interface MobileMapper {
 	public OsInfoVO selectOsInfo(OsInfoVO inOsInfo);
 	public List<OsInfoVO> selectOsInfoList();
 	public long updateOsInfo(OsInfoVO osInfo);
+	
+	//Aura Homepage
+	public MemberVO selectMemberByMdn(MemberVO member);
 }

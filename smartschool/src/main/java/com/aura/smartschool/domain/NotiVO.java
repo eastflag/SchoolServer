@@ -1,10 +1,12 @@
 package com.aura.smartschool.domain;
 
+import java.util.Date;
+
 public class NotiVO {
 	private int noti_id;
 	private String title;
 	private String content;
-	private String created;
+	private Date created;
 	public int getNoti_id() {
 		return noti_id;
 	}
@@ -23,10 +25,10 @@ public class NotiVO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public String getCreated() {
+	public Date getCreated() {
 		return created;
 	}
-	public void setCreated(String created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 }

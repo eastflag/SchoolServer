@@ -7,6 +7,7 @@ public class MemberVO {
 	private String gcm_id;
 	private int is_parent; //0:학생, 1:부모
 	private String name;
+	private String email;
 	private String relation;
 	private String photo;
 	private int school_id;
@@ -33,6 +34,9 @@ public class MemberVO {
 	//결제일과 측정일
 	private String pay_date;
 	private String measure_date;
+	
+	//아우라홈페이지
+	private String certifyKey;
 	
 	public String getHome_id() {
 		return home_id;
@@ -69,6 +73,12 @@ public class MemberVO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public String getRelation() {
 		return relation;
@@ -201,6 +211,12 @@ public class MemberVO {
 	}
 	public void setMeasure_date(String measure_date) {
 		this.measure_date = measure_date;
+	}
+	public String getCertifyKey() {
+		return certifyKey;
+	}
+	public void setCertifyKey(String certifyKey) {
+		this.certifyKey = certifyKey;
 	}
 	
 }

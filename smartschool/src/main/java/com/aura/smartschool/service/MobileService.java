@@ -130,4 +130,7 @@ public interface MobileService {
 	public OsInfoVO getOsInfo(OsInfoVO inOsInfo);
 	public List<OsInfoVO> getOsInfoList();
 	public long modifyOsInfo(OsInfoVO osInfo);
+	
+	//Aura Homepage
+	public MemberVO getMemberByMdn(MemberVO member);
 }

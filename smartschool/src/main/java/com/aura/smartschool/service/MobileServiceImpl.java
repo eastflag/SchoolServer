@@ -619,4 +619,10 @@ public class MobileServiceImpl implements MobileService {
 	public long modifyOsInfo(OsInfoVO osInfo) {
 		return mobileMapper.updateOsInfo(osInfo);
 	}
+
+	/* ------------------------ 아우라 홈페이지 ------------------------------ */
+	@Override
+	public MemberVO getMemberByMdn(MemberVO member) {
+		return mobileMapper.selectMemberByMdn(member);
+	}
 }

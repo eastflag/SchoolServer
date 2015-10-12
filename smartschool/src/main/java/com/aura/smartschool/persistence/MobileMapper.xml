@@ -4,7 +4,7 @@
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
 <select id="signInOfMobile" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex,
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
@@ -14,7 +14,7 @@
 </select>
 
 <select id="signInOfWeb" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex,
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
@@ -1067,5 +1067,22 @@ select
 	SET version_name = #{version_name}, version_code=#{version_code}
 	where os_name = #{os_name}
 </update>
+
+<!-- Aura Home -->
+<select id="selectMemberByMdn" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as mdn,
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as name,
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	<where>
+	AND mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+	<if test=" member_id != null and member_id !='' ">
+	AND member_id=#{member_id}
+	</if>
+	</where>
+	and use_yn = 1
+	Limit 1
+</select>
 
 </mapper>
