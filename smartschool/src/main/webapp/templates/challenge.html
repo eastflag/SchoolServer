@@ -1,0 +1,112 @@
+<div ng-controller='ChallengeCtrl'>
+	<div class="row">
+		<div class="col-lg-12">
+			<h3 class="page-header">도전 건강! 관리</h3>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-7">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-list fa-lg"></i> 도전!! 건강!! 목록
+				</div>
+				<table class="table table-striped">
+					<colgroup span="3">
+						<col width="30%" />
+						<col width="*" />
+						<col width="20%" />
+					</colgroup>
+					<thead>
+						<tr>
+							<td>편집</td>
+							<td>제목</td>
+							<td>등록일자</td>
+						</tr>
+					</thead>
+					<tbody>
+				<tr ng-repeat="magazine in magazines">
+					<td>
+						<button class="btn btn-default btn-xs" ng-click="viewApplyHealth(magazine)">
+						<span class="glyphicon glyphicon-pencil"></span> 상 세
+					</button>
+					<button class="btn btn-default btn-xs" ng-click="editApplyHealth(magazine)">
+						<span class="glyphicon glyphicon-remove-circle"></span> 수 정
+					</button>
+					</td>
+					<td>{{magazine.title}}</td>
+					<td>{{created}}</td>
+				</tr>
+				<tr>
+					<td colspan="7" style="text-align:center">
+							<pagination boundary-links="true" total-items="totalCount" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="pageChange()"></pagination>
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-lg-5">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-edit fa-lg"></i> {{mode_text}}
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="titleText" class="col-sm-4 control-label">연도</label>
+							<div class="col-sm-8">
+								<select class="form-control" ng-model="year">
+									<option value="">년 선택</option>
+									<option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="titleText" class="col-sm-4 control-label">월</label>
+							<div class="col-sm-8">
+								<select class="form-control" ng-model="month">
+									<option value="">월 선택</option>
+									<option ng-repeat="m in months" value="{{m}}">{{m}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="titleText" class="col-sm-4 control-label">제목</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" ng-model="title" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="titleText" class="col-sm-4 control-label">내용</label>
+							<div class="col-sm-8">
+								<textarea type="text" class="form-control" ng-model="content"></textarea>
+							</div>
+						</div>
+						<div class="form-group" ng-repeat="row in [1,2,3,4,5,6,7,8,9,10]">
+							<label for="noti_dateText" class="col-sm-4 control-label">이미지 {{row}}</label>
+							<div class="col-sm-8">
+								<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
+								<span ng-show="attachedfile != ''">{{filenames[$index]}}</span>
+							</div>
+						</div>
+					</form> 
+					<div class="row" ng-switch="mode">
+						<div class="col-lg-6" ng-switch-when="edit">
+							<button type="button" ng-click="modifyMagazine()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="edit">
+							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="">
+							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="">
+							<button type="button" ng-click="addMagazine()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
