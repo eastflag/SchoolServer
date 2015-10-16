@@ -1081,8 +1081,107 @@ select
 	AND member_id=#{member_id}
 	</if>
 	</where>
-	and use_yn = 1
+	AND use_yn = 1
 	Limit 1
+</select>
+<select id="countPressList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM press
+</select>
+
+<select id="selectPressList" parameterType="SearchVO" resultType="PressVO">
+	SELECT * FROM press
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<!-- 2015.10.13 건강매거진 추가 -->
+<select id="countMagazineList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+</select>
+
+<select id="selectMagazineList" parameterType="SearchVO" resultType="MagazineVO">
+	SELECT * FROM magazine
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="checkMagazine" parameterType="MagazineVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+	WHERE year = #{year}
+	AND month = #{month}
+	<if test=" magazine_id != null and magazine_id != '' ">
+	AND magazine_id != #{magazine_id}
+	</if>
+</select>
+
+<insert id="insertMagazine" parameterType="MagazineVO">
+	INSERT INTO magazine (
+		year,
+		month,
+		title,
+		content,
+		img_1,
+		img_2,
+		img_3,
+		img_4,
+		img_5,
+		img_6,
+		img_7,
+		img_8,
+		img_9,
+		img_10
+	) values (
+		#{year},
+		#{month},
+		#{title},
+		#{content},
+		#{img_1},
+		#{img_2},
+		#{img_3},
+		#{img_4},
+		#{img_5},
+		#{img_6},
+		#{img_7},
+		#{img_8},
+		#{img_9},
+		#{img_10}
+	)
+</insert>
+
+<update id="updateMagazine" parameterType="MagazineVO">
+	UPDATE magazine SET
+		year = #{year},
+		month = #{month},
+		title = #{title},
+		content = #{content},
+		img_1 = #{img_1},
+		img_2 = #{img_2},
+		img_3 = #{img_3},
+		img_4 = #{img_4},
+		img_5 = #{img_5},
+		img_6 = #{img_6},
+		img_7 = #{img_7},
+		img_8 = #{img_8},
+		img_9 = #{img_9},
+		img_10 = #{img_10}
+	WHERE magazine_id = #{magazine_id}
+</update>
+
+<delete id="deleteMagazine" parameterType="MagazineVO">
+	DELETE FROM magazine WHERE magazine_id = #{magazine_id}
+</delete>
+
+<select id="countChallengeList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM challenge
+</select>
+
+<select id="getChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
+	SELECT * FROM challenge
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
 </select>
 
 </mapper>

@@ -10,15 +10,18 @@ import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -131,6 +134,20 @@ public interface MobileService {
 	public List<OsInfoVO> getOsInfoList();
 	public long modifyOsInfo(OsInfoVO osInfo);
 	
-	//Aura Homepage
+	/** Aura Homepage */
 	public MemberVO getMemberByMdn(MemberVO member);
+	public int countPressList(SearchVO search);
+	public List<PressVO> getPressList(SearchVO search);
+	
+	/** 2015.10.13 건강매거진 추가 */
+	public int checkMagazine(MagazineVO magazine);
+	public List<MagazineVO> getMagazineList(SearchVO search);
+	public int countMagazineList(SearchVO search);
+	public int addMagazine(MagazineVO magazine) throws PersistenceException ;
+	public int modifyMagazine(MagazineVO magazine) throws PersistenceException ;
+	public int deleteMagazine(MagazineVO magazine) throws PersistenceException ;
+	
+	/** 2015.10.16 도전 건강! 추가 */
+	public int countChallengeList(SearchVO search);
+	public List<ChallengeVO> getChallengeList(SearchVO search);
 }

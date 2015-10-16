@@ -14,15 +14,18 @@ import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -620,9 +623,62 @@ public class MobileServiceImpl implements MobileService {
 		return mobileMapper.updateOsInfo(osInfo);
 	}
 
-	/* ------------------------ 아우라 홈페이지 ------------------------------ */
+	/** 아우라 홈페이지 */
 	@Override
 	public MemberVO getMemberByMdn(MemberVO member) {
 		return mobileMapper.selectMemberByMdn(member);
+	}
+
+	@Override
+	public int countPressList(SearchVO search) {
+		return mobileMapper.countPressList(search);
+	}
+
+	@Override
+	public List<PressVO> getPressList(SearchVO search) {
+		return mobileMapper.selectPressList(search);
+	}
+
+	/** 2015.10.13 건강매거진 추가 */
+	@Override
+	public int countMagazineList(SearchVO search) {
+		return mobileMapper.countMagazineList(search);
+	}
+
+	@Override
+	public List<MagazineVO> getMagazineList(SearchVO search) {
+		return mobileMapper.selectMagazineList(search);
+	}
+
+	@Override
+	public int checkMagazine(MagazineVO magazine) {
+		return mobileMapper.checkMagazine(magazine);
+	}
+
+	@Override
+	public int addMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.insertMagazine(magazine);
+	}
+
+	@Override
+	public int modifyMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.updateMagazine(magazine);
+	}
+
+	@Override
+	public int deleteMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.deleteMagazine(magazine);
+	}
+	
+
+	/** 2015.10.16 도전 건강! 추가 */
+	@Override
+	public int countChallengeList(SearchVO search) {
+		return mobileMapper.countChallengeList(search);
+	}
+
+	@Override
+	public List<ChallengeVO> getChallengeList(SearchVO search) {
+		return mobileMapper.selectChallengeList(search);
 	}
 }

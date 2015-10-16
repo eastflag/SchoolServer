@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.BoardVO;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
@@ -38,6 +40,7 @@ import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
+import com.aura.smartschool.util.FileUtil;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -621,5 +624,118 @@ public class AdminController {
 		long result = mobileService.modifyOsInfo(osInfo);
 		
 		return new Result(0, "success");
+	}
+	
+	/** 2015.10.13 건강매거진 추가 */
+	/**
+	 * 건강매거진 목록 조회
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value={"/admin/api/getMagazineList"})
+	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getMagazineList--------------------------------------------------");
+		List<MagazineVO> magazineList = this.mobileService.getMagazineList(search);
+		int total = this.mobileService.countMagazineList(search);
+		return new ResultDataTotal<List<MagazineVO>>(0, "success", magazineList, total);
+	}
+
+	/**
+	 * 건강매거진 등록
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value={"/admin/api/addMagazine"})
+	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addMagazine---------------------------------------------------");
+		Gson gson = new Gson();
+		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/" + magazine.getYear() + "/" + magazine.getMonth();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		int chCnt = this.mobileService.checkMagazine(magazine);
+		if (chCnt == 0) {
+			if (files.size() > 0) {
+				try {
+					FileUtil.fileUpload(files, path);
+				} catch (IllegalStateException | IOException e) {
+					e.printStackTrace();
+					return new Result(200, "fail");
+				}
+			}
+			int rsCnt = this.mobileService.addMagazine(magazine);
+			if (rsCnt > 0) {
+				return new Result(0, "success");
+			}
+		}
+		return new Result(100, "fail");
+	}
+
+	/**
+	 * 건강매거진 수정
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value={"/admin/api/modifyMagazine"})
+	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
+		Gson gson = new Gson();
+		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/" + magazine.getYear() + "/" + magazine.getMonth();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		int chCnt = this.mobileService.checkMagazine(magazine);
+		if (chCnt == 0) {
+			if (files.size() > 0) {
+				try {
+					FileUtil.fileUpload(files, path);
+				} catch (IllegalStateException | IOException e) {
+					e.printStackTrace();
+					return new Result(200, "fail");
+				}
+			}
+			int rsCnt = this.mobileService.modifyMagazine(magazine);
+			if (rsCnt > 0) {
+				return new Result(0, "success");
+			}
+		}
+		return new Result(100, "fail");
+	}
+	
+	/**
+	 * 매거진 삭제
+	 * @param magazine
+	 * @return
+	 */
+	@RequestMapping(value={"/admin/api/deleteMagazine"})
+	public Result deleteMagazine(@RequestBody MagazineVO magazine) {
+		logger.debug("/admin/api/deleteMagazine---------------------------------------------------");
+		int rsCnt = this.mobileService.deleteMagazine(magazine);
+		if (rsCnt >= 0) {
+			return new Result(0, "success");
+		}
+		return new Result(100, "failed");
+	}
+
+	/** 2015.10.16 도전 건강! 추가 */
+	/**
+	 * 도전 건강! 목록
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value={"/admin/api/getChallengeList"})
+	public ResultData<List<ChallengeVO>> getChallengeList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getChallengeList--------------------------------------------------");
+		int total = this.mobileService.countChallengeList(search);
+		List<ChallengeVO> challengeList = this.mobileService.getChallengeList(search);
+		return new ResultDataTotal<List<ChallengeVO>>(0, "success", challengeList, total);
 	}
 }

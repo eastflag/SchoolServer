@@ -1586,3 +1586,338 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		};
 	}
 }]);
+
+/* 2015.10.13 건강매거진 추가 */
+app.service('MagazineSvc', function($http) {
+	this.getMagazineList = function(params) {
+		return $http.post('/admin/api/getMagazineList', params);
+	}
+	this.deleteMagazine = function(params) {
+		return $http.post('/admin/api/deleteMagazine', params);
+	}
+});
+app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'MagazineSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, MagazineSvc) {
+	$scope.magazines = [];
+	$scope.totalCount = 0;
+	$scope.currentPage = 1;
+	
+	$scope.mode = "";
+	$scope.mode_text = "메거진 추가";
+	
+	$scope.years = [];
+	$scope.months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+	
+	$scope.getMagazineList = function(){
+		MagazineSvc.getMagazineList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+		.success(function(response) {
+			$scope.magazines = response.data;
+			$scope.totalCount = response.total;
+			
+			$scope.clearMagazine();
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.clearMagazine = function() {
+		$scope.mode = "";
+		$scope.mode_text = "건강매거진 추가";
+		
+		var cDate = new Date();
+		var currYear = cDate.getFullYear();
+		for(var i=0;i<10;i++){
+			var tmp = (currYear-i);
+			$scope.years[i] = tmp;
+		}
+
+		$scope.title = '';
+		$scope.content = '';
+		$scope.year = '';
+		$scope.month = '';
+		$scope.f = [];
+		$scope.filenames = [];
+	}
+	
+	$scope.pageChange = function() {
+		$scope.getMagazineList();
+	};
+	
+	$scope.uploadFiles = function(file,idx) {
+		console.log('file selected');
+		console.log('$scope.filenames : '+$scope.filenames);
+
+		if (file != null && file.name != null) {
+			$scope.f.push(file);
+			$scope.filenames[idx] = file.name;
+		};
+		console.log('$scope.filenames : '+$scope.filenames);
+	}
+	
+	$scope.checkImgName = function(){
+		for(var i=0; i<($scope.filenames.length-1); i++){
+			if($scope.filenames[i] == null) continue;
+			
+			for(var j=i+1; j<$scope.filenames.length; j++){
+				if($scope.filenames[j] != null && $scope.filenames[j] == $scope.filenames[i]){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	$scope.addMagazine = function(){
+		if($scope.year == ''){
+			$window.alert('연도를 선택하세요.');
+			return;
+		}
+		else if($scope.month == ''){
+			$window.alert('월을 선택하세요.');
+			return;
+		}
+		else if($scope.title == ''){
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
+			return;
+		}
+		else if($scope.filenames.length==0){
+			$window.alert('선택된 이미지가 없습니다.\n건강매거진 이미지를 선택하세요.');
+			return;
+		}
+		else {
+			var magazine = {
+				year: $scope.year,
+				month: $scope.month,
+				title: $scope.title,
+				content: $scope.content,
+				img_1:$scope.filenames[0],
+				img_2:$scope.filenames[1],
+				img_3:$scope.filenames[2],
+				img_4:$scope.filenames[3],
+				img_5:$scope.filenames[4],
+				img_6:$scope.filenames[5],
+				img_7:$scope.filenames[6],
+				img_8:$scope.filenames[7],
+				img_9:$scope.filenames[8],
+				img_10:$scope.filenames[9]
+			}
+	
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/addMagazine',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(magazine),
+				fileFormDataName : 'files',
+			}).success(function(data, status, headers, config) {
+				console.log('data: ' + data + "," + data.result);
+				if(data.result == 0) {
+					$window.alert('건강매거진이 등록되었습니다.');
+					$scope.getMagazineList();
+					$scope.clearMagazine();
+				} else {
+					$window.alert(data.msg);
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.editMagazine = function(magazine){
+		console.log('건강매거진 수정');
+		$scope.magazine_id = magazine.magazine_id;
+		$scope.mode = "edit";
+		$scope.mode_text = "건강매거진 수정";
+		
+		$scope.year = magazine.year;
+		$scope.month = magazine.month;
+		$scope.title = magazine.title;
+		$scope.content = magazine.content;
+		$scope.filenames = [
+			magazine.img_1,
+			magazine.img_2,
+			magazine.img_3,
+			magazine.img_4,
+			magazine.img_5,
+			magazine.img_6,
+			magazine.img_7,
+			magazine.img_8,
+			magazine.img_9,
+			magazine.img_10
+		];
+	}
+	
+	$scope.modifyMagazine = function(){
+		if($scope.year == ''){
+			$window.alert('연도를 선택하세요.');
+			return;
+		}
+		else if($scope.month == ''){
+			$window.alert('월을 선택하세요.');
+			return;
+		}
+		else if($scope.title == ''){
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
+			return;
+		}
+		else if($scope.filenames.length==0){
+			$window.alert('선택된 이미지가 없습니다.\n매거진 이미지를 선택하세요.');
+			return;
+		}
+		else {
+			console.log('건강매거진 수정');
+			
+			var magazine = {
+				magazine_id:$scope.magazine_id,
+				year: $scope.year,
+				month: $scope.month,
+				title: $scope.title,
+				content: $scope.content,
+				img_1:$scope.filenames[0],
+				img_2:$scope.filenames[1],
+				img_3:$scope.filenames[2],
+				img_4:$scope.filenames[3],
+				img_5:$scope.filenames[4],
+				img_6:$scope.filenames[5],
+				img_7:$scope.filenames[6],
+				img_8:$scope.filenames[7],
+				img_9:$scope.filenames[8],
+				img_10:$scope.filenames[9]
+			}
+	
+			console.log('$scope.f.length : '+$scope.f.length);
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/modifyMagazine',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(magazine),
+				fileFormDataName : 'files',
+			}).success(function(data, status, headers, config) {
+				console.log('data: ' + data + "," + data.result);
+				if(data.result == 0) {
+					$window.alert('건강매거진이 수정되었습니다.');
+					$scope.getMagazineList();
+					$scope.clearMagazine();
+				} else {
+					$window.alert(data.msg);
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.deleteMagazine = function(magazine){
+		console.log('매거진 삭제--------------');
+		if (! $window.confirm("정말 삭제하시겠습니까?")) {
+			return;
+		};
+
+		MagazineSvc.deleteMagazine({magazine_id : magazine.magazine_id})
+			.success(function(result) {
+				if(result == 0){
+					$scope.getMagazineList();
+					$scope.clearMagazine();
+				} else {
+					$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+	}
+	
+	$scope.getMagazineList();
+}]);
+
+// 도전 건강 테스트
+app.service('ChallengeSvc', function($http) {
+	this.getApplyHealthList = function(params) {
+		return $http.post('/admin/api/getChallengeList', params);
+	}
+	this.addgetChallenge = function(params) {
+		return $http.post('/api/addgetChallenge', params);
+	}
+});
+app.controller('ChallengeCtrlCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'ChallengeSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, ChallengeSvc) {
+	$scope.applyHealths = [];
+	$scope.totalCount = 0;
+	$scope.currentPage = 1;
+	
+	$scope.mode = "";
+	$scope.mode_text = "순위 설정";
+	
+	$scope.getChallengeList = function(){
+		ChallengeSvc.getChallengeList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+			.success(function(response) {
+				$scope.applyHealths = response.data;
+				$scope.totalCount = response.total;
+				
+				$scope.clear();
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+	}
+
+	$scope.clear = function() {
+		$scope.mode = "";
+		$scope.mode_text = "순위 설정";
+		
+		$scope.title = '';
+		$scope.content = '';
+		$scope.filenames = [];
+	}
+	
+	$scope.getChallengeList();
+}]);

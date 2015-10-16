@@ -1,9 +1,6 @@
 package com.aura.smartschool.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -19,18 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.AbstractView;
 
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SmsVO;
 import com.aura.smartschool.result.Result;
@@ -41,7 +34,6 @@ import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.SmsUtil;
 
 @Controller
-@RequestMapping("/HealthCare")
 public class AuraHomeController {
 
 	private static Logger logger = LoggerFactory.getLogger(AuraHomeController.class);
@@ -65,22 +57,18 @@ public class AuraHomeController {
 		return sb.toString();
 	}
 	
-	@RequestMapping(value={"/index","/login","/notice", "/request","/introduce","/inquiry"}, method=RequestMethod.GET)
-	public String aura(HttpServletRequest request){
-		
-		return "home/index";
-	}
-	
 	/**
 	 * 전화번호 인증
 	 * @param rphone
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/api/getSmsCertifyKey", method=RequestMethod.POST)
+	@RequestMapping(value="/home/api/getSmsCertifyKey")
 	public Result requestSmsCertifyKey(
 			@RequestBody MemberVO in,
+			HttpServletRequest reqst,
 			HttpSession session){
+		logger.debug("/home/api/getSmsCertifyKey");
 		//회원여부 확인
 		MemberVO member = mobileService.getMemberByMdn(in);
 		if(member==null){
@@ -96,7 +84,7 @@ public class AuraHomeController {
 			sms.setMsg(msg);
 			sms.setRphone(member.getMdn());
 			sms.setSmsType("S");		//SMS 단문
-			//sms.setTestflag("Y");	//테스트 요청 설정
+			sms.setTestflag("Y");	//테스트 요청 설정
 			
 			//SMS 전송
 			try {
@@ -106,6 +94,7 @@ public class AuraHomeController {
 				Map<String,Object> data = new HashMap<String,Object>();
 				data.put("rsCode", rMsg[0]);
 				
+				logger.debug((String) session.getAttribute("certifyKey")); 
 				return new Result(0, rMsg[0]);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -121,10 +110,12 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/api/login", method=RequestMethod.POST)
+	@RequestMapping(value="/home/api/login")
 	public ResultData<Map<String,Object>> login(
 			@RequestBody MemberVO in,
+			HttpServletRequest reqst,
 			HttpSession session){
+		logger.debug("/home/api/login");
 		ResultData<Map<String,Object>> result = null;
 		String certifyKey = (String) session.getAttribute("certifyKey");
 		
@@ -143,6 +134,7 @@ public class AuraHomeController {
 				ResultData<List<MemberVO>> result = new ResultData<List<MemberVO>>(0, "success", memberList);
 				*/
 				//인증번호삭제
+				logger.debug((String) session.getAttribute("certifyKey")); 
 				session.removeAttribute("certifyKey");
 				
 				try {
@@ -164,28 +156,14 @@ public class AuraHomeController {
 	}
 	
 	/**
-	 * 로그아웃 시, 세션의 회원정보 삭제
-	 * @param session
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping("/api/logout")
-	public Result logout(HttpSession session){
-		session.removeAttribute("user");
-		session.invalidate();
-		
-		return new Result(0,"success");
-	}
-	
-	/**
 	 * 공지사항 조회
 	 * @param SearchVO search
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("/api/getNotiList")
-	public ResultData<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
-		logger.debug("Request URL : /api/getNotiList");
+	@RequestMapping(value="/home/api/getNotiList")
+	public ResultDataTotal<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
+		logger.debug("/home/api/getNotiList");
 		List<NotiVO> notiList = new ArrayList<NotiVO>();
 		int total = mobileService.countNotiList(search);
 		logger.debug("Total Count : "+total);
@@ -201,12 +179,33 @@ public class AuraHomeController {
 	}
 	
 	/**
+	 * 언론자료 조회
+	 * @param SearchVO search
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/home/api/getPressList")
+	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
+		List<PressVO> pressList = new ArrayList<PressVO>();
+		logger.debug("/home/api/getPressList");
+		int total = mobileService.countPressList(search);
+		if(total > 0){
+			pressList = mobileService.getPressList(search);
+		}else{
+			PressVO press = new PressVO();
+			press.setTitle("등록된 언론자료가 없습니다.");
+			pressList.add(press);
+		}
+		return new ResultDataTotal<List<PressVO>>(0, "success", pressList, total);
+	}
+	
+	/**
 	 * 회원정보조회
 	 * @param in
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/api/getMemberInfo", method=RequestMethod.POST)
+	@RequestMapping(value="/home/api/getMemberInfo")
 	public ResultData<MemberVO> getMemberInfo(@RequestBody MemberVO in){
 		
 		MemberVO member = mobileService.getMemberByMdn(in);
@@ -219,7 +218,7 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/api/requestQnA", method=RequestMethod.POST)
+	@RequestMapping(value="/home/api/requestQnA", method=RequestMethod.POST, headers="Accept=application/json")
 	public Result requestQnA(@RequestBody BoardVO in){
 		try {
 			in.setBoard_type(1);
@@ -233,92 +232,4 @@ public class AuraHomeController {
 			return new Result(100, "insert failed");
 		}
 	}
-	
-	@RequestMapping("/download/doc")
-	public View downloadDocument(
-			@RequestParam(value="g") String g){
-		
-		final File file = new File("path", g);
-		
-		View view = new AbstractView(){
-
-			@Override
-			protected void renderMergedOutputModel(
-					Map<String, Object> arg0, HttpServletRequest req, HttpServletResponse res) throws Exception {
-				res.setContentType("application/octet-stream");
-				res.setContentLength((int)file.length());
-				res.setHeader("Content-Transfer-Encoding", "binary");
-				res.setHeader("Content-Disposition", "attachment;filename=\""+file.getName()+"\";");
-				
-				OutputStream out = res.getOutputStream();
-				FileInputStream fis = null;
-				
-				try{
-					fis = new FileInputStream(file);
-					FileCopyUtils.copy(fis,out);
-				}
-				catch(IOException ioe){
-					ioe.printStackTrace();
-				}
-				finally{
-					if(fis != null) fis.close();
-					if(out != null) out.close();
-				}
-			}
-			
-		};
-		
-		return view;
-	}
-	
-	/**
-	 * 공지사항 - 목록
-	 * @param start_index
-	 * @param page_size
-	 * @param model
-	 * @return
-	@RequestMapping("/notice")
-	public String noticeList(
-			@RequestParam(value="page",defaultValue="1") int page
-			,@RequestParam(value="page_size",defaultValue="10") int page_size
-			,ModelMap model){
-		
-		SearchVO search = new SearchVO();
-		search.setStart_index((page-1)*page_size);
-		search.setPage_size(page_size);
-		
-		int total = mobileService.countNotiList(search);
-		logger.info("Total : "+total);
-		model.addAttribute("total", total);
-		//model.addAttribute("pagination", paginagionRenderder("/notice/list", page, page_size, total));
-		if(total>0){
-			model.addAttribute("list", mobileService.getNotiList(search));
-		}
-		
-		return "home/notice/notice";
-	}
-	 */
-	
-	/**
-	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public String login(){
-		return "home/login";
-	}
-	
-	@RequestMapping(value="/notice", method=RequestMethod.POST)
-	public String login(){
-		return "home/notice";
-	}
-	
-	@RequestMapping(value="/request", method=RequestMethod.POST)
-	public String login(){
-		return "home/request";
-	}
-	
-	@RequestMapping(value="/customer", method=RequestMethod.GET)
-	public String customer(){
-		
-		return "home/customer";
-	}
-	*/
 }
