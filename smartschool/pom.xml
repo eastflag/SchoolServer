@@ -5,6 +5,7 @@
 	<artifactId>smartschool</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SmartSchool</name>
+	<packaging>war</packaging>
 	
 	<properties>
 		<java.version>1.7</java.version>

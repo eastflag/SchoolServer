@@ -16,12 +16,9 @@ public class DataConfig {
 	public DataSource dataSource() {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setDriverClass(com.mysql.jdbc.Driver.class);
-		dataSource.setUsername("aura");
-		dataSource.setUrl("jdbc:mysql://220.73.163.76:3306/AURA_HOME");
-		dataSource.setPassword("aura2015!");
-		//dataSource.setUsername("healthcare");
-		//dataSource.setUrl("jdbc:mysql://localhost:3306/healthcare");
-		//dataSource.setPassword("!healthcare");
+		dataSource.setUsername("healthcare");
+		dataSource.setUrl("jdbc:mysql://aurasystem.kr:3306/healthcare");
+		dataSource.setPassword("!healthcare");
 
 		// populate some data
 		/*JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);

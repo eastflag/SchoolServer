@@ -846,12 +846,12 @@ select
 	) as 'progress'
 </select>
 
-
 <insert id="insertNoti" parameterType="NotiVO">
 	INSERT INTO 
 		noti(title, content) 
 	VALUES(#{title}, #{content});
 </insert>
+
 <select id="selectNotiList" parameterType="SearchVO" resultType="NotiVO">
 	SELECT * FROM noti
 	ORDER BY noti_id desc
@@ -859,9 +859,11 @@ select
 	Limit #{start_index}, #{page_size}
 	</if>
 </select>
+
 <select id="countNotiList" parameterType="SearchVO" resultType="Integer">
 	SELECT count(*) FROM noti
 </select>
+
 <update id="updateNoti" parameterType="NotiVO">
 	UPDATE noti
 		<set>
@@ -1082,7 +1084,7 @@ select
 	</if>
 	</where>
 	AND use_yn = 1
-	Limit 1
+	Limit 1;
 </select>
 <select id="countPressList" parameterType="SearchVO" resultType="int">
 	SELECT COUNT(*) FROM press

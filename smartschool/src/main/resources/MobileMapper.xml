@@ -1,0 +1,1189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aura.smartschool.persistence.MobileMapper">
+
+<select id="signInOfMobile" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex,
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	WHERE mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura')) and home_id=#{home_id} and use_yn = 1
+	Limit 1;
+</select>
+
+<select id="signInOfWeb" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex,
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	WHERE name=HEX(AES_ENCRYPT(#{name}, 'aura')) and home_id=#{home_id} and use_yn = 1
+	Limit 1;
+</select>
+
+<select id="selectAllMemberOfGcm" resultType="MemberVO">
+	SELECT gcm_id FROM member
+	WHERE use_yn=1 and gcm_id is not null and home_id in (select home_id from home where use_yn=1)
+</select>
+
+<select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
+	SELECT 
+		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
+		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
+		S.school_id, S.School_name, 
+		S.address,
+		S.lat,
+		S.lng,
+		S.homepage,
+		S.contact,
+		S.sido,
+		S.gubun1,
+		S.gubun2,
+		S.code,
+		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date'
+	FROM member M left join school S on M.school_id = S.school_id
+	WHERE M.home_id = #{home_id} and M.use_yn=1
+</select>
+
+<select id="selectAllMember" parameterType="SearchVO" resultType="MemberVO">
+	SELECT 
+		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
+		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
+		S.school_id, S.School_name, 
+		S.address,
+		S.lat,
+		S.lng,
+		S.homepage,
+		S.contact,
+		S.sido,
+		S.gubun1,
+		S.gubun2,
+		S.code, 
+		S.school_name, M.access_date,
+		(select pay_date from pay_info where member_id= M.member_id order by pay_date desc limit 1) as 'pay_date',
+		(select measure_date from measure_info where member_id=M.member_id order by measure_id desc limit 1) as 'measure_date'
+	FROM member M left join school S on M.school_id = S.school_id
+	WHERE 1=1
+		<if test="home_id != null">AND M.home_id = #{home_id}</if>
+		<choose>
+			<when test="search_key=='name'">
+				AND M.name = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='mdn'">
+				AND M.mdn = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='school_id'">
+				AND M.school_id = #{search_value}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	Limit #{start_index}, #{page_size}
+</select>
+
+<select id="countAllMember" parameterType="SearchVO" resultType="Integer">
+	select count(*) from member
+	WHERE 1=1
+		<if test="home_id != null">AND home_id = #{home_id}</if>
+		<choose>
+			<when test="search_key=='name'">
+				AND name = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='mdn'">
+				AND mdn = HEX(AES_ENCRYPT(#{search_value}, 'aura'))
+			</when>
+			<when test="search_key=='school_id'">
+				AND school_id = #{search_value}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+</select>
+
+<select id="countHome" parameterType="HomeVO" resultType="Integer">
+	SELECT count(*) FROM HOME
+	WHERE home_id = #{home_id}
+</select> 
+
+<select id="selectHomeList" parameterType="SearchVO" resultType="HomeVO">
+	select * from home
+	<if test="search_value != null">
+		where home_id like concat('%', #{search_value}, '%')
+	</if>
+	<choose>
+		<when test="order_key=='home_created'">
+			order by created desc
+		</when>
+		<when test="order_key=='home_name'">
+			order by home_id asc
+		</when>
+		<otherwise>order by created desc</otherwise>
+	</choose>
+	limit #{start_index}, #{page_size}
+</select> 
+
+<select id="countHomeList" parameterType="SearchVO" resultType="Integer">
+	select count(*) from home
+	<if test="search_value != null">
+		where home_id like concat('%', #{search_value}, '%')
+	</if>
+</select>
+
+<select id="selectHomeListByNumber" parameterType="MemberVO" resultType="HomeVO">
+	select home_id from member
+	where mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+	Limit 1;
+</select> 
+
+<select id="selectMember" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	WHERE 
+		member_id=#{member_id}
+	Limit 1
+</select>
+
+<select id="checkMemberExistInHome" parameterType="MemberVO" resultType="Integer">
+	SELECT count(*)
+	FROM member inner join home on member.home_id = home.home_id
+	WHERE 
+		member.use_yn=1 and home.use_yn=1
+		and member.name=HEX(AES_ENCRYPT(#{name}, 'aura'))
+		<choose>
+			<when test="member_id != 0"> 
+				 and member.home_id=(select home_id from member where member_id = #{member_id})
+			</when>
+			<otherwise>
+				and member.home_id = #{home_id}
+			</otherwise>
+		</choose>
+		<if test ="mdn != null"> OR member.mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
+</select>
+
+<insert id="insertHome" parameterType="HomeVO">
+	INSERT INTO home(home_id) values(#{home_id});
+</insert>
+
+<update id="updateHome" parameterType="SearchVO">
+	UPDATE HOME
+	SET home_id = #{new_home_id},
+		use_yn=#{use_yn}
+	WHERE home_id = #{home_id}
+</update>
+
+<insert id="insertMember" parameterType="MemberVO">
+	INSERT INTO 
+		MEMBER(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
+		VALUES(#{home_id}, 
+			HEX(AES_ENCRYPT(#{mdn}, 'aura')),
+			#{gcm_id}, 
+			#{is_parent}, 
+			HEX(AES_ENCRYPT(#{name}, 'aura')),
+			#{relation}, 
+			#{photo}, 
+			<choose>                                                                                                  
+				<when test="school_id == 0">                                                                     
+					null,                                                                                  
+				</when>                                                                                               
+				<otherwise>                                                                     
+					#{school_id},                                                                                
+				</otherwise>                                                                                               
+			</choose> 
+			#{school_grade}, 
+			#{school_class}, 
+			#{sex}, 
+			HEX(AES_ENCRYPT(#{birth_date}, 'aura')));
+</insert>
+
+<update id="updateMember" parameterType="MemberVO">
+	UPDATE MEMBER
+	SET is_parent=#{is_parent}
+	<if test="home_id != null">, home_id=#{home_id}</if>
+	<if test="mdn != null">, mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
+	<if test="name != null">, name=HEX(AES_ENCRYPT(#{name}, 'aura'))</if>
+	<if test="relation != null">, relation=#{relation}</if>
+	<if test="photo != null">, photo=#{photo}</if>
+	<if test="use_yn != -1">, use_yn = #{use_yn}</if>
+	
+	<choose>
+		<when test="is_parent==0">
+			<if test="school_id != 0">, school_id=#{school_id}</if>
+			<if test="school_grade != null">, school_grade=#{school_grade}</if>
+			<if test="school_class != null">, school_class=#{school_class}</if>
+			<if test="sex != null">, sex=#{sex}</if>
+			<if test="birth_date != null">, birth_date=HEX(AES_ENCRYPT(#{birth_date}, 'aura'))</if>
+		</when>
+		<when test="is_parent==1">
+			, school_id=null
+			, school_grade=null
+			, school_class=null
+			, sex=null
+			,birth_date=null
+		</when>
+	</choose>
+
+	WHERE member_id = #{member_id} 
+</update>
+
+<update id="deleteMember" parameterType="MemberVO">
+	UPDATE MEMBER
+		SET use_yn = 0
+	WHERE member_id = #{member_id}
+</update>
+
+<update id="updateGcmId" parameterType="MemberVO">
+	UPDATE MEMBER
+		set gcm_id = #{gcm_id}, access_date = now()
+	WHERE home_id = #{home_id} and mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+</update>
+
+<select id="selectPayList" parameterType="MemberVO" resultType="PayVO">
+	SELECT * FROM PAY_INFO
+	WHERE member_id = #{member_id}
+	ORDER BY pay_date desc
+</select>
+
+<update id="updatePay" parameterType="PayVO">
+	UPDATE PAY_INFO
+	SET pay_date = #{pay_date}
+	WHERE pay_id = #{pay_id}
+</update>
+
+<insert id="insertPay" parameterType="PayVO">
+	INSERT INTO pay_info(member_id, pay_date) values(#{member_id}, #{pay_date});
+</insert>
+
+<delete id="deletePay" parameterType="PayVO">
+	DELETE FROM pay_info
+	WHERE pay_id = #{pay_id}
+</delete>
+	
+
+
+<insert id="insertLocation" parameterType="LocationVO">
+	INSERT INTO 
+		LOCATION(member_id, lat, lng, address) 
+		values(#{member_id}, 
+			HEX(AES_ENCRYPT(#{lat}, 'aura')),
+			HEX(AES_ENCRYPT(#{lng}, 'aura')), 
+			HEX(AES_ENCRYPT(#{address}, 'aura'))
+		);
+</insert>
+
+<select id="selectLastLocation" parameterType="MemberVO" resultType="LocationVO">
+	SELECT 
+		member_id,
+		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
+		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
+		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
+		CREATED_DATE
+	FROM LOCATION
+	WHERE member_id = #{member_id} and created_date >= curdate()
+	ORDER BY CREATED_DATE desc
+	LIMIT 1;
+</select>
+
+<select id="selectLastHomeLocation" parameterType="HomeVO" resultType="LocationVO">
+	SELECT location_id, member_id, lat, lng, created_date 
+	from lat
+	(select * from location
+	where member_id in (select member_id from home where home_id = #{home_id})
+	order by created_date desc ) A
+group by member_id;
+</select>
+
+<select id="selectLocationList" parameterType="MemberVO" resultType="LocationVO">
+	SELECT 
+		CAST(AES_DECRYPT(unhex(address), 'aura') AS CHAR(500)) as 'address', 
+		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
+		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
+		CREATED_DATE
+	FROM LOCATION
+	WHERE member_id = #{member_id} and
+		 created_date > date_format(curdate( ), '%Y-%m-%d %H:%i:%s' ) 
+	ORDER BY CREATED_DATE asc
+</select>
+
+<select id="selectSchoolById" parameterType="Integer" resultType="SchoolVO">
+	SELECT *
+	FROM school
+	WHERE school_id = #{school_id}
+</select>
+
+<select id="selectSchoolList" parameterType="SchoolVO" resultType="SchoolVO">
+	SELECT *
+	FROM school
+	WHERE school_name like CONCAT('%', #{school_name}, '%')
+	order by school_name asc
+</select>
+
+<insert id="insertSchool" parameterType="SchoolVO">
+	INSERT INTO school(
+			school_name,
+			gubun1,
+			gubun2,
+			zipcode,
+			address,
+			new_address,
+			lat,
+			lng,
+			homepage,
+			fax,
+			contact,
+			sido,
+			gugun,
+			support) 
+		VALUES (
+			#{name},
+			#{gubun1},
+			#{gubun2},
+			#{zipcode},
+			#{address},
+			#{new_address},
+			#{lat},
+			#{lng},
+			#{homepage},
+			#{fax},
+			#{contact},
+			#{sido},
+			#{gugun},
+			#{support})
+</insert>
+
+<insert id="insertArea" parameterType="AreaVO">
+	INSERT INTO AREA_INFO (
+		lat, lng, category, title, content, picture)
+		VALUES(#{lat}, #{lng}, #{category}, #{title}, #{content}, #{picture});
+</insert>
+
+<select id="selectAreaList" resultType="AreaVO">
+	SELECT id, lat, lng, category, title, content FROM AREA_INFO;
+</select> 
+
+<select id="selectArea" resultType="AreaVO">
+	SELECT * FROM AREA_INFO
+	WHERE id = #{id};
+</select> 
+
+<select id="selectBodySummary" parameterType="MemberVO" resultType="BodyMeasureSummary">
+	select 
+			measure_info.member_id,
+			measure_info.measure_date,
+			truncate(inbody_info.HEIGHT, 1) AS height,
+			truncate(inbody_info.Weight, 1) AS weight,
+			truncate(inbody_info.BMI, 1) AS bmi,
+			inbody_info.Percent_Body_Fat AS fat,
+			truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
+			truncate(inbody_info.Skeletal_Muscle_Mass, 1) AS skeletal,
+			truncate(inbody_info.weight_Control, 1) AS weight_Control,
+			truncate(inbody_info.fat_Control, 1) AS fat_Control,
+			truncate(inbody_info.muscle_control, 1) AS muscle_control,
+			truncate(inbody_info.Waist_Hip_Ratio, 3) AS waist,
+			truncate(inbody_info.Fitness_Score, 0) AS growthGrade,
+			smoke_info.ppm, smoke_info.cohd,
+			member.sex, measure_info.school_id, measure_info.school_grade_id
+		FROM 
+			member inner join measure_info on member.member_id = measure_info.member_id
+			inner join inbody_info on measure_info.inbody_seq = inbody_info.Inbody_seq
+			left outer join smoke_info on measure_info.smoke_seq = smoke_info.smoke_seq
+		where
+			measure_info.member_id = #{member_id}
+	ORDER BY measure_info.measure_date desc;
+</select>
+
+<select id="selectGradeBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
+	select 
+		ms_grade_data.Ms_Grade_ID as gradeId,
+		ms_grade_data.Srandard_Grade as gradeDesc,
+		ms_grade_data.Section as section,
+		#{value} as value,
+		ms_grade_data.Grade_ID as schoolGradeId,
+		ms_grade_data.sex as sex,
+		standard_data.Year as year
+	from
+		healthcare_gwangmyeong.ms_grade_data,
+		healthcare_gwangmyeong.standard_data
+	where
+		healthcare_gwangmyeong.ms_grade_data.Grade_ID = #{schoolGradeId}
+		and healthcare_gwangmyeong.ms_grade_data.sex = #{sex}
+		and healthcare_gwangmyeong.ms_grade_data.Section = #{section}
+		and healthcare_gwangmyeong.standard_data.Year = #{year}
+		and healthcare_gwangmyeong.standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID
+		and healthcare_gwangmyeong.standard_data.Start_Int &lt;= #{value}
+		and healthcare_gwangmyeong.standard_data.End_Int &gt; #{value};
+</select>
+
+<select id="selectSmokerGrade" parameterType="string" resultType="BodyMeasureGrade">
+	select 
+		smoke_data.Smoke_Data_ID as gradeId,
+		smoke_data.DISCRIPTION as gradeDesc
+	from
+		healthcare_gwangmyeong.smoke_data
+	where
+		1 = 1
+		and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int);
+</select>
+
+<select id="selectGradeRankingBySection" parameterType="BodyMeasureGrade" resultType="BodyMeasureGrade">
+	SELECT  T.ROWNUM AS rank, @ROWNUM AS total           
+	FROM                                                                                                              
+		(SELECT 
+			(@ROWNUM:=@ROWNUM + 1) AS ROWNUM, A.*                                                             
+         FROM 
+              (SELECT member.member_id, member.SEX,  measure_info.SCHOOL_GRADE_ID, measure_info.SCHOOL_ID, measure_info.MEASURE_DATE,
+                <choose>                                                                                                  
+	       			<when test="section == 'Height'">        
+						TRUNCATE(inbody_info.height, 1) AS VALUE
+					</when>
+					<when test="section == 'Weight'">  
+						TRUNCATE(inbody_info.weight, 1) AS VALUE
+					</when>
+				</choose>                                                                                                                                                                                                                                  
+				FROM member inner join school on member.school_id = school.school_id
+					inner join measure_info on member.member_id = measure_info.member_id
+					inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq   
+				WHERE measure_info.school_grade_id in (select school_grade_id from measure_info where member_id = #{member_id}  AND DATE_FORMAT(MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m'))  
+					AND	member.sex= #{sex} 																												
+					AND DATE_FORMAT(measure_info.MEASURE_DATE, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')                                                                                                                                                                      
+				ORDER BY 
+				 <choose>                                                                                                  
+	       			<when test="section == 'Height'">        
+						inbody_info.height  DESC
+					</when>
+					<when test="section == 'Weight'">  
+						inbody_info.weight  DESC
+					</when>
+				</choose>  
+				) A, (SELECT @ROWNUM:=0) RNUM
+    	 ) T                                                                      
+	WHERE T.member_id = #{member_id}; 
+</select>
+
+<select id="selectRankInGwangmyeong" parameterType="BodyMeasureGrade" resultType="java.util.Map">
+select 
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
+	) total,
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
+			<choose>                                                                                                  
+       			<when test="section == 'Height'">        
+					and II.HEIGHT > #{value}
+				</when>
+				<when test="section == 'Weight'">  
+					and II.WEIGHT > #{value}
+				</when>
+			</choose>
+	) rank
+</select>
+
+<select id="selectBeforeRankInGwangmyeong" parameterType="BodyMeasureGrade" resultType="java.util.Map">
+select 
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')
+	) total,
+	(select 
+			count(*)
+			
+		from 
+			healthcare_gwangmyeong.body_measure_plan BP, 
+			healthcare_gwangmyeong.student_info SI, 
+			healthcare_gwangmyeong.inbody_info II
+		where  
+			BP.Student_ID = SI.student_id 
+			and BP.Inbody_seq = II.Inbody_seq
+			and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+			and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{beforeMeasureDate}, '%Y%m')
+			<choose>                                                                                                  
+       			<when test="section == 'Height'">        
+					and II.HEIGHT > #{beforeValue}
+				</when>
+				<when test="section == 'Weight'">  
+					and II.WEIGHT > #{beforeValue}
+				</when>
+			</choose>
+	) rank
+</select>
+
+<select id="selectAveragePerSchool" parameterType="StatisticsParam" resultType="AverageItem">		
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    school.school_name AS name,
+	    <choose>
+			<when test="section == 'Height'">
+				truncate(avg(inbody_info.Height), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+				truncate(avg(inbody_info.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+				truncate(avg(Iinbody_info.BMI), 2) AS value
+			</when>
+		</choose>
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_id = #{schoolId}
+		and measure_info.school_grade_id = #{schoolGradeId}                       
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')   	
+</select>
+
+<!-- 광명시 통계, 아직 통계데이터가 많지 않으므로 local 통계는 광명시 데이터로 대신한다. 
+<select id="selectAveragePerLocal" parameterType="StatisticsParam" resultType="AverageItem">
+	select 
+		DATE_FORMAT(BP.Measure_Date, '%Y%m') AS measureDate,
+		'local average' AS name,
+		<choose>
+			<when test="section == 'Height'">
+			truncate(avg(II.HEIGHT), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+			truncate(avg(II.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+			truncate(avg(II.BMI), 2) AS value
+			</when>
+		</choose>
+	from 
+		healthcare_gwangmyeong.body_measure_plan BP, 
+		healthcare_gwangmyeong.student_info SI, 
+		healthcare_gwangmyeong.inbody_info II
+	where  
+		BP.Student_ID = SI.student_id 
+		and BP.Inbody_seq = II.Inbody_seq
+		and SI.STU_Sex=#{sex} and BP.Grade_id=#{schoolGradeId}
+		and DATE_FORMAT(BP.Measure_Date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')
+	group by BP.Measure_Date
+</select>-->
+
+<!-- 지역 평균 : 17개 시도 평균 -->
+<select id="selectAveragePerLocal" parameterType="StatisticsParam" resultType="AverageItem">
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    school.sido AS name,
+	    <choose>
+			<when test="section == 'Height'">
+				truncate(avg(inbody_info.Height), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+				truncate(avg(inbody_info.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+				truncate(avg(Iinbody_info.BMI), 2) AS value
+			</when>
+		</choose>
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_grade_id = #{schoolGradeId}   
+		and school.sido = (select sido from school where school_id = #{schoolId})                   
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')  
+</select>
+
+<select id="selectAveragePerNation" parameterType="StatisticsParam" resultType="AverageItem">
+	SELECT 
+		DATE_FORMAT(measure_info.Measure_Date, '%Y%m') AS measureDate,
+	    'nation average' AS name,
+	    <choose>
+			<when test="section == 'Height'">
+				truncate(avg(inbody_info.Height), 1) AS value
+			</when>
+			<when test="section == 'Weight'">
+				truncate(avg(inbody_info.Weight), 1) AS value
+			</when>
+			<when test="section == 'BMI'">
+				truncate(avg(Iinbody_info.BMI), 2) AS value
+			</when>
+		</choose>
+	FROM
+		member inner join school on member.school_id = school.school_id
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+	WHERE
+		member.sex = #{sex}
+		and measure_info.school_grade_id = #{schoolGradeId}                       
+		AND DATE_FORMAT(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')  
+</select>
+
+<select id="selectAveragePerStandard" parameterType="StatisticsParam" resultType="AverageItem">
+	select
+		standard_data.Year AS measureDate, 
+	    'standard average' as name,
+	    standard_data.value 
+		from
+		    healthcare_gwangmyeong.ms_grade_data,
+			healthcare_gwangmyeong.standard_data
+		where
+			ms_grade_data.Grade_ID = #{schoolGradeId}
+				and ms_grade_data.sex = #{sex}
+				and ms_grade_data.Section = #{section}
+				and standard_data.Year = DATE_FORMAT(#{measureDate}, '%Y')
+				and ms_grade_data.Srandard_Grade = '표준'
+				and standard_data.Ms_Grade_ID = ms_grade_data.Ms_Grade_ID;
+</select>
+
+<select id="selectSchoolListOfMember" parameterType="SearchVO" resultType="SchoolVO">
+	select * from school
+	where school_id in (
+		SELECT school_id FROM healthcare.member
+		group by school_id
+	)
+		<if test="search_value != null">
+			AND school_name like concat('%', #{search_value}, '%')
+		</if>
+	order by school_name
+	Limit #{start_index}, #{page_size}
+</select>
+
+<select id="countSchoolListOfMember" parameterType="SearchVO" resultType="Integer">
+	select count(*) from school
+	where school_id in (
+		SELECT school_id FROM healthcare.member
+		group by school_id
+	)
+		<if test="search_value != null">
+			AND school_name like concat('%', #{search_value}, '%')
+		</if>
+</select>
+
+<update id="updateSchool" parameterType="SchoolVO">
+	UPDATE SCHOOL
+	<set>
+		<if test="school_name != null">school_name=#{school_name},</if>
+		<if test="address != null">address=#{address},</if>
+		<if test="zipcode != null">zipcode=#{zipcode},</if>
+		<if test="gubun1 != null">gubun1=#{gubun1},</if>
+		<if test="gubun2 != null">gubun2=#{gubun2},</if>
+		<if test="homepage != null">homepage=#{homepage},</if>
+		<if test="fax != null">fax=#{fax},</if>
+		<if test="contact != null">contact=#{contact},</if>
+		<if test="sido != null">sido=#{sido},</if>
+		<if test="gugun != null">gugun=#{gugun},</if>
+		<if test="lat != null">lat=#{lat},</if>
+		<if test="lng != null">lng=#{lng},</if>
+		<if test="code != null">code=#{code}</if>
+	</set>
+	WHERE school_id = #{school_id} 
+</update>
+
+<select id="selectMemberOfSchool" parameterType="SchoolVO" resultType="MemberVO">
+	SELECT * FROM member
+	WHERE use_yn=1 and gcm_id is not null and ( school_id = #{school_id} or ( is_parent = 1 and home_id in (SELECT distinct(home_id) FROM member WHERE use_yn=1 and school_id = #{school_id})))
+</select>
+
+<insert id="insertSchoolNoti" parameterType="SchoolNotiVO">
+	INSERT INTO 
+		school_noti(school_id, category, title, content, filename) 
+		values(#{school_id}, #{category}, #{title}, #{content}, #{filename});
+</insert>
+
+<update id="updateSchoolNoti" parameterType="SchoolNotiVO">
+	UPDATE school_noti
+	<set>
+		<if test="category != null">category=#{category},</if>
+		<if test="title != null">title=#{title},</if>
+		<if test="content != null">content=#{content},</if>
+		<if test="filename != null">filename=#{filename}</if>
+	</set>
+	WHERE noti_seq = #{noti_seq} 
+</update>
+
+<select id="selectFilenameOfSchoolNoti" parameterType="String" resultType="SchoolNotiVO">
+	SELECT * FROM school_noti
+	WHERE filename = #{filename}
+	Limit 1;
+</select>
+
+<delete id="deleteSchoolNoti" parameterType="SchoolNotiVO">
+	Delete From school_noti
+	Where noti_seq = #{noti_seq}
+</delete>
+
+<select id="selectSchoolNoti" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
+	SELECT * FROM school_noti
+	WHERE noti_seq = #{noti_seq}
+	LIMIT 1;
+</select>
+
+<select id="selectSchoolNotiList" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
+	SELECT noti_seq, school_id, category, title, content,
+		DATE_FORMAT(noti_date, '%Y-%m-%d %h:%i %p') as 'noti_date', filename FROM SCHOOL_NOTI
+	WHERE school_id = #{school_id} 
+	Order By noti_date desc
+	<if test="page_size != 0">
+		Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="countSchoolNotiList" parameterType="SchoolNotiVO" resultType="Integer">
+	SELECT count(*) FROM SCHOOL_NOTI
+	WHERE school_id = #{school_id} 
+</select>
+
+<insert id="insertNotiBookmark" parameterType="SchoolNotiVO">
+	INSERT INTO noti_bookmark(noti_seq, member_id)
+	values(#{noti_seq}, #{member_id})
+</insert>
+
+<delete id="deleteNotiBookmark" parameterType="SchoolNotiVO">
+	DELETE FROM noti_bookmark
+	WHERE noti_seq = #{noti_seq} AND member_id=#{member_id}
+</delete>
+
+<select id="selectSchoolNotiListByMember" parameterType="SchoolNotiVO" resultType="SchoolNotiVO">
+	SELECT noti_seq, school_id, category, title, content, noti_date, filename,
+		(select member_id from noti_bookmark where member_id=#{member_id} and noti_seq = N.noti_seq) as member_id
+	FROM SCHOOL_NOTI N
+	WHERE school_id = #{school_id} and category=#{category}
+	Order By noti_date desc	
+</select>
+
+
+<insert id="insertSession" parameterType="SessionVO">
+	INSERT INTO 
+		session(member_id, category) 
+	VALUES(#{member_id}, #{category});
+</insert>
+<insert id="insertConsult" parameterType="ConsultVO">
+	INSERT INTO 
+		consult(session_id, who, content) 
+	VALUES(#{session_id}, #{who}, #{content});
+</insert>
+<update id="updateSession" parameterType="SessionVO">
+	UPDATE session
+		SET rate = #{rate}, ended=now()
+	WHERE session_id = #{session_id} 
+</update>
+<select id="selectSessionOngoingList" parameterType="SearchVO" resultType="SessionVO">
+	SELECT session.session_id, session.member_id, session.category, 
+		consult.who, school.school_name, 
+		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
+		member.school_grade, consult.created
+	FROM session inner join member on session.member_id = member.member_id
+		 inner join school on member.school_id = school.school_id
+		 inner join (select * from consult where consult_id in (SELECT max(consult_id) FROM consult group by session_id)) consult
+			on session.session_id = consult.session_id
+	WHERE session.rate = 0 
+		<if test="category != 0">AND session.category = #{category}</if>
+	ORDER BY consult.who asc, created desc
+		
+	Limit #{start_index}, #{page_size} 
+</select>
+<select id="countSessionOngoingList" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) FROM session inner join member on session.member_id = member.member_id
+	WHERE session.rate = 0 AND member.is_parent=0
+		<if test="category != 0">AND category = #{category}</if>
+</select>
+<select id="selectSession" parameterType="SessionVO" resultType="SessionVO">
+	SELECT * FROM session
+	WHERE member_id = #{member_id} 
+		AND category = #{category}
+		AND rate =0
+</select>
+<select id="selectLastSession" resultType="SessionVO">
+	SELECT * FROM session
+	ORDER BY session_id desc
+	Limit 1
+</select>
+<select id="selectConsultList" parameterType="SessionVO" resultType="ConsultVO">
+	SELECT * FROM consult
+	WHERE session_id = #{session_id}
+	ORDER BY created asc
+</select>
+<select id="selectConsultHistory" parameterType="SessionVO" resultType="ConsultHistoryVO">
+	select (
+		select count(*) from session
+		where member_id = #{member_id} and rate >0
+	) as 'complete',
+		(
+		select count(*)  from session
+		where member_id = #{member_id} and rate = 0
+	) as 'progress'
+</select>
+
+<insert id="insertNoti" parameterType="NotiVO">
+	INSERT INTO 
+		noti(title, content) 
+	VALUES(#{title}, #{content});
+</insert>
+
+<select id="selectNotiList" parameterType="SearchVO" resultType="NotiVO">
+	SELECT * FROM noti
+	ORDER BY noti_id desc
+	<if test="page_size!=0">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="countNotiList" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) FROM noti
+</select>
+
+<update id="updateNoti" parameterType="NotiVO">
+	UPDATE noti
+		<set>
+			<if test="title != null">title=#{title},</if>
+			<if test="content != null">content=#{content}</if>
+		</set>
+	WHERE noti_id = #{noti_id} 
+</update>
+
+<delete id="deleteNoti" parameterType="NotiVO">
+	DELETE FROM noti
+	WHERE noti_id = #{noti_id}
+</delete>
+
+<insert id="insertBoard" parameterType="BoardVO">
+	INSERT INTO 
+		board(member_id, board_type, title, content) 
+	VALUES(#{member_id}, #{board_type}, #{title}, #{content});
+</insert>
+<select id="selectBoardGcm" parameterType="BoardVO" resultType="MemberVO">
+	SELECT gcm_id FROM Board B inner join Member M
+		ON B.member_id = M.member_id
+	Where B.board_id = #{board_id} 
+</select>
+
+<select id="selectBoardList" parameterType="SearchVO" resultType="BoardVO">
+	SELECT board.*, member.home_id, 
+		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
+	    CAST(AES_DECRYPT(unhex(member.mdn), 'aura') AS CHAR(100)) as 'mdn',
+		school.school_name
+	FROM board inner join member on board.member_id = member.member_id
+		left outer join school on member.school_id = school.school_id
+	WHERE board.board_type = #{board_type}
+		<if test="member_id != 0">
+			AND member.member_id = #{member_id}
+		</if>
+	ORDER BY board.board_id desc
+	<if test="page_size != 0">
+		Limit #{start_index}, #{page_size}
+	</if>
+</select>
+<select id="countBoardList" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) from board
+	WHERE board_type = #{board_type}
+	<if test="member_id != 0">
+		AND member_id = #{member_id}
+	</if>
+</select>
+
+<update id="updateBoard" parameterType="BoardVO">
+	UPDATE board
+		SET updated = now()
+		<if test="answer != null">, answer=#{answer}</if>
+	WHERE board_id = #{board_id} 
+</update>
+<delete id="deleteBoard" parameterType="BoardVO">
+	DELETE FROM board
+	WHERE board_id = #{board_id}
+</delete>
+
+<insert id="insertActivity" parameterType="ActivityVO">
+	INSERT INTO
+		activity(member_id, activity_date, step, calory, distance, time)
+	VALUES(#{member_id}, #{activity_date}, #{step}, #{calory}, #{distance}, #{time});
+</insert>
+
+<update id="updateActivity" parameterType="ActivityVO">
+	UPDATE activity
+	SET member_id=#{member_id}, 
+		activity_date=#{activity_date},
+		step = #{step},
+		calory = #{calory},
+		distance = #{distance},
+		time = #{time}
+	WHERE activity_id = #{activity_id}
+</update>
+
+<select id="selectActivity" parameterType="ActivityVO" resultType="ActivityVO">
+	SELECT * FROM activity
+	WHERE member_id = #{member_id} and activity_date = #{activity_date}
+	Limit 1;
+</select>
+
+<select id="selectActivityList" parameterType="ActivityVO" resultType="ActivityVO">
+	SELECT 
+		activity_id, member_id,
+		date_format(activity_date, '%Y-%m-%d') as 'activity_date',
+		step, calory, distance, time
+	FROM activity
+	WHERE member_id = #{member_id}
+	Order by activity_id desc
+</select>
+
+<select id="selectVideoListByMasterGradeId" parameterType="VideoTypeVO" resultType="VideoVO">
+		select 
+			HC.CT_NAME AS title,
+			concat('http://aurasystem.kr/contents/eng_total/', HC.ct_url_eng) AS videoUrl,
+			concat('http://aurasystem.kr/contents/', HC.CT_URL_THUM) AS thumbnailUrl,
+			HC.ct_duration AS duration
+		from
+		    healthcare_gwangmyeong.ms_grade_data MGD,
+		    healthcare_gwangmyeong.contents_category CC,
+		    healthcare_gwangmyeong.healthcare_contents HC
+		where
+		    MGD.Ms_Grade_ID = #{masterGradeId}
+		        and MGD.Ms_Grade_ID = CC.MS_Grade_ID
+		        and CC.CT_ID = HC.CT_ID;
+</select>
+
+<select id="selectVideoListByInfoType" parameterType="VideoTypeVO" resultType="VideoVO">
+	select 
+		CT_NAME AS title,
+		concat('http://aurasystem.kr/contents/eng_total/', ct_url_eng) AS videoUrl,
+		concat('http://aurasystem.kr/contents/', CT_URL_THUM) AS thumbnailUrl,
+		ct_duration AS duration
+	from
+	    healthcare_gwangmyeong.healthcare_contents
+	where
+	    ct_info = #{infoType}
+	    <if test = "section != null">
+	    	 and ct_section = #{section}
+	    </if>
+</select>
+
+<select id="selectVideoTimeOfMember" parameterType="VideoTimeVO" resultType="VideoTimeVO">
+	SELECT * FROM VIDEO_TIME
+	WHERE member_id = #{member_id}
+	Limit 1;
+</select>
+
+<insert id="insertVideoTime" parameterType="VideoTimeVO">
+	INSERT INTO VIDEO_TIME(member_id, access_time)
+	VALUES(#{member_id}, now());
+</insert>
+
+<select id="selectOsInfo" parameterType="OsInfoVO" resultType="OsInfoVO">
+	SELECT * FROM os_info
+	WHERE os_name = #{os_name}
+	Limit 1
+</select>
+
+
+<insert id="insertManager" parameterType="ManagerVO">
+	INSERT INTO manager(id, pass, name, role_id)
+		VALUES(HEX(AES_ENCRYPT(#{id}, 'aura')), password(#{pass}), HEX(AES_ENCRYPT(#{name}, 'aura')), #{role_id});
+</insert>
+
+<update id="updateManager" parameterType="ManagerVO">
+	UPDATE manager
+	<set>
+		<if test="id != null">id=HEX(AES_ENCRYPT(#{id}, 'aura')),</if>
+		<if test="pass != null">pass=password(#{pass}),</if>
+		<if test="name != null">name=HEX(AES_ENCRYPT(#{name}, 'aura')),</if>
+		<if test="role_id != 0">role_id=#{role_id}</if>
+	</set>
+	WHERE manager_id = #{manager_id}
+</update>
+
+<delete id="deleteManager" parameterType="ManagerVO">
+	DELETE FROM manager
+	WHERE manager_id = #{manager_id}
+</delete>
+
+<select id="countManager" parameterType="SearchVO" resultType="Integer">
+	SELECT count(*) FROM manager
+</select>
+
+<select id="selectManager" parameterType="ManagerVO" resultType="ManagerVO">
+	SELECT 
+		manager_id,
+		CAST(AES_DECRYPT(unhex(id), 'aura') AS CHAR(100)) as 'id',
+		pass,
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
+		role_id 
+	FROM manager
+	WHERE 1=1
+		<if test="id != null"> AND id=HEX(AES_ENCRYPT(#{id}, 'aura'))</if>
+		<if test="pass != null"> AND pass=password(#{pass})</if>
+		<if test="manager_id != 0"> AND manager_id=#{manager_id}</if>
+	Limit 1
+</select>
+
+<select id="selectManagerList" parameterType="SearchVO" resultType="ManagerVO">
+	SELECT 
+		manager_id,
+		CAST(AES_DECRYPT(unhex(id), 'aura') AS CHAR(20)) as 'id',
+		pass,
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(20)) as 'name',
+		role_id
+	FROM manager
+	ORDER BY name
+	<if test="page_size != 0">
+		LIMIT #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="selectOsInfoList" resultType="OsInfoVO">
+	SELECT * FROM os_info
+</select>
+
+<update id="updateOsInfo" parameterType="OsInfoVO">
+	UPDATE os_info
+	SET version_name = #{version_name}, version_code=#{version_code}
+	where os_name = #{os_name}
+</update>
+
+<!-- Aura Home -->
+<select id="selectMemberByMdn" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as mdn,
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as name,
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	<where>
+	AND mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+	<if test=" member_id != null and member_id !='' ">
+	AND member_id=#{member_id}
+	</if>
+	</where>
+	AND use_yn = 1
+	Limit 1;
+</select>
+<select id="countPressList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM press
+</select>
+
+<select id="selectPressList" parameterType="SearchVO" resultType="PressVO">
+	SELECT * FROM press
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<!-- 2015.10.13 건강매거진 추가 -->
+<select id="countMagazineList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+</select>
+
+<select id="selectMagazineList" parameterType="SearchVO" resultType="MagazineVO">
+	SELECT * FROM magazine
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="checkMagazine" parameterType="MagazineVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+	WHERE year = #{year}
+	AND month = #{month}
+	<if test=" magazine_id != null and magazine_id != '' ">
+	AND magazine_id != #{magazine_id}
+	</if>
+</select>
+
+<insert id="insertMagazine" parameterType="MagazineVO">
+	INSERT INTO magazine (
+		year,
+		month,
+		title,
+		content,
+		img_1,
+		img_2,
+		img_3,
+		img_4,
+		img_5,
+		img_6,
+		img_7,
+		img_8,
+		img_9,
+		img_10
+	) values (
+		#{year},
+		#{month},
+		#{title},
+		#{content},
+		#{img_1},
+		#{img_2},
+		#{img_3},
+		#{img_4},
+		#{img_5},
+		#{img_6},
+		#{img_7},
+		#{img_8},
+		#{img_9},
+		#{img_10}
+	)
+</insert>
+
+<update id="updateMagazine" parameterType="MagazineVO">
+	UPDATE magazine SET
+		year = #{year},
+		month = #{month},
+		title = #{title},
+		content = #{content},
+		img_1 = #{img_1},
+		img_2 = #{img_2},
+		img_3 = #{img_3},
+		img_4 = #{img_4},
+		img_5 = #{img_5},
+		img_6 = #{img_6},
+		img_7 = #{img_7},
+		img_8 = #{img_8},
+		img_9 = #{img_9},
+		img_10 = #{img_10}
+	WHERE magazine_id = #{magazine_id}
+</update>
+
+<delete id="deleteMagazine" parameterType="MagazineVO">
+	DELETE FROM magazine WHERE magazine_id = #{magazine_id}
+</delete>
+
+<select id="countChallengeList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM challenge
+</select>
+
+<select id="getChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
+	SELECT * FROM challenge
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+</mapper>
