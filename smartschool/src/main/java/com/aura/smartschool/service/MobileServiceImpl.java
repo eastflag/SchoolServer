@@ -1,15 +1,18 @@
 package com.aura.smartschool.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
@@ -36,6 +39,7 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.persistence.MobileMapper;
 import com.aura.smartschool.util.CommonUtil;
+import com.aura.smartschool.util.FileUtil;
 
 @Service("mobileService")
 public class MobileServiceImpl implements MobileService {
@@ -44,6 +48,12 @@ public class MobileServiceImpl implements MobileService {
 
 	@Autowired
 	private MobileMapper mobileMapper;
+	
+	//첨부파일 등록
+	@Override
+	public int registAttachFile(AttachVO attach) throws Exception{
+		return mobileMapper.insertAttachFileInfo(attach);
+	}
 
 	@Override
 	public int countHome(HomeVO home) {
@@ -623,12 +633,13 @@ public class MobileServiceImpl implements MobileService {
 		return mobileMapper.updateOsInfo(osInfo);
 	}
 
-	/** 아우라 홈페이지 */
+	//아우라 홈페이지 로그인
 	@Override
 	public MemberVO getMemberByMdn(MemberVO member) {
 		return mobileMapper.selectMemberByMdn(member);
 	}
 
+	//언론자료 관리
 	@Override
 	public int countPressList(SearchVO search) {
 		return mobileMapper.countPressList(search);
@@ -639,7 +650,25 @@ public class MobileServiceImpl implements MobileService {
 		return mobileMapper.selectPressList(search);
 	}
 
-	/** 2015.10.13 건강매거진 추가 */
+	@Override
+	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
+		int press_id = mobileMapper.insertPress(press);
+		
+		if(files.size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(files, path);
+			
+			if (list.size() != 0){
+				for(AttachVO attach:list){
+					attach.setBoard_type(1);	//1:언론자료
+					attach.setBoard_id(press_id);
+					this.registAttachFile(attach);
+				}
+			}
+		}
+		return press_id;
+	}
+
+	//건강매거진 관리
 	@Override
 	public int countMagazineList(SearchVO search) {
 		return mobileMapper.countMagazineList(search);
@@ -669,9 +698,8 @@ public class MobileServiceImpl implements MobileService {
 	public int deleteMagazine(MagazineVO magazine) throws PersistenceException {
 		return mobileMapper.deleteMagazine(magazine);
 	}
-	
 
-	/** 2015.10.16 도전 건강! 추가 */
+	//도전!건강! 관리
 	@Override
 	public int countChallengeList(SearchVO search) {
 		return mobileMapper.countChallengeList(search);

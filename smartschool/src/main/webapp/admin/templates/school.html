@@ -1,0 +1,210 @@
+<div ng-controller='SchoolCtrl'>
+	<div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">학교 관리</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-list fa-lg"></i> 학교 목록
+				</div>
+				<div class="input-group margin-bottom-sm">
+                    <input type="text" class="form-control" placeholder="학교검색" ng-model="search_value" ng-enter="getSchoolList()" />
+                    <span class="input-group-addon" ng-click="getSchoolList()" style="cursor:pointer"><i class="fa fa-send fa-fw"></i>검색</span>
+                </div>
+				<table class="table table-striped">
+			    	<thead>
+			    		<tr>
+			    			<td>Edit</td>
+			    			<td>학교명</td>
+			    			<td>주소</td>
+			    		</tr>
+			    	</thead>
+			    	<tbody>
+					    <tr ng-repeat="school in schools | orderBy:'school_name'">
+					    	<td>
+					    		<button class="btn btn-default btn-xs" ng-click="editSchool(school)">
+						          <span class="glyphicon glyphicon-pencil"></span> 수 정 & 알리미
+						        </button>
+						    </td>
+						    <td>{{ school.school_name}}</td>
+						    <td>{{ school.address}}</td>
+					    </tr>
+				    </tbody>
+			    </table>
+				<div class="panel-footer" style="text-align:center; padding:0px;">	
+					<pagination boundary-links="true" total-items="totalSchoolListCount" ng-model="currentPageSchool" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="schoolPageChanged()"></pagination>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-4">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-edit fa-lg"></i> 학교 편집
+				</div>
+
+				<div class="panel-body">
+					<div class="input-group margin-bottom-md">
+						<span class="input-group-addon"><i class="fa fa-bus fa-fw"></i></span>
+						<input type="text" class="form-control" id="school_name" ng-model="school_name" placeholder="학교 이름">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+						<input type="text" class="form-control" id="address" ng-model="address" placeholder="주소">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-anchor fa-fw"></i></span>
+						<input type="text" class="form-control" id="zipcode" ng-model="zipcode" placeholder="우편번호">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-hand-o-left fa-fw"></i></span>
+						<input type="text" class="form-control" id="gubun1" ng-model="gubun1" placeholder="구분1">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-hand-o-left fa-fw"></i></span>
+						<input type="text" class="form-control" id="gubun2" ng-model="gubun2" placeholder="구분2">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-home fa-fw"></i></span>
+						<input type="text" class="form-control" id="homepage" ng-model="homepage" placeholder="홈페이지">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-fax fa-fw"></i></span>
+						<input type="text" class="form-control" id="fax" ng-model="fax" placeholder="팩스">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+						<input type="text" class="form-control" id="contact" ng-model="contact" placeholder="연락처">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-file-o fa-fw"></i></span>
+						<input type="text" class="form-control" id="sido" ng-model="sido" placeholder="행정구역 대 예)경북">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-file-o fa-fw"></i></span>
+						<input type="text" class="form-control" id="gugun" ng-model="gugun" placeholder="행정구역 소 예)경주시">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-location-arrow fa-fw"></i></span>
+						<input type="text" class="form-control" id="lat" ng-model="lat" placeholder="위도">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-location-arrow fa-fw"></i></span>
+						<input type="text" class="form-control" id="lng" ng-model="lng" placeholder="경도">
+					</div>
+					<div class="input-group margin-bottom-sm">
+						<span class="input-group-addon"><i class="fa fa-gear fa-fw"></i></span>
+						<input type="text" class="form-control" id="lng" ng-model="code" placeholder="나이스 학교 코드">
+					</div>
+				</div>
+				<div class="panel-footer">
+					<button type="button" ng-click="modifySchool()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- school noti -->
+	<div class="row">
+        <div class="col-lg-8">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-list fa-lg"></i> 학교 알림장 목록
+					<div class="pull-right">
+                        <button type="button" class="btn btn-default btn-xs" ng-click="clickNewNoti()">알림장추가</button>
+                    </div>
+				</div>
+				<table class="table table-striped">
+					<thead>
+			    		<tr>
+			    			<td>EDIT</td>
+			    			<td>category</td>
+			    			<td>title</td>
+			    			<td>date</td>
+			    			<td>첨부화일</td>
+			    		</tr>
+			    	</thead>
+			    	<tbody>
+					    <tr ng-repeat="noti in notis | orderBy:'-noti_date'">
+					    	<td>
+					    		<button class="btn btn-default btn-xs" ng-click="clickEditNoti(noti)">
+						        	<span class="glyphicon glyphicon-pencil"></span> 수 정
+						        </button>
+						        <button class="btn btn-default btn-xs" ng-click="removeNoti(noti)">
+						        	<span class="glyphicon glyphicon-remove-circle"></span> 삭 제
+						        </button>
+						    </td>
+						    <td>{{ categories[noti.category-1].name}}</td>
+						    <td>{{ noti.title}}</td>
+						    <td>{{ noti.noti_date}}</td>
+						    <td>{{ noti.filename}}</td>
+					    </tr>
+				    </tbody>
+			    </table>
+				<div class="panel-footer" style="text-align:center">
+					<pagination boundary-links="true" total-items="totalNotiListCount" ng-model="currentPageNoti" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="notiPageChanged()" items-per-page="itemPerNotiPage"></pagination>
+			    </div>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-edit fa-lg"></i> {{noti_mode_text}}
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+				    	<input type="text" ng-model="noti_seq" ng-hide="true">
+						<div class="form-group">
+					    	<label for="categorySelect" class="col-sm-4 control-label">카테고리</label>
+					    	<div class="col-sm-8">
+					      		<select class="form-control" name="singleSelect" ng-model="category">
+					      			<option value="">Select category-------</option> <!-- not selected / blank option -->
+					      			<option ng-repeat="c in categories" value="{{c.code}}">
+						        		{{c.name}}
+						    		</option>
+					      		</select>
+					    	</div>
+					  	</div>
+					  	<div class="form-group">
+					    	<label for="titleText" class="col-sm-4 control-label">title</label>
+					    	<div class="col-sm-8">
+					      		<input type="text" class="form-control" id="titleText" ng-model="title" />
+					    	</div>
+					  	</div>
+					  	<div class="form-group">
+					    	<label for="contentText" class="col-sm-4 control-label">content</label>
+					    	<div class="col-sm-8">
+					      		<textarea class="form-control" rows="6" ng-model="content"></textarea>
+					    	</div>
+					  	</div>
+					  	<div class="form-group">
+					    	<label for="noti_dateText" class="col-sm-4 control-label">첨부파일</label>
+					    	<div class="col-sm-8">
+					      		<button type="file" ngf-select="uploadFiles($file)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
+					      		<span ng-show="attachedfile != ''">{{filename}}</span>
+					    	</div>
+					  	</div>
+					</form> 
+					<div class="row" ng-switch="noti_mode">
+							<div class="col-lg-6" ng-switch-when="edit">
+					      		<button type="button" ng-click="modifyNoti()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="edit">
+					      		<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+					    	</div>
+					    	<div class="col-lg-6" ng-switch-when="">
+					      		<button type="button" ng-click="addNoti()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
+					    	</div>
+					   	</div>
+				</div>	
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,10 +1,14 @@
 package com.aura.smartschool.domain;
 
+import java.util.List;
+
 public class PressVO {
 	private int press_id;
 	private String title;
 	private String content;
 	private String created;
+	
+	private List<AttachVO> list;
 	
 	public int getPress_id() {
 		return press_id;
@@ -29,6 +33,12 @@ public class PressVO {
 	}
 	public void setCreated(String created) {
 		this.created = created;
+	}
+	public List<AttachVO> getList() {
+		return list;
+	}
+	public void setList(List<AttachVO> list) {
+		this.list = list;
 	}
 
 }

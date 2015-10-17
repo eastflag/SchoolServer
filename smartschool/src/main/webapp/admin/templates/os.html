@@ -1,0 +1,47 @@
+<div ng-controller='OsCtrl'>
+	<div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">사이트 관리</h3>
+        </div>
+    </div>
+
+	<div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-list fa-lg"></i> 앱 버전 관리
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <table class="table table-striped .table-bordered .table-condensed">
+				    	<thead>
+				    		<tr>
+				    			<td>os</td>
+				    			<td>버전네임</td>
+				    			<td>버전코드</td>
+				    			<td>편집</td>
+				    		</tr>
+				    	</thead>
+				    	<tbody>
+						    <tr ng-repeat="osInfo in osInfoList">
+							    <td>{{ osInfo.os_name }}</td>
+							    <td>
+							    	<span data-ng-hide="editMode">{{osInfo.version_name}}</span>
+            						<input type="text" ng-show="editMode" ng-model="osInfo.version_name" ng-required />
+            					</td>
+				    			<td>
+				    				<span data-ng-hide="editMode">{{osInfo.version_code}}</span>
+            						<input type="text" ng-show="editMode" ng-model="osInfo.version_code" ng-required />
+            					</td>
+	                            <td>
+	                            	<button type="submit" ng-hide="editMode" ng-click="editMode=true; editOsInfo(osInfo)" class="btn btn-default">Edit</button>
+						            <button type="submit" ng-show="editMode" ng-click="editMode=false; modifyOsInfo(osInfo)" class="btn btn-default">Save</button>
+						            <button type="submit" ng-show="editMode" ng-click="editMode=false; clearOsInfo($index)" class="btn btn-default">Cancel</button>
+							    </td>
+						    </tr>
+					    </tbody>
+				    </table>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>

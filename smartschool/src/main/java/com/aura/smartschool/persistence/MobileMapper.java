@@ -7,6 +7,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
@@ -33,6 +34,9 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 
 public interface MobileMapper {
+	//첨부파일 등록
+	public int insertAttachFileInfo(AttachVO attach);
+	
 	public int countHome(HomeVO home);
 	public List<HomeVO> selectHomeList(SearchVO search);
 	public HomeVO selectHomeListByNumber(MemberVO member);
@@ -155,12 +159,15 @@ public interface MobileMapper {
 	public List<OsInfoVO> selectOsInfoList();
 	public long updateOsInfo(OsInfoVO osInfo);
 	
-	// Aura Home
+	//아우라 홈페이지 로그인
 	public MemberVO selectMemberByMdn(MemberVO member);
+	
+	//언론자료 관리
 	public int countPressList(SearchVO search);
 	public List<PressVO> selectPressList(SearchVO search);
+	public int insertPress(PressVO press);
 	
-	//2015.10.13 건강매거진 추가
+	//건강매거진 관리
 	public int countMagazineList(SearchVO search);
 	public List<MagazineVO> selectMagazineList(SearchVO search);
 	public int checkMagazine(MagazineVO magazine);
@@ -168,7 +175,7 @@ public interface MobileMapper {
 	public int updateMagazine(MagazineVO magazine) throws PersistenceException;
 	public int deleteMagazine(MagazineVO magazine) throws PersistenceException;
 	
-	//2015.10.16 건강매거진 추가
+	//도전!건강! 관리
 	public int countChallengeList(SearchVO search);
 	public List<ChallengeVO> selectChallengeList(SearchVO search);
 }

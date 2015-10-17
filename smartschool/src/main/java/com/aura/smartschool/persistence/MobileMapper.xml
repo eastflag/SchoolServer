@@ -3,6 +3,23 @@
 
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
+<!-- 첨부파일 등록 -->
+<insert id="insertAttachFileInfo" parameterType="AttachVO" useGeneratedKeys="true" keyProperty="file_id">
+	INSERT INTO attach (
+		board_type
+		,board_id
+		,path
+		,org_name
+		,upd_name
+	) VALUES (
+		#{board_type}
+		,#{board_id}
+		,#{path}
+		,#{org_name}
+		,#{upd_name}
+	)
+</insert>
+
 <select id="signInOfMobile" parameterType="MemberVO" resultType="MemberVO">
 	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex,
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
@@ -670,7 +687,7 @@ select
 <select id="selectSchoolListOfMember" parameterType="SearchVO" resultType="SchoolVO">
 	select * from school
 	where school_id in (
-		SELECT school_id FROM healthcare.member
+		SELECT school_id FROM member
 		group by school_id
 	)
 		<if test="search_value != null">
@@ -683,7 +700,7 @@ select
 <select id="countSchoolListOfMember" parameterType="SearchVO" resultType="Integer">
 	select count(*) from school
 	where school_id in (
-		SELECT school_id FROM healthcare.member
+		SELECT school_id FROM member
 		group by school_id
 	)
 		<if test="search_value != null">
@@ -1070,7 +1087,7 @@ select
 	where os_name = #{os_name}
 </update>
 
-<!-- Aura Home -->
+<!-- 아우라 홈페이지 로그인 -->
 <select id="selectMemberByMdn" parameterType="MemberVO" resultType="MemberVO">
 	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as mdn,
@@ -1086,6 +1103,8 @@ select
 	AND use_yn = 1
 	Limit 1;
 </select>
+
+<!-- 언론자료 관리 -->
 <select id="countPressList" parameterType="SearchVO" resultType="int">
 	SELECT COUNT(*) FROM press
 </select>
@@ -1097,7 +1116,17 @@ select
 	</if>
 </select>
 
-<!-- 2015.10.13 건강매거진 추가 -->
+<insert id="insertPress" parameterType="PressVO" useGeneratedKeys="true" keyProperty="press_id">
+	INSERT INTO press (
+		title
+		,content
+	) VALUES (
+		#{title}
+		,#{content}
+	)
+</insert>
+
+<!-- 건강매거진 관리 -->
 <select id="countMagazineList" parameterType="SearchVO" resultType="int">
 	SELECT COUNT(*) FROM magazine
 </select>
@@ -1175,11 +1204,12 @@ select
 	DELETE FROM magazine WHERE magazine_id = #{magazine_id}
 </delete>
 
+<!-- 도전! 건강! 관리 -->
 <select id="countChallengeList" parameterType="SearchVO" resultType="int">
 	SELECT COUNT(*) FROM challenge
 </select>
 
-<select id="getChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
+<select id="selectChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
 	SELECT * FROM challenge
 	<if test=" page_size !=0 ">
 	Limit #{start_index}, #{page_size}

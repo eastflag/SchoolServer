@@ -30,6 +30,8 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!--  MyBatis -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
@@ -104,6 +106,20 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/java/com/aura/smartschool/persistence</directory>
+				<targetPath>com/aura/smartschool/persistence</targetPath>
+				<filtering>false</filtering>
+				<includes>
+					<include>MobileMapper.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 	</build>
 
 	<repositories>

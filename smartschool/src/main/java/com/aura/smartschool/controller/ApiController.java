@@ -20,11 +20,13 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -737,5 +739,21 @@ public class ApiController {
 		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
 		
 		return new ResultData<OsInfoVO>(0, "success", osInfo);
+	}
+	
+	//건강메거진 목록 조회
+	@RequestMapping("/api/getMagazineList")
+	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search){
+		List<MagazineVO> list = mobileService.getMagazineList(search);
+		
+		return new ResultData<List<MagazineVO>>(0, "success", list);
+	}
+	
+	//언론자료 목록 조회
+	@RequestMapping("/api/getPressList")
+	public ResultData<List<PressVO>> getPressList(@RequestBody SearchVO search){
+		List<PressVO> list = mobileService.getPressList(search);
+		
+		return new ResultData<List<PressVO>>(0, "success", list);
 	}
 }

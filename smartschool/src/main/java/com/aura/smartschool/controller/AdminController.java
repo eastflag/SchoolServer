@@ -30,6 +30,7 @@ import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -626,18 +627,62 @@ public class AdminController {
 		return new Result(0, "success");
 	}
 	
-	/** 2015.10.13 건강매거진 추가 */
+	/** 언론자료 추가 */
+	/**
+	 * 언론자료 목록
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getPressList")
+	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
+		logger.debug("/admin/api/getPressList--------------------------------------------------");
+		List<PressVO> lsit = this.mobileService.getPressList(search);
+		int total = this.mobileService.countMagazineList(search);
+		return new ResultDataTotal<List<PressVO>>(0, "success", lsit, total);
+	}
+	
+	/**
+	 * 언론자료 등록
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/addPress")
+	public Result addPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addMagazine---------------------------------------------------");
+		Gson gson = new Gson();
+		PressVO press = gson.fromJson(data, PressVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.addPress(press, files, path);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100, e.getMessage());
+		}
+	}
+	
+	/** 건강매거진 추가 */
 	/**
 	 * 건강매거진 목록 조회
 	 * @param search
 	 * @return
 	 */
-	@RequestMapping(value={"/admin/api/getMagazineList"})
+	@RequestMapping(value="/admin/api/getMagazineList")
 	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getMagazineList--------------------------------------------------");
-		List<MagazineVO> magazineList = this.mobileService.getMagazineList(search);
+		List<MagazineVO> lsit = this.mobileService.getMagazineList(search);
 		int total = this.mobileService.countMagazineList(search);
-		return new ResultDataTotal<List<MagazineVO>>(0, "success", magazineList, total);
+		return new ResultDataTotal<List<MagazineVO>>(0, "success", lsit, total);
 	}
 
 	/**
@@ -647,7 +692,7 @@ public class AdminController {
 	 * @param files
 	 * @return
 	 */
-	@RequestMapping(value={"/admin/api/addMagazine"})
+	@RequestMapping(value="/admin/api/addMagazine")
 	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
 		logger.debug("/admin/api/addMagazine---------------------------------------------------");
 		Gson gson = new Gson();
@@ -682,7 +727,7 @@ public class AdminController {
 	 * @param files
 	 * @return
 	 */
-	@RequestMapping(value={"/admin/api/modifyMagazine"})
+	@RequestMapping(value="/admin/api/modifyMagazine")
 	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
 		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
 		Gson gson = new Gson();
@@ -715,7 +760,7 @@ public class AdminController {
 	 * @param magazine
 	 * @return
 	 */
-	@RequestMapping(value={"/admin/api/deleteMagazine"})
+	@RequestMapping(value="/admin/api/deleteMagazine")
 	public Result deleteMagazine(@RequestBody MagazineVO magazine) {
 		logger.debug("/admin/api/deleteMagazine---------------------------------------------------");
 		int rsCnt = this.mobileService.deleteMagazine(magazine);
@@ -725,13 +770,13 @@ public class AdminController {
 		return new Result(100, "failed");
 	}
 
-	/** 2015.10.16 도전 건강! 추가 */
+	/** 도전 건강! 추가 */
 	/**
 	 * 도전 건강! 목록
 	 * @param search
 	 * @return
 	 */
-	@RequestMapping(value={"/admin/api/getChallengeList"})
+	@RequestMapping(value="/admin/api/getChallengeList")
 	public ResultData<List<ChallengeVO>> getChallengeList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getChallengeList--------------------------------------------------");
 		int total = this.mobileService.countChallengeList(search);
