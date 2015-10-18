@@ -1650,7 +1650,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		console.log('file selected');
 
 		if (file != null && file.name != null) {
-			$scope.f.push(file);
+			$scope.f[idx] = file;
 			$scope.filenames[idx].name = file.name;
 			$scope.filenames[idx].file_id = null;
 		};
@@ -1758,7 +1758,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		if($scope.filenames[(idx-1)].file_id == null){
 			$scope.f[idx-1] = null;
 			$scope.filenames[(idx-1)].name = null;
-		} else if($scope.filenames[(idx-1)].file_id == null && $scope.mode == 'edit'){
+		} else if($scope.filenames[(idx-1)].file_id != null && $scope.mode == 'edit'){
 			if($window.confirm("파일을 삭제하시겠습니까?")){
 				$scope.f[idx-1] = null;
 				$scope.filenames[(idx-1)].name = null;
@@ -1805,7 +1805,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				title: $scope.title,
 				content: $scope.content
 			}
-	
+			
 			for(var i=0;i<$scope.f.length;i++){
 				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
 					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
@@ -2244,6 +2244,8 @@ app.controller('CkeditorCtrl', ['$scope', function ($scope) {
 			font_names : 'Gulim/Gulim;Dotum/Dotum;Batang/Batang;Gungsuh/Gungsuh;Arial/Arial;Tahoma/Tahoma;Verdana/Verdana',
 			fontSize_sizes : '8/8px;9/9px;10/10px;11/11px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;36/36px;48/48px;',
 			height : 300,
+			enterMode : CKEDITOR.ENTER_BR,
+			shiftEnterMode : CKEDITOR.ENTER_P,
 			toolbar: 'full',
 			toolbar_full: [
 				{ name: 'wysiwyg', items: ['Source','-','NewPage','Preview','-','Templates'] },

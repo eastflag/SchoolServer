@@ -1,4 +1,4 @@
-var app = angular.module('home', ['ngRoute', 'ngCookies']);
+var app = angular.module('home', ['ngRoute', 'ngCookies','ngSanitize']);
 
 app.run(['$rootScope', function($rootScope) {
 	$rootScope.auth_token = null;
@@ -49,7 +49,7 @@ app.service('HomeSvc', function($http) {
 	};
 });
 
-app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$window', '$location', 'HomeSvc', function ($scope, $http, $rootScope, $cookieStore, $window, $location, HomeSvc) {
+app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$window', '$location', '$filter', '$sce', 'HomeSvc', function ($scope, $http, $rootScope, $cookieStore, $window, $location, $filter, $sce, HomeSvc) {
 	$scope.token = null;
 	$scope.error = null;
 	
@@ -249,8 +249,6 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		temp.splice(0, 1);
 		$scope.pagePressNext = temp.pop();
 		$scope.pageNumPressList = temp;
-		
-		console.log($scope.pageNumPressList);
 	}
 	
 	$scope.pressPageChange = function(num) {
@@ -365,6 +363,16 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		};
 		console.log('로그인 체크 => '+($rootScope.auth_token !== null));
 		return $rootScope.auth_token !== null
+	}
+	
+	$scope.stringToHtml = function(str){
+		return $sce.trustAsHtml(str);
+	}
+	
+	$scope.yyyyMMdd = function(date){
+		var tmp = date.substring(0,10);
+		var d = tmp.split("-");
+		return d[0]+"."+d[1]+"."+d[2];
 	}
 	
 	$scope.setPath = function(){

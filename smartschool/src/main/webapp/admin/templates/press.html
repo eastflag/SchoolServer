@@ -67,7 +67,7 @@
 						<div class="form-group">
 							<label for="pressContent" class="col-sm-2 control-label">내용</label>
 							<div class="col-sm-10" ng-controller="CkeditorCtrl">
-								<textarea type="text" class="form-control" id="pressContent" ckeditor="options" ng-model="content" ready="onReady()"></textarea>
+								<textarea type="text" class="form-control" id="pressContent" ckeditor="options" ng-model="$parent.content" ready="onReady()"></textarea>
 							</div>
 						</div>
 						<div class="form-group" ng-repeat="row in filenames">

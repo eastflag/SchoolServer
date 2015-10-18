@@ -6,18 +6,30 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.View;
 
+import com.aura.smartschool.domain.AttachVO;
+import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.FileUtil;
 
 @Controller
 public class CommonController {
 
+	private static Logger logger = LoggerFactory.getLogger(CommonController.class);
+	
+	@Autowired
+	private MobileService mobileService;
+	
 	/**
 	 * 에디터 이미지 파일 업로드
 	 */
@@ -51,5 +63,13 @@ public class CommonController {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	@RequestMapping("/download")
+	public View downAttachFile(@RequestParam(value="f") int file_id){
+		AttachVO attach = new AttachVO();
+		attach.setFile_id(file_id);
+		
+		return FileUtil.download(mobileService.getAttachFileById(attach));
 	}
 }
