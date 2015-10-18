@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultVO;
@@ -636,8 +638,8 @@ public class AdminController {
 	@RequestMapping(value="/admin/api/getPressList")
 	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
 		logger.debug("/admin/api/getPressList--------------------------------------------------");
-		List<PressVO> lsit = this.mobileService.getPressList(search);
 		int total = this.mobileService.countMagazineList(search);
+		List<PressVO> lsit = this.mobileService.getPressList(search);
 		return new ResultDataTotal<List<PressVO>>(0, "success", lsit, total);
 	}
 	
@@ -649,12 +651,13 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/addPress")
-	public Result addPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
-		logger.debug("/admin/api/addMagazine---------------------------------------------------");
+	public Result addPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addPress---------------------------------------------------");
+		logger.debug("file size : " + files.size());
 		Gson gson = new Gson();
 		PressVO press = gson.fromJson(data, PressVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		String path = request.getServletContext().getRealPath("/upload") + "press";
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -668,6 +671,80 @@ public class AdminController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Result(100, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 언론자료 수정
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/modifyPress")
+	public Result modifyPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/modifyPress---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		PressVO press = gson.fromJson(data, PressVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "press";
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.modifyPress(press, files, path);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 언론자료 삭제
+	 * @param press
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/removePress")
+	public Result removePress(@RequestBody PressVO press){
+		logger.debug("/admin/api/removePress---------------------------------------------------");
+		logger.debug("attach size : "+press.getList().size());
+		try {
+			int rs = mobileService.removePress(press);
+			if(rs > 0){
+				return new Result(0,"success");
+			}else{
+				return new Result(100,"fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 첨부파일 삭제
+	 * @param attach
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/removeAttachFile")
+	public Result removeAttachFile(@RequestBody AttachVO attach){
+		logger.debug("/admin/api/removeAttachFile---------------------------------------------------");
+		try {
+			int rs = mobileService.removeAttachFile(attach);
+			if(rs !=0){
+				return new Result(0,"success");
+			}else{
+				return new Result(100,"fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100,"fail");
 		}
 	}
 	
@@ -693,12 +770,12 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/addMagazine")
-	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
+	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
 		logger.debug("/admin/api/addMagazine---------------------------------------------------");
 		Gson gson = new Gson();
 		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/" + magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -706,7 +783,7 @@ public class AdminController {
 		if (chCnt == 0) {
 			if (files.size() > 0) {
 				try {
-					FileUtil.fileUpload(files, path);
+					FileUtil.fileUploadOriginalName(files, path);
 				} catch (IllegalStateException | IOException e) {
 					e.printStackTrace();
 					return new Result(200, "fail");
@@ -728,12 +805,12 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/modifyMagazine")
-	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="file", required=false) List<MultipartFile> files) {
+	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
 		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
 		Gson gson = new Gson();
 		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/" + magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -741,7 +818,7 @@ public class AdminController {
 		if (chCnt == 0) {
 			if (files.size() > 0) {
 				try {
-					FileUtil.fileUpload(files, path);
+					FileUtil.fileUploadOriginalName(files, path);
 				} catch (IllegalStateException | IOException e) {
 					e.printStackTrace();
 					return new Result(200, "fail");
@@ -760,11 +837,22 @@ public class AdminController {
 	 * @param magazine
 	 * @return
 	 */
-	@RequestMapping(value="/admin/api/deleteMagazine")
-	public Result deleteMagazine(@RequestBody MagazineVO magazine) {
-		logger.debug("/admin/api/deleteMagazine---------------------------------------------------");
-		int rsCnt = this.mobileService.deleteMagazine(magazine);
-		if (rsCnt >= 0) {
+	@RequestMapping(value="/admin/api/removeMagazine")
+	public Result removeMagazine(HttpServletRequest request, @RequestBody MagazineVO magazine) {
+		logger.debug("/admin/api/removeMagazine---------------------------------------------------");
+		int rsCnt = this.mobileService.removeMagazine(magazine);
+		if (rsCnt > 0) {
+			String path = request.getServletContext().getRealPath("/upload") + magazine.getYear() + "/" + magazine.getMonth();
+			
+			//해당 디렉토리의 파일 삭제
+			File dir = new File(path);
+			if(dir.isDirectory()){
+				try {
+					FileUtils.cleanDirectory(dir);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			return new Result(0, "success");
 		}
 		return new Result(100, "failed");

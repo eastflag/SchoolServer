@@ -35,6 +35,7 @@ import com.aura.smartschool.domain.VideoVO;
 public interface MobileService {
 	//첨부파일 등록
 	int registAttachFile(AttachVO attach) throws Exception;
+	List<AttachVO> getAttachList(AttachVO attach);
 	
 	public int countHome(HomeVO home);
 	public List<HomeVO> selectHomeList(SearchVO search);
@@ -141,11 +142,15 @@ public interface MobileService {
 	
 	//아우라 홈 로그인 
 	public MemberVO getMemberByMdn(MemberVO member);
+	public AttachVO getAttachFileById(AttachVO attach);
+	public int removeAttachFile(AttachVO attach) throws Exception;
 	
 	//언론자료 관리
 	public int countPressList(SearchVO search);
 	public List<PressVO> getPressList(SearchVO search);
 	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public int removePress(PressVO press) throws Exception;
 	
 	//건강매거진 관리
 	public int checkMagazine(MagazineVO magazine);
@@ -153,7 +158,7 @@ public interface MobileService {
 	public int countMagazineList(SearchVO search);
 	public int addMagazine(MagazineVO magazine) throws PersistenceException ;
 	public int modifyMagazine(MagazineVO magazine) throws PersistenceException ;
-	public int deleteMagazine(MagazineVO magazine) throws PersistenceException ;
+	public int removeMagazine(MagazineVO magazine) throws PersistenceException ;
 	
 	//도전!건강! 관리
 	public int countChallengeList(SearchVO search);

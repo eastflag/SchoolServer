@@ -48,12 +48,6 @@ public class MobileServiceImpl implements MobileService {
 
 	@Autowired
 	private MobileMapper mobileMapper;
-	
-	//첨부파일 등록
-	@Override
-	public int registAttachFile(AttachVO attach) throws Exception{
-		return mobileMapper.insertAttachFileInfo(attach);
-	}
 
 	@Override
 	public int countHome(HomeVO home) {
@@ -638,6 +632,37 @@ public class MobileServiceImpl implements MobileService {
 	public MemberVO getMemberByMdn(MemberVO member) {
 		return mobileMapper.selectMemberByMdn(member);
 	}
+	
+	//첨부파일 등록
+	@Override
+	public int registAttachFile(AttachVO attach) throws Exception{
+		return mobileMapper.insertAttachFileInfo(attach);
+	}
+	
+	//첨부파일 목록 조회
+	@Override
+	public List<AttachVO> getAttachList(AttachVO attach) {
+		return mobileMapper.getAttachList(attach);
+	}
+	
+	//첨부파일 조회
+	@Override
+	public AttachVO getAttachFileById(AttachVO attach){
+		return mobileMapper.getAttachFileById(attach);
+	}
+
+	//첨부파일 삭제
+	@Override
+	public int removeAttachFile(AttachVO attach) throws Exception {
+		int rs = 0;
+		attach = mobileMapper.getAttachFileById(attach);
+		
+		if(FileUtil.deleteFile(attach)){
+			rs = mobileMapper.deleteAttachFile(attach);
+		}
+		
+		return rs;
+	}
 
 	//언론자료 관리
 	@Override
@@ -647,7 +672,15 @@ public class MobileServiceImpl implements MobileService {
 
 	@Override
 	public List<PressVO> getPressList(SearchVO search) {
-		return mobileMapper.selectPressList(search);
+		List<PressVO> list = mobileMapper.selectPressList(search);
+		for(PressVO press:list){
+			AttachVO attach = new AttachVO();
+			attach.setBoard_type(1);
+			attach.setBoard_id(press.getPress_id());
+			press.setList(this.getAttachList(attach));
+		}
+		
+		return list;
 	}
 
 	@Override
@@ -661,11 +694,42 @@ public class MobileServiceImpl implements MobileService {
 				for(AttachVO attach:list){
 					attach.setBoard_type(1);	//1:언론자료
 					attach.setBoard_id(press_id);
+					attach.setPath(path);
 					this.registAttachFile(attach);
 				}
 			}
 		}
 		return press_id;
+	}
+
+	@Override
+	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
+		int rsCnt = mobileMapper.updatePress(press);
+		
+		if(files.size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(files, path);
+			
+			if (list.size() != 0){
+				for(AttachVO attach:list){
+					attach.setBoard_type(1);	//1:언론자료
+					attach.setBoard_id(press.getPress_id());
+					attach.setPath(path);
+					this.registAttachFile(attach);
+				}
+			}
+		}
+		return rsCnt;
+	}
+	
+	public int removePress(PressVO press) throws Exception {
+		int rs = 0;
+		for(AttachVO attach:press.getList()){
+			this.removeAttachFile(attach);
+		}
+		
+		rs = mobileMapper.deletePress(press);
+		
+		return rs;
 	}
 
 	//건강매거진 관리
@@ -683,7 +747,6 @@ public class MobileServiceImpl implements MobileService {
 	public int checkMagazine(MagazineVO magazine) {
 		return mobileMapper.checkMagazine(magazine);
 	}
-
 	@Override
 	public int addMagazine(MagazineVO magazine) throws PersistenceException {
 		return mobileMapper.insertMagazine(magazine);
@@ -695,7 +758,7 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int deleteMagazine(MagazineVO magazine) throws PersistenceException {
+	public int removeMagazine(MagazineVO magazine) throws PersistenceException {
 		return mobileMapper.deleteMagazine(magazine);
 	}
 

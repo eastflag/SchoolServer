@@ -1592,8 +1592,14 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 
 //언론자료 관리
 app.service('PressSvc', function($http) {
-	this.getPressList = function(params) {
-		return $http.post('/admin/api/getPressList', params);
+	this.getPressList = function(data) {
+		return $http.post('/admin/api/getPressList', data);
+	}
+	this.removePress = function(data){
+		return $http.post('/admin/api/removePress', data);
+	}
+	this.removeFile = function(data){
+		return $http.post('/admin/api/removeAttachFile',data);
 	}
 });
 app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'PressSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, PressSvc) {
@@ -1646,6 +1652,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		if (file != null && file.name != null) {
 			$scope.f.push(file);
 			$scope.filenames[idx].name = file.name;
+			$scope.filenames[idx].file_id = null;
 		};
 	}
 	
@@ -1657,9 +1664,22 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		$scope.content = null;
 		$scope.f = [];
 		$scope.filenames = [
-			{code:1, name:null},
-			{code:2, name:null}
+			{code:1, name:null, file_id:null},
+			{code:2, name:null, file_id:null}
 		];
+	}
+	
+	$scope.checkImgName = function(){
+		for(var i=0; i<($scope.filenames.length-1); i++){
+			if($scope.filenames[i].name == null) continue;
+			
+			for(var j=i+1; j<$scope.filenames.length; j++){
+				if($scope.filenames[j].name != null && $scope.filenames[j].name == $scope.filenames[i].name){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	$scope.addPress = function(){
@@ -1672,8 +1692,12 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$window.alert('내용을 입력하세요.');
 			return;
 		}
-		else {
+
+		else if(!$scope.checkImgName()){
+			$window.alert('중복된 첨부파일이 있습니다.\n첨부파일을 확인하세요.');
 			return;
+		}
+		else {
 			var press = {
 				title: $scope.title,
 				content: $scope.content
@@ -1698,9 +1722,9 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
 				if(data.result == 0) {
-					$window.alert('건강매거진이 등록되었습니다.');
-					$scope.getMagazineList();
-					$scope.clearMagazine();
+					$window.alert('언론자료가 등록되었습니다.');
+					$scope.getPressList();
+					$scope.clearPress();
 				} else {
 					$window.alert(data.msg);
 				}
@@ -1720,54 +1744,127 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		
 		$scope.hide = false;
 		$scope.mode = 'edit';
-		$scope.title = '';
-		$scope.content = '';
+		$scope.press_id = press.press_id;
+		$scope.title = press.title;
+		$scope.content = press.content;
 		$scope.f = [];
-		$scope.filenames = [
-			{code:1, name:press.list[0].org_name},
-			{code:2, name:press.list[1].org_name}
-		];
+		for(var i=0; i<press.list.length;i++){
+			$scope.filenames[i] = {code:(i+1), name:press.list[i].org_name, file_id:press.list[i].file_id};
+		}
+	}
+	
+	$scope.removeFile = function(idx){
+		console.log('파일삭제');
+		if($scope.filenames[(idx-1)].file_id == null){
+			$scope.f[idx-1] = null;
+			$scope.filenames[(idx-1)].name = null;
+		} else if($scope.filenames[(idx-1)].file_id == null && $scope.mode == 'edit'){
+			if($window.confirm("파일을 삭제하시겠습니까?")){
+				$scope.f[idx-1] = null;
+				$scope.filenames[(idx-1)].name = null;
+				
+				PressSvc.removeFile({file_id:$scope.filenames[(idx-1)].file_id})
+					.success(function(response){
+						if(response.result == 0) {
+							$window.alert('첨부파일이 삭제되었습니다.');
+						} else {
+							$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+						}
+					})
+					.error(function(response,status){
+						if (status >= 400) {
+							$rootScope.auth_token = null;
+							$cookieStore.remove("auth_info");
+						} else {
+							alert("error : " + data.message);
+						}
+					});
+			}else{
+				return false;
+			}
+		}
 	}
 	
 	$scope.modifyPress = function(){
 		console.log('언론자료 수정');
+		if ($scope.title == null) {
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if($scope.content == null) {
+			$window.alert('내용을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복된 첨부파일이 있습니다.\n첨부파일을 확인하세요.');
+			return;
+		}
+		else {
+			var press = {
+				press_id : $scope.press_id,
+				title: $scope.title,
+				content: $scope.content
+			}
+	
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/modifyPress',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(press),
+				fileFormDataName : 'files',
+			}).success(function(response) {
+				if(response.result == 0) {
+					$window.alert('언론자료가 수정되었습니다.');
+					$scope.getPressList();
+					$scope.clearPress();
+				} else {
+					$window.alert('수정 실패!\n잠시 후에 다시 시도하세요.');
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
 	}
 	
-	$scope.options = {
-			language: 'kr',
-			skin: 'moono',
-			filebrowserImageUploadUrl: '/editor/image/upload',
-			toolbarLocation: 'top',
-			font_names : 'Gulim/Gulim;Dotum/Dotum;Batang/Batang;Gungsuh/Gungsuh;Arial/Arial;Tahoma/Tahoma;Verdana/Verdana',
-			fontSize_sizes : '8/8px;9/9px;10/10px;11/11px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;36/36px;48/48px;',
-			height : 300,
-			toolbar: 'full',
-			toolbar_full: [
-				{ name: 'wysiwyg', items: ['Source','-','NewPage','Preview','-','Templates'] },
-				{ name: 'styles', items: [ 'Font', 'Format', 'FontSize', 'TextColor', 'PasteText', 'RemoveFormat' ] },
-				{ name: 'basicstyles',items: [ 'Bold', 'Italic', 'Strike', 'Underline' ] },
-				{ name: 'paragraph', items: [ 'BulletedList', 'NumberedList', 'Blockquote' ] },
-				{ name: 'editing', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
-				{ name: 'tools', items: [ 'Maximize' ] },
-				{ name: 'clipboard', items: [ 'Undo', 'Redo' ] },
-				{ name: 'insert', items: [ 'Image', 'Table', 'SpecialChar'] },'/',
-			]
-	};
-	// Called when the editor is completely ready.
-	$scope.onReady = function () {
-		CKEDITOR.on('dialogDefinition', function( ev ){
-			var dialogName = ev.data.name;
-			var dialogDefinition = ev.data.definition;
-		
-			switch (dialogName) {
-				case 'image': //Image Properties dialog
-					//dialogDefinition.removeContents('info');
-					dialogDefinition.removeContents('Link');
-					dialogDefinition.removeContents('advanced');
-					break;
-			}
-		});
-	};
+	$scope.removePress = function(press){
+		if($window.confirm('해당 언론자료를 삭제하시겠습니까?')){
+			PressSvc.removePress(press)
+				.success(function(response){
+					if(response.result == 0) {
+						$window.alert('언론자료가 삭제되었습니다.');
+						$scope.getPressList();
+						$scope.clearPress();
+					} else {
+						$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				})
+				.error(function(response, state){
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}else{
+			return;
+		}
+	}
 	
 	$scope.getPressList();
 }]);
@@ -1777,8 +1874,8 @@ app.service('MagazineSvc', function($http) {
 	this.getMagazineList = function(params) {
 		return $http.post('/admin/api/getMagazineList', params);
 	}
-	this.deleteMagazine = function(params) {
-		return $http.post('/admin/api/deleteMagazine', params);
+	this.removeMagazine = function(params) {
+		return $http.post('/admin/api/removeMagazine', params);
 	}
 });
 app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'MagazineSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, MagazineSvc) {
@@ -1992,16 +2089,16 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				month: $scope.month,
 				title: $scope.title,
 				content: $scope.content,
-				img_1:$scope.filenames[0],
-				img_2:$scope.filenames[1],
-				img_3:$scope.filenames[2],
-				img_4:$scope.filenames[3],
-				img_5:$scope.filenames[4],
-				img_6:$scope.filenames[5],
-				img_7:$scope.filenames[6],
-				img_8:$scope.filenames[7],
-				img_9:$scope.filenames[8],
-				img_10:$scope.filenames[9]
+				img_1:$scope.filenames[0].name,
+				img_2:$scope.filenames[1].name,
+				img_3:$scope.filenames[2].name,
+				img_4:$scope.filenames[3].name,
+				img_5:$scope.filenames[4].name,
+				img_6:$scope.filenames[5].name,
+				img_7:$scope.filenames[6].name,
+				img_8:$scope.filenames[7].name,
+				img_9:$scope.filenames[8].name,
+				img_10:$scope.filenames[9].name
 			}
 	
 			console.log('$scope.f.length : '+$scope.f.length);
@@ -2041,28 +2138,26 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		}
 	}
 	
-	$scope.deleteMagazine = function(magazine){
+	$scope.removeMagazine = function(magazine){
 		console.log('매거진 삭제--------------');
-		if (! $window.confirm("정말 삭제하시겠습니까?")) {
-			return;
-		};
-
-		MagazineSvc.deleteMagazine({magazine_id : magazine.magazine_id})
-			.success(function(result) {
-				if(result == 0){
-					$scope.getMagazineList();
-					$scope.clearMagazine();
-				} else {
-					$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
-				}
-			}).error(function(data, status) {
-				if (status >= 400) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
-				} else {
-					alert("error : " + data.message);
-				}
-			});
+		if ($window.confirm("해당 건강매거진을 삭제하시겠습니까?")) {
+			MagazineSvc.removeMagazine(magazine)
+				.success(function(response) {
+					if(response.result == 0){
+						$scope.getMagazineList();
+						$scope.clearMagazine();
+					} else {
+						$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				}).error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
 	}
 	
 	$scope.getMagazineList();
@@ -2137,4 +2232,43 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	
 	
 	$scope.getChallengeList();
+}]);
+
+app.controller('CkeditorCtrl', ['$scope', function ($scope) {
+	// Editor options.
+	$scope.options = {
+			language: 'kr',
+			skin: 'moono',
+			filebrowserImageUploadUrl: '/editor/image/upload',
+			toolbarLocation: 'top',
+			font_names : 'Gulim/Gulim;Dotum/Dotum;Batang/Batang;Gungsuh/Gungsuh;Arial/Arial;Tahoma/Tahoma;Verdana/Verdana',
+			fontSize_sizes : '8/8px;9/9px;10/10px;11/11px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;36/36px;48/48px;',
+			height : 300,
+			toolbar: 'full',
+			toolbar_full: [
+				{ name: 'wysiwyg', items: ['Source','-','NewPage','Preview','-','Templates'] },
+				{ name: 'styles', items: [ 'Font', 'Format', 'FontSize', 'TextColor', 'PasteText', 'RemoveFormat' ] },
+				{ name: 'basicstyles',items: [ 'Bold', 'Italic', 'Strike', 'Underline' ] },
+				{ name: 'paragraph', items: [ 'BulletedList', 'NumberedList', 'Blockquote' ] },
+				{ name: 'editing', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
+				{ name: 'tools', items: [ 'Maximize' ] },
+				{ name: 'clipboard', items: [ 'Undo', 'Redo' ] },
+				{ name: 'insert', items: [ 'Image', 'Table', 'SpecialChar'] },'/',
+			]
+	};
+	// Called when the editor is completely ready.
+	$scope.onReady = function () {
+		CKEDITOR.on('dialogDefinition', function( ev ){
+			var dialogName = ev.data.name;
+			var dialogDefinition = ev.data.definition;
+		
+			switch (dialogName) {
+				case 'image': //Image Properties dialog
+					//dialogDefinition.removeContents('info');
+					dialogDefinition.removeContents('Link');
+					dialogDefinition.removeContents('advanced');
+					break;
+			}
+		});
+	};
 }]);

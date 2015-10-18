@@ -72,4 +72,37 @@ public class FileUtil {
 		}
 		return list;
 	}
+	
+	/**
+	 * 멀티 파일 업로드[원본 이름으로 저장]
+	 * @param files
+	 * @param path
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	public static void fileUploadOriginalName(List<MultipartFile> files, String path) throws IllegalStateException, IOException{
+		File dir = new File(path);
+		
+		//디렉토리 생성
+		if(!dir.isDirectory()){
+			dir.mkdirs();
+		}
+		
+		//첨부파일 등록
+		for(int i=0;i<files.size();i++){
+			if(!files.get(i).isEmpty()){
+				String originalFileName = files.get(i).getOriginalFilename();
+				File saveFile = new File(path, originalFileName);
+				files.get(i).transferTo(saveFile);
+			}
+		}
+	}
+
+	public static boolean deleteFile(AttachVO attach) {
+		String path = attach.getPath();
+		String name = attach.getUpd_name();
+		
+		File f = new File(path, name);
+		return f.delete();
+	}
 }

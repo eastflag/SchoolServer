@@ -6,7 +6,7 @@
 	</div>
 
 	<div class="row">
-		<div class="col-lg-6">
+		<div class="col-lg-12">
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<i class="fa fa-list fa-lg"></i> 도전!건강! 목록
@@ -43,7 +43,10 @@
 				</table>
 			</div>
 		</div>
-		<div class="col-lg-6">
+	</div>
+	
+	<div class="row">
+		<div class="col-lg-12">
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<i class="fa fa-edit fa-lg"></i> 순위설정
@@ -52,15 +55,11 @@
 					<form class="form-horizontal">
 						<div class="form-group">
 							<label for="titleText" class="col-sm-2 control-label">제목</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" ng-model="title" />
-							</div>
+							<div class="col-sm-10">{{title}}</div>
 						</div>
 						<div class="form-group">
 							<label for="titleText" class="col-sm-2 control-label">내용</label>
-							<div class="col-sm-10">
-								<textarea type="text" class="form-control" ng-model="content"></textarea>
-							</div>
+							<div class="col-sm-10">{{content}}</div>
 						</div>
 						<div class="form-group" ng-repeat="row in imgs">
 							<label for="noti_dateText" class="col-sm-2 control-label">이미지 {{row.code}}</label>

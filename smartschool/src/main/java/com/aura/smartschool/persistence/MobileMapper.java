@@ -34,8 +34,6 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 
 public interface MobileMapper {
-	//첨부파일 등록
-	public int insertAttachFileInfo(AttachVO attach);
 	
 	public int countHome(HomeVO home);
 	public List<HomeVO> selectHomeList(SearchVO search);
@@ -162,10 +160,18 @@ public interface MobileMapper {
 	//아우라 홈페이지 로그인
 	public MemberVO selectMemberByMdn(MemberVO member);
 	
+	//첨부파일 등록
+	public int insertAttachFileInfo(AttachVO attach) throws PersistenceException;
+	public List<AttachVO> getAttachList(AttachVO attach);
+	public AttachVO getAttachFileById(AttachVO attach);
+	public int deleteAttachFile(AttachVO attach) throws PersistenceException;
+	
 	//언론자료 관리
 	public int countPressList(SearchVO search);
 	public List<PressVO> selectPressList(SearchVO search);
-	public int insertPress(PressVO press);
+	public int insertPress(PressVO press) throws PersistenceException;
+	public int updatePress(PressVO press) throws PersistenceException;
+	public int deletePress(PressVO press) throws PersistenceException;
 	
 	//건강매거진 관리
 	public int countMagazineList(SearchVO search);
