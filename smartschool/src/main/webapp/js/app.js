@@ -1055,7 +1055,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 		});
 	}
 
-	$scope.multiple = "multiple";
+	//$scope.multiple = "multiple";
 
 	//알리미 신규 글 등록
 	$scope.addNoti = function() {
