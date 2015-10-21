@@ -638,7 +638,7 @@ public class AdminController {
 	@RequestMapping(value="/admin/api/getPressList")
 	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
 		logger.debug("/admin/api/getPressList--------------------------------------------------");
-		int total = this.mobileService.countMagazineList(search);
+		int total = this.mobileService.countPressList(search);
 		List<PressVO> lsit = this.mobileService.getPressList(search);
 		return new ResultDataTotal<List<PressVO>>(0, "success", lsit, total);
 	}
@@ -657,7 +657,7 @@ public class AdminController {
 		Gson gson = new Gson();
 		PressVO press = gson.fromJson(data, PressVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "press";
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -688,7 +688,7 @@ public class AdminController {
 		Gson gson = new Gson();
 		PressVO press = gson.fromJson(data, PressVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "press";
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -775,7 +775,7 @@ public class AdminController {
 		Gson gson = new Gson();
 		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -810,7 +810,7 @@ public class AdminController {
 		Gson gson = new Gson();
 		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "magazine/" + magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);
 		
@@ -842,7 +842,7 @@ public class AdminController {
 		logger.debug("/admin/api/removeMagazine---------------------------------------------------");
 		int rsCnt = this.mobileService.removeMagazine(magazine);
 		if (rsCnt > 0) {
-			String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
+			String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
 			
 			//해당 디렉토리의 파일 삭제
 			File dir = new File(path);

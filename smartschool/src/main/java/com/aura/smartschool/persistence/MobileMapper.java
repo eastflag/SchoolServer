@@ -169,6 +169,7 @@ public interface MobileMapper {
 	//언론자료 관리
 	public int countPressList(SearchVO search);
 	public List<PressVO> selectPressList(SearchVO search);
+	public PressVO selectPress(PressVO in);
 	public int insertPress(PressVO press) throws PersistenceException;
 	public int updatePress(PressVO press) throws PersistenceException;
 	public int deletePress(PressVO press) throws PersistenceException;

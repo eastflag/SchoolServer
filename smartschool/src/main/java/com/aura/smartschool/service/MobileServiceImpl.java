@@ -703,6 +703,19 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
+	public PressVO getPress(PressVO in) {
+		PressVO rs = mobileMapper.selectPress(in);
+		if( rs !=null ) {
+			AttachVO attach = new AttachVO();
+			attach.setBoard_type(1);		//1:언론자료
+			attach.setBoard_id(rs.getPress_id());
+			rs.setList(this.getAttachList(attach));
+		}
+		
+		return rs;
+	}
+
+	@Override
 	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
 		int rsCnt = mobileMapper.updatePress(press);
 		

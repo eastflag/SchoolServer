@@ -20,9 +20,13 @@ public class DataConfig {
 	public DataSource dataSource() {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setDriverClass(com.mysql.jdbc.Driver.class);
-		dataSource.setUsername("aura");
-		dataSource.setUrl("jdbc:mysql://220.73.163.76:3306/AURA_HOME");
-		dataSource.setPassword("aura2015!");
+		//dataSource.setUrl("jdbc:mysql://220.73.163.76:3306/AURA_HOME");
+		//dataSource.setUsername("aura");
+		//dataSource.setPassword("aura2015!");
+
+		dataSource.setUrl("jdbc:mysql://aurasystem.kr:3306/healthcare");
+		dataSource.setUsername("healthcare");
+		dataSource.setPassword("!healthcare");
 
 		// populate some data
 		//JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -32,8 +36,6 @@ public class DataConfig {
 		//	System.out.println(row.get("member_id"));
 		//	System.out.println(row.get("mdn"));
 		//}
-		//jdbcTemplate.execute("create table users(id serial, firstName varchar(255), lastName varchar(255), email varchar(255))");
-		//jdbcTemplate.update("INSERT INTO users(firstName, lastName, email) values (?,?,?)", "Mike", "Lanyon", "lanyonm@gmail.com");
 
 		return dataSource;
 	}

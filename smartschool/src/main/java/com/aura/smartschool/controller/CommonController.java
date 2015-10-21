@@ -65,7 +65,7 @@ public class CommonController {
 		}
 	}
 	
-	@RequestMapping("/download")
+	@RequestMapping("/download.html")
 	public View downAttachFile(@RequestParam(value="f") int file_id){
 		AttachVO attach = new AttachVO();
 		attach.setFile_id(file_id);

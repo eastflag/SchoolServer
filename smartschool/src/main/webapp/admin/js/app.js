@@ -14,16 +14,16 @@ app.run(['$rootScope', function($rootScope) {
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
-	.when('/member', {templateUrl: 'templates/member.html'})
-	.when('/school', {templateUrl: 'templates/school.html'})
-	.when('/consult', {templateUrl: 'templates/consult.html'})
-	.when('/noti', {templateUrl: 'templates/noti.html'})
-	.when('/qna', {templateUrl: 'templates/qna.html'})
-	.when('/os', {templateUrl: 'templates/os.html'})
-	.when('/admin', {templateUrl: 'templates/admin.html'})
-	.when('/press', {templateUrl: 'templates/press.html'})
-	.when('/magazine', {templateUrl: 'templates/magazine.html'})
-	.when('/challenge', {templateUrl: 'templates/challenge.html'})
+	.when('/member', {templateUrl: '/admin/templates/member.html'})
+	.when('/school', {templateUrl: '/admin/templates/school.html'})
+	.when('/consult', {templateUrl: '/admin/templates/consult.html'})
+	.when('/noti', {templateUrl: '/admin/templates/noti.html'})
+	.when('/qna', {templateUrl: '/admin/templates/qna.html'})
+	.when('/os', {templateUrl: '/admin/templates/os.html'})
+	.when('/admin', {templateUrl: '/admin/templates/admin.html'})
+	.when('/press', {templateUrl: '/admin/templates/press.html'})
+	.when('/magazine', {templateUrl: '/admin/templates/magazine.html'})
+	.when('/challenge', {templateUrl: '/admin/templates/challenge.html'})
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -1719,14 +1719,13 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				//data 속성으로 별도의 데이터를 보냄.
 				data : JSON.stringify(press),
 				fileFormDataName : 'files',
-			}).success(function(data, status, headers, config) {
-				console.log('data: ' + data + "," + data.result);
-				if(data.result == 0) {
+			}).success(function(response) {
+				if(response.result == 0) {
 					$window.alert('언론자료가 등록되었습니다.');
 					$scope.getPressList();
 					$scope.clearPress();
 				} else {
-					$window.alert(data.msg);
+					$window.alert(response.msg);
 				}
 			}).error(function(data, status) {
 				if (status >= 400) {
@@ -2212,15 +2211,15 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	};
 	
 	$scope.viewChallenge = function(challenge){
-		$scope.mode = "rank";
+		$scope.mode = "view";
 		$scope.title = challenge.title;
 		$scope.content = challenge.content;
 		$scope.imgs = [
-			{code:1, img:challenge.img_1},
-			{code:2, img:challenge.img_2},
-			{code:3, img:challenge.img_3},
-			{code:4, img:challenge.img_4},
-			{code:5, img:challenge.img_5}
+			{code:1, img:challenge.img_1==null?null:'/upload/challenge/'+challenge.img_1},
+			{code:2, img:challenge.img_2==null?null:'/upload/challenge/'+challenge.img_2},
+			{code:3, img:challenge.img_3==null?null:'/upload/challenge/'+challenge.img_3},
+			{code:4, img:challenge.img_4==null?null:'/upload/challenge/'+challenge.img_4},
+			{code:5, img:challenge.img_5==null?null:'/upload/challenge/'+challenge.img_5}
 		]
 		$scope.rank = challenge.rank;
 		console.log('------------- 상세보기 -------------');
@@ -2229,7 +2228,6 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	$scope.setupRank = function(){
 		console.log('------------- 순위설정 -------------');
 	}
-	
 	
 	$scope.getChallengeList();
 }]);

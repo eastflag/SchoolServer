@@ -149,6 +149,7 @@ public interface MobileService {
 	public int countPressList(SearchVO search);
 	public List<PressVO> getPressList(SearchVO search);
 	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public PressVO getPress(PressVO in) ;
 	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
 	public int removePress(PressVO press) throws Exception;
 	

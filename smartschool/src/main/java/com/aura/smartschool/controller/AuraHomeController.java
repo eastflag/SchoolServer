@@ -14,11 +14,11 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.MemberVO;
@@ -33,7 +33,7 @@ import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.SmsUtil;
 
-@Controller
+@RestController
 public class AuraHomeController {
 
 	private static Logger logger = LoggerFactory.getLogger(AuraHomeController.class);
@@ -62,7 +62,6 @@ public class AuraHomeController {
 	 * @param rphone
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/getSmsCertifyKey")
 	public Result requestSmsCertifyKey(
 			@RequestBody MemberVO in,
@@ -109,7 +108,6 @@ public class AuraHomeController {
 	 * @param HttpSession session
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/login")
 	public ResultData<Map<String,Object>> login(
 			@RequestBody MemberVO in,
@@ -160,7 +158,6 @@ public class AuraHomeController {
 	 * @param SearchVO search
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/getNotiList")
 	public ResultDataTotal<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
 		logger.debug("/home/api/getNotiList");
@@ -183,7 +180,6 @@ public class AuraHomeController {
 	 * @param SearchVO search
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/getPressList")
 	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
 		List<PressVO> pressList = new ArrayList<PressVO>();
@@ -200,11 +196,25 @@ public class AuraHomeController {
 	}
 	
 	/**
+	 * 언론자료 상세
+	 * @param in
+	 * @return
+	 */
+	@RequestMapping(value="home/api/getPress")
+	public ResultData<PressVO> getPress(@RequestBody PressVO in){
+		PressVO rs = mobileService.getPress(in);
+		if(rs != null){
+			return new ResultData<PressVO>(0,"success", rs);
+		}else{
+			return new ResultData<PressVO>(100,"no-data", new PressVO());
+		}
+	}
+	
+	/**
 	 * 회원정보조회
 	 * @param in
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/getMemberInfo")
 	public ResultData<MemberVO> getMemberInfo(@RequestBody MemberVO in){
 		
@@ -217,7 +227,6 @@ public class AuraHomeController {
 	 * @param BoardVO in
 	 * @return
 	 */
-	@ResponseBody
 	@RequestMapping(value="/home/api/requestQnA", method=RequestMethod.POST, headers="Accept=application/json")
 	public Result requestQnA(@RequestBody BoardVO in){
 		try {

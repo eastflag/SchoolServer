@@ -45,7 +45,7 @@
 		</div>
 	</div>
 	
-	<div class="row">
+	<div class="row" ng-show=" mode == 'view' ">
 		<div class="col-lg-12">
 			<div class="panel panel-info">
 				<div class="panel-heading">
@@ -64,7 +64,7 @@
 						<div class="form-group" ng-repeat="row in imgs">
 							<label for="noti_dateText" class="col-sm-2 control-label">이미지 {{row.code}}</label>
 							<div class="col-sm-10">
-								{{row.img}}
+								<img ng-src="{{row.img}}" />
 							</div>
 						</div>
 						<div class="form-group">
@@ -79,7 +79,7 @@
 					</form> 
 					<div class="row">
 						<div class="col-lg-12">
-							<button type="button" ng-click="setupRank()" class="btn btn-info btn-block" ng-class="{disabled : mode != 'rank'}"><i class="fa fa-save fa-lg"></i> Save</button>
+							<button type="button" ng-click="setupRank()" class="btn btn-info btn-block" ng-class="{disabled : mode != 'view'}"><i class="fa fa-save fa-lg"></i> Save</button>
 						</div>
 					</div>
 				</div>

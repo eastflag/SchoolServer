@@ -36,36 +36,76 @@
 			<section id="container">
 				<div class="news_area">
 					<h2><img src="/images/common/txt_media_title.png" alt="언론자료 | ￼언론에 보도된 스마트안전건강지킴이" /></h2>
-					<table class="news_list_header">
-						<colgroup>
-							<col style="width:80px;" />
-							<col style="width:753px;" />
-							<col style="width:147px;" />
-						</colgroup>
-						<thead>
-							<tr>
-								<th>번호</th>
-								<th>제목</th>
-								<th>등록일</th>
-							</tr>
-						</thead>
-					</table>
-					<ul class="news_list">
-						<li ng-repeat="press in pressList">
-							<a ng-click="toggleContent($index)">
-								<span class="num" ng-show="{{totalPress == 0}}"></span>
-								<span class="num" ng-show="{{totalPress > 0}}">{{ totalPress - (currenPressPage-1)*pageSize -$index }}</span>
-								<span class="subject">{{ press.title }}</span>
-								<span class="date">{{ yyyyMMdd(press.created) }}</span>
-							</a>
-							<div class="news_cont" ng-bind-html="stringToHtml(press.content)"></div>
-						</li>
-					</ul>
-					
-					<div class="list_paging">
-						<a href="javascript:;" class="btn_prev" ng-class="{ disabled : currenPressPage == pagePressFirst }" ng-click="pressPageChange(pagePressFirst)"><img src="/images/common/btn_paging_prev.gif" alt="이전페이지" /></a>
-						<a ]ref="javascript:;" class="num" ng-repeat="pageNumber in pageNumPressList" ng-class="{ curr : currenPressPage == pageNumber }" ng-click="pressPageChange(pageNumber)">{{ pageNumber }}</a>
-						<a href="javascript:;" class="btn_next" ng-class="{ disabled : currenPressPage == pagePressNext }" ng-click="pressPageChange(pagePressNext)"><img src="/images/common/btn_paging_next.gif" alt="다음페이지" /></a>
+					<div ng-switch="flag">
+						<div ng-switch-when="null">
+							<table class="news_list_header">
+								<colgroup>
+									<col style="width:80px;" />
+									<col style="width:753px;" />
+									<col style="width:147px;" />
+								</colgroup>
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>제목</th>
+										<th>등록일</th>
+									</tr>
+								</thead>
+							</table>
+							<ul class="news_list">
+								<li ng-repeat="press in pressList">
+									<a href="javascript:;" ng-click="toggleContent($index)">
+										<span class="num" ng-show="{{totalPress == 0}}"></span>
+										<span class="num" ng-show="{{totalPress > 0}}">{{ totalPress - (currenPressPage-1)*pageSize -$index }}</span>
+										<span class="subject">{{ press.title }}</span>
+										<span class="date">{{ yyyyMMdd(press.created) }}</span>
+									</a>
+									<div class="news_cont">
+										<div class="attach">
+											<a href="/download.html?f={{attach.file_id}}" class="btn_file_download" ng-repeat="attach in press.list" target="_self"><img src="/images/common/ico_file.gif" alt="" /> {{attach.org_name}}</a>
+										</div>
+										<div ng-bind-html="stringToHtml(press.content)"></div>
+									</div>
+								</li>
+							</ul>
+							
+							<div class="list_paging">
+								<a href="javascript:;" class="btn_prev" ng-class="{ disabled : currenPressPage == pagePressFirst }" ng-click="pressPageChange(pagePressFirst)"><img src="/images/common/btn_paging_prev.gif" alt="이전페이지" /></a>
+								<a ]ref="javascript:;" class="num" ng-repeat="pageNumber in pageNumPressList" ng-class="{ curr : currenPressPage == pageNumber }" ng-click="pressPageChange(pageNumber)">{{ pageNumber }}</a>
+								<a href="javascript:;" class="btn_next" ng-class="{ disabled : currenPressPage == pagePressNext }" ng-click="pressPageChange(pagePressNext)"><img src="/images/common/btn_paging_next.gif" alt="다음페이지" /></a>
+							</div>
+						</div>
+						<div ng-switch-when="view">
+							<table class="common_view_table">
+								<colgroup>
+									<col style="width:100px;" />
+									<col style="width:650px;" />
+									<col style="width:100px;" />
+									<col style="width:129px;" />
+								</colgroup>
+								<tbody>
+									<tr>
+										<th colspan="4" class="subject">{{press.title}}</th>
+									</tr>
+									<tr>
+										<th>첨부파일</th>
+										<td>
+											<a href="/download.html?f={{attach.file_id}}" class="btn_file_download" ng-repeat="attach in press.attach" target="_self"><img src="/images/common/ico_file.gif" alt="" /> {{attach.org_name}}</a>
+										</td>
+										<th>등록일</th>
+										<td>{{press.created}}</td>
+									</tr>
+									<tr>
+										<td colspan="6" class="contents">
+											<div class="data" ng-bind-html="stringToHtml(press.content)"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="btn_wrap">
+								<a href="/SmartCare/press.html" class="btn_list" target="_self">목록으로</a>
+							</div>
+						</div>
 					</div>
 					
 				</div>

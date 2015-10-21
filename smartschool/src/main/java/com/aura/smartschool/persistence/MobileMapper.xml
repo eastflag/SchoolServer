@@ -1131,6 +1131,11 @@ select
 	</if>
 </select>
 
+<select id="selectPress" parameterType="PressVO" resultType="PressVO">
+	SELECT * FROM press
+	WHERE press_id = #{press_id}
+</select>
+
 <insert id="insertPress" parameterType="PressVO" useGeneratedKeys="true" keyProperty="press_id">
 	INSERT INTO press (
 		title

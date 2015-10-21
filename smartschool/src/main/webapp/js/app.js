@@ -41,6 +41,10 @@ app.service('HomeSvc', function($http) {
 		console.log('-----------------언론자료 목록 --------------------');
 		return $http.post('home/api/getPressList', data);
 	}
+	this.viewPress = function(data){
+		console.log('-----------------언론자료 상세 --------------------');
+		return $http.post('home/api/getPress', data);
+	}
 	this.getMemberInfo = function(data){
 		return $http.post('home/api/getMemberInfo', data);
 	};
@@ -210,6 +214,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 	};
 	
 	$scope.toggleContent = function(idx){
+		console.log(idx);
 		var list = $('.news_list').find('li');
 		if(list.eq(idx).hasClass('curr')){
 			list.eq(idx).removeClass('curr');
@@ -219,12 +224,20 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 	}
 	
 	//언론자료 관련 변수
-	$scope.pressList = [];
+	$scope.pressList = [];		//목록
+	$scope.press = {
+		title:null,
+		content:null,
+		created:null,
+		attach:[]
+	};
 	$scope.currenPressPage = 1;
 	$scope.totalPress = 0;
 	$scope.pageNumPressList = [];
 	$scope.pagePressFirst = 1;
 	$scope.pagePressNext = 1;
+	$scope.flag = null;
+	$scope.press_id = null;
 	
 	$scope.getPressList = function() {
 		HomeSvc.getPressList({start_index:($scope.currenPressPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
@@ -241,6 +254,30 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 					$window.alert("error : " + response.message);
 				}
 			});
+	}
+	
+	$scope.viewPress = function(press_id){
+		console.log('press_id => '+press_id);
+		HomeSvc.viewPress({press_id:press_id})
+			.success(function(response){
+				if(response.result==0){
+					$scope.press.title = response.data.title;
+					$scope.press.content = response.data.content;
+					$scope.press.created = $scope.yyyyMMdd(response.data.created);
+					$scope.press.attach = response.data.list;
+				}else{
+					$window.alert('해당 게시물이 존재하지 않습니다.');
+					$window.location.href='/SmartCare/press.html';
+				}
+			})
+			.error(function(response, state){
+				if (state >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					$window.alert("error : " + response.message);
+				}
+			})
 	}
 	
 	$scope.setPressPaginationInfo = function(){
@@ -370,6 +407,9 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 	}
 	
 	$scope.yyyyMMdd = function(date){
+		if(date == null || date ==''){
+			return '';
+		}
 		var tmp = date.substring(0,10);
 		var d = tmp.split("-");
 		return d[0]+"."+d[1]+"."+d[2];
@@ -393,7 +433,13 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		$scope.getNotiList();
 	} else if ($scope.getPath() == 'press') {
 		console.log('언론자료 목록 조회');
-		$scope.getPressList();
+
+		if(typeof $location.search().view != 'undefined'){
+			$scope.flag = 'view';
+			$scope.viewPress($location.search().view);
+		}else{
+			$scope.getPressList();
+		}
 	} else if($scope.getPath() == 'inquiry') {
 		console.log('문의하기');
 		if($scope.loggedIn()){
