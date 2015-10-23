@@ -2,9 +2,10 @@ package com.aura.smartschool.domain;
 
 public class ChallengeVO {
 
-	private int challeng_id;
+	private int challenge_id;
 	private String home_id;
 	private int member_id;
+	private String member_name;
 	private String title;
 	private String content;
 	private String img_1;
@@ -13,12 +14,13 @@ public class ChallengeVO {
 	private String img_4;
 	private String img_5;
 	private int rank;
+	private String created;
 	
-	public int getChalleng_id() {
-		return challeng_id;
+	public int getChallenge_id() {
+		return challenge_id;
 	}
-	public void setChalleng_id(int challeng_id) {
-		this.challeng_id = challeng_id;
+	public void setChallenge_id(int challenge_id) {
+		this.challenge_id = challenge_id;
 	}
 	public String getHome_id() {
 		return home_id;
@@ -31,6 +33,12 @@ public class ChallengeVO {
 	}
 	public void setMember_id(int member_id) {
 		this.member_id = member_id;
+	}
+	public String getMember_name() {
+		return member_name;
+	}
+	public void setMember_name(String member_name) {
+		this.member_name = member_name;
 	}
 	public String getTitle() {
 		return title;
@@ -79,6 +87,12 @@ public class ChallengeVO {
 	}
 	public void setRank(int rank) {
 		this.rank = rank;
+	}
+	public String getCreated() {
+		return created;
+	}
+	public void setCreated(String created) {
+		this.created = created;
 	}
 
 }

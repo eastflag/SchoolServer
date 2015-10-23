@@ -1236,15 +1236,75 @@ select
 </delete>
 
 <!-- 도전! 건강! 관리 -->
+<select id="selectChallengeTop5List" resultType="ChallengeVO">
+	SELECT
+		challenge_id, a.home_id, a.member_id,
+		CAST(AES_DECRYPT(unhex(b.name), 'aura') AS CHAR(100)) as member_name,
+		a.title, a.content,a.rank,
+		img_1, img_2, img_3, img_4, img_5, DATE_FORMAT(a.created,'%Y.%m.%d') as created
+	FROM challenge a inner join member b on a.home_id=b.home_id and a.member_id=b.member_id
+	WHERE rank IS NOT NULL
+	ORDER BY rank ASC
+</select>
+
 <select id="countChallengeList" parameterType="SearchVO" resultType="int">
 	SELECT COUNT(*) FROM challenge
+	WHERE rank IS NULL
 </select>
 
 <select id="selectChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
-	SELECT * FROM challenge
+	SELECT
+		challenge_id, a.home_id, a.member_id,
+		CAST(AES_DECRYPT(unhex(b.name), 'aura') AS CHAR(100)) as member_name,
+		a.title, a.content,
+		img_1, img_2, img_3, img_4, img_5, DATE_FORMAT(a.created,'%Y.%m.%d') as created
+	FROM challenge a inner join member b on a.home_id=b.home_id and a.member_id=b.member_id
+	WHERE a.rank IS NULL
+	ORDER BY a.created DESC
 	<if test=" page_size !=0 ">
 	Limit #{start_index}, #{page_size}
 	</if>
 </select>
+
+<insert id="insertChallenge" parameterType="ChallengeVO" useGeneratedKeys="true" keyProperty="challenge_id">
+	INSERT INTO challenge (
+		home_id
+		,member_id
+		,title
+		,content
+		,img_1
+		,img_2
+		,img_3
+		,img_4
+		,img_5
+	) VALUES (
+		#{home_id}
+		,#{member_id}
+		,#{title}
+		,#{content}
+		,#{img_1}
+		,#{img_2}
+		,#{img_3}
+		,#{img_4}
+		,#{img_5}
+	)
+</insert>
+
+<update id="releaseChallengeRank" parameterType="int">
+	UPDATE challenge SET
+		rank = null
+	WHERE rank = #{rank}
+</update>
+
+<update id="setupChallengeRank" parameterType="ChallengeVO">
+	UPDATE challenge SET
+		rank = #{rank}
+	WHERE challenge_id = #{challenge_id}
+</update>
+<!--
+	UPDATE challenge SET
+		rank = IF(rank+1=6,null,rank+1)
+	WHERE rank <![CDATA[>=]]> #{rank}
+-->
 
 </mapper>

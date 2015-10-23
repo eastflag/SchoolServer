@@ -1,6 +1,7 @@
 package com.aura.smartschool.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -784,5 +785,40 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<ChallengeVO> getChallengeList(SearchVO search) {
 		return mobileMapper.selectChallengeList(search);
+	}
+
+	@Override
+	public List<ChallengeVO> getChallengeTop5List() {
+		return mobileMapper.selectChallengeTop5List();
+	}
+
+	@Override
+	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception {
+		//파일 업로드
+		for(int i=0; i<files.size(); i++){
+			String name = FileUtil.fileUpload(files.get(i), path);
+			switch(i){
+				case 0: challenge.setImg_1(name); break;
+				case 1: challenge.setImg_2(name); break;
+				case 2: challenge.setImg_3(name); break;
+				case 3: challenge.setImg_4(name); break;
+				case 4: challenge.setImg_5(name); break;
+			}
+		}
+		
+		return mobileMapper.insertChallenge(challenge);
+	}
+	
+	@Override
+	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException {
+		return mobileMapper.releaseChallengeRank(challenge.getRank());
+	}
+
+	@Override
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException {
+		//기존 순위자의 순위 해제
+		mobileMapper.releaseChallengeRank(challenge.getRank());
+		
+		return mobileMapper.setupChallengeRank(challenge);
 	}
 }

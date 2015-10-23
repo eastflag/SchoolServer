@@ -157,11 +157,16 @@ public interface MobileService {
 	public int checkMagazine(MagazineVO magazine);
 	public List<MagazineVO> getMagazineList(SearchVO search);
 	public int countMagazineList(SearchVO search);
-	public int addMagazine(MagazineVO magazine) throws PersistenceException ;
-	public int modifyMagazine(MagazineVO magazine) throws PersistenceException ;
-	public int removeMagazine(MagazineVO magazine) throws PersistenceException ;
+	public int addMagazine(MagazineVO magazine) throws PersistenceException;
+	public int modifyMagazine(MagazineVO magazine) throws PersistenceException;
+	public int removeMagazine(MagazineVO magazine) throws PersistenceException;
 	
 	//도전!건강! 관리
 	public int countChallengeList(SearchVO search);
 	public List<ChallengeVO> getChallengeList(SearchVO search);
+	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception;
+	//5위까지의 도전건강 목록조회
+	public List<ChallengeVO> getChallengeTop5List();
+	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException;
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
 }

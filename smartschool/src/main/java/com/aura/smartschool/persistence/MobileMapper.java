@@ -183,6 +183,10 @@ public interface MobileMapper {
 	public int deleteMagazine(MagazineVO magazine) throws PersistenceException;
 	
 	//도전!건강! 관리
+	public List<ChallengeVO> selectChallengeTop5List();
 	public int countChallengeList(SearchVO search);
 	public List<ChallengeVO> selectChallengeList(SearchVO search);
+	public int insertChallenge(ChallengeVO challenge);
+	public int releaseChallengeRank(int rank) throws PersistenceException;
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
 }

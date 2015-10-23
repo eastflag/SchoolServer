@@ -17,10 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.BoardVO;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PressVO;
@@ -32,6 +35,7 @@ import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.SmsUtil;
+import com.google.gson.Gson;
 
 @RestController
 public class AuraHomeController {
@@ -140,6 +144,7 @@ public class AuraHomeController {
 					//토큰만들기
 					String token = CommonUtil.createJWT(member.getHome_id(), member.getHome_id(), String.valueOf(member.getMember_id()), 600 * 60 * 1000);
 					data.put("token", token);
+					data.put("home_id", member.getHome_id());
 					data.put("member_id", member.getMember_id());
 					data.put("mdn", member.getMdn());
 					result = new ResultData<Map<String,Object>>(0, "success", data);
@@ -227,7 +232,7 @@ public class AuraHomeController {
 	 * @param BoardVO in
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/requestQnA", method=RequestMethod.POST, headers="Accept=application/json")
+	@RequestMapping(value="/home/api/requestQnA")
 	public Result requestQnA(@RequestBody BoardVO in){
 		try {
 			in.setBoard_type(1);
@@ -239,6 +244,48 @@ public class AuraHomeController {
 			}
 		} catch (PersistenceException e) {
 			return new Result(100, "insert failed");
+		}
+	}
+	
+	/**
+	 * 도전건강 목록[상위 5개]
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/home/api/getChallengeTop5List")
+	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
+		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
+	}
+
+	/**
+	 * 도전건강! 응모하기
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/home/api/addChallenge")
+	public Result addChallenge(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addChallenge---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "challenge"+"/"+challenge.getHome_id();
+		//String path = request.getServletContext().getRealPath("/upload") + "/challenge";
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.addChallenge(challenge, files, path);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
 		}
 	}
 }

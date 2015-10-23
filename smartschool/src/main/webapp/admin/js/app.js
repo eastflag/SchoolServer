@@ -2167,22 +2167,30 @@ app.service('ChallengeSvc', function($http) {
 	this.getChallengeList = function(params) {
 		return $http.post('/admin/api/getChallengeList', params);
 	}
+	this.getChallengeTop5List = function() {
+		return $http.post('/admin/api/getChallengeTop5List');
+	}
+	this.setupChallengeRank = function(params){
+		return $http.post('/admin/api/setupChallengeRank',params);
+	}
+	this.releaseChallengeRank = function(params){
+		return $http.post('/admin/api/releaseChallengeRank',params);
+	}
 });
 app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'ChallengeSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, ChallengeSvc) {
-	$scope.challenges = [];
+	$scope.challengesTop5 = [];	//1~5위 도전건강 목록
+	$scope.challenges = [];		// 순위 없는 목록
 	$scope.totalCount = 0;
 	$scope.currentPage = 1;
 	
 	$scope.mode = "";
 	
-	$scope.getChallengeList = function(){
-		ChallengeSvc.getChallengeList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+	$scope.getChallengeTop5List = function(){
+		ChallengeSvc.getChallengeTop5List()
 			.success(function(response) {
-				$scope.challenges = response.data;
-				$scope.totalCount = response.total;
-				
-				$scope.clear();
-			}).error(function(data, status) {
+				$scope.challengesTop5 = response.data;
+			})
+			.error(function(data, status) {
 				if (status >= 400) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
@@ -2191,9 +2199,29 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 				}
 			});
 	}
+	
+	$scope.getChallengeList = function(){
+		ChallengeSvc.getChallengeList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+			.success(function(response) {
+				$scope.challenges = response.data;
+				$scope.totalCount = response.total;
+				
+				$scope.clear();
+			})
+			.error(function(response, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + response.message);
+				}
+			});
+	}
 
 	$scope.clear = function() {
 		$scope.mode = "";
+		$scope.challenge_id = null;
+		$scope.name = null;
 		$scope.title = null;
 		$scope.content = null;
 		$scope.imgs = [
@@ -2203,7 +2231,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 			{code:4, img:null},
 			{code:5, img:null}
 		];
-		$scope.rank = "";
+		$scope.rank = null;
 	}
 	
 	$scope.pageChange = function() {
@@ -2211,24 +2239,78 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	};
 	
 	$scope.viewChallenge = function(challenge){
+		console.log(challenge);
 		$scope.mode = "view";
+		$scope.challenge_id = challenge.challenge_id;
+		$scope.name = challenge.member_name;
 		$scope.title = challenge.title;
 		$scope.content = challenge.content;
 		$scope.imgs = [
-			{code:1, img:challenge.img_1==null?null:'/upload/challenge/'+challenge.img_1},
-			{code:2, img:challenge.img_2==null?null:'/upload/challenge/'+challenge.img_2},
-			{code:3, img:challenge.img_3==null?null:'/upload/challenge/'+challenge.img_3},
-			{code:4, img:challenge.img_4==null?null:'/upload/challenge/'+challenge.img_4},
-			{code:5, img:challenge.img_5==null?null:'/upload/challenge/'+challenge.img_5}
+			{code:1, img:challenge.img_1==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_1},
+			{code:2, img:challenge.img_2==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_2},
+			{code:3, img:challenge.img_3==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_3},
+			{code:4, img:challenge.img_4==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_4},
+			{code:5, img:challenge.img_5==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_5}
 		]
-		$scope.rank = challenge.rank;
+		$scope.rank = challenge.rank==0?'':challenge.rank;
 		console.log('------------- 상세보기 -------------');
 	}
 	
-	$scope.setupRank = function(){
-		console.log('------------- 순위설정 -------------');
+	$scope.releaseChallengeRank = function(challenge){
+		if($window.confirm('순위를 해제하시겠습니까?')){
+			ChallengeSvc.releaseChallengeRank(challenge)
+				.success(function(response){
+					if(response.result==0){
+						$window.alert('순위가 해제되었습니다.');
+						$scope.getChallengeTop5List();
+						$scope.getChallengeList();
+					}else{
+						$window.alert('순위해제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				})
+				.error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
+		return;
 	}
 	
+	$scope.setupChallengeRank = function(){
+		console.log('------------- 순위설정 -------------');
+		if($scope.rank == '' || $scope.rank == null){
+			$window.alert('순위를 지정하세요.');
+			return;
+		} else {
+			var challenge = {challenge_id:$scope.challenge_id, rank:$scope.rank};
+			console.log(challenge);
+			ChallengeSvc.setupChallengeRank({challenge_id:$scope.challenge_id, rank:$scope.rank})
+				.success(function(response){
+					if(response.result == 0 ){
+						$window.alert('순위가 설정되었습니다.');
+						$scope.getChallengeTop5List();
+						$scope.getChallengeList();
+					} else {
+						$window.alert('순위설정 실패!\n잠시 후에 다시 시도하세요.');
+						$scope.clear();
+					}
+				})
+				.error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
+	}
+	
+	$scope.getChallengeTop5List();
 	$scope.getChallengeList();
 }]);
 

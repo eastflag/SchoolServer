@@ -1,12 +1,13 @@
-var app = angular.module('home', ['ngRoute', 'ngCookies','ngSanitize']);
+var app = angular.module('home', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize']);
 
 app.run(['$rootScope', function($rootScope) {
 	$rootScope.auth_token = null;
 	$rootScope.rootPath = "/";
 	
-	$rootScope.member_id = null
-	$rootScope.name = null
-	$rootScope.mdn = null
+	$rootScope.home_id = null;
+	$rootScope.member_id = null;
+	$rootScope.name = null;
+	$rootScope.mdn = null;
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -51,14 +52,18 @@ app.service('HomeSvc', function($http) {
 	this.requestQnA = function(data) {
 		return $http.post('home/api/requestQnA', data);
 	};
+	this.getChallengeList = function(data){
+		return $http.post('home/api/getChallengeList', data);
+	}
 });
 
-app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$window', '$location', '$filter', '$sce', 'HomeSvc', function ($scope, $http, $rootScope, $cookieStore, $window, $location, $filter, $sce, HomeSvc) {
+app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$window', '$location', '$filter', '$sce', 'Upload', 'HomeSvc', function ($scope, $http, $rootScope, $cookieStore, $window, $location, $filter, $sce, Upload, HomeSvc) {
 	$scope.token = null;
 	$scope.error = null;
 	
 	$scope.path = null;
 	
+	$scope.home_id = null;
 	$scope.member_id = null;
 	$scope.name = null;
 	$scope.mdn = null;
@@ -138,14 +143,16 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 						$scope.certifyKey = null;
 	
 						$scope.token = response.data.token;
+						$scope.home_id = response.data.home_id;
 						$scope.member_id = response.data.member_id;
 						$scope.mdn = response.data.mdn;
 	
 						$rootScope.auth_token = $scope.token;
+						$rootScope.home_id = $scope.home_id;
 						$rootScope.member_id = $scope.member_id;
 						$rootScope.mdn = $scope.mdn;
 	
-						var auth_info = {auth_token : $rootScope.auth_token, member_id:$rootScope.member_id, name:$rootScope.name, mdn:$rootScope.mdn};
+						var auth_info = {auth_token : $rootScope.auth_token, home_id:$rootScope.home_id, member_id:$rootScope.member_id, name:$rootScope.name, mdn:$rootScope.mdn};
 	
 						$cookieStore.put("auth_info", auth_info);
 	
@@ -239,6 +246,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 	$scope.flag = null;
 	$scope.press_id = null;
 	
+	//언론자료 목록
 	$scope.getPressList = function() {
 		HomeSvc.getPressList({start_index:($scope.currenPressPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
 			.success(function(response) {
@@ -256,6 +264,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			});
 	}
 	
+	//언론자료 상세
 	$scope.viewPress = function(press_id){
 		console.log('press_id => '+press_id);
 		HomeSvc.viewPress({press_id:press_id})
@@ -280,6 +289,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			})
 	}
 	
+	//언론자료 페이징설정
 	$scope.setPressPaginationInfo = function(){
 		var temp = setPaginationInfo($scope.currenPressPage, $scope.pageSize, $scope.totalPress);
 		$scope.pagePressFirst = temp[0];
@@ -288,12 +298,14 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		$scope.pageNumPressList = temp;
 	}
 	
+	//언론자료 페이지이동
 	$scope.pressPageChange = function(num) {
 		console.log(num);
 		$scope.currenPressPage = num;
 		$scope.getPressList();
 	};
 	
+	//문의하기(로그인 체크)
 	$scope.moveLogin = function(){
 		if(confirm("로그인 후에 이용가능합니다.\n\n로그인 페이지로 이동하시겠습니까?")){
 			$window.location.href = '/home/login.html';
@@ -317,6 +329,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			});
 	}
 	
+	//문의사항 등록
 	$scope.requestQnA = function() {
 		if ($scope.title == "") {
 			$window.alert("제목을 입력하세요.");
@@ -390,8 +403,10 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			var auth_info = $cookieStore.get("auth_info");
 
 			$rootScope.auth_token = auth_info.auth_token;
+			$rootScope.home_id = auth_info.home_id;
 			$rootScope.member_id = auth_info.member_id;
 			$rootScope.mdn = auth_info.mdn;
+			$scope.home_id = auth_info.home_id;
 			$scope.member_id = auth_info.member_id;
 			$scope.name = auth_info.name;
 			$scope.mdn = auth_info.mdn;
@@ -415,25 +430,14 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		return d[0]+"."+d[1]+"."+d[2];
 	}
 	
-	$scope.setPath = function(){
-		console.log($location.path());
-		var path = $location.path().replace("/SmartCare/","").replace(".html","");
-		$scope.path  = path;
-	}
-	
 	$scope.getPath = function(){
-		return $scope.path;
+		console.log($location.path());
+		return $location.path().replace("/SmartCare/","").replace(".html","");
 	}
 	
-	$scope.setPath();
-	
-	console.log('path => '+$scope.path);
 	if ($scope.getPath() == 'notice') {
-		console.log('공지사항 목록 조회');
 		$scope.getNotiList();
 	} else if ($scope.getPath() == 'press') {
-		console.log('언론자료 목록 조회');
-
 		if(typeof $location.search().view != 'undefined'){
 			$scope.flag = 'view';
 			$scope.viewPress($location.search().view);
@@ -441,7 +445,6 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			$scope.getPressList();
 		}
 	} else if($scope.getPath() == 'inquiry') {
-		console.log('문의하기');
 		if($scope.loggedIn()){
 			$scope.getMemberInfo();
 		}else{

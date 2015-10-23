@@ -860,6 +860,17 @@ public class AdminController {
 
 	/** 도전 건강! 추가 */
 	/**
+	 * 도전건강 목록[상위 5개]
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getChallengeTop5List")
+	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
+		logger.debug("/admin/api/getChallengeTop5List--------------------------------------------------");
+		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
+	}
+	
+	/**
 	 * 도전 건강! 목록
 	 * @param search
 	 * @return
@@ -868,7 +879,48 @@ public class AdminController {
 	public ResultData<List<ChallengeVO>> getChallengeList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getChallengeList--------------------------------------------------");
 		int total = this.mobileService.countChallengeList(search);
-		List<ChallengeVO> challengeList = this.mobileService.getChallengeList(search);
-		return new ResultDataTotal<List<ChallengeVO>>(0, "success", challengeList, total);
+		List<ChallengeVO> list = this.mobileService.getChallengeList(search);
+		return new ResultDataTotal<List<ChallengeVO>>(0, "success", list, total);
+	}
+	
+	/**
+	 * 도전건강! 순위해제
+	 * @param challenge
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/releaseChallengeRank")
+	public Result releaseChallengeRank(@RequestBody ChallengeVO challenge){
+		try{
+			int rs = mobileService.releaseChallengeRank(challenge);
+			if(rs != 0){
+				return new Result(0,"success");
+			} else {
+				return new Result(100,"fail");
+			}
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+			return new Result(200,"fail");
+		}
+	}
+	
+	/**
+	 * 도전 건강! 순위설정
+	 * @param challenge
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/setupChallengeRank")
+	public Result setupChallengeRank(@RequestBody ChallengeVO challenge){
+		try{
+			int rs = mobileService.setupChallengeRank(challenge);
+			
+			if(rs != 0){
+				return new Result(0,"success");
+			} else {
+				return new Result(100,"fail");
+			}
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+			return new Result(200,"fail");
+		}
 	}
 }
