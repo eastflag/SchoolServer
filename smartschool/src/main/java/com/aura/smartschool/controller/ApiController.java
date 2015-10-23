@@ -2,6 +2,8 @@ package com.aura.smartschool.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
@@ -38,6 +43,7 @@ import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.NetworkUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -739,6 +745,38 @@ public class ApiController {
 		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
 		
 		return new ResultData<OsInfoVO>(0, "success", osInfo);
+	}
+	
+	//도전건강 목록[상위 5개]
+	@RequestMapping(value="/api/getChallengeTop5List")
+	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
+		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
+	}
+
+	//도전건강! 응모하기
+	@RequestMapping(value="/api/addChallenge")
+	public Result addChallenge(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/api/addChallenge---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
+		//String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.addChallenge(challenge, files, path);
+			if(rs > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert or update failed");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100, "insert or update failed");
+		}
 	}
 	
 	//건강메거진 목록 조회
