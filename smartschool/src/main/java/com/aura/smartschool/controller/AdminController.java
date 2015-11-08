@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -38,6 +43,7 @@ import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.CommonUtil;
+import com.aura.smartschool.util.FileUtil;
 import com.aura.smartschool.util.NetworkUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -621,5 +627,300 @@ public class AdminController {
 		long result = mobileService.modifyOsInfo(osInfo);
 		
 		return new Result(0, "success");
+	}
+	
+	/** 언론자료 추가 */
+	/**
+	 * 언론자료 목록
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getPressList")
+	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
+		logger.debug("/admin/api/getPressList--------------------------------------------------");
+		int total = this.mobileService.countPressList(search);
+		List<PressVO> lsit = this.mobileService.getPressList(search);
+		return new ResultDataTotal<List<PressVO>>(0, "success", lsit, total);
+	}
+	
+	/**
+	 * 언론자료 등록
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/addPress")
+	public Result addPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addPress---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		PressVO press = gson.fromJson(data, PressVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.addPress(press, files, path);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 언론자료 수정
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/modifyPress")
+	public Result modifyPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/modifyPress---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		PressVO press = gson.fromJson(data, PressVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.modifyPress(press, files, path);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 언론자료 삭제
+	 * @param press
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/removePress")
+	public Result removePress(@RequestBody PressVO press){
+		logger.debug("/admin/api/removePress---------------------------------------------------");
+		logger.debug("attach size : "+press.getList().size());
+		try {
+			int rs = mobileService.removePress(press);
+			if(rs > 0){
+				return new Result(0,"success");
+			}else{
+				return new Result(100,"fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
+	}
+	
+	/**
+	 * 첨부파일 삭제
+	 * @param attach
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/removeAttachFile")
+	public Result removeAttachFile(@RequestBody AttachVO attach){
+		logger.debug("/admin/api/removeAttachFile---------------------------------------------------");
+		try {
+			int rs = mobileService.removeAttachFile(attach);
+			if(rs !=0){
+				return new Result(0,"success");
+			}else{
+				return new Result(100,"fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100,"fail");
+		}
+	}
+	
+	/** 건강매거진 추가 */
+	/**
+	 * 건강매거진 목록 조회
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getMagazineList")
+	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getMagazineList--------------------------------------------------");
+		List<MagazineVO> lsit = this.mobileService.getMagazineList(search);
+		int total = this.mobileService.countMagazineList(search);
+		return new ResultDataTotal<List<MagazineVO>>(0, "success", lsit, total);
+	}
+
+	/**
+	 * 건강매거진 등록
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/addMagazine")
+	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/addMagazine---------------------------------------------------");
+		Gson gson = new Gson();
+		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		int chCnt = this.mobileService.checkMagazine(magazine);
+		if (chCnt == 0) {
+			if (files.size() > 0) {
+				try {
+					FileUtil.fileUploadOriginalName(files, path);
+				} catch (IllegalStateException | IOException e) {
+					e.printStackTrace();
+					return new Result(200, "fail");
+				}
+			}
+			int rsCnt = this.mobileService.addMagazine(magazine);
+			if (rsCnt > 0) {
+				return new Result(0, "success");
+			}
+		}
+		return new Result(100, "fail");
+	}
+
+	/**
+	 * 건강매거진 수정
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/modifyMagazine")
+	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
+		Gson gson = new Gson();
+		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		int chCnt = this.mobileService.checkMagazine(magazine);
+		if (chCnt == 0) {
+			if (files.size() > 0) {
+				try {
+					FileUtil.fileUploadOriginalName(files, path);
+				} catch (IllegalStateException | IOException e) {
+					e.printStackTrace();
+					return new Result(200, "fail");
+				}
+			}
+			int rsCnt = this.mobileService.modifyMagazine(magazine);
+			if (rsCnt > 0) {
+				return new Result(0, "success");
+			}
+		}
+		return new Result(100, "fail");
+	}
+	
+	/**
+	 * 매거진 삭제
+	 * @param magazine
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/removeMagazine")
+	public Result removeMagazine(HttpServletRequest request, @RequestBody MagazineVO magazine) {
+		logger.debug("/admin/api/removeMagazine---------------------------------------------------");
+		int rsCnt = this.mobileService.removeMagazine(magazine);
+		if (rsCnt > 0) {
+			String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+			
+			//해당 디렉토리의 파일 삭제
+			File dir = new File(path);
+			if(dir.isDirectory()){
+				try {
+					FileUtils.cleanDirectory(dir);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return new Result(0, "success");
+		}
+		return new Result(100, "failed");
+	}
+
+	/** 도전 건강! 추가 */
+	/**
+	 * 도전건강 목록[상위 5개]
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getChallengeTop5List")
+	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
+		logger.debug("/admin/api/getChallengeTop5List--------------------------------------------------");
+		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
+	}
+	
+	/**
+	 * 도전 건강! 목록
+	 * @param search
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/getChallengeList")
+	public ResultData<List<ChallengeVO>> getChallengeList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getChallengeList--------------------------------------------------");
+		int total = this.mobileService.countChallengeList(search);
+		List<ChallengeVO> list = this.mobileService.getChallengeList(search);
+		return new ResultDataTotal<List<ChallengeVO>>(0, "success", list, total);
+	}
+	
+	/**
+	 * 도전건강! 순위해제
+	 * @param challenge
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/releaseChallengeRank")
+	public Result releaseChallengeRank(@RequestBody ChallengeVO challenge){
+		try{
+			int rs = mobileService.releaseChallengeRank(challenge);
+			if(rs != 0){
+				return new Result(0,"success");
+			} else {
+				return new Result(100,"fail");
+			}
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+			return new Result(200,"fail");
+		}
+	}
+	
+	/**
+	 * 도전 건강! 순위설정
+	 * @param challenge
+	 * @return
+	 */
+	@RequestMapping(value="/admin/api/setupChallengeRank")
+	public Result setupChallengeRank(@RequestBody ChallengeVO challenge){
+		try{
+			int rs = mobileService.setupChallengeRank(challenge);
+			
+			if(rs != 0){
+				return new Result(0,"success");
+			} else {
+				return new Result(100,"fail");
+			}
+		} catch (PersistenceException e) {
+			e.printStackTrace();
+			return new Result(200,"fail");
+		}
 	}
 }

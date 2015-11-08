@@ -4,22 +4,27 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -29,6 +34,10 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 
 public interface MobileService {
+	//첨부파일 등록
+	int registAttachFile(AttachVO attach) throws Exception;
+	List<AttachVO> getAttachList(AttachVO attach);
+	
 	public int countHome(HomeVO home);
 	public List<HomeVO> selectHomeList(SearchVO search);
 	public int countHomeList(SearchVO search);
@@ -136,4 +145,34 @@ public interface MobileService {
 	public long addDining(DiningVO dining);
 	public DiningVO getDining(DiningVO dining);
 	public List<DiningVO> getDiningList(String query_month);
+	
+	//아우라 홈 로그인 
+	public MemberVO getMemberByMdn(MemberVO member);
+	public AttachVO getAttachFileById(AttachVO attach);
+	public int removeAttachFile(AttachVO attach) throws Exception;
+	
+	//언론자료 관리
+	public int countPressList(SearchVO search);
+	public List<PressVO> getPressList(SearchVO search);
+	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public PressVO getPress(PressVO in) ;
+	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public int removePress(PressVO press) throws Exception;
+	
+	//건강매거진 관리
+	public int checkMagazine(MagazineVO magazine);
+	public List<MagazineVO> getMagazineList(SearchVO search);
+	public int countMagazineList(SearchVO search);
+	public int addMagazine(MagazineVO magazine) throws PersistenceException;
+	public int modifyMagazine(MagazineVO magazine) throws PersistenceException;
+	public int removeMagazine(MagazineVO magazine) throws PersistenceException;
+	
+	//도전!건강! 관리
+	public int countChallengeList(SearchVO search);
+	public List<ChallengeVO> getChallengeList(SearchVO search);
+	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception;
+	//5위까지의 도전건강 목록조회
+	public List<ChallengeVO> getChallengeTop5List();
+	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException;
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
 }

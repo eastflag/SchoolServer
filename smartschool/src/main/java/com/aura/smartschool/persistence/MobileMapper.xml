@@ -683,7 +683,7 @@ select
 <select id="countSchoolListOfMember" parameterType="SearchVO" resultType="Integer">
 	select count(*) from school
 	where school_id in (
-		SELECT school_id FROM healthcare.member
+		SELECT school_id FROM member
 		group by school_id
 	)
 		<if test="search_value != null">
@@ -846,12 +846,12 @@ select
 	) as 'progress'
 </select>
 
-
 <insert id="insertNoti" parameterType="NotiVO">
 	INSERT INTO 
 		noti(title, content) 
 	VALUES(#{title}, #{content});
 </insert>
+
 <select id="selectNotiList" parameterType="SearchVO" resultType="NotiVO">
 	SELECT * FROM noti
 	ORDER BY noti_id desc
@@ -859,9 +859,11 @@ select
 	Limit #{start_index}, #{page_size}
 	</if>
 </select>
+
 <select id="countNotiList" parameterType="SearchVO" resultType="Integer">
 	SELECT count(*) FROM noti
 </select>
+
 <update id="updateNoti" parameterType="NotiVO">
 	UPDATE noti
 		<set>
@@ -1068,6 +1070,7 @@ select
 	where os_name = #{os_name}
 </update>
 
+<!-- 식단 정보 -->
 <insert id="insertDining" parameterType="DiningVO">
 	INSERT INTO DINING(school_id, dining_date, category)
 	VALUES(#{school_id}, #{dining_date}, #{category});
@@ -1082,5 +1085,242 @@ select
 	SELECT * FROM dining
 	WHERE DATE_FORMAT(dining_date, '%Y-%m') = #{query_month}
 </select>
+
+<!-- 아우라 홈페이지 로그인 -->
+<select id="selectMemberByMdn" parameterType="MemberVO" resultType="MemberVO">
+	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
+		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as mdn,
+		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as name,
+		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
+	FROM member
+	<where>
+	AND mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))
+	<if test=" member_id != null and member_id !='' ">
+	AND member_id=#{member_id}
+	</if>
+	</where>
+	AND use_yn = 1
+	Limit 1;
+</select>
+
+<!-- 첨부파일 등록 -->
+<insert id="insertAttachFileInfo" parameterType="AttachVO" useGeneratedKeys="true" keyProperty="file_id">
+	INSERT INTO attach (
+		board_type
+		,board_id
+		,path
+		,org_name
+		,upd_name
+	) VALUES (
+		#{board_type}
+		,#{board_id}
+		,#{path}
+		,#{org_name}
+		,#{upd_name}
+	)
+</insert>
+
+<select id="getAttachList" parameterType="AttachVO" resultType="AttachVO">
+	SELECT * FROM attach
+	WHERE board_type = #{board_type}
+	AND board_id = #{board_id}
+</select>
+
+<select id="getAttachFileById" parameterType="AttachVO" resultType="AttachVO">
+	SELECT * FROM attach
+	WHERE file_id = #{file_id}
+</select>
+
+<delete id="deleteAttachFile" parameterType="AttachVO">
+	DELETE FROM attach WHERE file_id = #{file_id}
+</delete>
+
+<!-- 언론자료 관리 -->
+<select id="countPressList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM press
+</select>
+
+<select id="selectPressList" parameterType="SearchVO" resultType="PressVO">
+	SELECT * FROM press
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="selectPress" parameterType="PressVO" resultType="PressVO">
+	SELECT * FROM press
+	WHERE press_id = #{press_id}
+</select>
+
+<insert id="insertPress" parameterType="PressVO" useGeneratedKeys="true" keyProperty="press_id">
+	INSERT INTO press (
+		title
+		,content
+	) VALUES (
+		#{title}
+		,#{content}
+	)
+</insert>
+
+<update id="updatePress" parameterType="PressVO">
+	UPDATE press SET
+		title = #{title}
+		,content = #{content}
+	WHERE press_id = #{press_id}
+</update>
+
+<delete id="deletePress" parameterType="PressVO">
+	DELETE FROM press WHERE press_id = #{press_id}
+</delete>
+
+<!-- 건강매거진 관리 -->
+<select id="countMagazineList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+</select>
+
+<select id="selectMagazineList" parameterType="SearchVO" resultType="MagazineVO">
+	SELECT * FROM magazine
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="checkMagazine" parameterType="MagazineVO" resultType="int">
+	SELECT COUNT(*) FROM magazine
+	WHERE year = #{year}
+	AND month = #{month}
+	<if test=" magazine_id != null and magazine_id != '' ">
+	AND magazine_id != #{magazine_id}
+	</if>
+</select>
+
+<insert id="insertMagazine" parameterType="MagazineVO">
+	INSERT INTO magazine (
+		year,
+		month,
+		title,
+		content,
+		img_1,
+		img_2,
+		img_3,
+		img_4,
+		img_5,
+		img_6,
+		img_7,
+		img_8,
+		img_9,
+		img_10
+	) values (
+		#{year},
+		#{month},
+		#{title},
+		#{content},
+		#{img_1},
+		#{img_2},
+		#{img_3},
+		#{img_4},
+		#{img_5},
+		#{img_6},
+		#{img_7},
+		#{img_8},
+		#{img_9},
+		#{img_10}
+	)
+</insert>
+
+<update id="updateMagazine" parameterType="MagazineVO">
+	UPDATE magazine SET
+		year = #{year},
+		month = #{month},
+		title = #{title},
+		content = #{content},
+		img_1 = #{img_1},
+		img_2 = #{img_2},
+		img_3 = #{img_3},
+		img_4 = #{img_4},
+		img_5 = #{img_5},
+		img_6 = #{img_6},
+		img_7 = #{img_7},
+		img_8 = #{img_8},
+		img_9 = #{img_9},
+		img_10 = #{img_10}
+	WHERE magazine_id = #{magazine_id}
+</update>
+
+<delete id="deleteMagazine" parameterType="MagazineVO">
+	DELETE FROM magazine WHERE magazine_id = #{magazine_id}
+</delete>
+
+<!-- 도전! 건강! 관리 -->
+<select id="selectChallengeTop5List" resultType="ChallengeVO">
+	SELECT
+		challenge_id, a.home_id, a.member_id,
+		CAST(AES_DECRYPT(unhex(b.name), 'aura') AS CHAR(100)) as member_name,
+		a.title, a.content,a.rank,
+		img_1, img_2, img_3, img_4, img_5, DATE_FORMAT(a.created,'%Y.%m.%d') as created
+	FROM challenge a inner join member b on a.home_id=b.home_id and a.member_id=b.member_id
+	WHERE rank IS NOT NULL
+	ORDER BY rank ASC
+</select>
+
+<select id="countChallengeList" parameterType="SearchVO" resultType="int">
+	SELECT COUNT(*) FROM challenge
+	WHERE rank IS NULL
+</select>
+
+<select id="selectChallengeList" parameterType="SearchVO" resultType="ChallengeVO">
+	SELECT
+		challenge_id, a.home_id, a.member_id,
+		CAST(AES_DECRYPT(unhex(b.name), 'aura') AS CHAR(100)) as member_name,
+		a.title, a.content,
+		img_1, img_2, img_3, img_4, img_5, DATE_FORMAT(a.created,'%Y.%m.%d') as created
+	FROM challenge a inner join member b on a.home_id=b.home_id and a.member_id=b.member_id
+	WHERE a.rank IS NULL
+	ORDER BY a.created DESC
+	<if test=" page_size !=0 ">
+	Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<insert id="insertChallenge" parameterType="ChallengeVO" useGeneratedKeys="true" keyProperty="challenge_id">
+	INSERT INTO challenge (
+		home_id
+		,member_id
+		,title
+		,content
+		,img_1
+		,img_2
+		,img_3
+		,img_4
+		,img_5
+	) VALUES (
+		#{home_id}
+		,#{member_id}
+		,#{title}
+		,#{content}
+		,#{img_1}
+		,#{img_2}
+		,#{img_3}
+		,#{img_4}
+		,#{img_5}
+	)
+</insert>
+
+<update id="releaseChallengeRank" parameterType="int">
+	UPDATE challenge SET
+		rank = null
+	WHERE rank = #{rank}
+</update>
+
+<update id="setupChallengeRank" parameterType="ChallengeVO">
+	UPDATE challenge SET
+		rank = #{rank}
+	WHERE challenge_id = #{challenge_id}
+</update>
+<!--
+	UPDATE challenge SET
+		rank = IF(rank+1=6,null,rank+1)
+	WHERE rank <![CDATA[>=]]> #{rank}
+-->
 
 </mapper>

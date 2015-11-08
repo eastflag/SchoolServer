@@ -7,20 +7,24 @@ import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -157,4 +161,37 @@ public interface MobileMapper {
 	public long insertDining(DiningVO dining);
 	public DiningVO selectDining(DiningVO dining);
 	public List<DiningVO> selectDiningOfMonth(String query_month);
+	
+	//아우라 홈페이지 로그인
+	public MemberVO selectMemberByMdn(MemberVO member);
+	
+	//첨부파일 등록
+	public int insertAttachFileInfo(AttachVO attach) throws PersistenceException;
+	public List<AttachVO> getAttachList(AttachVO attach);
+	public AttachVO getAttachFileById(AttachVO attach);
+	public int deleteAttachFile(AttachVO attach) throws PersistenceException;
+	
+	//언론자료 관리
+	public int countPressList(SearchVO search);
+	public List<PressVO> selectPressList(SearchVO search);
+	public PressVO selectPress(PressVO in);
+	public int insertPress(PressVO press) throws PersistenceException;
+	public int updatePress(PressVO press) throws PersistenceException;
+	public int deletePress(PressVO press) throws PersistenceException;
+	
+	//건강매거진 관리
+	public int countMagazineList(SearchVO search);
+	public List<MagazineVO> selectMagazineList(SearchVO search);
+	public int checkMagazine(MagazineVO magazine);
+	public int insertMagazine(MagazineVO magazine) throws PersistenceException;
+	public int updateMagazine(MagazineVO magazine) throws PersistenceException;
+	public int deleteMagazine(MagazineVO magazine) throws PersistenceException;
+	
+	//도전!건강! 관리
+	public List<ChallengeVO> selectChallengeTop5List();
+	public int countChallengeList(SearchVO search);
+	public List<ChallengeVO> selectChallengeList(SearchVO search);
+	public int insertChallenge(ChallengeVO challenge);
+	public int releaseChallengeRank(int rank) throws PersistenceException;
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
 }

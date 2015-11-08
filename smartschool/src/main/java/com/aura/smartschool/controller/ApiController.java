@@ -17,22 +17,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -45,6 +49,7 @@ import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.NetworkUtil;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -750,7 +755,7 @@ public class ApiController {
 	
 	//급식 등록
 	@RequestMapping("/api/addDining")
-    public Result addDining(HttpServletRequest request, @RequestBody DiningVO dining) {
+    	public Result addDining(HttpServletRequest request, @RequestBody DiningVO dining) {
 		logger.debug("/api/addDining-------------------------------------------------------------");
 		
 		String path = request.getServletContext().getRealPath("/images/dining/");
@@ -787,5 +792,53 @@ public class ApiController {
 		
 		List<DiningVO> diningList = mobileService.getDiningList(dining.getDining_date());
 		return new ResultData<List<DiningVO>>(0, "success", diningList);
+	}
+	
+	//도전건강 목록[상위 5개]
+	@RequestMapping(value="/api/getChallengeTop5List")
+	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
+		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
+	}
+
+	//도전건강! 응모하기
+	@RequestMapping(value="/api/addChallenge")
+	public Result addChallenge(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+		logger.debug("/api/addChallenge---------------------------------------------------");
+		logger.debug("file size : " + files.size());
+		Gson gson = new Gson();
+		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
+		
+		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
+		//String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
+		logger.debug("path : " + path);
+		logger.debug("data : " + data);
+		
+		try{
+			int rs = this.mobileService.addChallenge(challenge, files, path);
+			if(rs > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "insert or update failed");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100, "insert or update failed");
+		}
+	}
+	
+	//건강메거진 목록 조회
+	@RequestMapping("/api/getMagazineList")
+	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search){
+		List<MagazineVO> list = mobileService.getMagazineList(search);
+		
+		return new ResultData<List<MagazineVO>>(0, "success", list);
+	}
+	
+	//언론자료 목록 조회
+	@RequestMapping("/api/getPressList")
+	public ResultData<List<PressVO>> getPressList(@RequestBody SearchVO search){
+		List<PressVO> list = mobileService.getPressList(search);
+		
+		return new ResultData<List<PressVO>>(0, "success", list);
 	}
 }

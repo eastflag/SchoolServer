@@ -1,0 +1,117 @@
+<div ng-controller='MagazineCtrl'>
+	<div class="row">
+		<div class="col-lg-12">
+			<h3 class="page-header">건강매거진 관리</h3>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-8">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-list fa-lg"></i> 건강매거진 목록
+					<div class="pull-right">
+						<button type="button" class="btn btn-default btn-xs" ng-click="clearMagazine()">매거진추가</button>
+					</div>
+				</div>
+				<table class="table table-striped">
+					<colgroup span="3">
+						<col width="30%" />
+						<col width="*" />
+						<col width="20%" />
+					</colgroup>
+					<thead>
+						<tr>
+							<td>편집</td>
+							<td>제목</td>
+							<td>등록일자</td>
+						</tr>
+					</thead>
+					<tbody>
+				<tr ng-repeat="magazine in magazines">
+					<td>
+						<button class="btn btn-default btn-xs" ng-click="editMagazine(magazine)">
+						<span class="glyphicon glyphicon-pencil"></span> 수 정
+					</button>
+					<button class="btn btn-default btn-xs" ng-click="removeMagazine(magazine)">
+						<span class="glyphicon glyphicon-remove-circle"></span> 삭 제
+					</button>
+					</td>
+					<td>{{magazine.title}}</td>
+					<td>{{created}}</td>
+				</tr>
+				<tr>
+					<td colspan="7" style="text-align:center">
+							<pagination boundary-links="true" total-items="totalCount" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="pageChange()"></pagination>
+						</td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<i class="fa fa-edit fa-lg"></i> {{mode_text}}
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label for="year" class="col-sm-4 control-label">연도</label>
+							<div class="col-sm-8">
+								<select class="form-control" id="year" ng-model="year">
+									<option value="">년 선택</option>
+									<option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="month" class="col-sm-4 control-label">월</label>
+							<div class="col-sm-8">
+								<select class="form-control" id="month" ng-model="month">
+									<option value="">월 선택</option>
+									<option ng-repeat="m in months" value="{{m}}">{{m}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="title" class="col-sm-4 control-label">제목</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="title" ng-model="title" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="content" class="col-sm-4 control-label">내용</label>
+							<div class="col-sm-8">
+								<textarea type="text" class="form-control" id="content" ng-model="content"></textarea>
+							</div>
+						</div>
+						<div class="form-group" ng-repeat="row in filenames">
+							<label class="col-sm-4 control-label">이미지 {{row.code}}</label>
+							<div class="col-sm-8">
+								<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
+								<span ng-show="attachedfile != ''">{{row.name}}</span>
+							</div>
+						</div>
+					</form> 
+				</div>
+				<div class="panel-footer">
+					<div class="row" ng-switch="mode">
+						<div class="col-lg-6" ng-switch-when="edit">
+							<button type="button" ng-click="modifyMagazine()" class="btn btn-info btn-block"><i class="fa fa-save fa-lg"></i> Save</button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="edit">
+							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="">
+							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
+						</div>
+						<div class="col-lg-6" ng-switch-when="">
+							<button type="button" ng-click="addMagazine()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

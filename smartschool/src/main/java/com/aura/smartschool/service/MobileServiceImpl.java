@@ -1,29 +1,36 @@
 package com.aura.smartschool.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
+import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.BodyMeasureGrade;
 import com.aura.smartschool.domain.BodyMeasureSummary;
+import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationVO;
+import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -34,6 +41,7 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.persistence.MobileMapper;
 import com.aura.smartschool.util.CommonUtil;
+import com.aura.smartschool.util.FileUtil;
 
 @Service("mobileService")
 public class MobileServiceImpl implements MobileService {
@@ -620,7 +628,8 @@ public class MobileServiceImpl implements MobileService {
 	public long modifyOsInfo(OsInfoVO osInfo) {
 		return mobileMapper.updateOsInfo(osInfo);
 	}
-
+	
+	//학교 급식 등록
 	@Override
 	public long addDining(DiningVO dining) {
 		return mobileMapper.insertDining(dining);
@@ -634,5 +643,199 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<DiningVO> getDiningList(String query_month) {
 		return mobileMapper.selectDiningOfMonth(query_month);
+	}
+
+	//아우라 홈페이지 로그인
+	@Override
+	public MemberVO getMemberByMdn(MemberVO member) {
+		return mobileMapper.selectMemberByMdn(member);
+	}
+	
+	//첨부파일 등록
+	@Override
+	public int registAttachFile(AttachVO attach) throws Exception{
+		return mobileMapper.insertAttachFileInfo(attach);
+	}
+	
+	//첨부파일 목록 조회
+	@Override
+	public List<AttachVO> getAttachList(AttachVO attach) {
+		return mobileMapper.getAttachList(attach);
+	}
+	
+	//첨부파일 조회
+	@Override
+	public AttachVO getAttachFileById(AttachVO attach){
+		return mobileMapper.getAttachFileById(attach);
+	}
+
+	//첨부파일 삭제
+	@Override
+	public int removeAttachFile(AttachVO attach) throws Exception {
+		int rs = 0;
+		attach = mobileMapper.getAttachFileById(attach);
+		
+		if(FileUtil.deleteFile(attach)){
+			rs = mobileMapper.deleteAttachFile(attach);
+		}
+		
+		return rs;
+	}
+
+	//언론자료 관리
+	@Override
+	public int countPressList(SearchVO search) {
+		return mobileMapper.countPressList(search);
+	}
+
+	@Override
+	public List<PressVO> getPressList(SearchVO search) {
+		List<PressVO> list = mobileMapper.selectPressList(search);
+		for(PressVO press:list){
+			AttachVO attach = new AttachVO();
+			attach.setBoard_type(1);
+			attach.setBoard_id(press.getPress_id());
+			press.setList(this.getAttachList(attach));
+		}
+		
+		return list;
+	}
+
+	@Override
+	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
+		int press_id = mobileMapper.insertPress(press);
+		
+		if(files.size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(files, path);
+			
+			if (list.size() != 0){
+				for(AttachVO attach:list){
+					attach.setBoard_type(1);	//1:언론자료
+					attach.setBoard_id(press_id);
+					attach.setPath(path);
+					this.registAttachFile(attach);
+				}
+			}
+		}
+		return press_id;
+	}
+
+	@Override
+	public PressVO getPress(PressVO in) {
+		PressVO rs = mobileMapper.selectPress(in);
+		if( rs !=null ) {
+			AttachVO attach = new AttachVO();
+			attach.setBoard_type(1);		//1:언론자료
+			attach.setBoard_id(rs.getPress_id());
+			rs.setList(this.getAttachList(attach));
+		}
+		
+		return rs;
+	}
+
+	@Override
+	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
+		int rsCnt = mobileMapper.updatePress(press);
+		
+		if(files.size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(files, path);
+			
+			if (list.size() != 0){
+				for(AttachVO attach:list){
+					attach.setBoard_type(1);	//1:언론자료
+					attach.setBoard_id(press.getPress_id());
+					attach.setPath(path);
+					this.registAttachFile(attach);
+				}
+			}
+		}
+		return rsCnt;
+	}
+	
+	public int removePress(PressVO press) throws Exception {
+		int rs = 0;
+		for(AttachVO attach:press.getList()){
+			this.removeAttachFile(attach);
+		}
+		
+		rs = mobileMapper.deletePress(press);
+		
+		return rs;
+	}
+
+	//건강매거진 관리
+	@Override
+	public int countMagazineList(SearchVO search) {
+		return mobileMapper.countMagazineList(search);
+	}
+
+	@Override
+	public List<MagazineVO> getMagazineList(SearchVO search) {
+		return mobileMapper.selectMagazineList(search);
+	}
+
+	@Override
+	public int checkMagazine(MagazineVO magazine) {
+		return mobileMapper.checkMagazine(magazine);
+	}
+	@Override
+	public int addMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.insertMagazine(magazine);
+	}
+
+	@Override
+	public int modifyMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.updateMagazine(magazine);
+	}
+
+	@Override
+	public int removeMagazine(MagazineVO magazine) throws PersistenceException {
+		return mobileMapper.deleteMagazine(magazine);
+	}
+
+	//도전!건강! 관리
+	@Override
+	public int countChallengeList(SearchVO search) {
+		return mobileMapper.countChallengeList(search);
+	}
+
+	@Override
+	public List<ChallengeVO> getChallengeList(SearchVO search) {
+		return mobileMapper.selectChallengeList(search);
+	}
+
+	@Override
+	public List<ChallengeVO> getChallengeTop5List() {
+		return mobileMapper.selectChallengeTop5List();
+	}
+
+	@Override
+	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception {
+		//파일 업로드
+		for(int i=0; i<files.size(); i++){
+			String name = FileUtil.fileUpload(files.get(i), path);
+			switch(i){
+				case 0: challenge.setImg_1(name); break;
+				case 1: challenge.setImg_2(name); break;
+				case 2: challenge.setImg_3(name); break;
+				case 3: challenge.setImg_4(name); break;
+				case 4: challenge.setImg_5(name); break;
+			}
+		}
+		
+		return mobileMapper.insertChallenge(challenge);
+	}
+	
+	@Override
+	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException {
+		return mobileMapper.releaseChallengeRank(challenge.getRank());
+	}
+
+	@Override
+	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException {
+		//기존 순위자의 순위 해제
+		mobileMapper.releaseChallengeRank(challenge.getRank());
+		
+		return mobileMapper.setupChallengeRank(challenge);
 	}
 }

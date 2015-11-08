@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor'
 ]);
 
 app.run(['$rootScope', function($rootScope) {
@@ -14,13 +14,16 @@ app.run(['$rootScope', function($rootScope) {
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
-	.when('/member', {templateUrl: 'templates/member.html'})
-	.when('/school', {templateUrl: 'templates/school.html'})
-	.when('/consult', {templateUrl: 'templates/consult.html'})
-	.when('/noti', {templateUrl: 'templates/noti.html'})
-	.when('/qna', {templateUrl: 'templates/qna.html'})
-	.when('/os', {templateUrl: 'templates/os.html'})
-	.when('/admin', {templateUrl: 'templates/admin.html'})
+	.when('/member', {templateUrl: '/admin/templates/member.html'})
+	.when('/school', {templateUrl: '/admin/templates/school.html'})
+	.when('/consult', {templateUrl: '/admin/templates/consult.html'})
+	.when('/noti', {templateUrl: '/admin/templates/noti.html'})
+	.when('/qna', {templateUrl: '/admin/templates/qna.html'})
+	.when('/os', {templateUrl: '/admin/templates/os.html'})
+	.when('/admin', {templateUrl: '/admin/templates/admin.html'})
+	.when('/press', {templateUrl: '/admin/templates/press.html'})
+	.when('/magazine', {templateUrl: '/admin/templates/magazine.html'})
+	.when('/challenge', {templateUrl: '/admin/templates/challenge.html'})
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -1054,9 +1057,6 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			}
 		});
 	}
-
-	//$scope.multiple = "multiple";
-
 	//알리미 신규 글 등록
 	$scope.addNoti = function() {
 		var noti = {
@@ -1066,7 +1066,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 				content: $scope.content
 		}
 
-		if ($scope.f != null && $scope.f.$error != null && $scope.f.$error != undefined) {
+		if ($scope.f.$error != null && $scope.f.$error != undefined) {
 			alert("첨부 파일은 10MB를 넘길 수 없습니다.");
 			$scope.f.$error = null;
 			$scope.f.$errorParam = "";
@@ -1473,7 +1473,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	$scope.currentPageAdmin = 1;
 	$scope.totalAdminListCount = 0;
 
-	$scope.admin_mode = null;
+	$scope.admin_mode = "";
 	$scope.admin_mode_text = "관리자 추가";
 
 	$scope.roles = [
@@ -1503,7 +1503,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	$scope.getManagerList();
 
 	$scope.clearAdmin = function() {
-		$scope.admin_mode = null;
+		$scope.admin_mode = "";
 		$scope.admin_mode_text = "관리자 추가";
 
 		$scope.id = null;
@@ -1522,7 +1522,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		$scope.admin_mode_text = "관리자 수정";
 
 		$scope.id = admin.id;
-		//$scope.pass = admin.pass;
+		$scope.pass = admin.pass;
 		$scope.name = admin.name;
 		$scope.role_id = admin.role_id;
 	}
@@ -1570,26 +1570,6 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 		});
 	}
 
-	$scope.modifyPassword = function() {
-		var admin = {
-			pass: $scope.pass
-		}
-		
-		AdminSvc.modifyManager(admin)
-		.success(function(data){
-			$scope.pass = null;
-			alert("변경되었습니다.");
-			//$scope.getManagerList();
-		}).error(function(data, status) {
-			if (status >= 400) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
-			} else {
-				alert("error : " + data.message);
-			}
-		});
-	}
-
 	$scope.deleteAdmin = function(admin) {
 		if ($window.confirm("삭제하시겠습니까?")) {	
 			AdminSvc.removeManager(admin)
@@ -1608,4 +1588,769 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			});
 		};
 	}
+}]);
+
+//언론자료 관리
+app.service('PressSvc', function($http) {
+	this.getPressList = function(data) {
+		return $http.post('/admin/api/getPressList', data);
+	}
+	this.removePress = function(data){
+		return $http.post('/admin/api/removePress', data);
+	}
+	this.removeFile = function(data){
+		return $http.post('/admin/api/removeAttachFile',data);
+	}
+});
+app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'PressSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, PressSvc) {
+	$scope.presses = [];
+	$scope.totalCount = 0;
+	$scope.currentPage = 1;
+
+	$scope.hide = true;
+	$scope.mode = '';
+	$scope.mode_text = '';
+	
+	$scope.getPressList = function(){
+		PressSvc.getPressList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+		.success(function(response) {
+			$scope.presses = response.data;
+			$scope.totalCount = response.total;
+			
+			$scope.clearPress();
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+	
+	$scope.clearPress = function() {
+		$scope.hide = true;
+		$scope.mode = '';
+		$scope.mode_text = '';
+		
+		$scope.title = null;
+		$scope.content = null;
+		$scope.f = [];
+		$scope.filenames = [
+			{code:1, name:null},
+			{code:2, name:null}
+		];
+	}
+	
+	$scope.pageChange = function() {
+		$scope.getPressList();
+	};
+	
+	$scope.uploadFiles = function(file,idx) {
+		console.log('file selected');
+
+		if (file != null && file.name != null) {
+			$scope.f[idx] = file;
+			$scope.filenames[idx].name = file.name;
+			$scope.filenames[idx].file_id = null;
+		};
+	}
+	
+	$scope.writePress = function() {
+		$scope.hide = false;
+		$scope.mode = 'write';
+		$scope.mode_text = '언론자료 추가';
+		$scope.title = null;
+		$scope.content = null;
+		$scope.f = [];
+		$scope.filenames = [
+			{code:1, name:null, file_id:null},
+			{code:2, name:null, file_id:null}
+		];
+	}
+	
+	$scope.checkImgName = function(){
+		for(var i=0; i<($scope.filenames.length-1); i++){
+			if($scope.filenames[i].name == null) continue;
+			
+			for(var j=i+1; j<$scope.filenames.length; j++){
+				if($scope.filenames[j].name != null && $scope.filenames[j].name == $scope.filenames[i].name){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	$scope.addPress = function(){
+		console.log('언론자료 등록');
+		if ($scope.title == null) {
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if($scope.content == null) {
+			$window.alert('내용을 입력하세요.');
+			return;
+		}
+
+		else if(!$scope.checkImgName()){
+			$window.alert('중복된 첨부파일이 있습니다.\n첨부파일을 확인하세요.');
+			return;
+		}
+		else {
+			var press = {
+				title: $scope.title,
+				content: $scope.content
+			}
+	
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/addPress',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(press),
+				fileFormDataName : 'files',
+			}).success(function(response) {
+				if(response.result == 0) {
+					$window.alert('언론자료가 등록되었습니다.');
+					$scope.getPressList();
+					$scope.clearPress();
+				} else {
+					$window.alert(response.msg);
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.editPress = function(press){
+		console.log('언론자료 상세');
+		
+		$scope.hide = false;
+		$scope.mode = 'edit';
+		$scope.press_id = press.press_id;
+		$scope.title = press.title;
+		$scope.content = press.content;
+		$scope.f = [];
+		for(var i=0; i<press.list.length;i++){
+			$scope.filenames[i] = {code:(i+1), name:press.list[i].org_name, file_id:press.list[i].file_id};
+		}
+	}
+	
+	$scope.removeFile = function(idx){
+		console.log('파일삭제');
+		if($scope.filenames[(idx-1)].file_id == null){
+			$scope.f[idx-1] = null;
+			$scope.filenames[(idx-1)].name = null;
+		} else if($scope.filenames[(idx-1)].file_id != null && $scope.mode == 'edit'){
+			if($window.confirm("파일을 삭제하시겠습니까?")){
+				$scope.f[idx-1] = null;
+				$scope.filenames[(idx-1)].name = null;
+				
+				PressSvc.removeFile({file_id:$scope.filenames[(idx-1)].file_id})
+					.success(function(response){
+						if(response.result == 0) {
+							$window.alert('첨부파일이 삭제되었습니다.');
+						} else {
+							$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+						}
+					})
+					.error(function(response,status){
+						if (status >= 400) {
+							$rootScope.auth_token = null;
+							$cookieStore.remove("auth_info");
+						} else {
+							alert("error : " + data.message);
+						}
+					});
+			}else{
+				return false;
+			}
+		}
+	}
+	
+	$scope.modifyPress = function(){
+		console.log('언론자료 수정');
+		if ($scope.title == null) {
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if($scope.content == null) {
+			$window.alert('내용을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복된 첨부파일이 있습니다.\n첨부파일을 확인하세요.');
+			return;
+		}
+		else {
+			var press = {
+				press_id : $scope.press_id,
+				title: $scope.title,
+				content: $scope.content
+			}
+			
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/modifyPress',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(press),
+				fileFormDataName : 'files',
+			}).success(function(response) {
+				if(response.result == 0) {
+					$window.alert('언론자료가 수정되었습니다.');
+					$scope.getPressList();
+					$scope.clearPress();
+				} else {
+					$window.alert('수정 실패!\n잠시 후에 다시 시도하세요.');
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.removePress = function(press){
+		if($window.confirm('해당 언론자료를 삭제하시겠습니까?')){
+			PressSvc.removePress(press)
+				.success(function(response){
+					if(response.result == 0) {
+						$window.alert('언론자료가 삭제되었습니다.');
+						$scope.getPressList();
+						$scope.clearPress();
+					} else {
+						$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				})
+				.error(function(response, state){
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}else{
+			return;
+		}
+	}
+	
+	$scope.getPressList();
+}]);
+
+// 건강매거진 관리
+app.service('MagazineSvc', function($http) {
+	this.getMagazineList = function(params) {
+		return $http.post('/admin/api/getMagazineList', params);
+	}
+	this.removeMagazine = function(params) {
+		return $http.post('/admin/api/removeMagazine', params);
+	}
+});
+app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'MagazineSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, MagazineSvc) {
+	$scope.magazines = [];
+	$scope.totalCount = 0;
+	$scope.currentPage = 1;
+	
+	$scope.mode = "";
+	$scope.mode_text = "메거진 추가";
+	
+	$scope.years = [];
+	$scope.months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+	
+	$scope.getMagazineList = function(){
+		MagazineSvc.getMagazineList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+		.success(function(response) {
+			$scope.magazines = response.data;
+			$scope.totalCount = response.total;
+			
+			$scope.clearMagazine();
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.clearMagazine = function() {
+		$scope.mode = "";
+		$scope.mode_text = "건강매거진 추가";
+		
+		var cDate = new Date();
+		var currYear = cDate.getFullYear();
+		for(var i=0;i<10;i++){
+			var tmp = (currYear-i);
+			$scope.years[i] = tmp;
+		}
+
+		$scope.title = '';
+		$scope.content = '';
+		$scope.year = '';
+		$scope.month = '';
+		$scope.f = [];
+		$scope.filenames = [
+			{code:1, name:null},
+			{code:2, name:null},
+			{code:3, name:null},
+			{code:4, name:null},
+			{code:5, name:null},
+			{code:6, name:null},
+			{code:7, name:null},
+			{code:8, name:null},
+			{code:9, name:null},
+			{code:10, name:null}
+		];
+	}
+	
+	$scope.pageChange = function() {
+		$scope.getMagazineList();
+	};
+	
+	$scope.uploadFiles = function(file,idx) {
+		if (file != null && file.name != null) {
+			$scope.f.push(file);
+			$scope.filenames[idx].name = file.name;
+		};
+	}
+	
+	$scope.checkImgName = function(){
+		for(var i=0; i<($scope.filenames.length-1); i++){
+			if($scope.filenames[i].name == null) continue;
+			
+			for(var j=i+1; j<$scope.filenames.length; j++){
+				if($scope.filenames[j].name != null && $scope.filenames[j].name == $scope.filenames[i].name){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	$scope.addMagazine = function(){
+		if($scope.year == ''){
+			$window.alert('연도를 선택하세요.');
+			return;
+		}
+		else if($scope.month == ''){
+			$window.alert('월을 선택하세요.');
+			return;
+		}
+		else if($scope.title == ''){
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
+			return;
+		}
+		else if($scope.filenames.length==0){
+			$window.alert('선택된 이미지가 없습니다.\n건강매거진 이미지를 선택하세요.');
+			return;
+		}
+		else {
+			var magazine = {
+				year: $scope.year,
+				month: $scope.month,
+				title: $scope.title,
+				content: $scope.content,
+				img_1:$scope.filenames[0].name,
+				img_2:$scope.filenames[1].name,
+				img_3:$scope.filenames[2].name,
+				img_4:$scope.filenames[3].name,
+				img_5:$scope.filenames[4].name,
+				img_6:$scope.filenames[5].name,
+				img_7:$scope.filenames[6].name,
+				img_8:$scope.filenames[7].name,
+				img_9:$scope.filenames[8].name,
+				img_10:$scope.filenames[9].name
+			}
+	
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/addMagazine',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(magazine),
+				fileFormDataName : 'files',
+			}).success(function(data, status, headers, config) {
+				console.log('data: ' + data + "," + data.result);
+				if(data.result == 0) {
+					$window.alert('건강매거진이 등록되었습니다.');
+					$scope.getMagazineList();
+					$scope.clearMagazine();
+				} else {
+					$window.alert(data.msg);
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.editMagazine = function(magazine){
+		console.log('건강매거진 수정');
+		$scope.magazine_id = magazine.magazine_id;
+		$scope.mode = "edit";
+		$scope.mode_text = "건강매거진 수정";
+		
+		$scope.year = magazine.year;
+		$scope.month = magazine.month;
+		$scope.title = magazine.title;
+		$scope.content = magazine.content;
+		$scope.filenames = [
+			{code:1, name:magazine.img_1},
+			{code:2, name:magazine.img_2},
+			{code:3, name:magazine.img_3},
+			{code:4, name:magazine.img_4},
+			{code:5, name:magazine.img_5},
+			{code:6, name:magazine.img_6},
+			{code:7, name:magazine.img_7},
+			{code:8, name:magazine.img_8},
+			{code:9, name:magazine.img_9},
+			{code:10, name:magazine.img_10}
+		];
+	}
+	
+	$scope.modifyMagazine = function(){
+		if($scope.year == ''){
+			$window.alert('연도를 선택하세요.');
+			return;
+		}
+		else if($scope.month == ''){
+			$window.alert('월을 선택하세요.');
+			return;
+		}
+		else if($scope.title == ''){
+			$window.alert('제목을 입력하세요.');
+			return;
+		}
+		else if(!$scope.checkImgName()){
+			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
+			return;
+		}
+		else if($scope.filenames.length==0){
+			$window.alert('선택된 이미지가 없습니다.\n매거진 이미지를 선택하세요.');
+			return;
+		}
+		else {
+			console.log('건강매거진 수정');
+			
+			var magazine = {
+				magazine_id:$scope.magazine_id,
+				year: $scope.year,
+				month: $scope.month,
+				title: $scope.title,
+				content: $scope.content,
+				img_1:$scope.filenames[0].name,
+				img_2:$scope.filenames[1].name,
+				img_3:$scope.filenames[2].name,
+				img_4:$scope.filenames[3].name,
+				img_5:$scope.filenames[4].name,
+				img_6:$scope.filenames[5].name,
+				img_7:$scope.filenames[6].name,
+				img_8:$scope.filenames[7].name,
+				img_9:$scope.filenames[8].name,
+				img_10:$scope.filenames[9].name
+			}
+	
+			console.log('$scope.f.length : '+$scope.f.length);
+			for(var i=0;i<$scope.f.length;i++){
+				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
+					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
+					$scope.f[i].$error = null;
+					$scope.f[i].$errorParam = "";
+					return;
+				}
+			}
+	
+			$scope.upload = Upload.upload({
+				url: '/admin/api/modifyMagazine',
+				method: 'POST',
+				file:$scope.f,
+				//data 속성으로 별도의 데이터를 보냄.
+				data : JSON.stringify(magazine),
+				fileFormDataName : 'files',
+			}).success(function(data, status, headers, config) {
+				console.log('data: ' + data + "," + data.result);
+				if(data.result == 0) {
+					$window.alert('건강매거진이 수정되었습니다.');
+					$scope.getMagazineList();
+					$scope.clearMagazine();
+				} else {
+					$window.alert(data.msg);
+				}
+			}).error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		}
+	}
+	
+	$scope.removeMagazine = function(magazine){
+		console.log('매거진 삭제--------------');
+		if ($window.confirm("해당 건강매거진을 삭제하시겠습니까?")) {
+			MagazineSvc.removeMagazine(magazine)
+				.success(function(response) {
+					if(response.result == 0){
+						$scope.getMagazineList();
+						$scope.clearMagazine();
+					} else {
+						$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				}).error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
+	}
+	
+	$scope.getMagazineList();
+}]);
+
+// 도전! 건강! 관리
+app.service('ChallengeSvc', function($http) {
+	this.getChallengeList = function(params) {
+		return $http.post('/admin/api/getChallengeList', params);
+	}
+	this.getChallengeTop5List = function() {
+		return $http.post('/admin/api/getChallengeTop5List');
+	}
+	this.setupChallengeRank = function(params){
+		return $http.post('/admin/api/setupChallengeRank',params);
+	}
+	this.releaseChallengeRank = function(params){
+		return $http.post('/admin/api/releaseChallengeRank',params);
+	}
+});
+app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '$window', 'Upload', 'ChallengeSvc', function ($scope, $rootScope, $window, $cookieStore, $window, Upload, ChallengeSvc) {
+	$scope.challengesTop5 = [];	//1~5위 도전건강 목록
+	$scope.challenges = [];		// 순위 없는 목록
+	$scope.totalCount = 0;
+	$scope.currentPage = 1;
+	
+	$scope.mode = "";
+	
+	$scope.getChallengeTop5List = function(){
+		ChallengeSvc.getChallengeTop5List()
+			.success(function(response) {
+				$scope.challengesTop5 = response.data;
+			})
+			.error(function(data, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+	}
+	
+	$scope.getChallengeList = function(){
+		ChallengeSvc.getChallengeList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+			.success(function(response) {
+				$scope.challenges = response.data;
+				$scope.totalCount = response.total;
+				
+				$scope.clear();
+			})
+			.error(function(response, status) {
+				if (status >= 400) {
+					$rootScope.auth_token = null;
+					$cookieStore.remove("auth_info");
+				} else {
+					alert("error : " + response.message);
+				}
+			});
+	}
+
+	$scope.clear = function() {
+		$scope.mode = "";
+		$scope.challenge_id = null;
+		$scope.name = null;
+		$scope.title = null;
+		$scope.content = null;
+		$scope.imgs = [
+			{code:1, img:null},
+			{code:2, img:null},
+			{code:3, img:null},
+			{code:4, img:null},
+			{code:5, img:null}
+		];
+		$scope.rank = null;
+	}
+	
+	$scope.pageChange = function() {
+		$scope.getChallengeList();
+	};
+	
+	$scope.viewChallenge = function(challenge){
+		console.log(challenge);
+		$scope.mode = "view";
+		$scope.challenge_id = challenge.challenge_id;
+		$scope.name = challenge.member_name;
+		$scope.title = challenge.title;
+		$scope.content = challenge.content;
+		$scope.imgs = [
+			{code:1, img:challenge.img_1==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_1},
+			{code:2, img:challenge.img_2==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_2},
+			{code:3, img:challenge.img_3==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_3},
+			{code:4, img:challenge.img_4==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_4},
+			{code:5, img:challenge.img_5==null?null:'/upload/challenge/'+challenge.home_id+"/"+challenge.img_5}
+		]
+		$scope.rank = challenge.rank==0?'':challenge.rank;
+		console.log('------------- 상세보기 -------------');
+	}
+	
+	$scope.releaseChallengeRank = function(challenge){
+		if($window.confirm('순위를 해제하시겠습니까?')){
+			ChallengeSvc.releaseChallengeRank(challenge)
+				.success(function(response){
+					if(response.result==0){
+						$window.alert('순위가 해제되었습니다.');
+						$scope.getChallengeTop5List();
+						$scope.getChallengeList();
+					}else{
+						$window.alert('순위해제 실패!\n잠시 후에 다시 시도하세요.');
+					}
+				})
+				.error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
+		return;
+	}
+	
+	$scope.setupChallengeRank = function(){
+		console.log('------------- 순위설정 -------------');
+		if($scope.rank == '' || $scope.rank == null){
+			$window.alert('순위를 지정하세요.');
+			return;
+		} else {
+			var challenge = {challenge_id:$scope.challenge_id, rank:$scope.rank};
+			console.log(challenge);
+			ChallengeSvc.setupChallengeRank({challenge_id:$scope.challenge_id, rank:$scope.rank})
+				.success(function(response){
+					if(response.result == 0 ){
+						$window.alert('순위가 설정되었습니다.');
+						$scope.getChallengeTop5List();
+						$scope.getChallengeList();
+					} else {
+						$window.alert('순위설정 실패!\n잠시 후에 다시 시도하세요.');
+						$scope.clear();
+					}
+				})
+				.error(function(response, status) {
+					if (status >= 400) {
+						$rootScope.auth_token = null;
+						$cookieStore.remove("auth_info");
+					} else {
+						alert("error : " + response.message);
+					}
+				});
+		}
+	}
+	
+	$scope.getChallengeTop5List();
+	$scope.getChallengeList();
+}]);
+
+app.controller('CkeditorCtrl', ['$scope', function ($scope) {
+	// Editor options.
+	$scope.options = {
+			language: 'kr',
+			skin: 'moono',
+			filebrowserImageUploadUrl: '/editor/image/upload',
+			toolbarLocation: 'top',
+			font_names : 'Gulim/Gulim;Dotum/Dotum;Batang/Batang;Gungsuh/Gungsuh;Arial/Arial;Tahoma/Tahoma;Verdana/Verdana',
+			fontSize_sizes : '8/8px;9/9px;10/10px;11/11px;12/12px;14/14px;16/16px;18/18px;20/20px;22/22px;24/24px;26/26px;28/28px;36/36px;48/48px;',
+			height : 300,
+			enterMode : CKEDITOR.ENTER_BR,
+			shiftEnterMode : CKEDITOR.ENTER_P,
+			toolbar: 'full',
+			toolbar_full: [
+				{ name: 'wysiwyg', items: ['Source','-','NewPage','Preview','-','Templates'] },
+				{ name: 'styles', items: [ 'Font', 'Format', 'FontSize', 'TextColor', 'PasteText', 'RemoveFormat' ] },
+				{ name: 'basicstyles',items: [ 'Bold', 'Italic', 'Strike', 'Underline' ] },
+				{ name: 'paragraph', items: [ 'BulletedList', 'NumberedList', 'Blockquote' ] },
+				{ name: 'editing', items: ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
+				{ name: 'tools', items: [ 'Maximize' ] },
+				{ name: 'clipboard', items: [ 'Undo', 'Redo' ] },
+				{ name: 'insert', items: [ 'Image', 'Table', 'SpecialChar'] },'/',
+			]
+	};
+	// Called when the editor is completely ready.
+	$scope.onReady = function () {
+		CKEDITOR.on('dialogDefinition', function( ev ){
+			var dialogName = ev.data.name;
+			var dialogDefinition = ev.data.definition;
+		
+			switch (dialogName) {
+				case 'image': //Image Properties dialog
+					//dialogDefinition.removeContents('info');
+					dialogDefinition.removeContents('Link');
+					dialogDefinition.removeContents('advanced');
+					break;
+			}
+		});
+	};
 }]);
