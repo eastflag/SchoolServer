@@ -1066,7 +1066,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 				content: $scope.content
 		}
 
-		if ($scope.f.$error != null && $scope.f.$error != undefined) {
+		if ($scope.f != null && $scope.f.$error != null && $scope.f.$error != undefined) {
 			alert("첨부 파일은 10MB를 넘길 수 없습니다.");
 			$scope.f.$error = null;
 			$scope.f.$errorParam = "";
