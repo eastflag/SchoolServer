@@ -21,6 +21,8 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	.when('/qna', {templateUrl: '/admin/templates/qna.html'})
 	.when('/os', {templateUrl: '/admin/templates/os.html'})
 	.when('/admin', {templateUrl: '/admin/templates/admin.html'})
+	.when('/location_use', {templateUrl: '/admin/templates/location_use.html'})
+	.when('/admin_access', {templateUrl: '/admin/templates/admin_access.html'})
 	.when('/press', {templateUrl: '/admin/templates/press.html'})
 	.when('/magazine', {templateUrl: '/admin/templates/magazine.html'})
 	.when('/challenge', {templateUrl: '/admin/templates/challenge.html'})
