@@ -160,7 +160,7 @@ public interface MobileMapper {
 	//학교 급식
 	public long insertDining(DiningVO dining);
 	public DiningVO selectDining(DiningVO dining);
-	public List<DiningVO> selectDiningOfMonth(String query_month);
+	public List<DiningVO> selectDiningOfMonth(DiningVO inDining);
 	
 	//아우라 홈페이지 로그인
 	public MemberVO selectMemberByMdn(MemberVO member);

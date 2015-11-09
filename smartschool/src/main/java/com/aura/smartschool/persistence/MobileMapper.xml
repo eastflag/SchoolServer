@@ -1081,9 +1081,9 @@ select
 	WHERE school_id=#{school_id} and dining_date=#{dining_date} and category=#{category}
 </select>
 
-<select id="selectDiningOfMonth" parameterType="String" resultType="DiningVO">
+<select id="selectDiningOfMonth" parameterType="DiningVO" resultType="DiningVO">
 	SELECT * FROM dining
-	WHERE DATE_FORMAT(dining_date, '%Y-%m') = #{query_month}
+	WHERE school_id = #{school_id} and DATE_FORMAT(dining_date, '%Y-%m') = #{dining_date}
 </select>
 
 <!-- 아우라 홈페이지 로그인 -->

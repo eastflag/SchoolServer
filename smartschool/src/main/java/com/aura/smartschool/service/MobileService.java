@@ -144,7 +144,7 @@ public interface MobileService {
 	//학교 급식
 	public long addDining(DiningVO dining);
 	public DiningVO getDining(DiningVO dining);
-	public List<DiningVO> getDiningList(String query_month);
+	public List<DiningVO> getDiningList(DiningVO inDining);
 	
 	//아우라 홈 로그인 
 	public MemberVO getMemberByMdn(MemberVO member);

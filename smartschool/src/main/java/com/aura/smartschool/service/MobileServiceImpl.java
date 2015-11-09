@@ -641,8 +641,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<DiningVO> getDiningList(String query_month) {
-		return mobileMapper.selectDiningOfMonth(query_month);
+	public List<DiningVO> getDiningList(DiningVO inDining) {
+		return mobileMapper.selectDiningOfMonth(inDining);
 	}
 
 	//아우라 홈페이지 로그인

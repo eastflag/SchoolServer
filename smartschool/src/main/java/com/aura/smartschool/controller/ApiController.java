@@ -787,10 +787,10 @@ public class ApiController {
 	
 	//급식 목록 가져오기 : 해당월 모두 가져오기
 	@RequestMapping("/api/getDiningList")
-    public Result getDiningList(@RequestBody DiningVO dining) {
+    public Result getDiningList(@RequestBody DiningVO inDining) {
 		logger.debug("/api/getDiningList---------------------------------------------------------");
 		
-		List<DiningVO> diningList = mobileService.getDiningList(dining.getDining_date());
+		List<DiningVO> diningList = mobileService.getDiningList(inDining);
 		return new ResultData<List<DiningVO>>(0, "success", diningList);
 	}
 	
