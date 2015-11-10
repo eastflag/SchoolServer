@@ -29,6 +29,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.MeasureItem;
@@ -77,6 +78,18 @@ public class ApiController {
 			ResultData<List<MemberVO>> result = new ResultData<List<MemberVO>>(0, "success", memberList);
 			//reg id update
 			mobileService.updateGcmId(member);
+			
+			//부모의 경우 위치 조회 기록 남기기
+			if(myInfo.getIs_parent() == 1) {
+				for(MemberVO m : memberList) {
+					if(m.getIs_parent()==0) {
+						LocationAccessVO accessVO = new LocationAccessVO();
+						accessVO.setChild_id(m.getMember_id());
+						accessVO.setParent_id(m.getMember_id());
+						mobileService.addLocationAccess(accessVO);
+					}
+				}
+			}
 			
 			return result;
 		} else {

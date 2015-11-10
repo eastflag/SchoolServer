@@ -313,6 +313,12 @@ group by member_id;
 	ORDER BY CREATED_DATE asc
 </select>
 
+<insert id="insertLocationAccess" parameterType="LocationAccessVO">
+	INSERT INTO location_access (
+		child_id, parent_id)
+		VALUES(#{child_id}, #{parent_id});
+</insert>
+
 <select id="selectSchoolById" parameterType="Integer" resultType="SchoolVO">
 	SELECT *
 	FROM school

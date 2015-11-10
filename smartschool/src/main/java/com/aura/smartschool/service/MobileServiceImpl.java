@@ -23,6 +23,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
@@ -837,5 +838,10 @@ public class MobileServiceImpl implements MobileService {
 		mobileMapper.releaseChallengeRank(challenge.getRank());
 		
 		return mobileMapper.setupChallengeRank(challenge);
+	}
+
+	@Override
+	public long addLocationAccess(LocationAccessVO accessVO) {
+		return mobileMapper.insertLocationAccess(accessVO);
 	}
 }

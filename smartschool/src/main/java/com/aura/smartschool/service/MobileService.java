@@ -17,6 +17,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
@@ -65,6 +66,9 @@ public interface MobileService {
 	public long insertLocation(LocationVO location) throws PersistenceException;
 	public LocationVO selectLastLocation(MemberVO member);
 	public List<LocationVO> selectLocationList(MemberVO member);
+	
+	//위치 정보 기록하기
+	public long addLocationAccess(LocationAccessVO accessVO);
 	
 	public List<SchoolVO> getSchoolList(SchoolVO school);
 	public long insertSchool(SchoolVO school) throws PersistenceException;
