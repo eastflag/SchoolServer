@@ -4,4 +4,41 @@
             <h3 class="page-header">계정 접근 관리</h3>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-list fa-lg"></i>계정 접근 목록
+                </div>
+
+                <div class="panel-body">
+					<table class="table table-striped">
+	                    <thead>
+	                        <tr>
+	                            <td>정보제공자 이름</td>
+	                            <td>정보제공자 전화번호</td>
+	                            <td></td>
+	                            <td>학년</td>
+	                            <td>새글유무</td>
+	                            <td>날짜</td>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <tr ng-repeat="session in sessions | orderBy:'-created'" ng-click="showConsultList(session.session_id, session.member_id, session.category)">
+	                            <td>{{session.category | changeCategoryName}}</td>
+	                            <td>{{session.name}}</td>
+	                            <td>{{session.school_name}}</td>
+	                            <td>{{session.school_grade}}</td>
+	                            <td ng-switch="{{session.who}}">
+	                                <span ng-switch-when="0">새글</span>
+	                                <span ng-switch-default></span>
+	                            </td>
+	                            <td>{{session.created}}</td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
