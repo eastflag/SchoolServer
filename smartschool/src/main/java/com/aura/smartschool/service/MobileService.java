@@ -69,6 +69,8 @@ public interface MobileService {
 	
 	//위치 정보 기록하기
 	public long addLocationAccess(LocationAccessVO accessVO);
+	public List<LocationAccessVO> getLocationAccessList(SearchVO search);
+	public int countLocationAccessList();
 	
 	public List<SchoolVO> getSchoolList(SchoolVO school);
 	public long insertSchool(SchoolVO school) throws PersistenceException;

@@ -266,8 +266,6 @@
 	DELETE FROM pay_info
 	WHERE pay_id = #{pay_id}
 </delete>
-	
-
 
 <insert id="insertLocation" parameterType="LocationVO">
 	INSERT INTO 
@@ -318,6 +316,24 @@ group by member_id;
 		child_id, parent_id)
 		VALUES(#{child_id}, #{parent_id});
 </insert>
+
+<select id="selectLocationAccessList" parameterType="SearchVO" resultType="LocationAccessVO">
+	SELECT 
+	   (select CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name' from member where member_id=child_id) as 'viewee_name',
+	   (select CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn' from member where member_id=child_id) as 'viewee_mdn',
+	   (select CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name' from member where member_id=parent_id) as 'viewer_name', 
+	   location_access.*
+	FROM location_access
+	ORDER BY created desc
+	<if test="page_size != 0">
+		Limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="countLocationAccessList" resultType="Integer">
+	SELECT count(*) FROM location_access
+</select>
+
 
 <select id="selectSchoolById" parameterType="Integer" resultType="SchoolVO">
 	SELECT *

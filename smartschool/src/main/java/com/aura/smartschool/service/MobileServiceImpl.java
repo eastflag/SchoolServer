@@ -844,4 +844,14 @@ public class MobileServiceImpl implements MobileService {
 	public long addLocationAccess(LocationAccessVO accessVO) {
 		return mobileMapper.insertLocationAccess(accessVO);
 	}
+
+	@Override
+	public List<LocationAccessVO> getLocationAccessList(SearchVO search) {
+		return mobileMapper.selectLocationAccessList(search);
+	}
+
+	@Override
+	public int countLocationAccessList() {
+		return mobileMapper.countLocationAccessList();
+	}
 }

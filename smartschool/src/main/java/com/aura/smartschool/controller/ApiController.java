@@ -85,7 +85,7 @@ public class ApiController {
 					if(m.getIs_parent()==0) {
 						LocationAccessVO accessVO = new LocationAccessVO();
 						accessVO.setChild_id(m.getMember_id());
-						accessVO.setParent_id(m.getMember_id());
+						accessVO.setParent_id(myInfo.getMember_id());
 						mobileService.addLocationAccess(accessVO);
 					}
 				}

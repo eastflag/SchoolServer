@@ -26,6 +26,7 @@ import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.HomeVO;
+import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
@@ -188,6 +189,16 @@ public class AdminController {
 				return new Result(100, "update failed");
 			}
 		}
+	}
+	
+	//위치 제공 정보 가져오기
+	@RequestMapping("/admin/api/getLocationAccessList")
+    public ResultData<List<LocationAccessVO>> getLocationAccessList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getLocationAccessList--------------------------------------------------");
+		List<LocationAccessVO> accessList = mobileService.getLocationAccessList(search);
+		int total = mobileService.countLocationAccessList();
+		
+		return new ResultDataTotal<List<LocationAccessVO>>(0, "success", accessList, total);
 	}
     
 	//get school list of member

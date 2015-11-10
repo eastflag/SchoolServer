@@ -67,6 +67,8 @@ public interface MobileMapper {
 	
 	//위치 정보 기록하기
 	public long insertLocationAccess(LocationAccessVO accessVO);
+	public List<LocationAccessVO> selectLocationAccessList(SearchVO search);
+	public int countLocationAccessList();
 	
 	public SchoolVO selectSchoolById(int school_id);
 	public List<SchoolVO> selectSchoolList(SchoolVO school);
