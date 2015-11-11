@@ -81,6 +81,12 @@ app.service('LocationAccessSvc', function($http) {
 	}
 });
 
+app.service('AdminAccessSvc', function($http) {
+	this.getAdminAccessList = function(access) {
+		return $http.post('/admin/api/getAdminAccessList', access);
+	}
+});
+
 app.service('SchoolSvc', function($http) {
 	this.getSchoolList = function(school) {
 		return $http.post('/admin/api/getSchoolListOfMember', school);
@@ -836,6 +842,29 @@ app.controller('LocationAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'L
 	}
 
 	$scope.getLocationAccessList();
+}]);
+
+app.controller('AdminAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'AdminAccessSvc', function ($scope, $rootScope, $cookieStore, AdminAccessSvc) {
+	$scope.currentPage = 1;
+	$scope.totalCount = 0;
+
+	$scope.getAdminAccessList = function() {
+		AdminAccessSvc.getAdminAccessList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+		.success(function(datas) {
+			$scope.datas = datas.data;
+			$scope.totalCount = datas.total;
+			console.log('total:' + $scope.totalCount);
+		}).error(function(data, status) {
+			if (status >= 400) {
+				$rootScope.auth_token = null;
+				$cookieStore.remove("auth_info");
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.getAdminAccessList();
 }]);
 
 app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore','Upload', 'SchoolSvc', function ($scope, $rootScope, $window, $cookieStore, Upload, SchoolSvc) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 import com.aura.smartschool.domain.ActivityVO;
+import com.aura.smartschool.domain.AdminAccessVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
@@ -157,6 +158,10 @@ public interface MobileMapper {
 	public int countManager(SearchVO search);
 	public ManagerVO selectManager(ManagerVO manager);
 	public List<ManagerVO> selectManagerList(SearchVO search);
+	//관리자 접속 정보
+	public long insertAdminAccess(AdminAccessVO accessVO) throws PersistenceException;
+	public List<AdminAccessVO> selectAdminAccessList(SearchVO search);
+	public int countAdminAccess();
 	
 	//os version
 	public OsInfoVO selectOsInfo(OsInfoVO inOsInfo);

@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.ActivityVO;
+import com.aura.smartschool.domain.AdminAccessVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.AverageItem;
@@ -853,5 +854,20 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public int countLocationAccessList() {
 		return mobileMapper.countLocationAccessList();
+	}
+
+	@Override
+	public long addAdminAccess(AdminAccessVO accessVO) throws PersistenceException {
+		return mobileMapper.insertAdminAccess(accessVO);
+	}
+
+	@Override
+	public List<AdminAccessVO> getAdminAccessList(SearchVO search) {
+		return mobileMapper.selectAdminAccessList(search);
+	}
+
+	@Override
+	public int countAdminAccess() {
+		return mobileMapper.countAdminAccess();
 	}
 }

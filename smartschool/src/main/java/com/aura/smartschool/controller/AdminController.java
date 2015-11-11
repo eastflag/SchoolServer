@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.domain.AdminAccessVO;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
@@ -71,7 +72,7 @@ public class AdminController {
 	
 	//관리자 페이지 로그인
 	@RequestMapping("/api/getLogin")
-	public Result getLogin(@RequestBody ManagerVO inManager) {
+	public Result getLogin(@RequestBody ManagerVO inManager, HttpServletRequest request) {
 		logger.debug("/admin/api/getLogin--------------------------------------------------------");
 		
 		//토큰 생성
@@ -82,6 +83,13 @@ public class AdminController {
 			try {
 				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 600 * 60 * 1000);
 				manager.setToken(token);
+				
+				//접속 정보 기록
+				AdminAccessVO accessVO = new AdminAccessVO();
+				accessVO.setLogin_id(manager.getId());
+				accessVO.setAccess_ip(request.getRemoteAddr());
+				mobileService.addAdminAccess(accessVO);
+				
 				return new ResultData<ManagerVO>(0, "success", manager);
 			} catch (IOException e) {
 				return new ResultData<ManagerVO>(200, "서버오류가 발생하였습니다. 잠시후에 시도하세요.", manager);
@@ -199,6 +207,16 @@ public class AdminController {
 		int total = mobileService.countLocationAccessList();
 		
 		return new ResultDataTotal<List<LocationAccessVO>>(0, "success", accessList, total);
+	}
+	
+	//백오피스 접근 정보 가져오기
+	@RequestMapping("/admin/api/getAdminAccessList")
+    public ResultData<List<AdminAccessVO>> getAdminAccessList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getAdminAccessList--------------------------------------------------");
+		List<AdminAccessVO> accessList = mobileService.getAdminAccessList(search);
+		int total = mobileService.countAdminAccess();
+		
+		return new ResultDataTotal<List<AdminAccessVO>>(0, "success", accessList, total);
 	}
     
 	//get school list of member

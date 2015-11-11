@@ -7,6 +7,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.ActivityVO;
+import com.aura.smartschool.domain.AdminAccessVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
@@ -141,6 +142,10 @@ public interface MobileService {
 	public int countManager(SearchVO search);
 	public ManagerVO getManager(ManagerVO manager);
 	public List<ManagerVO> getManagerList(SearchVO search);
+	//관리자 접속 정보
+	public long addAdminAccess(AdminAccessVO accessVO) throws PersistenceException;
+	public List<AdminAccessVO> getAdminAccessList(SearchVO search);
+	public int countAdminAccess();
 	
 	//앱버전 관리
 	public OsInfoVO getOsInfo(OsInfoVO inOsInfo);

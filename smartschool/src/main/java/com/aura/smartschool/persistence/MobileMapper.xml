@@ -1082,6 +1082,24 @@ select
 	</if>
 </select>
 
+<!-- 백오피스 접속 정보 -->
+<insert id="insertAdminAccess" parameterType="DiningVO">
+	INSERT INTO admin_access(login_id, access_ip)
+	VALUES(#{login_id}, #{access_ip});
+</insert>
+<select id="selectAdminAccessList" parameterType="SearchVO" resultType="AdminAccessVO">
+	SELECT 
+		admin_access_id, login_id, access_ip, created
+	FROM admin_access
+	ORDER BY created desc
+	<if test="page_size != 0">
+		LIMIT #{start_index}, #{page_size}
+	</if>
+</select>
+<select id="countAdminAccess" resultType="Integer">
+	SELECT count(*) FROM admin_access
+</select>
+
 <select id="selectOsInfoList" resultType="OsInfoVO">
 	SELECT * FROM os_info
 </select>
