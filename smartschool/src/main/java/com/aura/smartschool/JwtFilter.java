@@ -23,7 +23,7 @@ public class JwtFilter extends GenericFilterBean {
             final ServletResponse res,
             final FilterChain chain) throws IOException, ServletException {
 		
-		System.out.println("doFilter");
+		//System.out.println("doFilter");
 		
 		final HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse)res;
@@ -38,9 +38,9 @@ public class JwtFilter extends GenericFilterBean {
 
         //final String token = authHeader.substring(7); // The part after "Bearer "
 
+        String new_token = null;
         try {
-        	Claims claims = CommonUtil.parseJWT(token);
-            request.setAttribute("claims", claims);
+        	new_token = CommonUtil.parseJWT(token);
         }
         catch (SignatureException e) {
             //throw new ServletException("Invalid token.");
@@ -55,10 +55,11 @@ public class JwtFilter extends GenericFilterBean {
         } catch (Exception e) {
             //throw new ServletException("Invalid token.");
         	System.out.println("expire error");
-        	response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT);
+        	response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         	return;
         }
 
+        response.addHeader("X-Auth", new_token);
         chain.doFilter(req, res);
 	}
 

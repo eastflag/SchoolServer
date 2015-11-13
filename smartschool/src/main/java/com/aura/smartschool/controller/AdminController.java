@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.AdminAccessVO;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
@@ -81,7 +82,7 @@ public class AdminController {
 		if(manager != null && manager.getRole_id() < 3) {
 			String token;
 			try {
-				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), 600 * 60 * 1000);
+				token = CommonUtil.createJWT(manager.getId(), manager.getId(), String.valueOf(manager.getRole_id()), Constant.SESSION_TIMEOUT);
 				manager.setToken(token);
 				
 				//접속 정보 기록

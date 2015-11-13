@@ -20,6 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.TokenVO;
 
@@ -84,10 +85,11 @@ public class CommonUtil {
 		}
 
 		 //Builds the JWT and serializes it to a compact, URL-safe string
+		System.out.println("builder.compact(): " + builder.compact());
 		return builder.compact();
 	}
 	
-	public static Claims parseJWT(String jwt) throws IOException, Exception {
+	public static String parseJWT(String jwt) throws IOException, Exception {
 		Resource resource = new ClassPathResource("/app.properties");
         Properties props = PropertiesLoaderUtils.loadProperties(resource);
 		String key = props.getProperty("auth.key");
@@ -95,14 +97,14 @@ public class CommonUtil {
 		//This line will throw an exception if it is not a signed JWS (as expected)
 		Claims claims = Jwts.parser()         
 		   .setSigningKey(DatatypeConverter.parseBase64Binary(key))
-		   .parseClaimsJws(jwt).getBody();
+		   .parseClaimsJws(jwt)
+		   .getBody();
 		
-		//System.out.println("ID: " + claims.getId());
-		//System.out.println("Subject: " + claims.getSubject());
-		//System.out.println("Issuer: " + claims.getIssuer());
-		//System.out.println("Expiration: " + claims.getExpiration());
+/*		System.out.println("ID: " + claims.getId());
+		System.out.println("Subject: " + claims.getSubject());
+		System.out.println("Issuer: " + claims.getIssuer());
+		System.out.println("Expiration: " + claims.getExpiration());*/
 		
-
 		
 /*		boolean isExpired = System.currentTimeMillis() > claims.getExpiration().getTime() ? true : false;
 		System.out.println("expired:" + isExpired);
@@ -114,7 +116,8 @@ public class CommonUtil {
 		tokenVO.setIssuedAt(claims.getIssuedAt());
 		tokenVO.setExpired(isExpired);*/
 		
-		return claims;
+		return createJWT(claims.getId(), claims.getIssuer(), claims.getSubject(), Constant.SESSION_TIMEOUT);
 
 	}
+
 }
