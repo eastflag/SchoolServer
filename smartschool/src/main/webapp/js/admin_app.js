@@ -6,10 +6,20 @@ var app = angular.module('app', [
     'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor'
 ]);
 
-app.run(['$rootScope', function($rootScope) {
+app.run(['$rootScope', '$cookieStore', '$http', function($rootScope, $cookieStore, $http) {
   	$rootScope.auth_token = null;
   	$rootScope.role_id = 0;
   	$rootScope.login_url = "/index.html";
+
+  	$rootScope.refreshToken = function(new_token) {
+		$rootScope.auth_token = new_token;
+
+		var auth_info = {auth_token : $rootScope.auth_token, role_id : $rootScope.role_id};
+
+		$cookieStore.put("auth_info", auth_info);
+
+		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+  	};
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -328,13 +338,14 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 		search_query.order_key = $scope.home_order_key;
 
 		MemberSvc.getHomeList(search_query)
-		.success(function(homes) {
+		.success(function(homes, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.homes = homes.data;
 			$scope.totalHomeListCount = homes.total;
 
 			$scope.clearHome();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -390,7 +401,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 				alert(data.msg);
 			}
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -417,7 +428,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.clearHome();
 			$scope.getHomeList();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -445,12 +456,13 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 		search_query_name.home_id = $scope.home_id;
 
 		MemberSvc.getMemberList(search_query_name)
-		.success(function(memberList) {
+		.success(function(memberList, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.members = memberList.data;
 			$scope.totalMemberListCount = memberList.total;
 			$scope.clearMember();
 		}).error(function(data, status) {
-			if (status >= 400 && status < 500) {
+			if (status == 401 && status < 500) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -577,7 +589,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 				alert(result.msg);
 			}
 		}).error(function(data, status) {
-			if (status >= 400 && status < 500) {
+			if (status == 401 && status < 500) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -661,7 +673,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 				alert(result.msg);
 			}
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -676,10 +688,11 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 
 	$scope.getPayList = function(member) {
 		MemberSvc.getPayList({member_id:member.member_id})
-		.success(function(payList){
+		.success(function(payList, status, headers){
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.pays = payList.data;
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -709,7 +722,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 		.success(function(){
 			$scope.getPayList({member_id: $scope.member_id});
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -724,7 +737,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.clearPay();
 			$scope.getPayList({member_id: $scope.member_id});
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -741,7 +754,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 
 				$scope.clearPay();
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -795,10 +808,11 @@ app.controller('SearchSchoolCtrl', ['$scope', 'MemberSvc', 'close', function ($s
 		$scope.selected_school = { selected_yn : "N", school_id : "0", school_name : "" };
 
 		MemberSvc.getSearchSchoolList({school_name:$scope.school_name})
-		.success(function(schoolLists){
+		.success(function(schoolLists, status, headers){
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.school_lists = schoolLists.data;
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -827,12 +841,13 @@ app.controller('LocationAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'L
 
 	$scope.getLocationAccessList = function() {
 		LocationAccessSvc.getLocationAccessList({start_index:($scope.currentPage - 1) * 10, page_size:10})
-		.success(function(datas) {
+		.success(function(datas, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.datas = datas.data;
 			$scope.totalCount = datas.total;
 			console.log('total:' + $scope.totalCount);
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -850,12 +865,13 @@ app.controller('AdminAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'Admi
 
 	$scope.getAdminAccessList = function() {
 		AdminAccessSvc.getAdminAccessList({start_index:($scope.currentPage - 1) * 10, page_size:10})
-		.success(function(datas) {
+		.success(function(datas, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.datas = datas.data;
 			$scope.totalCount = datas.total;
 			console.log('total:' + $scope.totalCount);
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -902,11 +918,12 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 		}
 
 		SchoolSvc.getSchoolList(search_query)
-		.success(function(schools) {
+		.success(function(schools, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.schools = schools.data;
 			$scope.totalSchoolListCount = schools.total;
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -975,7 +992,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			//	$scope.schools = schools.data;
 			//})
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1014,11 +1031,12 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 		var noti = {school_id:school.school_id, start_index:($scope.currentPageNoti - 1) * $scope.itemPerNotiPage, page_size:$scope.itemPerNotiPage};
 		
 		SchoolSvc.getSchoolNotiList(noti)
-		.success(function(notiList) {
+		.success(function(notiList, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.notis = notiList.data;
 			$scope.totalNotiListCount = notiList.total;	
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1053,7 +1071,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 
 			$scope.getNoti($scope.selected_school);
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1109,7 +1127,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			$scope.getNoti($scope.selected_school);
 			$scope.clearNoti();
     	}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1149,7 +1167,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 				alert(data.msg);
 			}
     	}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1240,11 +1258,12 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
 	$scope.getSessionList = function(categoryNo) {
 		var search = {category: categoryNo, start_index:($scope.currentPageSession - 1) * 10, page_size:10};
 		ConsultSvc.getSessionList(search)
-		.success(function(sessions) {
+		.success(function(sessions, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.sessions = sessions.data;
 			$scope.totalSessionListCount = sessions.total;
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1267,10 +1286,11 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
 		$scope.consultListCategoryNo = category_no;
 
 	 	ConsultSvc.getConsultList({ session_id : session_id})
-		.success(function(lists) {
-				$scope.consultLists = lists.data;
+		.success(function(lists, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
+			$scope.consultLists = lists.data;
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1290,12 +1310,12 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
 
     		ConsultSvc.addConsult(consult)
     		.success(function(result) {
-    				$scope.showConsultList($scope.session_id, $scope.member_id, $scope.consultListCategoryNo);
-    				$scope.consultMessage = "";
+    			$scope.showConsultList($scope.session_id, $scope.member_id, $scope.consultListCategoryNo);
+    			$scope.consultMessage = "";
 
     				$scope.getSessionList($scope.selectedCategoryNo);
     		}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -1319,12 +1339,13 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 
 	$scope.getNotiList = function() {
 		NotiSvc.getNotiList({start_index:($scope.currentPageNoti - 1) * 10, page_size:10})
-		.success(function(notis) {
+		.success(function(notis, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.notis = notis.data;
 			$scope.totalNotiListCount = notis.total;
 
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1348,7 +1369,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 
 				$scope.clearNoti();
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -1384,7 +1405,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 
 			$scope.clearNoti();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1420,13 +1441,14 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 
 	$scope.getBoardList = function() {
 		BoardSvc.getBoardList({board_type:1, start_index:($scope.currentPageBoard - 1) * 10, page_size:10})
-		.success(function(boards) {
+		.success(function(boards, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.boards = boards.data;
 			$scope.totalBoardListCount = boards.total;
 
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1451,7 +1473,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 
 			$scope.clearBoard();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1477,12 +1499,13 @@ app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', funct
 
 	$scope.getOsInfoList = function() {
 		OsSvc.getOsInfoList()
-		.success(function(osinfos) {
+		.success(function(osinfos, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.osInfoList = osinfos.data;
 			$scope.tempList = angular.copy(osinfos.data);
 			console.log("$scope.tempList:" + $scope.tempList[0].os_name);
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1515,7 +1538,7 @@ app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', funct
 			}
 		})
 		.error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1545,13 +1568,14 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 
 	$scope.getManagerList = function(){
 		AdminSvc.getManagerList({start_index:($scope.currentPageAdmin - 1) * 10, page_size:10})
-		.success(function(admins) {
+		.success(function(admins, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.admins = admins.data;
 			$scope.totalAdminListCount = admins.total;
 
 			$scope.clearAdmin();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1600,7 +1624,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1621,7 +1645,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.clearAdmin();
 			$scope.getManagerList();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1639,7 +1663,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				$scope.clearAdmin();
 				$scope.getManagerList();
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -1673,13 +1697,14 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	
 	$scope.getPressList = function(){
 		PressSvc.getPressList({start_index:($scope.currentPage - 1) * 10, page_size:10})
-		.success(function(response) {
+		.success(function(response, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.presses = response.data;
 			$scope.totalCount = response.total;
 			
 			$scope.clearPress();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -1788,7 +1813,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 					$window.alert(response.msg);
 				}
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -1831,7 +1856,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 						}
 					})
 					.error(function(response,status){
-						if (status >= 400) {
+						if (status == 401) {
 							$rootScope.auth_token = null;
 							$cookieStore.remove("auth_info");
 						} else {
@@ -1890,7 +1915,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 					$window.alert('수정 실패!\n잠시 후에 다시 시도하세요.');
 				}
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -1913,7 +1938,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 					}
 				})
 				.error(function(response, state){
-					if (status >= 400) {
+					if (status == 401) {
 						$rootScope.auth_token = null;
 						$cookieStore.remove("auth_info");
 					} else {
@@ -1950,13 +1975,14 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 	$scope.getMagazineList = function(){
 		MagazineSvc.getMagazineList({start_index:($scope.currentPage - 1) * 10, page_size:10})
-		.success(function(response) {
+		.success(function(response, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.magazines = response.data;
 			$scope.totalCount = response.total;
 			
 			$scope.clearMagazine();
 		}).error(function(data, status) {
-			if (status >= 400) {
+			if (status == 401) {
 				$rootScope.auth_token = null;
 				$cookieStore.remove("auth_info");
 			} else {
@@ -2084,7 +2110,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 					$window.alert(data.msg);
 				}
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -2187,7 +2213,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 					$window.alert(data.msg);
 				}
 			}).error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -2209,7 +2235,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 						$window.alert('삭제 실패!\n잠시 후에 다시 시도하세요.');
 					}
 				}).error(function(response, status) {
-					if (status >= 400) {
+					if (status == 401) {
 						$rootScope.auth_token = null;
 						$cookieStore.remove("auth_info");
 					} else {
@@ -2247,11 +2273,12 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	
 	$scope.getChallengeTop5List = function(){
 		ChallengeSvc.getChallengeTop5List()
-			.success(function(response) {
+			.success(function(response, status, headers) {
+				$rootScope.refreshToken(headers('X-Auth'));
 				$scope.challengesTop5 = response.data;
 			})
 			.error(function(data, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -2262,14 +2289,15 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 	
 	$scope.getChallengeList = function(){
 		ChallengeSvc.getChallengeList({start_index:($scope.currentPage - 1) * 10, page_size:10})
-			.success(function(response) {
+			.success(function(response, status, headers) {
+				$rootScope.refreshToken(headers('X-Auth'));
 				$scope.challenges = response.data;
 				$scope.totalCount = response.total;
 				
 				$scope.clear();
 			})
 			.error(function(response, status) {
-				if (status >= 400) {
+				if (status == 401) {
 					$rootScope.auth_token = null;
 					$cookieStore.remove("auth_info");
 				} else {
@@ -2329,7 +2357,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 					}
 				})
 				.error(function(response, status) {
-					if (status >= 400) {
+					if (status == 401) {
 						$rootScope.auth_token = null;
 						$cookieStore.remove("auth_info");
 					} else {
@@ -2360,7 +2388,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 					}
 				})
 				.error(function(response, status) {
-					if (status >= 400) {
+					if (status == 401) {
 						$rootScope.auth_token = null;
 						$cookieStore.remove("auth_info");
 					} else {
