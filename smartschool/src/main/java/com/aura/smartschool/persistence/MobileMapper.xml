@@ -1061,10 +1061,15 @@ select
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		role_id 
 	FROM manager
-	WHERE 1=1
-		<if test="id != null"> AND id=HEX(AES_ENCRYPT(#{id}, 'aura'))</if>
-		<if test="pass != null"> AND pass=password(#{pass})</if>
-		<if test="manager_id != 0"> AND manager_id=#{manager_id}</if>
+	WHERE  
+		 <choose>
+		 	<when test="manager_id == 0">
+		 		id=HEX(AES_ENCRYPT(#{id}, 'aura')) AND pass=password(#{pass})	
+		 	</when>
+		 	<otherwise>
+		 		manager_id=#{manager_id}
+		 	</otherwise>
+		 </choose>
 	Limit 1
 </select>
 
