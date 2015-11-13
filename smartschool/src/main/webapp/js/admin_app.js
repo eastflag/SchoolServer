@@ -3,11 +3,10 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor', 'toaster', 'ngAnimate'
 ]);
 
-app.run(['$rootScope', '$cookieStore', '$http', function($rootScope, $cookieStore, $http) {
-  	$rootScope.auth_token = null;
+app.run(['$rootScope', '$cookieStore', '$http', 'toaster', function($rootScope, $cookieStore, $http, toaster) {
   	$rootScope.role_id = 0;
   	$rootScope.login_url = "/index.html";
 
@@ -20,6 +19,20 @@ app.run(['$rootScope', '$cookieStore', '$http', function($rootScope, $cookieStor
 
 		$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
   	};
+
+  	$rootScope.logout = function() {
+  		$rootScope.auth_token = null;
+  		$cookieStore.remove("auth_info");
+  		$rootScope.pop('error', 'LogOut', '세션이 만료되었습니다.', 3000);
+  	}
+
+  	$rootScope.pop = function(type, title, content, time) {
+  		toaster.pop(type, title, content, time);
+  	}
+
+  	$rootScope.clear = function() {
+  		toaster.clear();
+  	}
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -346,8 +359,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.clearHome();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -402,8 +414,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			}
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -429,8 +440,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.getHomeList();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -462,9 +472,8 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.totalMemberListCount = memberList.total;
 			$scope.clearMember();
 		}).error(function(data, status) {
-			if (status == 401 && status < 500) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+			if (status == 401) {
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -589,9 +598,8 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 				alert(result.msg);
 			}
 		}).error(function(data, status) {
-			if (status == 401 && status < 500) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+			if (status == 401) {
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -674,8 +682,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			}
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -693,8 +700,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.pays = payList.data;
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -723,8 +729,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.getPayList({member_id: $scope.member_id});
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -738,8 +743,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 			$scope.getPayList({member_id: $scope.member_id});
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -755,8 +759,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 				$scope.clearPay();
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -813,8 +816,7 @@ app.controller('SearchSchoolCtrl', ['$scope', 'MemberSvc', 'close', function ($s
 			$scope.school_lists = schoolLists.data;
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -845,11 +847,9 @@ app.controller('LocationAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'L
 			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.datas = datas.data;
 			$scope.totalCount = datas.total;
-			console.log('total:' + $scope.totalCount);
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -869,11 +869,9 @@ app.controller('AdminAccessCtrl', ['$scope', '$rootScope', '$cookieStore', 'Admi
 			$rootScope.refreshToken(headers('X-Auth'));
 			$scope.datas = datas.data;
 			$scope.totalCount = datas.total;
-			console.log('total:' + $scope.totalCount);
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -924,8 +922,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			$scope.totalSchoolListCount = schools.total;
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -993,8 +990,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			//})
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1037,8 +1033,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			$scope.totalNotiListCount = notiList.total;	
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1072,8 +1067,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			$scope.getNoti($scope.selected_school);
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1128,8 +1122,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			$scope.clearNoti();
     	}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1168,8 +1161,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 			}
     	}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1264,8 +1256,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
 			$scope.totalSessionListCount = sessions.total;
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1291,8 +1282,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
 			$scope.consultLists = lists.data;
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1316,8 +1306,7 @@ app.controller('ConsultCtrl', ['$scope', '$rootScope', '$cookieStore', 'ConsultS
     				$scope.getSessionList($scope.selectedCategoryNo);
     		}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1346,8 +1335,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1370,8 +1358,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 				$scope.clearNoti();
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1406,8 +1393,7 @@ app.controller('NotiCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', '
 			$scope.clearNoti();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1449,8 +1435,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 			$scope.clearBoard();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1474,8 +1459,7 @@ app.controller('BoardCtrl', ['$scope', '$rootScope', '$cookieStore', 'BoardSvc',
 			$scope.clearBoard();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1506,8 +1490,7 @@ app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', funct
 			console.log("$scope.tempList:" + $scope.tempList[0].os_name);
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1539,8 +1522,7 @@ app.controller('OsCtrl', ['$scope', '$rootScope', '$cookieStore', 'OsSvc', funct
 		})
 		.error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1576,8 +1558,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.clearAdmin();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1625,8 +1606,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.getManagerList();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1646,8 +1626,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.getManagerList();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1664,8 +1643,7 @@ app.controller('AdminCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				$scope.getManagerList();
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1705,8 +1683,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			$scope.clearPress();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -1814,8 +1791,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				}
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1857,8 +1833,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 					})
 					.error(function(response,status){
 						if (status == 401) {
-							$rootScope.auth_token = null;
-							$cookieStore.remove("auth_info");
+							$rootScope.logout();
 						} else {
 							alert("error : " + data.message);
 						}
@@ -1916,8 +1891,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				}
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -1939,8 +1913,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 				})
 				.error(function(response, state){
 					if (status == 401) {
-						$rootScope.auth_token = null;
-						$cookieStore.remove("auth_info");
+						$rootScope.logout();
 					} else {
 						alert("error : " + response.message);
 					}
@@ -1983,8 +1956,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$scope.clearMagazine();
 		}).error(function(data, status) {
 			if (status == 401) {
-				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$rootScope.logout();
 			} else {
 				alert("error : " + data.message);
 			}
@@ -2111,8 +2083,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				}
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -2214,8 +2185,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				}
 			}).error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -2236,8 +2206,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 					}
 				}).error(function(response, status) {
 					if (status == 401) {
-						$rootScope.auth_token = null;
-						$cookieStore.remove("auth_info");
+						$rootScope.logout();
 					} else {
 						alert("error : " + response.message);
 					}
@@ -2279,8 +2248,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 			})
 			.error(function(data, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + data.message);
 				}
@@ -2298,8 +2266,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 			})
 			.error(function(response, status) {
 				if (status == 401) {
-					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$rootScope.logout();
 				} else {
 					alert("error : " + response.message);
 				}
@@ -2358,8 +2325,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 				})
 				.error(function(response, status) {
 					if (status == 401) {
-						$rootScope.auth_token = null;
-						$cookieStore.remove("auth_info");
+						$rootScope.logout();
 					} else {
 						alert("error : " + response.message);
 					}
@@ -2389,8 +2355,7 @@ app.controller('ChallengeCtrl', ['$scope', '$rootScope', '$window', '$cookieStor
 				})
 				.error(function(response, status) {
 					if (status == 401) {
-						$rootScope.auth_token = null;
-						$cookieStore.remove("auth_info");
+						$rootScope.logout();
 					} else {
 						alert("error : " + response.message);
 					}
