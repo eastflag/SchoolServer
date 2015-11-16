@@ -6,7 +6,7 @@ public class NotiVO {
 	private int noti_id;
 	private String title;
 	private String content;
-	private Date created;
+	private String created;
 	public int getNoti_id() {
 		return noti_id;
 	}
@@ -25,10 +25,10 @@ public class NotiVO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public Date getCreated() {
+	public String getCreated() {
 		return created;
 	}
-	public void setCreated(Date created) {
+	public void setCreated(String created) {
 		this.created = created;
 	}
 }
