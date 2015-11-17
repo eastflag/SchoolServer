@@ -154,7 +154,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 	
 						var auth_info = {auth_token : $rootScope.auth_token, home_id:$rootScope.home_id, member_id:$rootScope.member_id, name:$rootScope.name, mdn:$rootScope.mdn};
 	
-						$cookies.put("auth_info", auth_info,{'path': '/'});
+						$cookies.putObject("auth_info", auth_info,{'path': '/'});
 	
 						$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 						
@@ -316,7 +316,8 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 	}
 	
 	$scope.getMemberInfo = function(){
-		HomeSvc.getMemberInfo(data)
+		console.log('MDN: '+$scope.mdn);
+		HomeSvc.getMemberInfo({mdn:$scope.mdn})
 			.success(function(response){
 				$scope.member_id = response.data.member_id;
 				$scope.name = response.data.name;
@@ -400,16 +401,18 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 	//로그인상태체크
 	$scope.loggedIn = function() {
 		if ($cookies.get("auth_info") != null && $cookies.get("auth_info") != undefined) {
-			var auth_info = $cookies.get("auth_info");
+			var auth_info = $cookies.getObject("auth_info");
 
 			$rootScope.auth_token = auth_info.auth_token;
 			$rootScope.home_id = auth_info.home_id;
 			$rootScope.member_id = auth_info.member_id;
 			$rootScope.mdn = auth_info.mdn;
+			
 			$scope.home_id = auth_info.home_id;
 			$scope.member_id = auth_info.member_id;
 			$scope.name = auth_info.name;
 			$scope.mdn = auth_info.mdn;
+			
 
 			$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 		};
