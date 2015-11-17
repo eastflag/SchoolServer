@@ -87,7 +87,7 @@ public class AuraHomeController {
 			sms.setMsg(msg);
 			sms.setRphone(member.getMdn());
 			sms.setSmsType("S");		//SMS 단문
-			sms.setTestflag("Y");	//테스트 요청 설정
+			//sms.setTestflag("Y");	//테스트 요청 설정
 			
 			//SMS 전송
 			try {
