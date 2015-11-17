@@ -57,7 +57,7 @@ app.service('HomeSvc', function($http) {
 	}
 });
 
-app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$window', '$location', '$filter', '$sce', 'Upload', 'HomeSvc', function ($scope, $http, $rootScope, $cookieStore, $window, $location, $filter, $sce, Upload, HomeSvc) {
+app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$window', '$location', '$filter', '$sce', 'Upload', 'HomeSvc', function ($scope, $http, $rootScope, $cookies, $window, $location, $filter, $sce, Upload, HomeSvc) {
 	$scope.token = null;
 	$scope.error = null;
 	
@@ -154,7 +154,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 	
 						var auth_info = {auth_token : $rootScope.auth_token, home_id:$rootScope.home_id, member_id:$rootScope.member_id, name:$rootScope.name, mdn:$rootScope.mdn};
 	
-						$cookieStore.put("auth_info", auth_info);
+						$cookies.put("auth_info", auth_info,{'path': '/'});
 	
 						$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
 						
@@ -166,7 +166,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 				.error(function(response, state){
 					if (state >= 400) {
 						$rootScope.auth_token = null;
-						$cookieStore.remove("auth_info");
+						$cookies.remove("auth_info");
 					} else {
 						$window.alert("error : " + response.message);
 					}
@@ -199,7 +199,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			.error(function(response, state) {
 				if (state >= 400) {
 					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$cookies.remove("auth_info");
 				} else {
 					$window.alert("error : " + response.message);
 				}
@@ -257,7 +257,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			.error(function(response, state) {
 				if (state >= 400) {
 					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$cookies.remove("auth_info");
 				} else {
 					$window.alert("error : " + response.message);
 				}
@@ -282,7 +282,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			.error(function(response, state){
 				if (state >= 400) {
 					$rootScope.auth_token = null;
-					$cookieStore.remove("auth_info");
+					$cookies.remove("auth_info");
 				} else {
 					$window.alert("error : " + response.message);
 				}
@@ -375,7 +375,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 			.error(function(data, status) {
 			if (status >= 400) {
 				$rootScope.auth_token = null;
-				$cookieStore.remove("auth_info");
+				$cookies.remove("auth_info");
 			} else {
 				$window.alert("error : " + data.message);
 			}
@@ -392,15 +392,15 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', '$w
 		$rootScope.email = null
 		$rootScope.certifyKey = null
 		$http.defaults.headers.post['X-Auth'] = "";
-		$cookieStore.remove("auth_info");
+		$cookies.remove("auth_info");
 		
 		$window.location.href = '/';
 	}
 	
 	//로그인상태체크
 	$scope.loggedIn = function() {
-		if ($cookieStore.get("auth_info") != null && $cookieStore.get("auth_info") != undefined) {
-			var auth_info = $cookieStore.get("auth_info");
+		if ($cookies.get("auth_info") != null && $cookies.get("auth_info") != undefined) {
+			var auth_info = $cookies.get("auth_info");
 
 			$rootScope.auth_token = auth_info.auth_token;
 			$rootScope.home_id = auth_info.home_id;
