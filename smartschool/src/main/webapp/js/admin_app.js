@@ -802,7 +802,7 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
     };
 }]);
 
-app.controller('SearchSchoolCtrl', ['$scope', 'MemberSvc', 'close', function ($scope, MemberSvc, close) {
+app.controller('SearchSchoolCtrl', ['$scope', '$rootScope', 'MemberSvc', 'close', function ($scope, $rootScope, MemberSvc, close) {
 	$scope.school_name = "";
 	$scope.school_lists = [];
 	$scope.selected_school = { selected_yn : "N", school_id : "0", school_name : "" };
