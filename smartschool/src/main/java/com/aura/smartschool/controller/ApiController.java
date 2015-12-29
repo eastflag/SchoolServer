@@ -1000,10 +1000,83 @@ public class ApiController {
 		}
 	}
 	
+	//랭킹 - 근육량 
+	@RequestMapping("/api/getRankingMuscle")
+	public ResultData<RankingItem> getRankingMuscle(@RequestBody MemberVO in){
+		logger.debug("/api/getRankingMuscle-----------------------------------------------------");
+		RankingItem rank = mobileService.getRanking(in, Constant.Muscle);
+		if(rank != null){
+			return new ResultData<RankingItem>(0, "success", rank);
+		}else{
+			return new ResultData<RankingItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹 - 체지방율 
+	@RequestMapping("/api/getRankingFat")
+	public ResultData<RankingItem> getRankingFat(@RequestBody MemberVO in){
+		logger.debug("/api/getRankingFat-----------------------------------------------------");
+		RankingItem rank = mobileService.getRanking(in, Constant.Fat);
+		if(rank != null){
+			return new ResultData<RankingItem>(0, "success", rank);
+		}else{
+			return new ResultData<RankingItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹목록 - 신장
 	@RequestMapping("/api/getRankingHeightList")
 	public ResultData<RankingListItem> getRankingHeightList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingHeightList-----------------------------------------------------");
 		RankingListItem result = mobileService.getRankingList(in, Constant.Height);
+		if(result != null){
+			return new ResultData<RankingListItem>(0, "success", result);
+		}else{
+			return new ResultData<RankingListItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹목록 - 체중
+	@RequestMapping("/api/getRankingWeightList")
+	public ResultData<RankingListItem> getRankingWeightList(@RequestBody SearchVO in){
+		logger.debug("/api/getRankingWeightList-----------------------------------------------------");
+		RankingListItem result = mobileService.getRankingList(in, Constant.Weight);
+		if(result != null){
+			return new ResultData<RankingListItem>(0, "success", result);
+		}else{
+			return new ResultData<RankingListItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹목록 - bmi
+	@RequestMapping("/api/getRankingBmiList")
+	public ResultData<RankingListItem> getRankingBmiList(@RequestBody SearchVO in){
+		logger.debug("/api/getRankingBmiList-----------------------------------------------------");
+		RankingListItem result = mobileService.getRankingList(in, Constant.BMI);
+		if(result != null){
+			return new ResultData<RankingListItem>(0, "success", result);
+		}else{
+			return new ResultData<RankingListItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹목록 - 근육량
+	@RequestMapping("/api/getRankingMuscleList")
+	public ResultData<RankingListItem> getRankingMuscleList(@RequestBody SearchVO in){
+		logger.debug("/api/getRankingMuscleList-----------------------------------------------------");
+		RankingListItem result = mobileService.getRankingList(in, Constant.Muscle);
+		if(result != null){
+			return new ResultData<RankingListItem>(0, "success", result);
+		}else{
+			return new ResultData<RankingListItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹목록 - 체지방율
+	@RequestMapping("/api/getRankingFatList")
+	public ResultData<RankingListItem> getRankingFatList(@RequestBody SearchVO in){
+		logger.debug("/api/getRankingFatList-----------------------------------------------------");
+		RankingListItem result = mobileService.getRankingList(in, Constant.Muscle);
 		if(result != null){
 			return new ResultData<RankingListItem>(0, "success", result);
 		}else{
