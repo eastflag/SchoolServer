@@ -766,6 +766,7 @@
 .common_layer.use_rule .layer_box h3 {height:60px; line-height:60px; color:#fff; font-size:22px; font-weight:normal; text-align:center; background:#1f8fd0; border-radius:5px 5px 0 0;}
 .common_layer.use_rule .layer_box .scroll_area {padding:20px 5%; height:320px; overflow-y:auto;}
 .common_layer.use_rule .layer_box .scroll_area p {line-height:20px; color:#676767; font-size:12.5px;}
+.common_layer.use_rule .layer_box .scroll_area p strong {display: block; margin-bottom: 5px;}
 /* private agree */
 .common_layer.private_agree .layer_box h3 {height:60px; line-height:60px; color:#fff; font-size:22px; font-weight:normal; text-align:center; background:#1f8fd0; border-radius:5px 5px 0 0;}
 .common_layer.private_agree .layer_box .scroll_area {padding:20px 5%; height:320px; overflow-y:auto;}
