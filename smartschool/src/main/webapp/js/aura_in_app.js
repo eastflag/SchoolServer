@@ -1643,7 +1643,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		RankingSvc.getRankingWeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
-					$scope.ranking_list = response.data;
+					$scope.setRankingListData(response.data);
 				}
 			})
 			.error(function(response, state) {
@@ -1654,7 +1654,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		RankingSvc.getRankingBmiList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
-					$scope.ranking_list = response.data;
+					$scope.setRankingListData(response.data);
 				}
 			})
 			.error(function(response, state) {
@@ -1665,7 +1665,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		RankingSvc.getRankingMuscleList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
-					$scope.ranking_list = response.data;
+					$scope.setRankingListData(response.data);
 				}
 			})
 			.error(function(response, state) {
@@ -1676,7 +1676,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		RankingSvc.getRankingFatList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
-					$scope.ranking_list = response.data;
+					$scope.setRankingListData(response.data);
 				}
 			})
 			.error(function(response, state) {
@@ -1724,6 +1724,10 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		} else {
 			return '-';
 		}
+	}
+	
+	$scope.blindeName = function(str){
+		return str.substring(0,1)+'✱✱';
 	}
 	
 	$scope.convertRound = function(data){

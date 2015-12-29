@@ -107,7 +107,7 @@
 								<td class="font_red">{{row.rank}}위</td>
 								<td>{{row.schoolName}}</td>
 								<td>{{row.schoolGrade}}</td>
-								<td>{{row.name}}</td>
+								<td>{{blindeName(row.name)}}</td>
 								<td>{{row.value}}cm</td>
 								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
@@ -182,7 +182,7 @@
 								<td class="font_red">{{row.rank}}위</td>
 								<td>{{row.schoolName}}</td>
 								<td>{{row.schoolGrade}}</td>
-								<td>{{row.name}}</td>
+								<td>{{blindeName(row.name)}}</td>
 								<td>{{row.value}}cm</td>
 								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
