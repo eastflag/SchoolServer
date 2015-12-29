@@ -1612,7 +1612,6 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.rank_list = data.list;
 	};
 	$scope.getRankingHeightList = function(){
-		console.log('$scope.list_tab => '+$scope.list_tab);
 		RankingSvc.getRankingHeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
