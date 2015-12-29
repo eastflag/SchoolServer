@@ -1,0 +1,78 @@
+<div class="load obesity">
+	<header class="header">
+		<h1>비만도</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="obesity_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="width:344px; height:492px;">
+			<div class="obesity_row_top">
+				<!-- stat01 ~ stat06 -->
+				<div class="my_status" ng-switch="bmi_step">
+					<img ng-switch-when="1" src="/images/aura_in_app/img_obesity_stat01.png" alt="저체중" />
+					<img ng-switch-when="2" src="/images/aura_in_app/img_obesity_stat02.png" alt="정상" />
+					<img ng-switch-when="3" src="/images/aura_in_app/img_obesity_stat03.png" alt="과체중" />
+					<img ng-switch-when="4" src="/images/aura_in_app/img_obesity_stat04.png" alt="비만" />
+					<img ng-switch-when="5" src="/images/aura_in_app/img_obesity_stat05.png" alt="중도비만" />
+					<img ng-switch-when="6" src="/images/aura_in_app/img_obesity_stat06.png" alt="고도비만" />
+					<img ng-switch-default src="/images/aura_in_app/img_obesity_stat02.png" alt="정상" />
+				</div>
+				<p class="summary">{{student_name}}님의 비만도는 <span class="stat04">{{bmi_string}}</span>입니다.</p>
+				<ul class="obesity_reference">
+					<li class="stat01">저체중</li>
+					<li class="stat02">정상</li>
+					<li class="stat03">과체중</li>
+					<li class="stat04">비만</li>
+					<li class="stat05">중도비만</li>
+					<li class="stat06">고도비만</li>
+				</ul>
+			</div>
+			<div class="obesity_row_bottom">
+				<div class="left">
+					<h2>BMI</h2>
+					<strong class="data">{{bmi}}</strong>
+					<dl>
+						<dt>BMI란?</dt>
+						<dd>체중(Kg)을 키의 제곱으로 
+						나눈값을 통해 지방의 양을 추정
+						하는 비만 측정법이다. 
+						수치가 클수록 체격이 커진다.</dd>
+					</dl>
+				</div>
+				<div class="right">
+					<h2>체지방률</h2>
+					<strong class="data">{{fat}}%</strong>
+					<dl>
+						<dt>체지방률이란?</dt>
+						<dd>
+						체중에서 체지방이 차지하는 
+						비율. 수치가 작을수록 근육형
+						체형이다.</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+		<a href="#!/training.html?p={{bmiGradeId}}" class="btn_recommend_exercise"><img src="/images/aura_in_app/img_health_tool.png" alt=""> 체형 추천 운동</a>
+	</article>
+</div>

@@ -2,31 +2,56 @@
 <html lang="ko">
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="Expires" content="-1"> 
-		<meta http-equiv="Pragma" content="no-cache"> 
-		<meta http-equiv="Cache-Control" content="No-Cache"> 
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1;text/html; charset=utf-8;">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>AURA | Smart Health Protector System</title>
 		<link rel="shortcut icon" href="/images/aura.ico" />
 		<link rel="stylesheet" href="/css/reset.css">
 		<link rel="stylesheet" href="/css/common.css">
 		<link rel="stylesheet" href="/css/jquery_ui.css">
+		<link rel="stylesheet" href="/css/in.app.common.css">
+		<link rel="stylesheet" href="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" type="text/css"/>
+		
 		<!--[if lt IE 9]>
 		<script src="/js/html5shiv.min.js"></script>
 		<script src="/js/respond-1.4.2.min.js"></script>
 		<![endif]-->
 		
+		<!--[if IE]>
+		<script language="javascript" type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+		<![endif]-->
+		<!-- jQuery  -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+		
+		<!-- Angular JS -->
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-touch.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.10.3/TweenMax.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
+		<script src="/js/ng-file-upload-shim.min.js"></script>
+		<script src="/js/ng-file-upload.min.js"></script>
+		
+		<script src="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
+		<script src="/ng-scrollbars-gh-pages/bower_components/ng-scrollbars/src/scrollbars.js"></script>
+		<script src="/ng-scrollbars-gh-pages/javascripts/highlight.js"></script>
+		
+		<!--Custom JavaScript -->
+		<script src="/js/common.js"></script>
+		<script src="/js/aura_in_app/common.js"></script>
+		<script src="/js/aura_in_app.js"></script>
+
 		<base href="/" />
 	</head>
 	
 	<body ng-app="home">
-		<section id="wrapper" ng-controller="HomeCtrl">
+		<section id="wrapper" ng-controller="AuraCtrl">
 			
 			<header id="header_wrap">
-				<h1><a href="/" target="_self"><img src="/images/common/img_header_logo.png" alt="AURA | Smart Health Protector System" /></a></h1>
+				<h1><a href="/#!/index.html" target="_self"><img src="/images/common/img_header_logo.png" alt="AURA | Smart Health Protector System" /></a></h1>
 				<ul class="gnb">
-					<li ng-show="loggedIn()"><a href="javascript:;" ng-click="logout()"><img src="/images/common/txt_gnb_logout.gif " alt="로그아웃" /></a></li>
-					<li ng-show="!loggedIn()"><a href="/SmartCare/login.html" target="_self"><img src="/images/common/txt_gnb_login.gif" alt="로그인" /></a></li>
 					<li><a href="/SmartCare/notice.html" target="_self"><img src="/images/common/txt_gnb_news.gif" alt="공지사항" /></a></li>
 					<li><a href="/SmartCare/press.html" target="_self"><img src="/images/common/txt_gnb_media.gif " alt="언론자료" /></a></li>
 					<li><a href="/SmartCare/introduce.html" target="_self"><img src="/images/common/txt_gnb_customer.gif" alt="고객센터" /></a></li>
@@ -36,8 +61,36 @@
 			<section id="container">
 				<div class="bg"><img src="/images/common/img_main_people.png" alt="" /></div>
 				<div class="img_phone"></div>
+				<div class="page_load_wrap">
+					<div id="scroll_wrapper" >
+						<ng-view></ng-view>
+					
+						<!-- 가족명 변경 레이어 -->
+						<section class="common_layer family_modify" style="display:{{change_home_display}}">
+							<div class="dim_area" ng-click="change_home_display='none';"></div>
+							<div class="layer_box">
+								<h3>가족명 변경</h3>
+								<form id="">
+									<fieldset>
+										<legend class="screen_out">변경할 가족명 입력</legend>
+										<div class="in_input mg_top15">
+											<input type="text" ng-model="new_home_id" placeholder="가족명을 입력하세요." />
+										</div>
+										<div class="half_wrap mg_top10">
+											<button type="submit" class="btn_common_blue" ng-click="modHomeId()">확인</button>
+											<button type="button" class="btn_common_blue_line" ng-click="change_home_display='none';">취소</button>
+										</div>
+									</fieldset>
+								</form>
+							</div>
+						</section>
+						<!-- 가족명 변경 레이어 -->
+					</div>
+				</div>
 				<div class="video_wrap">
+					<!-- 
 					<iframe width="416" height="233" src="https://www.youtube.com/embed/QIdXkABDGOs" frameborder="0" allowfullscreen></iframe>
+					 -->
 				</div>
 				<p class="slogan">
 					<img src="/images/common/txt_main_slogan.png" alt="스마트안전건강지킴이는 대한민국 아동, 청소년을 위한 통합솔루션으로 미래창조과학부 지원 국가개발 우수과제로 선정된 공신력있는 프로그램입니다." />
@@ -551,24 +604,5 @@
 				</div>
 			</div>
 		</div>
-		
-		<!--[if IE]>
-		<script language="javascript" type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
-		<![endif]-->
-		<!-- jQuery  -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-		
-		<!-- Angular JS -->
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
-		<script src="/js/ng-file-upload-shim.min.js"></script>
-		<script src="/js/ng-file-upload.min.js"></script>
-		
-		<!--Custom JavaScript -->
-		<script src="/js/common.js"></script>
-		<script src="/js/app.js"></script>
 	</body>
 </html>

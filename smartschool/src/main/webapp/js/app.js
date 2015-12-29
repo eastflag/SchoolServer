@@ -1,43 +1,178 @@
-var app = angular.module('home', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize']);
+var app = angular.module('home', ['ngRoute', 'ngCookies', 'ngSanitize']);
 
 app.run(['$rootScope', function($rootScope) {
-	$rootScope.auth_token = null;
 	$rootScope.rootPath = "/";
 	
 	$rootScope.home_id = null;
-	$rootScope.member_id = null;
 	$rootScope.name = null;
 	$rootScope.mdn = null;
+	$rootScope.email = null;
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
-	/*
-	$routeProvider
-		.when('/login', {templateUrl: '/home/templates/login.html', controller:'IndexCtrl'})
-		.when('/notice', {templateUrl: '/home/templates/notice.html', controller:'NotiCtrl'})
-		.when('/request', {templateUrl: '/home/templates/request.html', controller:'ReqCtrl'})
-		.when('/introduce', {templateUrl: '/home/templates/introduce.html', controller:'QnACtrl'})
-		.when('/inquiry', {templateUrl: '/home/templates/inquiry.html', controller:'QnACtrl'})
+	/*$routeProvider
+		.when('/', {templateUrl: '/SmartCare/in_app/index.html'})
+		.when('/index.html', {templateUrl: '/SmartCare/in_app/index.html', controller:'AppMemberCtrl'})
+		.when('/login.html', {templateUrl: '/SmartCare/in_app/login.html', controller:'CommonCtrl'})
+		.when('/join.html', {templateUrl: '/SmartCare/in_app/join.html'})
+		.when('/measure.html', {templateUrl: '/SmartCare/in_app/measure.html'})
+		.when('/magazine/list.html', {templateUrl: '/SmartCare/in_app/magazine_list.html', controller:'CommonCtrl'})
 	*/
 	$locationProvider.html5Mode(true);
-	//$locationProvider.hashPrefix('!');
-
-	$httpProvider.defaults.headers.post['X-Auth'] = "";
 }]);
 
-app.service('HomeSvc', function($http) {
-	this.requestCertification = function(data) {
-		console.log('----------------- 인증번호 요청 --------------------');
-		return $http.post('home/api/getSmsCertifyKey', data);
+app.service('CommonSvc', function($http) {
+	this.toggleContent = function(idx){
+		var list = $('.news_list').find('li');
+		if(list.eq(idx).hasClass('curr')){
+			list.eq(idx).removeClass('curr');
+		}else{
+			list.eq(idx).addClass('curr');
+		}
 	};
-	this.login = function(data){
-		console.log('----------------- 로그인 --------------------');
-		return $http.post('home/api/login', data);
+	this.yyyyMMdd = function(date) {
+		if(date == null || date ==''){
+			return '';
+		}
+		var tmp = date.substring(0,10);
+		var d = tmp.split("-");
+		return d[0]+"."+d[1]+"."+d[2];
 	};
+	this.setPaginationInfo = function(targetPage, page_size, total){
+		var currentPage = targetPage;
+		var pageSize = page_size;
+		var totalItemCount = total;
+		var totalPageCount=1;
+		var firstPageNoOnPageList;
+		var lastPageNoOnPageList;
+		var prevPageNoOnPageList;
+		var nextPageNoOnPageList;
+		
+		if(totalItemCount==0){
+			var result = [1,1,1];
+			return result;
+		} else {
+			totalPageCount = parseInt((totalItemCount-1)/pageSize) + 1;
+			firstPageNoOnPageList = parseInt((currentPage-1)/pageSize)*pageSize + 1;
+			lastPageNoOnPageList = firstPageNoOnPageList+pageSize-1;
+			if(lastPageNoOnPageList > totalPageCount){
+				lastPageNoOnPageList = totalPageCount;
+			}
+			prevPageNoOnPageList = firstPageNoOnPageList-pageSize;
+			if(prevPageNoOnPageList<1){
+				prevPageNoOnPageList=1;
+			}
+			nextPageNoOnPageList = lastPageNoOnPageList+1;
+			if(nextPageNoOnPageList > totalPageCount){
+				nextPageNoOnPageList = totalPageCount;
+			}
+		
+			var result = [totalPageCount+2];
+			var j=0;
+			result[j] = prevPageNoOnPageList;
+			j++;
+			for(var i=firstPageNoOnPageList; i<=lastPageNoOnPageList; i++){
+				result[j]=i;
+				j++;
+			}
+			result[j] = nextPageNoOnPageList;
+			return result;
+		}
+	}
+});
+
+app.controller('CommonCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'CommonSvc', function($scope, $rootScope, $cookies, $window, $location, CommonSvc){
+	$scope.home_id = null;
+	$scope.name = null;
+	$scope.mdn = null;
+	$scope.email = null;
+	
+	//로그인상태체크
+	$scope.loggedIn = function() {
+		var member_info = $cookies.getObject("member_info");
+		
+		if (member_info != null && member_info != undefined) {
+			$scope.home_id = member_info.home_id;
+			$scope.name = member_info.name;
+			$scope.mdn = member_info.mdn;
+			$scope.email = member_info.email;
+			
+			$rootScope.home_id = $scope.home_id;
+			$rootScope.name = $scope.name;
+			$rootScope.mdn = $scope.mdn;
+			$rootScope.email = $scope.email;
+			
+			var loadDt = new Date();
+			var expires = new Date(Date.parse(loadDt) + 1000 * 60*30);  //30분후
+			var member_info = {home_id:$scope.home_id, name:$scope.name, mdn:$scope.mdn, email:$scope.email};
+			$cookies.putObject("member_info", member_info,{'path': '/', 'expires':expires});
+			console.log('로그인 상태 => '+true);
+			return true;
+		}else{
+			console.log('로그인 상태 => '+false);
+			return false;
+		}
+	}
+}]);
+
+app.service('NoticeSvc', function($http) {
 	this.getNotiList = function(data) {
 		console.log('----------------- 공지사항 목록 --------------------');
 		return $http.post('home/api/getNotiList', data);
 	};
+});
+
+app.controller('NoticeCtrl', ['$scope', 'NoticeSvc', 'CommonSvc', function ($scope, NoticeSvc, CommonSvc) {
+	$scope.notiList = [];
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+	$scope.totalNoti = 0;
+	$scope.pageNumList = [];
+	$scope.pageFirst = 1;
+	$scope.pageNext = 1;
+	
+	$scope.getNotiList = function() {
+		NoticeSvc.getNotiList({start_index:($scope.currentPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
+			.success(function(response) {
+				$scope.notiList = response.data;
+				$scope.totalNoti = response.total;
+				$scope.setPaginationInfo();
+			})
+			.error(function(response, state) {
+				if (state >= 400) {
+					$cookies.remove("member_info",{'path': '/'});
+				} else {
+					$window.alert("error : " + response.message);
+				}
+			});
+	}
+	
+	$scope.setPaginationInfo = function(){
+		var temp = CommonSvc.setPaginationInfo($scope.currentPage, $scope.pageSize, $scope.totalNoti);
+		$scope.pageFirst = temp[0];
+		temp.splice(0, 1);
+		$scope.pageNext = temp.pop();
+		$scope.pageNumList = temp;
+	}
+	
+	$scope.pageChange = function(num) {
+		console.log(num);
+		$scope.currentPage = num;
+		$scope.getNotiList();
+	};
+	
+	$scope.toggleContent = function(idx){
+		CommonSvc.toggleContent(idx);
+	}
+	
+	$scope.yyyyMMdd = function(date){
+		return CommonSvc.yyyyMMdd(date);
+	};
+	
+	$scope.getNotiList();
+}]);
+
+app.service('PressSvc', function($http) {
 	this.getPressList = function(data){
 		console.log('-----------------언론자료 목록 --------------------');
 		return $http.post('home/api/getPressList', data);
@@ -46,191 +181,9 @@ app.service('HomeSvc', function($http) {
 		console.log('-----------------언론자료 상세 --------------------');
 		return $http.post('home/api/getPress', data);
 	}
-	this.getMemberInfo = function(data){
-		return $http.post('home/api/getMemberInfo', data);
-	};
-	this.requestQnA = function(data) {
-		return $http.post('home/api/requestQnA', data);
-	};
-	this.getChallengeList = function(data){
-		return $http.post('home/api/getChallengeList', data);
-	}
 });
 
-app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$window', '$location', '$filter', '$sce', 'Upload', 'HomeSvc', function ($scope, $http, $rootScope, $cookies, $window, $location, $filter, $sce, Upload, HomeSvc) {
-	$scope.token = null;
-	$scope.error = null;
-	
-	$scope.path = null;
-	
-	$scope.home_id = null;
-	$scope.member_id = null;
-	$scope.name = null;
-	$scope.mdn = null;
-	$scope.email = null;
-	$scope.certifyKey = null;
-	
-	$scope.request = false;
-	
-	//인증번호요청
-	$scope.requestCertification = function(){
-		if($scope.request){
-			$window.alert('이미 인증번호요청을 하셨습니다.\n잠시후에 다시 시도하세요.');
-			return;
-		}else{
-			if($scope.mdn=='' || $scope.mdn == null){
-				$window.alert('핸드폰번호를 입력해주세요.');
-				return;
-			}
-			else if(!isInteger($scope.mdn)){
-				$window.alert("숫자만 입력하세요.");
-				return;
-			}
-			else{
-				var data = {"mdn": $scope.mdn};
-				HomeSvc.requestCertification(data)
-					.success(function(response) {
-						if(response.result == 0){
-							if(response.msg == 'success' || response.msg == 'Test Success!'){
-								$window.alert("인증번호가 발송되었습니다.");
-								$scope.request = true;
-								$("#_txt_phone").prop("readonly",true);
-								$("#_txt_certifyKey").prop("disabled",false);
-								$("#_btn_login").removeAttr('style');
-							}else{
-								$window.alert("오류가 발생하였습니다.\n잠시후에 다시 시도하세요.");
-							}
-						} else if(response.result == 100){
-							$window.alert('등록되지 않은 전화번호입니다.\n\n서비스를 이용하시려면\n고객센터 1544-1284로 연락바랍니다.');
-						}
-					})
-					.error(function(response, state) {
-						console.log(response.message);
-						$window.alert("오류가 발생하였습니다.\n잠시후에 다시 시도하세요.");
-					});
-			}
-		}
-	}
-	
-	//로그인
-	$scope.login = function(){
-		if(!$scope.request) {
-			$window.alert("인증번호요청을 진행하셔야 합니다.");
-			return false;
-		}
-		else if($scope.mdn=='' || $scope.mdn == null) {
-			$window.alert('핸드폰번호를 입력해주세요.');
-			return;
-		}
-		else if(!isInteger($scope.mdn)) {
-			$window.alert("숫자만 입력하세요.");
-			return;
-		}
-		else if($scope.certifyKey == '' || $scope.certifyKey == null) {
-			$window.alert("인증번호를 입력하세요.");
-			return;
-		}
-		else if(!isInteger($scope.certifyKey)) {
-			$window.alert("숫자만 입력하세요.");
-			return;
-		}
-		else{
-			$scope.error = null;
-			HomeSvc.login({mdn:$scope.mdn, certifyKey:$scope.certifyKey})
-				.success(function(response){
-					if(response.result == 0) {
-						$scope.mdn = null;
-						$scope.certifyKey = null;
-	
-						$scope.token = response.data.token;
-						$scope.home_id = response.data.home_id;
-						$scope.member_id = response.data.member_id;
-						$scope.mdn = response.data.mdn;
-	
-						$rootScope.auth_token = $scope.token;
-						$rootScope.home_id = $scope.home_id;
-						$rootScope.member_id = $scope.member_id;
-						$rootScope.mdn = $scope.mdn;
-	
-						var auth_info = {auth_token : $rootScope.auth_token, home_id:$rootScope.home_id, member_id:$rootScope.member_id, name:$rootScope.name, mdn:$rootScope.mdn};
-	
-						$cookies.putObject("auth_info", auth_info,{'path': '/'});
-	
-						$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-						
-						$window.location.href = '/';
-					} else {
-						$window.alert(response.msg);
-					}
-				})
-				.error(function(response, state){
-					if (state >= 400) {
-						$rootScope.auth_token = null;
-						$cookies.remove("auth_info");
-					} else {
-						$window.alert("error : " + response.message);
-					}
-				});
-		}
-	};
-	
-	$scope.guest = function(){
-		$window.alert('준비중입니다.');
-	}
-
-	// 페이징 공통변수
-	$scope.pageSize = 10;
-	
-	//공지사항 관련 변수
-	$scope.notiList = [];
-	$scope.currentNotiPage = 1;
-	$scope.totalNoti = 0;
-	$scope.pageNumNotiList = [];
-	$scope.pageNotiFirst = 1;
-	$scope.pageNotiNext = 1;
-	
-	$scope.getNotiList = function() {
-		HomeSvc.getNotiList({start_index:($scope.currentNotiPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
-			.success(function(response) {
-				$scope.notiList = response.data;
-				$scope.totalNoti = response.total;
-				$scope.setNotiPaginationInfo();
-			})
-			.error(function(response, state) {
-				if (state >= 400) {
-					$rootScope.auth_token = null;
-					$cookies.remove("auth_info");
-				} else {
-					$window.alert("error : " + response.message);
-				}
-			});
-	}
-	
-	$scope.setNotiPaginationInfo = function(){
-		var temp = setPaginationInfo($scope.currentNotiPage, $scope.pageSize, $scope.totalNoti);
-		$scope.pageNotiFirst = temp[0];
-		temp.splice(0, 1);
-		$scope.pageNotiNext = temp.pop();
-		$scope.pageNumNotiList = temp;
-	}
-	
-	$scope.notiPageChange = function(num) {
-		console.log(num);
-		$scope.currentNotiPage = num;
-		$scope.getNotiList();
-	};
-	
-	$scope.toggleContent = function(idx){
-		console.log(idx);
-		var list = $('.news_list').find('li');
-		if(list.eq(idx).hasClass('curr')){
-			list.eq(idx).removeClass('curr');
-		}else{
-			list.eq(idx).addClass('curr');
-		}
-	}
-	
-	//언론자료 관련 변수
+app.controller('PressCtrl', ['$scope', '$sce', 'PressSvc', 'CommonSvc', function ($scope, $sce, PressSvc, CommonSvc) {
 	$scope.pressList = [];		//목록
 	$scope.press = {
 		title:null,
@@ -238,17 +191,18 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 		created:null,
 		attach:[]
 	};
-	$scope.currenPressPage = 1;
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
 	$scope.totalPress = 0;
-	$scope.pageNumPressList = [];
-	$scope.pagePressFirst = 1;
-	$scope.pagePressNext = 1;
+	$scope.pageNumList = [];
+	$scope.pageFirst = 1;
+	$scope.pageNext = 1;
 	$scope.flag = null;
 	$scope.press_id = null;
 	
 	//언론자료 목록
 	$scope.getPressList = function() {
-		HomeSvc.getPressList({start_index:($scope.currenPressPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
+		PressSvc.getPressList({start_index:($scope.currentPage - 1) * $scope.pageSize, page_size:$scope.pageSize})
 			.success(function(response) {
 				$scope.pressList = response.data;
 				$scope.totalPress = response.total;
@@ -256,8 +210,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 			})
 			.error(function(response, state) {
 				if (state >= 400) {
-					$rootScope.auth_token = null;
-					$cookies.remove("auth_info");
+					$cookies.remove("member_info",{'path': '/'});
 				} else {
 					$window.alert("error : " + response.message);
 				}
@@ -267,12 +220,12 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 	//언론자료 상세
 	$scope.viewPress = function(press_id){
 		console.log('press_id => '+press_id);
-		HomeSvc.viewPress({press_id:press_id})
+		PressSvc.viewPress({press_id:press_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.press.title = response.data.title;
 					$scope.press.content = response.data.content;
-					$scope.press.created = $scope.yyyyMMdd(response.data.created);
+					$scope.press.created = CommonSvc.yyyyMMdd(response.data.created);
 					$scope.press.attach = response.data.list;
 				}else{
 					$window.alert('해당 게시물이 존재하지 않습니다.');
@@ -281,8 +234,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 			})
 			.error(function(response, state){
 				if (state >= 400) {
-					$rootScope.auth_token = null;
-					$cookies.remove("auth_info");
+					$cookies.remove("member_info",{'path': '/'});
 				} else {
 					$window.alert("error : " + response.message);
 				}
@@ -291,33 +243,57 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 	
 	//언론자료 페이징설정
 	$scope.setPressPaginationInfo = function(){
-		var temp = setPaginationInfo($scope.currenPressPage, $scope.pageSize, $scope.totalPress);
-		$scope.pagePressFirst = temp[0];
+		var temp = CommonSvc.setPaginationInfo($scope.currentPage, $scope.pageSize, $scope.totalPress);
+		$scope.pageFirst = temp[0];
 		temp.splice(0, 1);
-		$scope.pagePressNext = temp.pop();
-		$scope.pageNumPressList = temp;
+		$scope.pageNext = temp.pop();
+		$scope.pageNumList = temp;
 	}
 	
 	//언론자료 페이지이동
-	$scope.pressPageChange = function(num) {
+	$scope.pageChange = function(num) {
 		console.log(num);
-		$scope.currenPressPage = num;
+		$scope.currentPage = num;
 		$scope.getPressList();
 	};
 	
-	//문의하기(로그인 체크)
+	$scope.toggleContent = function(idx){
+		CommonSvc.toggleContent(idx);
+	}
+	
+	$scope.yyyyMMdd = function(date){
+		return CommonSvc.yyyyMMdd(date);
+	}
+	
+	$scope.getPressList();
+}]);
+
+app.service('RequestSvc', function($http) {
+	this.getMemberInfo = function(data){
+		return $http.post('home/api/getMemberInfo', data);
+	};
+	this.requestQnA = function(data) {
+		return $http.post('home/api/requestQnA', data);
+	};
+});
+app.controller('RequestCtrl', ['$scope', '$rootScope', '$window', 'RequestSvc', function ($scope, $rootScope, $window, RequestSvc) {
+	$scope.home_id = $rootScope.home_id;
+	$scope.member_id = $rootScope.member_id;
+	$scope.name = $rootScope.name;
+	$scope.mdn = $rootScope.mdn;
+	$scope.email = $rootScope.email;
+	
 	$scope.moveLogin = function(){
 		if(confirm("로그인 후에 이용가능합니다.\n\n로그인 페이지로 이동하시겠습니까?")){
-			$window.location.href = '/home/login.html';
+			$window.location.href = '/SmartCare/login.html';
 			return true;
 		}else{
 			return false;
 		}
-	}
+	};
 	
 	$scope.getMemberInfo = function(){
-		console.log('MDN: '+$scope.mdn);
-		HomeSvc.getMemberInfo({mdn:$scope.mdn})
+		RequestSvc.getMemberInfo({member_id:$scope.member_id})
 			.success(function(response){
 				$scope.member_id = response.data.member_id;
 				$scope.name = response.data.name;
@@ -328,7 +304,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 			.error(function(response){
 				$window.alert(response.message);
 			});
-	}
+	};
 	
 	//문의사항 등록
 	$scope.requestQnA = function() {
@@ -364,7 +340,7 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 		}
 		
 		var data = {member_id:$scope.member_id, title:$scope.title, content:$scope.content, board_type:$scope.board_type};
-		HomeSvc.requestQnA(data)
+		RequestSvc.requestQnA(data)
 			.success(function(response) {
 				if(response.result == 0){
 					$window.alert('문의사항이 등록되었습니다.');
@@ -374,85 +350,11 @@ app.controller('HomeCtrl', ['$scope', '$http', '$rootScope', '$cookies', '$windo
 				}
 			})
 			.error(function(data, status) {
-			if (status >= 400) {
-				$rootScope.auth_token = null;
-				$cookies.remove("auth_info");
-			} else {
-				$window.alert("error : " + data.message);
-			}
-		});
-	}
-	
-	//로그아웃
-	$scope.logout = function() {
-		console.log('----------------- 로그아웃 --------------------');
-		$rootScope.auth_token = null;
-		$rootScope.member_id = null
-		$rootScope.name = null
-		$rootScope.mdn = null
-		$rootScope.email = null
-		$rootScope.certifyKey = null
-		$http.defaults.headers.post['X-Auth'] = "";
-		$cookies.remove("auth_info");
-		
-		$window.location.href = '/';
-	}
-	
-	//로그인상태체크
-	$scope.loggedIn = function() {
-		if ($cookies.get("auth_info") != null && $cookies.get("auth_info") != undefined) {
-			var auth_info = $cookies.getObject("auth_info");
-
-			$rootScope.auth_token = auth_info.auth_token;
-			$rootScope.home_id = auth_info.home_id;
-			$rootScope.member_id = auth_info.member_id;
-			$rootScope.mdn = auth_info.mdn;
-			
-			$scope.home_id = auth_info.home_id;
-			$scope.member_id = auth_info.member_id;
-			$scope.name = auth_info.name;
-			$scope.mdn = auth_info.mdn;
-			
-
-			$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-		};
-		console.log('로그인 체크 => '+($rootScope.auth_token !== null));
-		return $rootScope.auth_token !== null
-	}
-	
-	$scope.stringToHtml = function(str){
-		return $sce.trustAsHtml(str);
-	}
-	
-	$scope.yyyyMMdd = function(date){
-		if(date == null || date ==''){
-			return '';
-		}
-		var tmp = date.substring(0,10);
-		var d = tmp.split("-");
-		return d[0]+"."+d[1]+"."+d[2];
-	}
-	
-	$scope.getPath = function(){
-		console.log($location.path());
-		return $location.path().replace("/SmartCare/","").replace(".html","");
-	}
-	
-	if ($scope.getPath() == 'notice') {
-		$scope.getNotiList();
-	} else if ($scope.getPath() == 'press') {
-		if(typeof $location.search().view != 'undefined'){
-			$scope.flag = 'view';
-			$scope.viewPress($location.search().view);
-		}else{
-			$scope.getPressList();
-		}
-	} else if($scope.getPath() == 'inquiry') {
-		if($scope.loggedIn()){
-			$scope.getMemberInfo();
-		}else{
-			$window.alert('로그인 후에 이용가능합니다');
-			$window.location.href = '/SmartCare/login.html';
-		}
-	}
+				if (status >= 400) {
+					$cookies.remove("member_info",{'path': '/'});
+				} else {
+					$window.alert("error : " + data.message);
+				}
+			});
+	};
 }]);

@@ -1,0 +1,54 @@
+<div class="load qna_list" ng-show="getMode()=='list'">
+	<header class="header">
+		<h1>Q&amp;A</h1>
+		<a href="javascript:;" ng-click="movePrevUrl()" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+	</header>
+	<article class="qna_list_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="height:473px; width:330px;">
+			<ul>
+				<li ng-repeat="row in qna_list">
+					<a href="javascript:;" ng-click="viewQna($index)">
+						<p class="subject">{{row.title}}</p>
+						<span class="stat complete" ng-if="row.answer!='' && row.answer != null">답변완료</span>
+						<span class="stat wait" ng-if="row.answer=='' || row.answer==null">답변대기</span>
+					</a>
+					<div class="hidden_cont">
+						<div class="question">
+							<p class="cont">{{row.content}}<p>
+							<span class="date">{{yyyyMMdd(row.created)}}</span>
+						</div>
+						<div class="answer" ng-if="row.answer">
+							<strong class="tit">답변보기</strong>
+							<p class="cont">{{row.answer}}<p>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<a href="#!/qna/write.html" class="btn_common_blue_line box_round mg_top30">질문하기</a>
+	</article>
+</div>
+
+<div class="load qna_write" ng-show="getMode()=='write'">
+	<header class="header">
+		<h1>Q&amp;A</h1>
+		<a href="javascript:;" ng-click="movePrevUrl()" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+	</header>
+	<article class="qna_write_wrap">
+		<p class="txt_guide">궁금한 점이 있으시면 무엇이든지 물어보세요.<br />
+		바로 답변 드리도록 하겠습니다.</p>
+		<form id="">
+			<fieldset>
+				<legend class="screen_out">Q&A</legend>
+				<div class="in_input">
+					<input type="text" class="ng-scope" id="text-title" ng-model="title" placeholder="제목을 입력하세요." />
+				</div>
+				<div class="in_textarea">
+					<textarea id="text-content" ng-model="content" placeholder="문의 내용을 입력해주세요."></textarea>
+				</div>
+				<button type="submit" class="btn_common_blue_line box_round mg_top30" ng-click="addQna()">문의하기</button>
+			</fieldset>
+		</form>
+
+	</article>
+</div>

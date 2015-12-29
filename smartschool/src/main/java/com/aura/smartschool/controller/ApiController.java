@@ -1,9 +1,11 @@
 package com.aura.smartschool.controller;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.ActivityVO;
 import com.aura.smartschool.domain.AreaVO;
 import com.aura.smartschool.domain.BoardVO;
@@ -28,16 +31,21 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
 import com.aura.smartschool.domain.MagazineVO;
 import com.aura.smartschool.domain.MeasureItem;
 import com.aura.smartschool.domain.MemberVO;
+import com.aura.smartschool.domain.MenuData;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.PressVO;
+import com.aura.smartschool.domain.RankingItem;
+import com.aura.smartschool.domain.RankingListItem;
+import com.aura.smartschool.domain.ScheduleData;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -47,9 +55,10 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
-import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
+import com.aura.smartschool.util.DateUtil;
 import com.aura.smartschool.util.NetworkUtil;
+import com.aura.smartschool.util.SchoolApi;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -62,10 +71,10 @@ public class ApiController {
 	
 	@Autowired
 	private MobileService mobileService;
-    
+	
 	//로그인하기 (모바일 home_id, mdn)
 	@RequestMapping("/api/signInOfMobile")
-    public ResultData<List<MemberVO>> signInOfMobile(@RequestBody MemberVO member) {
+	public ResultData<List<MemberVO>> signInOfMobile(@RequestBody MemberVO member) {
 		logger.debug("/api/signInOfMobile--------------------------------------------------------");
 		
 		//home_id 존재하는지 체크, 
@@ -95,11 +104,11 @@ public class ApiController {
 		} else {
 			return new ResultData<List<MemberVO>>(100, "login failed", null);
 		}
-    }
+	}
 	
 	//로그인하기  (웹 home_id, name)
 	@RequestMapping("/api/signInOfWeb")
-    public ResultData<List<MemberVO>> signInOfWeb(@RequestBody MemberVO member) {
+	public ResultData<List<MemberVO>> signInOfWeb(@RequestBody MemberVO member) {
 		logger.debug("/api/signInOfWeb-----------------------------------------------------------");
 		
 		//home_id 존재하는지 체크, 
@@ -115,12 +124,12 @@ public class ApiController {
 		} else {
 			return new ResultData<List<MemberVO>>(100, "login failed", null);
 		}
-    }
+	}
 	
 	//회원가입 (모바일)
 	@Transactional
 	@RequestMapping("/api/signUp")
-    public Result signUp(@RequestBody MemberVO member) {
+	public Result signUp(@RequestBody MemberVO member) {
 		logger.debug("/api/signUp----------------------------------------------------------------");
 		
 		int result = 0;
@@ -153,11 +162,11 @@ public class ApiController {
 		}
 		
 		return new Result(result, msg);
-    }
+	}
 	
 	//가족 멤버 등록
 	@RequestMapping("/api/addMember")
-    public Result addMember(@RequestBody MemberVO member) {
+	public Result addMember(@RequestBody MemberVO member) {
 		logger.debug("/api/addMember-------------------------------------------------------------");
 		
 		try {
@@ -178,7 +187,7 @@ public class ApiController {
 	
 	//가족 멤버 수정
 	@RequestMapping("/api/updateMember")
-    public Result updateMember(@RequestBody MemberVO member) {
+	public Result updateMember(@RequestBody MemberVO member) {
 		logger.debug("/api/updateMember----------------------------------------------------------");
 		
 		if(mobileService.checkMemberExistInHome(member) > 1) {
@@ -195,7 +204,7 @@ public class ApiController {
 	
 	//가족 멤버 삭제
 	@RequestMapping("/api/removeMember")
-    public Result removeMember(@RequestBody MemberVO member) {
+	public Result removeMember(@RequestBody MemberVO member) {
 		logger.debug("/api/removeMember----------------------------------------------------------");
 		
 		long resultCount = mobileService.removeMember(member);
@@ -208,7 +217,7 @@ public class ApiController {
 	
 	//가족 멤버 리스트 가져오기
 	@RequestMapping("/api/getMemberList")
-    public Result getMemberList(@RequestBody HomeVO home) {
+	public Result getMemberList(@RequestBody HomeVO home) {
 		logger.debug("/api/getMemberList---------------------------------------------------------");
 		
 		List<MemberVO> memberList = mobileService.getMemberList(home);
@@ -222,7 +231,7 @@ public class ApiController {
 	
 	//홈아이디 변경하기
 	@RequestMapping("/api/modifyHome")
-    public Result modifyHome(@RequestBody SearchVO search) {
+	public Result modifyHome(@RequestBody SearchVO search) {
 		logger.debug("/api/modifyHome------------------------------------------------------");
 		
 		HomeVO home = new HomeVO();
@@ -244,7 +253,7 @@ public class ApiController {
 	
 	//전화번호로 홈아이디 찾기
 	@RequestMapping("/api/getHomeByNumber")
-    public Result getHomeByNumber(@RequestBody MemberVO member) {
+	public Result getHomeByNumber(@RequestBody MemberVO member) {
 		logger.debug("/api/getHomeByNumber-------------------------------------------------------");
 		
 		HomeVO home = mobileService.getHomeListByNumber(member);
@@ -257,7 +266,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/getPayList")
-    public Result getPayList(@RequestBody MemberVO member) {
+	public Result getPayList(@RequestBody MemberVO member) {
 		logger.debug("/api/getPayList---------------------------------------------------------");
 		
 		List<PayVO> payList = mobileService.getPayList(member);
@@ -267,7 +276,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/addPay")
-    public Result addPay(@RequestBody PayVO pay) {
+	public Result addPay(@RequestBody PayVO pay) {
 		logger.debug("/api/addPay---------------------------------------------------------");
 		
 		long result = mobileService.addPay(pay);
@@ -276,7 +285,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/modifyPay")
-    public Result modifyPay(@RequestBody PayVO pay) {
+	public Result modifyPay(@RequestBody PayVO pay) {
 		logger.debug("/api/modifyPay---------------------------------------------------------");
 		
 		long result = mobileService.modifyPay(pay);
@@ -285,7 +294,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/removePay")
-    public Result removePay(@RequestBody PayVO pay) {
+	public Result removePay(@RequestBody PayVO pay) {
 		logger.debug("/api/removePay---------------------------------------------------------");
 		
 		long result = mobileService.removePay(pay);
@@ -295,7 +304,7 @@ public class ApiController {
 	
 	//자녀 위치 등록
 	@RequestMapping("/api/addLocation")
-    public Result addLocation(@RequestBody LocationVO location) {
+	public Result addLocation(@RequestBody LocationVO location) {
 		logger.debug("/api/addLocation-----------------------------------------------------------");
 		
 		int result = 0;
@@ -311,7 +320,7 @@ public class ApiController {
 	
 	//오늘날짜의 위치 데이터 가져오기
 	@RequestMapping("/api/getLocationList")
-    public Result getLocationList(@RequestBody MemberVO member) {
+	public Result getLocationList(@RequestBody MemberVO member) {
 		logger.debug("/api/getLocationList-------------------------------------------------------");
 		
 		List<LocationVO> locationList = mobileService.selectLocationList(member);
@@ -379,7 +388,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/getAreaList")
-    public Result getAreaList() {
+	public Result getAreaList() {
 		logger.debug("/api/getAreaList-----------------------------------------------------------");
 		
 		List<AreaVO> areaList = mobileService.getAreaList();
@@ -404,6 +413,7 @@ public class ApiController {
 			return new ResultData<BodyMeasureSummary>(100, "data does not exist", summary);
 		}
 	}
+	
 	
 	//학생 신체정보 가져오기
 	@RequestMapping("/api/getHeight")
@@ -485,7 +495,7 @@ public class ApiController {
 	//학교 알리미 (공지사항, 가정통신문)
 	//즐겨찾기 등록
 	@RequestMapping("/api/addNotiBookmark")
-    public Result addNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
+	public Result addNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
 		logger.debug("/api/addNotiBookmark-------------------------------------------------------------");
 		
 		try {
@@ -501,7 +511,7 @@ public class ApiController {
 	}
 	//즐겨찾기 삭제
 	@RequestMapping("/api/removeNotiBookmark")
-    public Result removeNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
+	public Result removeNotiBookmark(@RequestBody SchoolNotiVO inNoti) {
 		logger.debug("/api/removeNotiBookmark-------------------------------------------------------------");
 		
 		try {
@@ -517,7 +527,7 @@ public class ApiController {
 	}
 	//공지사항, 가정통신문 가져오기 (모바일, 자기 학교, 카테고리에 해당하는 목록만 가져오기)
 	@RequestMapping("/api/getSchoolNotiListByMember")
-    public ResultData<List<SchoolNotiVO>> getSchoolNotiListByMember(@RequestBody SchoolNotiVO inNoti) {
+	public ResultData<List<SchoolNotiVO>> getSchoolNotiListByMember(@RequestBody SchoolNotiVO inNoti) {
 		logger.debug("/api/getSchoolNotiListByMember--------------------------------------------------");
 		
 		List<SchoolNotiVO> notiList = mobileService.getSchoolNotiListByMember(inNoti);
@@ -533,7 +543,7 @@ public class ApiController {
 	
 	//실시간 상담====================================================================================
 	@RequestMapping("/api/getConsultList")
-    public ResultData<List<ConsultVO>> getConsultList(@RequestBody SessionVO inSession) {
+	public ResultData<List<ConsultVO>> getConsultList(@RequestBody SessionVO inSession) {
 		logger.debug("/api/getConsultList--------------------------------------------------");
 		SessionVO session = mobileService.selectSession(inSession);
 		
@@ -547,7 +557,7 @@ public class ApiController {
 	}
 	//상담 평가하고 종료하기
 	@RequestMapping("/api/rateConsult")
-    public Result rateConsult(@RequestBody SessionVO session) {
+	public Result rateConsult(@RequestBody SessionVO session) {
 		logger.debug("/api/rateConsult----------------------------------------------------------");
 		
 		long resultCount = mobileService.updateSession(session);
@@ -559,7 +569,7 @@ public class ApiController {
 	}
 	//상담 기록 가져오기(모바일, 학부모)
 	@RequestMapping("/api/getConsultHistory")
-    public Result getConsultHistory(@RequestBody SessionVO session) {
+	public Result getConsultHistory(@RequestBody SessionVO session) {
 		logger.debug("/api/getConsultHistory---------------------------------------------------------");
 		
 		ConsultHistoryVO history = mobileService.getConsultHistory(session);
@@ -569,7 +579,7 @@ public class ApiController {
 	}
 	//상담 입력하기 (add session and consult)
 	@RequestMapping("/api/addConsult")
-    public Result addConsult(@RequestBody SessionVO inSession) {
+	public Result addConsult(@RequestBody SessionVO inSession) {
 		logger.debug("/api/addConsult----------------------------------------------------");
 		SessionVO outSession = mobileService.selectSession(inSession);
 		
@@ -610,7 +620,7 @@ public class ApiController {
 	
 	//앱 공지사항 가져오기=============================================================================
 	@RequestMapping("/api/getNotiList")
-    public ResultData<List<NotiVO>> getNotiList() {
+	public ResultData<List<NotiVO>> getNotiList() {
 		logger.debug("/api/getNotiList--------------------------------------------------");
 		List<NotiVO> notiList = mobileService.getNotiList(new SearchVO());
 		
@@ -625,7 +635,7 @@ public class ApiController {
 	
 	//학교 게시판(FaQ)==========================================================================
 	@RequestMapping("/api/getBoardList")
-    public ResultData<List<BoardVO>> getBoardList(@RequestBody SearchVO search) {
+	public ResultData<List<BoardVO>> getBoardList(@RequestBody SearchVO search) {
 		logger.debug("/api/getBoardList--------------------------------------------------");
 		List<BoardVO> boardList = mobileService.getBoardList(search);
 		
@@ -637,7 +647,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/addBoard")
-    public Result addBoard(@RequestBody BoardVO inBoard) {
+	public Result addBoard(@RequestBody BoardVO inBoard) {
 		logger.debug("/api/addBoard-------------------------------------------------------------");
 		
 		try {
@@ -653,7 +663,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/modifyBoard")
-    public Result modifyBoard(@RequestBody BoardVO inBoard) {
+	public Result modifyBoard(@RequestBody BoardVO inBoard) {
 		logger.debug("/api/modifyBoard----------------------------------------------------------");
 		
 		long resultCount = mobileService.modifyBoard(inBoard);
@@ -685,7 +695,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/removeBoard")
-    public Result removeBoard(@RequestBody BoardVO inBoard) {
+	public Result removeBoard(@RequestBody BoardVO inBoard) {
 		logger.debug("/api/removeBoard----------------------------------------------------------");
 		
 		long resultCount = mobileService.removeBoard(inBoard);
@@ -698,7 +708,7 @@ public class ApiController {
 	
 	//활동량=====================================================================================
 	@RequestMapping("/api/getActivityList")
-    public ResultData<List<ActivityVO>> getActivityList(@RequestBody ActivityVO inActivity) {
+	public ResultData<List<ActivityVO>> getActivityList(@RequestBody ActivityVO inActivity) {
 		logger.debug("/api/getActivityList--------------------------------------------------");
 		List<ActivityVO> activityList = mobileService.getActivityList(inActivity);
 		
@@ -707,7 +717,7 @@ public class ApiController {
 	
 	//활동량을 update or insert 한다.
 	@RequestMapping("/api/addActivity")
-    public Result saveActivity(@RequestBody ActivityVO inActivity) {
+	public Result saveActivity(@RequestBody ActivityVO inActivity) {
 		logger.debug("/api/addActivity-------------------------------------------------------------");
 		
 		ActivityVO activity = mobileService.getActivity(inActivity);
@@ -729,7 +739,7 @@ public class ApiController {
 	
 	//비디오리스트 가져오기: 키, 체중, BMI================================================================
 	@RequestMapping("/api/getVideoListByMasterGradeId")
-    public ResultData<List<VideoVO>> getVideoListByMasterGradeId(@RequestBody VideoTypeVO type) {
+	public ResultData<List<VideoVO>> getVideoListByMasterGradeId(@RequestBody VideoTypeVO type) {
 		logger.debug("/api/getVideoListByMasterGradeId--------------------------------------------------");
 		List<VideoVO> videoList = mobileService.getVideoListByMasterGradeId(type);
 		
@@ -737,7 +747,7 @@ public class ApiController {
 	}
 	//비디오리스트 가져오기: PT 화면
 	@RequestMapping("/api/getVideoListByInfoType")
-    public ResultData<List<VideoVO>> getVideoListByInfoType(@RequestBody VideoTypeVO type) {
+	public ResultData<List<VideoVO>> getVideoListByInfoType(@RequestBody VideoTypeVO type) {
 		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
 		List<VideoVO> videoList = mobileService.getVideoListByInfoType(type);
 		
@@ -746,7 +756,7 @@ public class ApiController {
 	
 	//비디오 최초 접속 시간 가져오기
 	@RequestMapping("/api/getVideoTimeOfMember")
-    public ResultData<VideoTimeVO> getVideoTimeOfMember(@RequestBody VideoTimeVO inVideoTime) {
+	public ResultData<VideoTimeVO> getVideoTimeOfMember(@RequestBody VideoTimeVO inVideoTime) {
 		logger.debug("/api/getVideoTimeOfMember--------------------------------------------------");
 		VideoTimeVO videoTime = mobileService.getVideoTimeOfMember(inVideoTime);
 		
@@ -759,7 +769,7 @@ public class ApiController {
 	}
 	
 	@RequestMapping("/api/getOsInfo")
-    public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {
+	public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {
 		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
 		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
 		
@@ -768,7 +778,7 @@ public class ApiController {
 	
 	//급식 등록
 	@RequestMapping("/api/addDining")
-    	public Result addDining(HttpServletRequest request, @RequestBody DiningVO dining) {
+		public Result addDining(HttpServletRequest request, @RequestBody DiningVO dining) {
 		logger.debug("/api/addDining-------------------------------------------------------------");
 		
 		String path = request.getServletContext().getRealPath("/images/dining/");
@@ -778,29 +788,29 @@ public class ApiController {
 		//convert base64 string to byte array
 		byte[] decoded = Base64.decodeBase64(dining.getImage());
 		//convert byte array to bitmap and save to file
-        
-        File file = new File(filename);
-        
-        try {
-		    FileOutputStream fileOuputStream = new FileOutputStream(file); 
-		    fileOuputStream.write(decoded);
-		    fileOuputStream.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
 		
-        //db 저장, 기존에 저장된 값이 있으며 수정이므로 파일만 저장하고 db는 안한다.
-        DiningVO diningVO = mobileService.getDining(dining);
-        if(diningVO == null) {
-        	mobileService.addDining(dining);
-        }
+		File file = new File(filename);
+		
+		try {
+			FileOutputStream fileOuputStream = new FileOutputStream(file); 
+			fileOuputStream.write(decoded);
+			fileOuputStream.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		//db 저장, 기존에 저장된 값이 있으며 수정이므로 파일만 저장하고 db는 안한다.
+		DiningVO diningVO = mobileService.getDining(dining);
+		if(diningVO == null) {
+			mobileService.addDining(dining);
+		}
 		
 		return new Result(0, "success");
 	}
 	
 	//급식 목록 가져오기 : 해당월 모두 가져오기
 	@RequestMapping("/api/getDiningList")
-    public Result getDiningList(@RequestBody DiningVO inDining) {
+	public Result getDiningList(@RequestBody DiningVO inDining) {
 		logger.debug("/api/getDiningList---------------------------------------------------------");
 		
 		List<DiningVO> diningList = mobileService.getDiningList(inDining);
@@ -843,8 +853,11 @@ public class ApiController {
 	@RequestMapping("/api/getMagazineList")
 	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search){
 		List<MagazineVO> list = mobileService.getMagazineList(search);
-		
-		return new ResultData<List<MagazineVO>>(0, "success", list);
+		if(list != null && list.size() > 0){
+			return new ResultData<List<MagazineVO>>(0, "success", list);
+		}else{
+			return new ResultData<List<MagazineVO>>(100, "data does not exist", null);
+		}
 	}
 	
 	//언론자료 목록 조회
@@ -853,5 +866,148 @@ public class ApiController {
 		List<PressVO> list = mobileService.getPressList(search);
 		
 		return new ResultData<List<PressVO>>(0, "success", list);
+	}
+	
+	//학교급식목록 가져오기
+	@RequestMapping("/api/getSchoolMenuList")
+	public ResultData<List<Map<String,Object>>> getSchoolMenuList(@RequestBody SearchVO in){
+		SchoolVO school = mobileService.getSchoolById(in.getSchool_id());
+		int yyyy = in.getSearch_year();
+		int MM = in.getSearch_month();
+		
+		if(school.getCode() != null){
+			MenuData[] menuList = SchoolApi.getMonthlyMenu(SchoolApi.getContry(school.getSido()), school.getCode(), SchoolApi.getSchoolType(school.getGubun2()), yyyy, MM);
+			if(menuList !=null && menuList.length>0){
+				List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+				for(int i=0; i<menuList.length; i++) {
+					if(menuList[i]!=null){
+						Map<String,Object> menu = new HashMap<String,Object>();
+						menu.put("date", MM+"월 "+ (i+1)+"일("+DateUtil.getDayOfWeek(yyyy,MM,(i+1))+")");
+						menu.put("breakfast", menuList[i].breakfast);
+						menu.put("lunch", menuList[i].lunch);
+						menu.put("dinner", menuList[i].dinner);
+						result.add(menu);
+					}
+				}
+				return new ResultData<List<Map<String,Object>>>(0,"success", result);
+			}
+		}
+		
+		return new ResultData<List<Map<String,Object>>>(100,"Menu does not exist.", null);
+	}
+	
+	//학교정보알리미(학사일정) 가져오기
+	@RequestMapping("/api/getSchoolScheduleList")
+	public ResultData<List<Map<String,Object>>> getSchoolScheduleList(@RequestBody SearchVO in){
+		SchoolVO school = mobileService.getSchoolById(in.getSchool_id());
+		int yyyy = in.getSearch_year();
+		int MM = in.getSearch_month();
+		
+		if(school.getCode() != null){
+			ScheduleData[] scheduleList = SchoolApi.getMonthlySchedule(SchoolApi.getContry(school.getSido()), school.getCode(), SchoolApi.getSchoolType(school.getGubun2()), yyyy, MM);
+			if(scheduleList !=null && scheduleList.length>0){
+				List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+				for(int i=0,idx=1; i<scheduleList.length; i++,idx++) {
+					if(scheduleList[i]!=null){
+						Map<String,Object> schedule = new HashMap<String,Object>();
+						schedule.put("year", yyyy);
+						schedule.put("month", MM);
+						schedule.put("day", idx);
+						schedule.put("schedule", scheduleList[i].schedule);
+						result.add(schedule);
+						logger.info(scheduleList[i].schedule);
+					}
+				}
+				return new ResultData<List<Map<String,Object>>>(0,"success", result);
+			}
+		}
+		
+		return new ResultData<List<Map<String,Object>>>(100,"Menu does not exist.", null);
+	}
+	
+	//신체측정목록 카운트
+	@RequestMapping("/api/getMeasureHistoryCount")
+	public ResultData<Integer> getMeasureHistoryCount(@RequestBody SearchVO in){
+		if(in.getSearch_year()==0){
+			in.setSearch_year(Integer.parseInt(DateUtil.getFormatTime("yyyy")));
+		}
+		return new ResultData<Integer>(0,"success", mobileService.getMeasureHistoryCount(in));
+	}
+	
+	//신체측정(키)목록
+	@RequestMapping("/api/getHeightHistoryList")
+	public ResultData<GrowthInfo> getHeightHistoryList(@RequestBody SearchVO in){
+		logger.debug("/api/getHeightHistoryList-----------------------------------------------------");
+		if(in.getSearch_year()==0){
+			in.setSearch_year(Integer.parseInt(DateUtil.getFormatTime("yyyy")));
+		}
+		GrowthInfo growth = mobileService.getMeasureHistoryList(in,Constant.Height);
+		if(growth !=null){
+			return new ResultData<GrowthInfo>(0,"success",growth);
+		}else{
+			return new ResultData<GrowthInfo>(100,"data does not exist",null);
+		}
+	}
+	
+	//신체측정(체중)목록
+	@RequestMapping("/api/getWeightHistoryList")
+	public ResultData<GrowthInfo> getWeightHistoryList(@RequestBody SearchVO in){
+		logger.debug("/api/getWeightHistoryList-----------------------------------------------------");
+		if(in.getSearch_year()==0){
+			in.setSearch_year(Integer.parseInt(DateUtil.getFormatTime("yyyy")));
+		}
+		GrowthInfo growth = mobileService.getMeasureHistoryList(in, Constant.Weight);
+		if(growth !=null){
+			return new ResultData<GrowthInfo>(0,"success",growth);
+		}else{
+			return new ResultData<GrowthInfo>(100,"data does not exist",null);
+		}
+	}
+	
+	//랭킹 - 신장
+	@RequestMapping("/api/getRankingHeight")
+	public ResultData<RankingItem> getRankingHeight(@RequestBody MemberVO in){
+		logger.debug("/api/getRankingHeight-----------------------------------------------------");
+		RankingItem rank = mobileService.getRanking(in, Constant.Height);
+		if(rank != null){
+			return new ResultData<RankingItem>(0, "success", rank);
+		}else{
+			return new ResultData<RankingItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹 - 체중 
+	@RequestMapping("/api/getRankingWeight")
+	public ResultData<RankingItem> getRankingWeight(@RequestBody MemberVO in){
+		logger.debug("/api/getRankingWeight-----------------------------------------------------");
+		RankingItem rank = mobileService.getRanking(in, Constant.Weight);
+		if(rank != null){
+			return new ResultData<RankingItem>(0, "success", rank);
+		}else{
+			return new ResultData<RankingItem>(100, "data does not exist",null);
+		}
+	}
+	
+	//랭킹 - BMI 
+	@RequestMapping("/api/getRankingBmi")
+	public ResultData<RankingItem> getRankingBmi(@RequestBody MemberVO in){
+		logger.debug("/api/getRankingBmi-----------------------------------------------------");
+		RankingItem rank = mobileService.getRanking(in, Constant.BMI);
+		if(rank != null){
+			return new ResultData<RankingItem>(0, "success", rank);
+		}else{
+			return new ResultData<RankingItem>(100, "data does not exist",null);
+		}
+	}
+	
+	@RequestMapping("/api/getRankingHeightList")
+	public ResultData<RankingListItem> getRankingHeightList(@RequestBody SearchVO in){
+		logger.debug("/api/getRankingHeightList-----------------------------------------------------");
+		RankingListItem result = mobileService.getRankingList(in, Constant.Height);
+		if(result != null){
+			return new ResultData<RankingListItem>(0, "success", result);
+		}else{
+			return new ResultData<RankingListItem>(100, "data does not exist",null);
+		}
 	}
 }

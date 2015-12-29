@@ -1,7 +1,12 @@
 package com.aura.smartschool.service;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +22,7 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
@@ -27,6 +33,8 @@ import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.PressVO;
+import com.aura.smartschool.domain.RankingItem;
+import com.aura.smartschool.domain.RankingListItem;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -34,6 +42,7 @@ import com.aura.smartschool.domain.SessionVO;
 import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
+import com.aura.smartschool.result.Result;
 
 public interface MobileService {
 	//첨부파일 등록
@@ -186,4 +195,13 @@ public interface MobileService {
 	public List<ChallengeVO> getChallengeTop5List();
 	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException;
 	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
+	public Result signUpWeb(MemberVO member, MultipartFile file) throws Exception;
+	public Map<String,Object> getMemberProfile(int member_id);
+	public Result addMember(MemberVO member, MultipartFile file) throws Exception;
+	public long modMember(MemberVO member, MultipartFile file) throws Exception;
+	
+	public GrowthInfo getMeasureHistoryList(SearchVO in, String section);		// 신체측정목록 가져오기
+	public int getMeasureHistoryCount(SearchVO in);
+	public RankingItem getRanking(MemberVO in, String height);
+	public RankingListItem getRankingList(SearchVO in, String height);
 }

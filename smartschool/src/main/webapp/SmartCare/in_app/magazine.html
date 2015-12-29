@@ -1,0 +1,113 @@
+<div class="load megazine_list" ng-show="magazine_mode=='list'">
+	<header class="header">
+		<h1>건강 매거진</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="megazine_list_wrap">
+		<section class="new">
+			<div class="photo"><img src="/images/aura_in_app/sample/img_megazine_sample.png" alt="" /></div>
+			<div class="info">
+				<strong class="main_title">{{magazine_recently.title}}</strong>
+				<p class="sub_title">{{magazine_recently.subTitle}}</p>
+				<p class="subject">{{magazine_recently.subject}}</p>
+				<p class="cont">{{magazine_recently.content}}</p>
+				<a href="javascript:;" ng-click="magazineView(magazine_recently)" class="btn_detail_view">내용보기</a>
+			</div>
+		</section>
+		
+		<section class="history">
+			<div class="list_top">
+				<strong class="count">전체<span>({{magazine_list.length}})</span></strong>
+				<div class="in_select">
+					<label for="select01">최신순</label>
+					<select id="select01" ng-model="order" ng-change="orderChange()">
+						<option value="desc">최신순</option>
+						<option value="asc">발행순</option>
+					</select>
+				</div>
+			</div>
+			
+			<div ng-scrollbars ng-scrollbars-config="config" style="height:315px; width:334px;">
+				<ul class="list">
+					<li ng-repeat="magazine in magazine_list">
+						<a href="javascript:;" ng-click="magazineView(magazine)">
+							<div class="photo"><img src="/images/aura_in_app/sample/img_megazine_sample.png" alt="" /></div>
+							<div class="info">
+								<p class="subject">{{magazine.subject}}</p>
+								<p class="cont">{{magazine.content}}</p>
+								<span class="date">{{yyyyMMdd(magazine.created)}}</span>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</section>
+	</article>
+</div>
+
+<div class="load megazine_view" ng-show="magazine_mode=='view'">
+	<header class="header">
+		<h1>건강 매거진</h1>
+		<a href="javascript:;" ng-click="magazine_mode='list'" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="megazine_view_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="width:340px; height:554px;">
+			<div class="photo_wrap">
+				<div class="swiper-wrapper">
+					<img ng-if="slide.image" ng-repeat="slide in images" class="slide slide-animation nonDraggableImage" ng-swipe-right="nextSlide()" ng-swipe-left="prevSlide()" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{slide.image}}">
+				</div>
+				<a href="javascript:;" class="arrow prev" ng-click="prevSlide()"></a>
+				<a href="javascript:;" class="arrow next" ng-click="nextSlide()"></a>
+			</div>
+			<div class="cont_box">
+				<p class="title">{{title}}</p>
+				<p class="subject">{{subject}}</p>
+				<p class="cont">{{content}}</p>
+			</div>
+		</div>
+	</article>
+</div>

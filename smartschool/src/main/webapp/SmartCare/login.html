@@ -2,31 +2,44 @@
 <html lang="ko">
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="Expires" content="-1"> 
-		<meta http-equiv="Pragma" content="no-cache"> 
-		<meta http-equiv="Cache-Control" content="No-Cache">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1;text/html; charset=utf-8;">
-		<link rel="shortcut icon" href="/images/aura.ico" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>AURA | Smart Health Protector System</title>
+		<link rel="shortcut icon" href="/images/aura.ico" />
 		<link rel="stylesheet" href="/css/reset.css">
 		<link rel="stylesheet" href="/css/common.css">
 		<link rel="stylesheet" href="/css/jquery_ui.css">
+		<link rel="stylesheet" href="/css/in.app.common.css">
+		
+		<!-- in app js // -->
+		<script src="/js/in_app/jquery-1.10.1.min.js"></script>
+		<script src="/js/in_app/jquery-ui-1.10.3.custom.min.js"></script>
+		<script src="/js/in_app/common.js"></script>
+		<script src="/js/in_app/iscroll.js"></script>
+		<!-- in app js // -->
+		
+		<style>
+		#scroll_wrapper {position:relative; width:340px; height:604px;}
+		.temp_nav {position:fixed; top:0; left:0; width:100%; padding:25px; background:#fff; opacity:0.9;}
+		.temp_nav ul {zoom:1;}
+		.temp_nav ul:after {display:block; content:""; clear:both;}
+		.temp_nav ul li {float:left; margin-right:15px; color:#000; font-size:14px; cursor:pointer;}
+		</style>
+		
 		<!--[if lt IE 9]>
 		<script src="/js/html5shiv.min.js"></script>
 		<script src="/js/respond-1.4.2.min.js"></script>
 		<![endif]-->
 		
-		<base href="/SmartCare" />
+		<base href="/" />
 	</head>
 	
 	<body ng-app="home">
-		<section id="wrapper" ng-controller="HomeCtrl">
+		<section id="wrapper" ng-controller="CommonCtrl">
 			
 			<header id="header_wrap">
 				<h1><a href="/" target="_self"><img src="/images/common/img_header_logo.png" alt="AURA | Smart Health Protector System" /></a></h1>
 				<ul class="gnb">
-					<li ng-show="loggedIn()"><a href="javascript:;" ng-click="logout()"><img src="/images/common/txt_gnb_logout.gif " alt="로그아웃" /></a></li>
-					<li ng-show="!loggedIn()"><a href="/SmartCare/login.html" target="_self"><img src="/images/common/txt_gnb_login_on.gif" alt="로그인" /></a></li>
+					<li><img src="/images/common/txt_gnb_login_on.gif" alt="로그인" /></li>
 					<li><a href="/SmartCare/notice.html" target="_self"><img src="/images/common/txt_gnb_news.gif" alt="공지사항" /></a></li>
 					<li><a href="/SmartCare/press.html" target="_self"><img src="/images/common/txt_gnb_media.gif " alt="언론자료" /></a></li>
 					<li><a href="/SmartCare/introduce.html" target="_self"><img src="/images/common/txt_gnb_customer.gif" alt="고객센터" /></a></li>
@@ -35,38 +48,32 @@
 			
 			<section id="container">
 				<div class="bg"><img src="/images/common/img_main_people.png" alt="" /></div>
-				<div class="img_phone">
-					<div class="login_cont">
-						<div class="login_top">
-							<h2><img src="/images/common/img_login_title.gif" alt="스마트 건강 지킴이 회원가입" /></h2>
-							<p class="txt_guide">헬스케어를 이용하기 위하여 전화번호 인증이<br />필요합니다</p>
+				<div class="img_phone"></div>
+				<div class="page_load_wrap">
+					<div class="load login">
+						<article class="login_wrap">
+							<h1><img src="/images/inApp/img_login_logo.png" alt="스마트 안전건강지킴이" /></h1>
 							<div class="in_input">
-								<input type="text" id="_txt_phone" ng-model="mdn" placeholder="핸드폰번호를 입력해주세요. ('-' 제외)" />
+								<input type="text" id="txt-home-id" ng-model="home_id" placeholder="가족명" />
 							</div>
-							<a href="javascript:;" class="btn_blue" ng-click="requestCertification()">인증번호 요청</a>
 							<div class="in_input">
-								<input type="text" id="_txt_certifyKey" ng-model="certifyKey" placeholder="인증번호를 입력해주세요." disabled="disabled"/>
+								<input type="text" id="txt-member-name" ng-model="name" placeholder="이름" />
 							</div>
-						</div>
-						<div class="login_bottom">
-							<a href="javascript:;" class="btn_gray" id="_btn_login" ng-click="login()" style="cursor:not-allowed">로그인</a>
-							<a href="javascript:;" class="btn_gray" id="_btn_guest" ng-click="guest()">게스트모드</a>
-							<p class="info_use_message">전화번호는 본인 확인 및 부정 이용방지를 위한 용도로만 <br />사용됩니다. </p>
-						</div>
+							<button type="submit" class="btn_common_gray mg_top10" ng-click="login()">로그인</button>
+							<div class="forget_account">
+								<a href="javascript:;" class="btn_forget_account">가족명을 잃어버리셨나요?</a>
+							</div>
+							<p class="join_message">아직 회원이 아니세요?</p>
+							<a href="javascript:;" class="btn_common_blue_line mg_top15">회원 가입하기</a>		
+						</article>
 					</div>
 				</div>
-				<p class="login_txt">
-					<img src="/images/common/txt_login_summary.png" alt="사용자확인 | 스마트건강지킴이 웹은 앱과 동일한 사용자 환경을 제공합니다. 왼쪽 스마트 폰에서 아래 단계를 따라주시면 쉽게 이용하실 수 있습니다." />
-				</p>
-				<div class="login_summary">
-					<ol>
-						<li class="step01">휴대전화번호 입력창에 가입자의 전화번호를 입력 해주세요.</li>
-						<li class="step02">인증 번호 요청 버튼을 누르시면 잠시 후 입력하신 전화번호로 <br />인증번호가 전송됩니다.</li>
-						<li class="step03">전송 받으신 인증번호를 좌측의 입력창에 입력해주세요.</li>
-						<li class="step04">로그인 버튼을 클릭해주세요.</li>
-					</ol>
-					<p class="txt_guest_mode">가입자가 아닌 경우는 게스트모드를 사용해주세요.<br />가상 학생에 대한 시뮬레이션 서비스를 이용하실 수 있습니다.</p>
+				<div class="video_wrap">
+					<iframe width="416" height="233" src="https://www.youtube.com/embed/QIdXkABDGOs" frameborder="0" allowfullscreen></iframe>
 				</div>
+				<p class="slogan">
+					<img src="/images/common/txt_main_slogan.png" alt="스마트안전건강지킴이는 대한민국 아동, 청소년을 위한 통합솔루션으로 미래창조과학부 지원 국가개발 우수과제로 선정된 공신력있는 프로그램입니다." />
+				</p>
 			</section>
 		</section>
 		

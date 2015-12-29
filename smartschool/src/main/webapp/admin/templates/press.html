@@ -36,7 +36,7 @@
 									<button class="btn btn-default btn-xs" ng-click="removePress(press)"><span class="glyphicon glyphicon-remove-circle"></span> 삭 제</button>
 								</td>
 								<td>{{ press.title }}</td>
-								<td>{{ press.created }}</td>
+								<td>{{ press.created | date: 'yyyy-MM-dd' }}</td>
 							</tr>
 							<tr>
 								<td colspan="3" style="text-align:center">

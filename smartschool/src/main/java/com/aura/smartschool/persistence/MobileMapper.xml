@@ -107,7 +107,7 @@
 </select>
 
 <select id="countHome" parameterType="HomeVO" resultType="Integer">
-	SELECT count(*) FROM HOME
+	SELECT count(*) FROM home
 	WHERE home_id = #{home_id}
 </select> 
 
@@ -182,7 +182,7 @@
 
 <insert id="insertMember" parameterType="MemberVO">
 	INSERT INTO 
-		MEMBER(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
+		member(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
 		VALUES(#{home_id}, 
 			HEX(AES_ENCRYPT(#{mdn}, 'aura')),
 			#{gcm_id}, 
@@ -205,7 +205,7 @@
 </insert>
 
 <update id="updateMember" parameterType="MemberVO">
-	UPDATE MEMBER
+	UPDATE member
 	SET is_parent=#{is_parent}
 	<if test="home_id != null">, home_id=#{home_id}</if>
 	<if test="mdn != null">, mdn=HEX(AES_ENCRYPT(#{mdn}, 'aura'))</if>
@@ -235,25 +235,25 @@
 </update>
 
 <update id="deleteMember" parameterType="MemberVO">
-	UPDATE MEMBER
+	UPDATE member
 		SET use_yn = 0
 	WHERE member_id = #{member_id}
 </update>
 
 <update id="updateGcmId" parameterType="MemberVO">
-	UPDATE MEMBER
+	UPDATE member
 		set gcm_id = #{gcm_id}, access_date = now()
 	WHERE home_id = #{home_id} and mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
 </update>
 
 <select id="selectPayList" parameterType="MemberVO" resultType="PayVO">
-	SELECT * FROM PAY_INFO
+	SELECT * FROM pay_info
 	WHERE member_id = #{member_id}
 	ORDER BY pay_date desc
 </select>
 
 <update id="updatePay" parameterType="PayVO">
-	UPDATE PAY_INFO
+	UPDATE pay_info
 	SET pay_date = #{pay_date}
 	WHERE pay_id = #{pay_id}
 </update>
@@ -269,7 +269,7 @@
 
 <insert id="insertLocation" parameterType="LocationVO">
 	INSERT INTO 
-		LOCATION(member_id, lat, lng, address) 
+		location(member_id, lat, lng, address) 
 		values(#{member_id}, 
 			HEX(AES_ENCRYPT(#{lat}, 'aura')),
 			HEX(AES_ENCRYPT(#{lng}, 'aura')), 
@@ -284,7 +284,7 @@
 		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
 		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
 		CREATED_DATE
-	FROM LOCATION
+	FROM location
 	WHERE member_id = #{member_id} and created_date >= curdate()
 	ORDER BY CREATED_DATE desc
 	LIMIT 1;
@@ -305,7 +305,7 @@ group by member_id;
 		CAST(AES_DECRYPT(unhex(lat), 'aura') AS CHAR(20)) as 'lat', 
 		CAST(AES_DECRYPT(unhex(lng), 'aura') AS CHAR(20)) as 'lng',
 		CREATED_DATE
-	FROM LOCATION
+	FROM location
 	WHERE member_id = #{member_id} and
 		 created_date > date_format(curdate( ), '%Y-%m-%d %H:%i:%s' ) 
 	ORDER BY CREATED_DATE asc
@@ -382,21 +382,50 @@ group by member_id;
 </insert>
 
 <insert id="insertArea" parameterType="AreaVO">
-	INSERT INTO AREA_INFO (
+	INSERT INTO area_info (
 		lat, lng, category, title, content, picture)
 		VALUES(#{lat}, #{lng}, #{category}, #{title}, #{content}, #{picture});
 </insert>
 
 <select id="selectAreaList" resultType="AreaVO">
-	SELECT id, lat, lng, category, title, content FROM AREA_INFO;
+	SELECT id, lat, lng, category, title, content FROM area_info;
 </select> 
 
 <select id="selectArea" resultType="AreaVO">
-	SELECT * FROM AREA_INFO
+	SELECT * FROM area_info
 	WHERE id = #{id};
 </select> 
 
 <select id="selectBodySummary" parameterType="MemberVO" resultType="BodyMeasureSummary">
+	select 
+		measure_info.member_id,
+		measure_info.measure_date,
+		truncate(inbody_info.HEIGHT, 1) AS height,
+		truncate(inbody_info.Weight, 1) AS weight,
+		truncate(inbody_info.BMI, 1) AS bmi,
+		inbody_info.Percent_Body_Fat AS fat,
+		truncate(inbody_info.Soft_Lean_Mass, 1) AS muscle,
+		truncate(inbody_info.Skeletal_Muscle_Mass, 1) AS skeletal,
+		truncate(inbody_info.weight_Control, 1) AS weight_Control,
+		truncate(inbody_info.fat_Control, 1) AS fat_Control,
+		truncate(inbody_info.muscle_control, 1) AS muscle_control,
+		truncate(inbody_info.Waist_Hip_Ratio, 3) AS waist,
+		truncate(inbody_info.Fitness_Score, 0) AS growthGrade,
+		smoke_info.ppm, smoke_info.cohd,
+		member.sex, measure_info.school_id, measure_info.school_grade_id
+	FROM 
+		member inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.Inbody_seq
+		left outer join smoke_info on measure_info.smoke_seq = smoke_info.smoke_seq
+	where
+		measure_info.member_id = #{member_id}
+	<if test=" measure_date !=null and measure_date != '' ">
+	and measure_info.measure_date <![CDATA[<=]]> str_to_date(#{measure_date},'%Y-%m-%d')
+	</if>
+	order by measure_info.measure_date desc;
+</select>
+
+<select id="selectBodySummaryByYear" parameterType="SearchVO" resultType="BodyMeasureSummary">
 	select 
 			measure_info.member_id,
 			measure_info.measure_date,
@@ -419,6 +448,8 @@ group by member_id;
 			left outer join smoke_info on measure_info.smoke_seq = smoke_info.smoke_seq
 		where
 			measure_info.member_id = #{member_id}
+		and
+			date_format(measure_info.measure_date, '%Y') = #{search_year}
 	ORDER BY measure_info.measure_date desc;
 </select>
 
@@ -486,7 +517,7 @@ group by member_id;
 					</when>
 				</choose>  
 				) A, (SELECT @ROWNUM:=0) RNUM
-    	 ) T                                                                      
+    	 ) T
 	WHERE T.member_id = #{member_id}; 
 </select>
 
@@ -1225,6 +1256,7 @@ select
 
 <select id="selectMagazineList" parameterType="SearchVO" resultType="MagazineVO">
 	SELECT * FROM magazine
+	ORDER BY created DESC
 	<if test=" page_size !=0 ">
 	Limit #{start_index}, #{page_size}
 	</if>
@@ -1244,6 +1276,7 @@ select
 		year,
 		month,
 		title,
+		subject,
 		content,
 		img_1,
 		img_2,
@@ -1259,6 +1292,7 @@ select
 		#{year},
 		#{month},
 		#{title},
+		#{subject},
 		#{content},
 		#{img_1},
 		#{img_2},
@@ -1278,6 +1312,7 @@ select
 		year = #{year},
 		month = #{month},
 		title = #{title},
+		subject = #{subject},
 		content = #{content},
 		img_1 = #{img_1},
 		img_2 = #{img_2},
@@ -1362,10 +1397,198 @@ select
 		rank = #{rank}
 	WHERE challenge_id = #{challenge_id}
 </update>
-<!--
-	UPDATE challenge SET
-		rank = IF(rank+1=6,null,rank+1)
-	WHERE rank <![CDATA[>=]]> #{rank}
--->
 
+<update id="updateMemberPhoto" parameterType="Map">
+	UPDATE member SET
+		photo = #{photo}
+	WHERE home_id = #{home_id}
+	AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))
+</update>
+
+<select id="selectMemberProfile" parameterType="int" resultType="java.util.Map">
+	SELECT photo FROM member
+	WHERE member_id = #{member_id}
+</select>
+
+<select id="selectChangeGrowth" parameterType="SearchVO" resultType="java.util.Map">
+	select
+	<choose>
+		<when test="section == 'Height'">
+		max(truncate(inbody_info.HEIGHT,1)) - min(truncate(inbody_info.HEIGHT,1)) AS value
+		</when>
+		<when test="section == 'Weight'">
+		max(truncate(inbody_info.Weight,1)) - min(truncate(inbody_info.Weight,1)) AS value
+		</when>
+	</choose>
+	from 
+		member
+		inner join measure_info on member.member_id = measure_info.member_id
+		inner join inbody_info on measure_info.inbody_seq = inbody_info.Inbody_seq
+	where
+		measure_info.member_id = #{member_id}
+	and
+		date_format(measure_info.measure_date, '%Y') = #{search_year}
+</select>
+
+<select id="selectGrowthAverageOfLocal" parameterType="SearchVO" resultType="java.util.Map">
+	select
+	<choose>
+		<when test="section == 'Height'">
+		truncate(avg(height),1) value
+		</when>
+		<when test="section == 'Weight'">
+		truncate(avg(weight),1) value
+		</when>
+	</choose>
+	from(
+		select 
+			truncate(max(inbody_info.Height) - min(inbody_info.Height), 1) AS height,
+			truncate(max(inbody_info.Weight) - min(inbody_info.Weight), 1) AS weight
+		FROM
+			member inner join school on member.school_id = school.school_id
+			inner join measure_info on member.member_id = measure_info.member_id
+			inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+		WHERE
+			member.sex = #{sex}
+			and school.sido = (select sido from school where school_id = #{school_id})                   
+			and date_format(measure_info.measure_date, '%Y') = #{search_year}
+		group by member.member_id
+	) t
+</select>
+
+<select id="selectGrowthAverageOfNation" parameterType="SearchVO" resultType="java.util.Map">
+	select
+	<choose>
+		<when test="section == 'Height'">
+		truncate(avg(height),1) value
+		</when>
+		<when test="section == 'Weight'">
+		truncate(avg(weight),1) value
+		</when>
+	</choose>
+	from(
+		select 
+			truncate(max(inbody_info.Height) - min(inbody_info.Height), 1) AS height,
+			truncate(max(inbody_info.Weight) - min(inbody_info.Weight), 1) AS weight
+		FROM
+			member inner join school on member.school_id = school.school_id
+			inner join measure_info on member.member_id = measure_info.member_id
+			inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq
+		WHERE
+			member.sex = #{sex}
+			and date_format(measure_info.measure_date, '%Y') = #{search_year}
+		group by member.member_id
+	) t
+</select>
+
+<select id="selectRankingByGubun" parameterType="java.util.Map" resultType="BodyMeasureGrade">
+	select  T.ROWNUM AS rank, @ROWNUM AS total           
+	from                                                                                                              
+		(select 
+			(@ROWNUM:=@ROWNUM + 1) AS ROWNUM, A.*                                                             
+		from 
+			(select member.member_id
+				from member inner join school on member.school_id = school.school_id
+					inner join measure_info on member.member_id = measure_info.member_id
+					inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq   
+				where
+					measure_info.school_grade_id = #{school_grade_id}
+				and member.sex= #{sex} 
+				and date_format(measure_info.measure_date, '%Y%m') = DATE_FORMAT(#{measureDate}, '%Y%m')     
+				<choose>
+					<when test="gubun == 'school'">
+				and school.school_id = #{school_id} 
+					</when>
+					<when test="gubun == 'local'">
+				and school.sido = (select sido from school where school_id  = #{school_id}) 
+					</when>
+				</choose>                                                                                                                                                                 
+				<choose>                                                                                                  
+					<when test="section == 'Height'">        
+				order by inbody_info.height DESC
+					</when>
+					<when test="section == 'Weight'">  
+				order by inbody_info.weight DESC
+					</when>
+					<when test="section == 'BMI'">  
+				order by inbody_info.BMI DESC
+					</when>
+					<when test="section == 'Muscle'">  
+				order by inbody_info.Soft_Lean_Mass DESC
+					</when>
+					<when test="section == 'Fat'">  
+				order by inbody_info.Percent_Body_Fat DESC
+					</when>
+				</choose>  
+				) A, (SELECT @ROWNUM:=0) RNUM
+	) T
+	where T.member_id = #{member_id}; 
+</select>
+
+<select id="selectRankingList" parameterType="java.util.Map" resultType="BodyMeasureGrade">
+	select
+		T.ROWNUM AS rank, @ROWNUM AS total,
+		T.member_id, CAST(AES_DECRYPT(unhex(T.name), 'aura') AS CHAR(100)) as name,
+		T.schoolGrade, T.schoolGradeId, T.school_id, T.schoolName, T.measureDate, T.value
+	from                                                                                                              
+	(
+		select 
+			(@ROWNUM:=@ROWNUM + 1) AS ROWNUM, A.*                                                             
+		from 
+			(select
+				member.member_id, member.name, member.school_grade as schoolGrade, measure_info.school_grade_id as schoolGradeId,
+				measure_info.school_id, school.school_name as schoolName, measure_info.measure_date as measureDate,
+				<choose>                                                                                                  
+					<when test="section == 'Height'">        
+						truncate(inbody_info.height, 1) as value
+					</when>
+					<when test="section == 'Weight'">  
+						truncate(inbody_info.weight, 1) as value
+					</when>
+					<when test="section == 'BMI'"> 
+						truncate(inbody_info.BMI, 1) as value
+					</when>
+					<when test="section == 'Muscle'">
+						truncate(inbody_info.Soft_Lean_Mass, 1) as value
+					</when>
+					<when test="section == 'Fat'">
+						truncate(inbody_info.Percent_Body_Fat, 1) as value
+					</when>
+				</choose>  
+			from member inner join school on member.school_id = school.school_id
+				inner join measure_info on member.member_id = measure_info.member_id
+				inner join inbody_info on measure_info.inbody_seq = inbody_info.inbody_seq   
+			where
+				member.sex= #{sex}
+			and measure_info.school_grade_id = #{school_grade_id}
+			and date_format(measure_info.measure_date, '%Y%m') = date_format(#{measureDate}, '%Y%m')   
+			<choose>
+				<when test="gubun == 'school'">
+				and school.school_id = #{school_id}
+				</when>
+				<when test="gubun == 'local'">
+				and school.sido = (select sido from school where school_id = #{school_id})
+				</when>
+			</choose>                                                                                                                                                                 
+			<choose>                                                                                                  
+				<when test="section == 'Height'">        
+			order by inbody_info.height DESC
+				</when>
+				<when test="section == 'Weight'">  
+			order by inbody_info.weight DESC
+				</when>
+				<when test="section == 'BMI'">  
+			order by inbody_info.BMI DESC
+				</when>
+				<when test="section == 'Muscle'">  
+			order by inbody_info.Soft_Lean_Mass DESC
+				</when>
+				<when test="section == 'Fat'">  
+			order by inbody_info.Percent_Body_Fat DESC
+				</when>
+			</choose>   
+			) A, (SELECT @ROWNUM:=0) RNUM
+	 ) T
+	limit 10
+</select>
 </mapper>

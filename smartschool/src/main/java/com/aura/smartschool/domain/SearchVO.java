@@ -16,6 +16,10 @@ public class SearchVO {
 	private int board_type;
 	private int use_yn;
 	
+	private int school_id;
+	private int search_year;
+	private int search_month;
+	
 	public String getSearch_value() {
 		return search_value;
 	}
@@ -93,6 +97,24 @@ public class SearchVO {
 	}
 	public void setOrder_key(String order_key) {
 		this.order_key = order_key;
+	}
+	public int getSchool_id() {
+		return school_id;
+	}
+	public void setSchool_id(int school_id) {
+		this.school_id = school_id;
+	}
+	public int getSearch_year() {
+		return search_year;
+	}
+	public void setSearch_year(int search_year) {
+		this.search_year = search_year;
+	}
+	public int getSearch_month() {
+		return search_month;
+	}
+	public void setSearch_month(int search_month) {
+		this.search_month = search_month;
 	}
 	
 }

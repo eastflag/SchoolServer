@@ -1,0 +1,74 @@
+<div class="load personal_ranking ranking_detail01">
+	<header class="header">
+		<h1>{{student_name}}</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="peosonal_wrap ranking_view_step01">
+		<nav class="main_tab fix_tab">
+			<ul>
+				<li ng-class="tab_index==0?'curr':''"><a href="#!/ranking/height.html">신장</a></li>
+				<li ng-class="tab_index==1?'curr':''"><a href="#!/ranking/weight.html">체중</a></li>
+				<li ng-class="tab_index==2?'curr':''"><a href="#!/ranking/bmi.html">BMI</a></li>
+				<li ng-class="tab_index==3?'curr':''"><a href="#!/ranking/muscle.html">근육량</a></li>
+				<li ng-class="tab_index==4?'curr':''"><a href="#!/ranking/fat.html">체지방률</a></li>
+			</ul>
+		</nav>
+		<div class="info_area">
+			<div class="title">
+				<h2>신장</h2>	
+				<p class="update">정보 Update {{measureDate}}</p>
+			</div>
+			<div class="ranking_wrap">
+				<div class="row_top">
+					<a href="{{detail_url}}" class="ranking_circle">
+						<img src="/images/aura_in_app/ico_ranking_school.png" alt="" class="school" />
+						<h3>학교 랭킹</h3>
+						<strong class="rank" ng-class="schoolChange">{{rankOfSchool}}위</strong>
+						<span class="change" ng-class="schoolChange" ng-if="schoolChange!=''">{{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}위</span>
+						<span class="change" ng-class="schoolChange" ng-if="schoolChange==''" style="padding:0; text-align:center;">-</span>
+					</a>
+				</div>
+				<div class="row_bottom">
+					<a href="{{detail_url}}" class="ranking_circle">
+						<img src="/images/aura_in_app/ico_ranking_area.png" alt="" class="area" />
+						<h3>지역 랭킹</h3>
+						<strong class="rank" ng-class="localChange">{{rankOfLocal}}%</strong>
+						<span class="change" ng-class="localChange" ng-if="localChange!=''">{{diffRankOfLocal}}%</span>
+						<span class="change" ng-class="localChange" ng-if="localChange==''" style="padding:0; text-align:center;">-</span>
+					</a>
+					<a href="{{detail_url}}" class="ranking_circle">
+						<img src="/images/aura_in_app/ico_ranking_all_area.png" alt="" class="all_area" />
+						<h3>전국 랭킹</h3>
+						<strong class="rank" ng-class="nationChange">{{rankOfNation}}%</strong>
+						<span class="change" ng-class="nationChange" ng-if="nationChange!=''">{{diffRankOfNation}}%</span>
+						<span class="change" ng-class="nationChange" ng-if="nationChange==''" style="padding:0; text-align:center;">-</span>
+					</a>
+				</div>
+
+			</div>
+
+		</div>
+	</article>
+</div>

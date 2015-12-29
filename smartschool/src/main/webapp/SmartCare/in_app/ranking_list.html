@@ -1,0 +1,198 @@
+<div class="load personal_ranking ranking_detail03">
+	<header class="header">
+		<h1>{{student_name}}</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="peosonal_wrap ranking_view_step03">
+		<nav class="main_tab fix_tab">
+			<ul>
+				<li ng-class="tab_index==0?'curr':''"><a href="#!/ranking/height.html">신장</a></li>
+				<li ng-class="tab_index==1?'curr':''"><a href="#!/ranking/weight.html">체중</a></li>
+				<li ng-class="tab_index==2?'curr':''"><a href="#!/ranking/bmi.html">BMI</a></li>
+				<li ng-class="tab_index==3?'curr':''"><a href="#!/ranking/muscle.html">근육량</a></li>
+				<li ng-class="tab_index==4?'curr':''"><a href="#!/ranking/fat.html">체지방률</a></li>
+			</ul>
+		</nav>
+		<div class="info_area">
+			<div class="title">
+				<h2>{{list_title}}</h2>
+			</div>
+			<ul class="main_tab in_tab">
+				<li ng-class="list_tab=='school'?'curr':''"><a href="{{list_url}}?gubun=school">학교 기준 랭킹</a><img src="/images/aura_in_app/img_tab_curr_arrow.png" alt="" class="curr_arrow" /></li>
+				<li ng-class="list_tab=='local'?'curr':''"><a href="{{list_url}}?gubun=local">지역 기준 랭킹</a><img src="/images/aura_in_app/img_tab_curr_arrow.png" alt="" class="curr_arrow" /></li>
+				<li ng-class="list_tab=='nation'?'curr':''"><a href="{{list_url}}?gubun=nation">전국 기준 랭킹</a><img src="/images/aura_in_app/img_tab_curr_arrow.png" alt="" class="curr_arrow" /></li>
+			</ul>
+			<!-- 학교 -->
+			<div ng-show="list_tab=='school'">
+				<h3>학교 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
+				<table class="gray_tbl">
+					<colgroup>
+						<col style="width:10%;" />
+						<col style="width:26%;" />
+						<col style="width:10%;" />
+						<col style="width:20%;" />
+						<col style="width:21%;" />
+						<col style="width:13%;" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">순위</th>
+							<th scope="col">학교</th>
+							<th scope="col">학년</th>
+							<th scope="col">이름</th>
+							<th scope="col">신장</th>
+							<th scope="col">변동</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{{rank_info.rank}}위</td>
+							<td>{{rank_info.schoolName}}</td>
+							<td>{{rank_info.schoolGrade}}</td>
+							<td>{{rank_info.name}}</td>
+							<td>{{rank_info.value}}cm</td>
+							<td ng-class="schoolFontColor(rank_info.rank,rank_info.beforeRank)">
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(rank_info.rank,rank_info.beforeRank)}}</span>
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(rank_info.rank,rank_info.beforeRank)}}</span>
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) == ''"><strong>-</strong></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div ng-scrollbars ng-scrollbars-config="config" style="height:263px; width:333px;">
+					<table class="white_tbl mg_top10">
+						<colgroup>
+							<col style="width:10%;" />
+							<col style="width:26%;" />
+							<col style="width:10%;" />
+							<col style="width:20%;" />
+							<col style="width:21%;" />
+							<col style="width:13%;" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">순위</th>
+								<th scope="col">학교</th>
+								<th scope="col">학년</th>
+								<th scope="col">이름</th>
+								<th scope="col">신장</th>
+								<th scope="col">변동</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="row in rank_list">
+								<td class="font_red">{{row.rank}}위</td>
+								<td>{{row.schoolName}}</td>
+								<td>{{row.schoolGrade}}</td>
+								<td>{{row.name}}</td>
+								<td>{{row.value}}cm</td>
+								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)==''"><strong>-</strong></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- 지역/전국 -->
+			<div ng-show="list_tab!='school'">
+				<h3 ng-if="list_tab=='local'">지역 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
+				<h3 ng-if="list_tab=='nation'">지역 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
+				<table class="gray_tbl">
+					<colgroup>
+						<col style="width:10%;" />
+						<col style="width:26%;" />
+						<col style="width:10%;" />
+						<col style="width:20%;" />
+						<col style="width:21%;" />
+						<col style="width:13%;" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">순위</th>
+							<th scope="col">학교</th>
+							<th scope="col">학년</th>
+							<th scope="col">이름</th>
+							<th scope="col">신장</th>
+							<th scope="col">변동</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{{rank_info.rank_rate}}%</td>
+							<td>{{rank_info.schoolName}}</td>
+							<td>{{rank_info.schoolGrade}}</td>
+							<td>{{rank_info.name}}</td>
+							<td>{{rank_info.value}}cm</td>
+							<td ng-class="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total)">
+								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
+								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
+								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) ==''"><strong>-</strong></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div ng-scrollbars ng-scrollbars-config="config" style="height:263px; width:333px;">
+					<table class="white_tbl mg_top10">
+						<colgroup>
+							<col style="width:10%;" />
+							<col style="width:26%;" />
+							<col style="width:10%;" />
+							<col style="width:20%;" />
+							<col style="width:21%;" />
+							<col style="width:13%;" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">순위</th>
+								<th scope="col">학교</th>
+								<th scope="col">학년</th>
+								<th scope="col">이름</th>
+								<th scope="col">신장</th>
+								<th scope="col">변동</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="row in rank_list">
+								<td class="font_red">{{row.rank}}위</td>
+								<td>{{row.schoolName}}</td>
+								<td>{{row.schoolGrade}}</td>
+								<td>{{row.name}}</td>
+								<td>{{row.value}}cm</td>
+								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
+									<span ng-if="schoolFontColor(row.rank,row.beforeRank)==''"><strong>-</strong></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</article>
+</div>

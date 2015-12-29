@@ -21,20 +21,18 @@
 	</head>
 	
 	<body ng-app="home">
-		<section id="wrapper" class="sub" ng-controller="HomeCtrl">
+		<section id="wrapper" class="sub" ng-controller="CommonCtrl">
 			
 			<header id="header_wrap">
 				<h1><a href="/" target="_self"><img src="/images/common/img_header_logo.png" alt="AURA | Smart Health Protector System" /></a></h1>
 				<ul class="gnb">
-					<li ng-show="loggedIn()"><a href="javascript:;" ng-click="logout()"><img src="/images/common/txt_gnb_logout.gif " alt="로그아웃" /></a></li>
-					<li ng-show="!loggedIn()"><a href="/SmartCare/login.html" target="_self"><img src="/images/common/txt_gnb_login.gif" alt="로그인" /></a></li>
 					<li><a href="/SmartCare/notice.html" target="_self"><img src="/images/common/txt_gnb_news.gif" alt="공지사항" /></a></li>
 					<li><a href="/SmartCare/press.html" target="_self"><img src="/images/common/txt_gnb_media_on.gif " alt="언론자료" /></a></li>
 					<li><a href="/SmartCare/introduce.html" target="_self"><img src="/images/common/txt_gnb_customer.gif" alt="고객센터" /></a></li>
 				</ul>
 			</header>
 			
-			<section id="container">
+			<section id="container" ng-controller="PressCtrl">
 				<div class="news_area">
 					<h2><img src="/images/common/txt_media_title.png" alt="언론자료 | ￼언론에 보도된 스마트안전건강지킴이" /></h2>
 					<div ng-switch="flag">
@@ -57,7 +55,7 @@
 								<li ng-repeat="press in pressList">
 									<a href="javascript:;" ng-click="toggleContent($index)">
 										<span class="num" ng-show="{{totalPress == 0}}"></span>
-										<span class="num" ng-show="{{totalPress > 0}}">{{ totalPress - (currenPressPage-1)*pageSize -$index }}</span>
+										<span class="num" ng-show="{{totalPress > 0}}">{{ totalPress - (currentPage-1)*pageSize -$index }}</span>
 										<span class="subject">{{ press.title }}</span>
 										<span class="date">{{ yyyyMMdd(press.created) }}</span>
 									</a>
@@ -71,9 +69,9 @@
 							</ul>
 							
 							<div class="list_paging">
-								<a href="javascript:;" class="btn_prev" ng-class="{ disabled : currenPressPage == pagePressFirst }" ng-click="pressPageChange(pagePressFirst)"><img src="/images/common/btn_paging_prev.gif" alt="이전페이지" /></a>
-								<a ]ref="javascript:;" class="num" ng-repeat="pageNumber in pageNumPressList" ng-class="{ curr : currenPressPage == pageNumber }" ng-click="pressPageChange(pageNumber)">{{ pageNumber }}</a>
-								<a href="javascript:;" class="btn_next" ng-class="{ disabled : currenPressPage == pagePressNext }" ng-click="pressPageChange(pagePressNext)"><img src="/images/common/btn_paging_next.gif" alt="다음페이지" /></a>
+								<a href="javascript:;" class="btn_prev" ng-class="{ disabled : currentPage == pageFirst }" ng-click="pageChange(pageFirst)"><img src="/images/common/btn_paging_prev.gif" alt="이전페이지" /></a>
+								<a ]ref="javascript:;" class="num" ng-repeat="pageNumber in pageNumList" ng-class="{ curr : currentPage == pageNumber }" ng-click="pageChange(pageNumber)">{{ pageNumber }}</a>
+								<a href="javascript:;" class="btn_next" ng-class="{ disabled : currentPage == pageNext }" ng-click="pageChange(pageNext)"><img src="/images/common/btn_paging_next.gif" alt="다음페이지" /></a>
 							</div>
 						</div>
 						<div ng-switch-when="view">
@@ -632,8 +630,6 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
-		<script src="/js/ng-file-upload-shim.min.js"></script>
-		<script src="/js/ng-file-upload.min.js"></script>
 		
 		<!--Custom JavaScript -->
 		<script src="/js/common.js"></script>

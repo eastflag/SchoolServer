@@ -35,9 +35,6 @@ public class MemberVO {
 	private String pay_date;
 	private String measure_date;
 	
-	//아우라홈페이지
-	private String certifyKey;
-	
 	public String getHome_id() {
 		return home_id;
 	}
@@ -211,12 +208,6 @@ public class MemberVO {
 	}
 	public void setMeasure_date(String measure_date) {
 		this.measure_date = measure_date;
-	}
-	public String getCertifyKey() {
-		return certifyKey;
-	}
-	public void setCertifyKey(String certifyKey) {
-		this.certifyKey = certifyKey;
 	}
 	
 }

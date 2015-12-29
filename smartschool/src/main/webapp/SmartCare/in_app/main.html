@@ -1,0 +1,154 @@
+<div class="load main">
+	<header class="header">
+		<h1>{{student_name}}</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back" ng-if="is_parent==1"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+		
+	<article class="main_wrap">
+		<nav class="main_nav">
+			<ul>
+				<li class="gnb01" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/height.html')">
+						<span class="menu">성장발달</span>
+						<span class="data">{{height!=null?height:0;}}cm</span>
+					</a>
+				</li>
+				<li class="gnb01" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">성장발달</span>
+						<span class="data">{{height!=null?height:0;}}cm</span>
+					</a>
+				</li>
+				<li class="gnb02" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/total.html')">
+						<span class="menu">종합건강점수</span>
+						<span class="data">{{growthGrade!=null?growthGrade:0}}점</span>
+					</a>
+				</li>
+				<li class="gnb02" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">종합건강점수</span>
+						<span class="data">{{growthGrade!=null?growthGrade:0}}점</span>
+					</a>
+				</li>
+				<li class="gnb03">
+					<a href="#!/dining.html">
+						<span class="menu">식단/영양</span>
+					</a>
+				</li>
+				<li class="gnb04">
+					<a href="#!/training.html">
+						<span class="menu">개인별맞춤운동</span>
+					</a>
+				</li>
+				<li class="gnb05" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/weight.html')">
+						<span class="menu">체중변화</span>
+						<span class="data">{{weight!=null?weight:0}}kg</span>
+					</a>
+				</li>
+				<li class="gnb05" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">체중변화</span>
+						<span class="data">{{weight!=null?weight:0}}kg</span>
+					</a>
+				</li>
+				<li class="gnb06" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/muscle.html')">
+						<span class="menu">근육량</span>
+						<span class="data">{{muscle!=null?muscle:0}}%</span>
+					</a>
+				</li>
+				<li class="gnb06" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">근육량</span>
+						<span class="data">{{muscle!=null?muscle:0}}%</span>
+					</a>
+				</li>
+				<li class="gnb07" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/ranking/height.html')">
+						<span class="menu">건강랭킹</span>
+					</a>
+				</li>
+				<li class="gnb07" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">건강랭킹</span>
+					</a>
+				</li>
+				<li class="gnb08">
+					<a href="javascript:;" onclick="alert('업데이트 예정')">
+						<span class="menu">두뇌발달분석</span>
+					</a>
+				</li>
+				<li class="gnb09" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/obesity.html')">
+						<span class="menu">비만도</span>
+						<span class="data">{{bmi!=null?bmi:0}}</span>
+					</a>
+				</li>
+				<li class="gnb09" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">비만도</span>
+						<span class="data">{{bmi!=null?bmi:0}}</span>
+					</a>
+				</li>
+				<li class="gnb10" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkStatus('/smoking.html')">
+						<span class="menu">흡연지수</span>
+						<span class="data">{{cohd!=null?cohd:0}}</span>
+					</a>
+				</li>
+				<li class="gnb10" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">흡연지수</span>
+						<span class="data">{{cohd!=null?cohd:0}}</span>
+					</a>
+				</li>
+				<li class="gnb11" ng-if="pay_date!=null">
+					<a href="#!/activity.html" ng-click="alertPayment()">
+						<span class="menu">나의활동량</span>
+					</a>
+				</li>
+				<li class="gnb11" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">나의활동량</span>
+					</a>
+				</li>
+				<li class="gnb12">
+					<a href="#!/magazine.html">
+						<span class="menu">건강매거진</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<nav class="etc_nav">
+			<ul>
+				<li class="etc01"><a href="javascript:;" onclick="alert('[스마트안전건강지킴이]앱을 이용하시기 바랍니다.'); return false;">안전지킴이</a></li>
+				<li class="etc02"><a href="javascript:;" onclick="alert('[스마트안전건강지킴이]앱을 이용하시기 바랍니다.'); return false;">모바일상담</a></li>
+				<li class="etc03"><a href="#!/school/message.html">학교정보알리미</a></li>
+				<li class="etc04"><a href="#!/challenge.html">도전!!!건강!!</a></li>
+			</ul>
+		</nav>
+	</article>
+</div>

@@ -811,8 +811,8 @@ app.controller('SearchSchoolCtrl', ['$scope', 'MemberSvc', 'close', function ($s
 		$scope.selected_school = { selected_yn : "N", school_id : "0", school_name : "" };
 
 		MemberSvc.getSearchSchoolList({school_name:$scope.school_name})
-		.success(function(schoolLists, status, headers){
-			$rootScope.refreshToken(headers('X-Auth'));
+		.success(function(schoolLists){
+			//$rootScope.refreshToken(headers('X-Auth'));
 			$scope.school_lists = schoolLists.data;
 		}).error(function(data, status) {
 			if (status == 401) {
@@ -1975,6 +1975,8 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		}
 
 		$scope.title = '';
+		$scope.subTitle = '';
+		$scope.subject = '';
 		$scope.content = '';
 		$scope.year = '';
 		$scope.month = '';
@@ -2030,6 +2032,14 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$window.alert('제목을 입력하세요.');
 			return;
 		}
+		else if($scope.subject == ''){
+			$window.alert('주제를 입력하세요.');
+			return;
+		}
+		else if($scope.content == ''){
+			$window.alert('내용을 입력하세요.');
+			return;
+		}
 		else if(!$scope.checkImgName()){
 			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
 			return;
@@ -2043,6 +2053,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				year: $scope.year,
 				month: $scope.month,
 				title: $scope.title,
+				subject: $scope.subject,
 				content: $scope.content,
 				img_1:$scope.filenames[0].name,
 				img_2:$scope.filenames[1].name,
@@ -2100,6 +2111,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		$scope.year = magazine.year;
 		$scope.month = magazine.month;
 		$scope.title = magazine.title;
+		$scope.subject = magazine.subject;
 		$scope.content = magazine.content;
 		$scope.filenames = [
 			{code:1, name:magazine.img_1},
@@ -2128,6 +2140,14 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$window.alert('제목을 입력하세요.');
 			return;
 		}
+		else if($scope.subject == ''){
+			$window.alert('주제를 입력하세요.');
+			return;
+		}
+		else if($scope.content == ''){
+			$window.alert('내용을 입력하세요.');
+			return;
+		}
 		else if(!$scope.checkImgName()){
 			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
 			return;
@@ -2144,6 +2164,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				year: $scope.year,
 				month: $scope.month,
 				title: $scope.title,
+				subject: $scope.subject,
 				content: $scope.content,
 				img_1:$scope.filenames[0].name,
 				img_2:$scope.filenames[1].name,
@@ -2215,6 +2236,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	}
 	
 	$scope.getMagazineList();
+	console.log('------- MagazineCtrl -------');
 }]);
 
 // 도전! 건강! 관리

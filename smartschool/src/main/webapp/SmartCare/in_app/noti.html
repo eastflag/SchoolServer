@@ -1,0 +1,18 @@
+<div class="load news_list">
+	<header class="header">
+		<h1>공지사항</h1>
+		<a href="javascript:;" ng-click="movePrevUrl()" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+	</header>
+	<article class="news_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="height:554px; width:330px;">
+			<ul>
+				<li ng-repeat="row in noti_list">
+					<a href="javascript:;" ng-click="viewNotice($index)">
+						<p class="subject">{{row.title}}</p>
+					</a>
+					<p class="cont">{{row.content}}</p>
+				</li>
+			</ul>
+		</div>
+	</article>
+</div>

@@ -1,0 +1,48 @@
+<div class="load pesonal_sports">
+	<header class="header">
+		<h1>{{student_name}}</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="pesonal_sports_wrap">
+		<div class="sports_list">
+			<div ng-scrollbars ng-scrollbars-config="config" style="width:333px; height:537px;">
+			<ul>
+				<li ng-repeat="row in training_list">
+					<a href="javascript:;" ng-click="viewTraining(row)">
+						<div class="photo"><img ng-src="{{row.thumbnailUrl}}" alt="" /></div>
+						<div class="info">
+							<p class="subject">{{row.title}}</p>
+							<span class="time">{{(row.duration - row.duration%60)/60}}분 {{row.duration%60}}초</span>
+						</div>
+					</a>
+					<div class="lock_area">
+						<img src="/images/aura_in_app/ico_lock.png" alt="lock" />
+					</div>
+				</li>
+			</ul>
+			</div>
+		</div>
+	</article>
+</div>

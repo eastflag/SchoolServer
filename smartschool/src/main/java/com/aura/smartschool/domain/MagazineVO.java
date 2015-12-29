@@ -6,6 +6,8 @@ public class MagazineVO {
 	private String year;
 	private String month;
 	private String title;
+	private String subTitle;
+	private String subject;
 	private String content;
 	private String img_1;
 	private String img_2;
@@ -43,6 +45,18 @@ public class MagazineVO {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public String getSubTitle() {
+		return subTitle;
+	}
+	public void setSubTitle(String subTitle) {
+		this.subTitle = subTitle;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 	public String getContent() {
 		return content;

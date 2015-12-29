@@ -1,0 +1,52 @@
+<!-- 나의활동량 -->
+<div class="load my_active_mass">
+	<header class="header">
+		<h1>나의활동량</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="my_active_mass_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="height:554px; width:343px;">
+			<ul class="month_list">
+				<li class="none" ng-show="activity_list.length==0">등록된 활동정보가 없습니다.</li>
+				<li ng-repeat="row in activity_list">
+					<dl class="month_total">
+						<dt class="date">{{row.yyyymm}}</dt>
+						<dd class="walking_count">총 <span>{{row.total_step | number}}</span> 걸음</dd>
+					</dl>
+					<ul class="day_list">
+						<li ng-repeat="item in row.list">
+							<p class="date">{{item.activity_date}}</p>
+							<div class="walking_info">
+								<strong class="count" ng-pattern="number">{{item.step | number}} 걸음</strong>
+								<span class="kcal">{{item.calory | number}}Kcal</span>
+								<span class="km">{{item.distance/1000}}km</span>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</article>
+</div>

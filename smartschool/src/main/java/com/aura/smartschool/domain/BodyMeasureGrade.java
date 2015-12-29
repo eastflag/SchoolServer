@@ -4,6 +4,9 @@ public class BodyMeasureGrade {
 	// user ID
 	int member_id;
 	
+	// user name
+	String name;
+	
 	String gradeId;
 	
 	// grade 설명
@@ -20,6 +23,9 @@ public class BodyMeasureGrade {
 	
 	// 학교 ID
 	int schoolId;
+	
+	// 학교 이름
+	String schoolName;
 		
 	// 학년 Grade ID : 1~ 12
 	String schoolGradeId;
@@ -29,7 +35,7 @@ public class BodyMeasureGrade {
 	
 	// 년도 : 2013
 	String year;
-	
+
 	// 년도/월 : 20130911
 	String measureDate;
 	
@@ -72,6 +78,14 @@ public class BodyMeasureGrade {
 
 	public void setMember_id(int member_id) {
 		this.member_id = member_id;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getGradeId() {
@@ -120,6 +134,14 @@ public class BodyMeasureGrade {
 
 	public void setSchoolId(int schoolId) {
 		this.schoolId = schoolId;
+	}
+
+	public String getSchoolName() {
+		return schoolName;
+	}
+
+	public void setSchoolName(String schoolName) {
+		this.schoolName = schoolName;
 	}
 
 	public String getSchoolGradeId() {

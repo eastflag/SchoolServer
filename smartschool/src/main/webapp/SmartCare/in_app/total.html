@@ -1,0 +1,74 @@
+<!-- 종합건강점수 -->
+<div class="load total_health_point">
+	<header class="header">
+		<h1>종합건강점수</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="total_health_point_wrap">
+		<div ng-scrollbars ng-scrollbars-config="config" style="width:336px; height:492px;">
+			<div class="top_explanation">
+				<strong class="point">{{growthGrade}}점</strong>
+				<p class="message">
+					{{student_name}} 학생의 키는 {{height}}cm 이고 몸무게는 {{weight}}kg 입니다.<br />
+					BMI는 {{bmi}}로 {{bmi_string}}이며 체지방은 {{fat}}% 입니다.<br />
+					건강을 위해서 아래사항을 참고하세요.
+				</p>
+				<div class="bottom_info">
+					<dl>
+						<dt>체중 조절</dt>
+						<dd>{{weight_control}}Kg</dd>
+					</dl>
+					<dl>
+						<dt>체지방조절</dt>
+						<dd>{{fat_control}}Kg</dd>
+					</dl>
+				</div>
+			</div>
+			<div class="charticle">
+				<ul>
+					<li class="stat01" ng-class="bmi_step==1?'check':''"><span></span>저체중</li>
+					<li class="stat02" ng-class="bmi_step==2?'check':''"><span></span>정상</li>
+					<li class="stat03" ng-class="bmi_step==3?'check':''"><span></span>과체중</li>
+					<li class="stat04" ng-class="bmi_step==4?'check':''"><span></span>비만</li>
+					<li class="stat05" ng-class="bmi_step==5?'check':''"><span></span>중도비만</li>
+					<li class="stat06" ng-class="bmi_step==6?'check':''"><span></span>고도비만</li>
+				</ul>
+			</div>
+			<div class="bottom_explanation">
+				<h2>{{bmi_string}}</h2>
+				<h3>비만관련 질환 위험도</h3>
+				<p class="message">비만관련 질환의 위험도 경도 위험으로 추정됩니다.</p>
+				<h3>식습관</h3>
+				<p class="message">
+					포화지방과 탄수화물이 많은 음식은 자제하고,싱겁게 먹는 것이 좋습니다.
+					불포화지방산[등푸른생선,땅콩류등]을 섭취하는게 좋습니다.
+					음식을 먹을땐 천천히 30회이상 씹어서 섭취합니다.
+					식사중의 물섭취는 피해서 하루에 1리터이상의 물을 먹습니다.
+				</p>
+			</div>
+		</div>
+		<a href="#!/training.html?p={{bmiGradeId}}" class="btn_recommend_exercise"><img src="/images/aura_in_app/img_health_tool.png" alt="" /> 종합 추천 운동</a>
+	</article>
+</div>

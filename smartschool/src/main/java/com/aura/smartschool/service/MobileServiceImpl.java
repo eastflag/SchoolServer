@@ -1,13 +1,21 @@
 package com.aura.smartschool.service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.Constant;
@@ -23,6 +31,7 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
@@ -33,6 +42,8 @@ import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.PressVO;
+import com.aura.smartschool.domain.RankingItem;
+import com.aura.smartschool.domain.RankingListItem;
 import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
@@ -42,6 +53,7 @@ import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.persistence.MobileMapper;
+import com.aura.smartschool.result.Result;
 import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.FileUtil;
 
@@ -870,4 +882,348 @@ public class MobileServiceImpl implements MobileService {
 	public int countAdminAccess() {
 		return mobileMapper.countAdminAccess();
 	}
+
+	@Transactional
+	@Override
+	public Result signUpWeb(MemberVO member, MultipartFile file) throws Exception {
+		int result = 0;
+		String msg = null;
+		
+		HomeVO home = new HomeVO();
+		home.setHome_id(member.getHome_id());
+		
+		//home_id 가 존재하는지 체크
+		if(this.countHome(home) > 0) {
+			result = 100;
+			msg = "가족명이 이미 존재합니다";
+		} else {
+			//홈아이디 생성
+			mobileMapper.insertHome(home);
+			//멤버 생성
+			mobileMapper.insertMember(member);
+			if(file != null) {
+				Map<String,Object> param = new HashMap<String,Object>();
+				param.put("home_id", member.getHome_id());
+				param.put("name", member.getName());
+				param.put("photo", new SerialBlob(file.getBytes()));
+				
+				mobileMapper.updateMemberPhoto(param);
+			}
+
+			msg = "success";
+		}
+		return new Result(result,msg);
+	}
+
+	@Override
+	public Map<String, Object> getMemberProfile(int member_id) {
+		return mobileMapper.selectMemberProfile(member_id);
+	}
+
+	@Transactional
+	@Override
+	public Result addMember(MemberVO member, MultipartFile file) throws Exception {
+		int result = 0;
+		String msg = null;
+		
+		HomeVO home = new HomeVO();
+		home.setHome_id(member.getHome_id());
+		
+		//home_id 가 존재하는지 체크
+		if(this.countHome(home) == 0) {
+			result = 100;
+			msg = "가족명이 존재하지 않습니다.";
+		} else {
+			if(mobileMapper.checkMemberExistInHome(member) > 0) {
+				return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
+			} else {
+				//멤버 생성
+				mobileMapper.insertMember(member);
+				if(file != null) {
+					Map<String,Object> param = new HashMap<String,Object>();
+					param.put("home_id", member.getHome_id());
+					param.put("name", member.getName());
+					param.put("photo", new SerialBlob(file.getBytes()));
+					
+					mobileMapper.updateMemberPhoto(param);
+				}
+				msg = "success";
+			}
+		}
+		return new Result(result,msg);
+	}
+
+	@Transactional
+	@Override
+	public long modMember(MemberVO member, MultipartFile file) throws Exception{
+		HomeVO home = new HomeVO();
+		home.setHome_id(member.getHome_id());
+		
+			//멤버 생성
+		long rs = mobileMapper.updateMember(member);
+		if(file != null) {
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("home_id", member.getHome_id());
+			param.put("name", member.getName());
+			param.put("photo", new SerialBlob(file.getBytes()));
+			
+			mobileMapper.updateMemberPhoto(param);
+		}
+		
+		return rs;
+	}
+
+	@Override
+	public GrowthInfo getMeasureHistoryList(SearchVO in, String section) {
+		List<BodyMeasureSummary> list = mobileMapper.selectBodySummaryByYear(in);
+		if(list !=null && list.size() > 0){
+			MemberVO m = new MemberVO();
+			m.setMember_id(in.getMember_id());
+			MemberVO member = mobileMapper.selectMember(m);
+			
+			GrowthInfo growthInfo = new GrowthInfo();
+			//키,체중 측정이력
+			List<Map<String,Object>> history_list = new ArrayList<Map<String,Object>>();
+			for(int i=0; i<12; i++){
+				Map<String,Object> value = new HashMap<String,Object>();
+				int month = i+1;
+				if(month<10){
+					value.put("month", "0"+month);
+				}else{
+					value.put("month", String.valueOf(month));
+				}
+				for(BodyMeasureSummary summary:list){
+					int mm = Integer.parseInt(summary.getMeasure_date().substring(5, 7),10) -1;
+					if(i==mm){
+						if(section=="Height"){
+							value.put("value", summary.getHeight());
+						}else if(section=="Weight"){
+							value.put("value", summary.getWeight());
+						}
+					}
+				}
+				history_list.add(i, value);
+			}
+			
+			growthInfo.setList(history_list);
+			
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("member_id", member.getMember_id());
+			param.put("sex", member.getSex());
+			param.put("school_id", member.getSchool_id());
+			param.put("search_year", in.getSearch_year());
+			param.put("section", section);
+			
+			//키,체중 변화 - 학생
+			Map<String,Object> growth = mobileMapper.selectChangeGrowth(param);
+			growthInfo.setGrowth(String.valueOf(growth.get("value")));
+			
+			//키,체중 변화 - 지역평균 구하기
+			Map<String,Object> local = mobileMapper.selectGrowthAverageOfLocal(param);
+			growthInfo.setAvgOfLocal(String.valueOf(local.get("value")));
+			
+			//키,체중 변화 - 전국평균 구하기
+			Map<String,Object> nation = mobileMapper.selectGrowthAverageOfNation(param);
+			growthInfo.setAvgOfNation(String.valueOf(nation.get("value")));
+			
+			return growthInfo;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public int getMeasureHistoryCount(SearchVO in) {
+		List<BodyMeasureSummary> list = mobileMapper.selectBodySummaryByYear(in);
+		if(list != null && list.size()>0){
+			return list.size();
+		}else{
+			return 0;
+		}
+	}
+
+	@Override
+	public RankingItem getRanking(MemberVO in, String section) {
+		List<BodyMeasureSummary> list = mobileMapper.selectBodySummary(in);
+		
+		if(list != null && list.size() > 0) {
+			RankingItem rank = new RankingItem();
+			
+			MemberVO member = mobileMapper.selectMember(in);
+			SchoolVO school = mobileMapper.selectSchoolById(member.getSchool_id());
+			
+			//get the lastest measure info.
+			BodyMeasureSummary summaryVO = list.get(0);
+			
+			rank.setMeasureDate(summaryVO.getMeasure_date());
+			rank.setMember_id(member.getMember_id());
+			rank.setSchool_id(school.getSchool_id());
+			rank.setNameOfSchool(school.getSchool_name());
+			rank.setSchool_grade(member.getSchool_grade());
+			rank.setSchool_grade_id(summaryVO.getSchool_grade_id());
+			rank.setNameOfLocal(school.getSido());
+			
+			if(Constant.Height.equals(section)) {
+				rank.setValue(summaryVO.getHeight());
+			} else if(Constant.Weight.equals(section)) {
+				rank.setValue(summaryVO.getWeight());
+			} else if(Constant.BMI.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			} else if(Constant.Muscle.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			} else if(Constant.Fat.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			}
+			
+			if(list.size()>1) {
+				if(Constant.Height.equals(section)) {
+					rank.setBeforeValue(list.get(1).getHeight());
+				} else if(Constant.Weight.equals(section)) {
+					rank.setBeforeValue(list.get(1).getWeight());
+				} else if(Constant.BMI.equals(section)) {
+					rank.setBeforeValue(list.get(1).getBmi());
+				} else if(Constant.Muscle.equals(section)) {
+					rank.setBeforeValue(list.get(1).getBmi());
+				} else if(Constant.Fat.equals(section)) {
+					rank.setBeforeValue(list.get(1).getBmi());
+				}
+			} else {
+				rank.setBeforeValue(rank.getValue());
+			}
+			
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("member_id",summaryVO.getMember_id());
+			param.put("sex",summaryVO.getSex());
+			param.put("school_id", summaryVO.getSchool_id());
+			param.put("school_grade_id", summaryVO.getSchool_grade_id());
+			param.put("section",section);
+			param.put("measureDate",summaryVO.getMeasure_date());
+			
+			//학교등수,학생수 구하기--------------------------------------------------------
+			param.put("gubun", "school");
+			BodyMeasureGrade result1 = mobileMapper.selectRankingByGubun(param);
+			rank.setRankOfSchool(result1.getRank());
+			rank.setTotalOfSchool(result1.getTotal());
+			//지역등수,학생수 구하기--------------------------------------------------------
+			param.put("gubun", "local");
+			BodyMeasureGrade result2 = mobileMapper.selectRankingByGubun(param);
+			rank.setRankOfLocal(result2.getRank());
+			rank.setTotalOfLocal(result2.getTotal());
+			//전국등수,학생수 구하기--------------------------------------------------------
+			param.put("gubun", "nation");
+			BodyMeasureGrade result3 = mobileMapper.selectRankingByGubun(param);
+			rank.setRankOfNation(result3.getRank());
+			rank.setTotalOfNation(result3.getTotal());
+
+			//이전 등수와 전체 학생수 : 이전 데이터가 없다면 최신데이터 값이 들어감.
+			if(list.size()>1) {
+				param.put("measureDate",list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
+				//학교등수,학생수 구하기--------------------------------------------------------
+				param.put("gubun", "school");
+				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param);
+				rank.setBeforeRankOfSchool(result4.getRank());
+				//지역등수,학생수 구하기--------------------------------------------------------
+				param.put("gubun", "local");
+				BodyMeasureGrade result5 = mobileMapper.selectRankingByGubun(param);
+				rank.setBeforeRankOfLocal(result5.getRank());
+				//전국등수,학생수 구하기--------------------------------------------------------
+				param.put("gubun", "nation");
+				BodyMeasureGrade result6 = mobileMapper.selectRankingByGubun(param);
+				rank.setBeforeRankOfNation(result6.getRank());
+			} else {
+				rank.setBeforeRankOfSchool(rank.getRankOfSchool());
+				rank.setBeforeRankOfLocal(rank.getRankOfLocal());
+				rank.setBeforeRankOfNation(rank.getRankOfNation());
+			}
+			return rank;
+		}
+		return null;
+	}
+
+	@Override
+	public RankingListItem getRankingList(SearchVO in, String section) {
+		MemberVO m = new MemberVO();
+		m.setMember_id(in.getMember_id());
+		List<BodyMeasureSummary> summary_list = mobileMapper.selectBodySummary(m);
+		
+		if(summary_list != null && summary_list.size() > 0) {
+			RankingListItem rank = new RankingListItem();
+			
+			MemberVO member = mobileMapper.selectMember(m);
+			SchoolVO school = mobileMapper.selectSchoolById(member.getSchool_id());
+			
+			//get the lastest measure info.
+			BodyMeasureSummary summaryVO = summary_list.get(0);
+			
+			rank.setMeasureDate(summaryVO.getMeasure_date());
+			rank.setMemberId(member.getMember_id());
+			rank.setName(member.getName());
+			rank.setSchoolName(school.getSchool_name());
+			rank.setSchoolGrade(member.getSchool_grade());
+			
+			if(Constant.Height.equals(section)) {
+				rank.setValue(summaryVO.getHeight());
+			} else if(Constant.Weight.equals(section)) {
+				rank.setValue(summaryVO.getWeight());
+			} else if(Constant.BMI.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			} else if(Constant.Muscle.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			} else if(Constant.Fat.equals(section)) {
+				rank.setValue(summaryVO.getBmi());
+			}
+			
+			//등수,학생수 구하기--------------------------------------------------------
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("member_id",summaryVO.getMember_id());
+			param.put("sex",summaryVO.getSex());
+			param.put("school_id", summaryVO.getSchool_id());
+			param.put("school_grade_id", summaryVO.getSchool_grade_id());
+			param.put("section",section);
+			param.put("measureDate",summaryVO.getMeasure_date());
+			param.put("gubun", in.getSearch_key());
+			
+			BodyMeasureGrade result1 = mobileMapper.selectRankingByGubun(param);
+			rank.setRank(result1.getRank());
+			rank.setTotal(result1.getTotal());
+
+			//이전 등수와 전체 학생수 : 이전 데이터가 없다면 최신데이터 값이 들어감.
+			if(summary_list.size()>1) {
+				param.put("measureDate",summary_list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
+				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param);
+				rank.setBeforeRank(result4.getRank());
+			} else {
+				rank.setBeforeRank(rank.getRank());
+			}
+			
+			//순위[1~10]
+			List<BodyMeasureGrade> ranklist = mobileMapper.selectRankingList(param);
+			//------------------- 이전 등수 가져오기 ------------------------------------------
+			for(BodyMeasureGrade row : ranklist){
+				MemberVO mb = new MemberVO();
+				mb.setMember_id(row.getMember_id());
+				mb.setMeasure_date(row.getMeasureDate());
+				List<BodyMeasureSummary> list = mobileMapper.selectBodySummary(mb);
+				if(list.size()>1){
+					Map<String,Object> p = new HashMap<String,Object>();
+					p.put("member_id", list.get(1).getMember_id());
+					p.put("sex", summaryVO.getSex());
+					p.put("section",section);
+					p.put("school_id", list.get(1).getSchool_id());
+					p.put("school_grade_id", list.get(1).getSchool_grade_id());
+					p.put("gubun", in.getSearch_key());
+					p.put("measureDate",list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
+					BodyMeasureGrade rs = mobileMapper.selectRankingByGubun(p);
+					row.setBeforeRank(rs.getRank());
+				}else{
+					row.setBeforeRank(row.getRank());
+				}
+			}
+			rank.setList(ranklist);
+			
+			return rank;
+		}
+		return null;
+	}
+
 }

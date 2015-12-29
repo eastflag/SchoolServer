@@ -1,0 +1,65 @@
+<div class="load muscle_amount">
+	<header class="header">
+		<h1>근육량</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="setting_display='block';"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="muscle_amount_wrap">
+		<div class="muscle_row_top" ng-switch="muscle_string">
+			<img ng-switch-when="부족" src="/images/aura_in_app/img_muscle_stat01.png" alt="" class="my_muscle" />
+			<img ng-switch-when="정상" src="/images/aura_in_app/img_muscle_stat02.png" alt="" class="my_muscle" />
+			<img ng-switch-when="많음" src="/images/aura_in_app/img_muscle_stat03.png" alt="" class="my_muscle" />
+			<img ng-switch-default src="/images/aura_in_app/img_muscle_stat02.png" alt="" class="my_muscle" />
+			<p class="summary">{{student_name}}님의 근육량은 <span class="stat02">{{muscle_string}}</span>입니다.</p>
+			<ul class="reference">
+				<li class="stat01">부족</li>
+				<li class="stat02">정상</li>
+				<li class="stat03">많음</li>
+			</ul>
+		</div>
+		<div class="muscle_row_bottom">
+			<div class="left">
+				<h2>골격근량</h2>
+				<strong class="data">{{skeletal}} Kg</strong>
+				<dl>
+					<dt>골격근량이란?</dt>
+					<dd>뼈에 붙어 직접적으로 힘을낼수 <br />
+					있는 근육을 말합니다.</dd>
+				</dl>
+			</div>
+			<div class="right">
+				<h2>근육조절</h2>
+				<strong class="data">{{muscle_control}} Kg</strong>
+				<dl>
+					<dt>근육조절이란?</dt>
+					<dd>
+					표준이하 : 근육조절 +0Kg 미만<br />
+					표준 :  근육조절 +0Kg 이상 ~ <br />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3Kg 미만<br />
+					표준이상 : 근육조절 +3Kg 이상</dd>
+				</dl>
+			</div>
+		</div>
+	</article>
+</div>

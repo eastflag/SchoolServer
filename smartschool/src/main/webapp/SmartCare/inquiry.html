@@ -20,20 +20,18 @@
 	</head>
 	
 	<body ng-app="home">
-		<section id="wrapper" class="sub" ng-controller="HomeCtrl">
+		<section id="wrapper" class="sub" ng-controller="CommonCtrl">
 			
 			<header id="header_wrap">
 				<h1><a href="/" target="_self"><img src="/images/common/img_header_logo.png" alt="AURA | Smart Health Protector System" /></a></h1>
 				<ul class="gnb">
-					<li ng-show="loggedIn()"><a href="javascript:;" ng-click="logout()"><img src="/images/common/txt_gnb_logout.gif " alt="로그아웃" /></a></li>
-					<li ng-show="!loggedIn()"><a href="/SmartCare/login.html" target="_self"><img src="/images/common/txt_gnb_login.gif" alt="로그인" /></a></li>
 					<li><a href="/SmartCare/notice.html" target="_self"><img src="/images/common/txt_gnb_news.gif" alt="공지사항" /></a></li>
 					<li><a href="/SmartCare/press.html" target="_self"><img src="/images/common/txt_gnb_media.gif " alt="언론자료" /></a></li>
 					<li><a href="/SmartCare/introduce.html" target="_self"><img src="/images/common/txt_gnb_customer_on.gif" alt="고객센터" /></a></li>
 				</ul>
 			</header>
 			
-			<section id="container">
+			<section id="container" ng-controller="RequestCtrl">
 				<div class="customer_area">
 					<h2><img src="/images/common/txt_customer_title.png" alt="고객센터 | 스마트건강지킴이에 대해 궁금하신 사항을 질문해주세요." /></h2>
 					<ul class="customer_tab">
@@ -91,7 +89,7 @@
 							</div>
 						</div>
 						<div class="btn_question_send">
-							<a href="javascript:;" ng-click=requestQnA()>문의 보내기</a>
+							<a href="javascript:;" ng-click="requestQnA()">문의 보내기</a>
 						</div>
 					</div>
 				</div>
@@ -617,8 +615,6 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
-		<script src="/js/ng-file-upload-shim.min.js"></script>
-		<script src="/js/ng-file-upload.min.js"></script>
 		
 		<!--Custom JavaScript -->
 		<script src="/js/common.js"></script>

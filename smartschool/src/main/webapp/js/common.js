@@ -54,48 +54,6 @@ function company_info(layerNumber){
 	});
 }
 
-function setPaginationInfo(targetPage, page_size, total){
-	var currentPage = targetPage;
-	var pageSize = page_size;
-	var totalItemCount = total;
-	var totalPageCount=1;
-	var firstPageNoOnPageList;
-	var lastPageNoOnPageList;
-	var prevPageNoOnPageList;
-	var nextPageNoOnPageList;
-	
-	if(totalItemCount==0){
-		var result = [1,1,1];
-		return result;
-	} else {
-		totalPageCount = parseInt((totalItemCount-1)/pageSize) + 1;
-		firstPageNoOnPageList = parseInt((currentPage-1)/pageSize)*pageSize + 1;
-		lastPageNoOnPageList = firstPageNoOnPageList+pageSize-1;
-		if(lastPageNoOnPageList > totalPageCount){
-			lastPageNoOnPageList = totalPageCount;
-		}
-		prevPageNoOnPageList = firstPageNoOnPageList-pageSize;
-		if(prevPageNoOnPageList<1){
-			prevPageNoOnPageList=1;
-		}
-		nextPageNoOnPageList = lastPageNoOnPageList+1;
-		if(nextPageNoOnPageList > totalPageCount){
-			nextPageNoOnPageList = totalPageCount;
-		}
-	
-		var result = [totalPageCount+2];
-		var j=0;
-		result[j] = prevPageNoOnPageList;
-		j++;
-		for(var i=firstPageNoOnPageList; i<=lastPageNoOnPageList; i++){
-			result[j]=i;
-			j++;
-		}
-		result[j] = nextPageNoOnPageList;
-		return result;
-	}
-}
-
 //*****************************************************************
 //숫자값인지 확인하는 함수
 //*****************************************************************

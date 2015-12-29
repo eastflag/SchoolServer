@@ -1,0 +1,93 @@
+<div class="load school_news">
+	<header class="header">
+		<h1>학교정보알리미</h1>
+		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+	</header>
+	<section class="gnb_wrap" style="display:{{setting_display}}">
+		<div class="dim_area" ng-click="toggleSetting();"></div>
+		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+		<div class="gnb_area">
+			<div class="info_area">
+				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+				<p class="name">{{home_id}}</p>
+				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+			</div>
+			<nav class="menu_area">
+				<ul>
+					<li><a href="#!/noti.html">공지사항</a></li>
+					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+					<li><a href="#!/app/info.html">정보</a></li>
+					<li><a href="#!/qna/list.html">서비스문의</a></li>
+					<li><a href="javascript:;">서비스탈퇴</a></li>
+				 </ul>
+			</nav>
+		</div>
+	</section>
+	
+	<article class="school_info_wrap">
+		<nav class="main_tab fix_tab">
+			<ul>
+				<li><a href="#!/school/schedule.html">가정통신문</a></li>
+				<li class="curr"><a href="javascript:;">월간일정표</a></li>
+				<li><a href="#!/school/noti.html">학교공지사항</a></li>
+			</ul>
+		</nav>
+		<div class="month_control">
+			<p class="month">학사일정({{MM}}월)</p>
+			<button type="button" class="btn prev" ng-click="prevMMSchedule()"></button>
+			<button type="button" class="btn next" ng-click="nextMMSchedule()"></button>
+			<button type="button" class="btn_list_view_type" ng-click="toggleScheduleType()"></button>
+		</div>
+		<!-- 학교정보알리미 (월간일정표-달력) -->
+		<div class="calendar_area" ng-show="schedule_mode=='calendar'">
+			<table class="calendar_tbl">
+				<colgroup>
+					<col style="width:14.3%;" />
+					<col style="width:14.3%;" />
+					<col style="width:14.3%;" />
+					<col style="width:14.3%;" />
+					<col style="width:14.3%;" />
+					<col style="width:14.3%;" />
+					<col style="width:14.2%;" />
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col" class="sun">일</th>
+						<th scope="col">월</th>
+						<th scope="col">화</th>
+						<th scope="col">수</th>
+						<th scope="col">목</th>
+						<th scope="col">금</th>
+						<th scope="col">토</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="week in schedule_calendar">
+						<td class="{{row.type}}" ng-class="getDayOfWeek($index)" ng-repeat="row in week">
+							<span>{{row.date}}</span>
+							<p class="cont" ng-if="row.schedule" ng-bind-html="row.schedule"></p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!-- 학교정보알리미 (월간일정표-list) -->
+		<div class="schedule_list_area" ng-show="schedule_mode=='list'">
+			<div ng-scrollbars ng-scrollbars-config="config" style="width:332px; height:430px;">
+				<table class="list_tbl">
+					<colgroup>
+						<col style="width:10%;" />
+						<col style="width:90%;" />
+					</colgroup>
+					<thead>
+						<tr ng-repeat="row in schedule_list">
+							<th scope="row">{{row.day}}</th>
+							<td><p>{{row.schedule}}</p></td>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</article>
+</div>

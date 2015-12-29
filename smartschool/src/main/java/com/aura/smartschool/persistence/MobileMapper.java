@@ -2,6 +2,7 @@ package com.aura.smartschool.persistence;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
@@ -76,6 +77,7 @@ public interface MobileMapper {
 	public long insertSchool(SchoolVO school) throws PersistenceException;
 	
 	public List<BodyMeasureSummary> selectBodySummary(MemberVO member);
+	public List<BodyMeasureSummary> selectBodySummaryByYear(SearchVO search);
 	//등수 구하기: 현재는 광명데이터로 광명시 전체에서 몇등인가, 향후에는 전체 데이터로 변경 필요
 	public BodyMeasureGrade selectGradeBySection(BodyMeasureGrade grade);
 	public BodyMeasureGrade selectBeforeGradeRankingBySection(BodyMeasureGrade grade);
@@ -205,4 +207,14 @@ public interface MobileMapper {
 	public int insertChallenge(ChallengeVO challenge);
 	public int releaseChallengeRank(int rank) throws PersistenceException;
 	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
+	public void updateMemberPhoto(Map<String, Object> param);
+	public Map<String, Object> selectMemberProfile(int member_id);
+	
+	//성장발달상세
+	public Map<String,Object> selectChangeGrowth(Map<String,Object> in);	//키, 체중 변화량(학생)
+	public Map<String,Object> selectGrowthAverageOfLocal(Map<String,Object> in);		//키, 체중 변화량(평균:지역)
+	public Map<String,Object> selectGrowthAverageOfNation(Map<String,Object> in);		//키, 체중 변화량(평균:전국)
+	//랭킹
+	public BodyMeasureGrade selectRankingByGubun(Map<String, Object> param);	//구분[학교,지역,전국]등수 및 학생수
+	public List<BodyMeasureGrade> selectRankingList(Map<String, Object> param);	//구분[학교,지역,전국] 랭킹목록
 }

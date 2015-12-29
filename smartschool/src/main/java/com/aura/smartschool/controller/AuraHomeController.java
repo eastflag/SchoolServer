@@ -1,6 +1,9 @@
 package com.aura.smartschool.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,12 +11,20 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
+import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PressVO;
@@ -87,7 +99,7 @@ public class AuraHomeController {
 			sms.setMsg(msg);
 			sms.setRphone(member.getMdn());
 			sms.setSmsType("S");		//SMS 단문
-			//sms.setTestflag("Y");	//테스트 요청 설정
+			sms.setTestflag("Y");	//테스트 요청 설정
 			
 			//SMS 전송
 			try {
@@ -113,49 +125,16 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@RequestMapping(value="/home/api/login")
-	public ResultData<Map<String,Object>> login(
-			@RequestBody MemberVO in,
-			HttpServletRequest reqst,
-			HttpSession session){
-		logger.debug("/home/api/login");
-		ResultData<Map<String,Object>> result = null;
-		String certifyKey = (String) session.getAttribute("certifyKey");
+	public ResultData<MemberVO> login(@RequestBody MemberVO in){
+		logger.debug("/home/api/login------------------------------------");
 		
-		//인증번호 확인
-		if(!certifyKey.equals(in.getCertifyKey())){
-			logger.debug("not equal certifyKey!!");
-			result = new ResultData<Map<String,Object>>(100,"인증번호를 다시 확인하세요.");
-		}else {
-			MemberVO member = mobileService.getMemberByMdn(in);
-			if(member != null){
-				/*
-				 * 구성원 리스트 조회
-				HomeVO home = new HomeVO();
-				home.setHome_id(member.getHome_id());
-				List<MemberVO> memberList = mobileService.getMemberList(home); 
-				ResultData<List<MemberVO>> result = new ResultData<List<MemberVO>>(0, "success", memberList);
-				*/
-				//인증번호삭제
-				logger.debug((String) session.getAttribute("certifyKey")); 
-				session.removeAttribute("certifyKey");
-				
-				try {
-					Map<String,Object> data = new HashMap<String,Object>();
-					//토큰만들기
-					String token = CommonUtil.createJWT(member.getHome_id(), member.getHome_id(), String.valueOf(member.getMember_id()), 600 * 60 * 1000);
-					data.put("token", token);
-					data.put("home_id", member.getHome_id());
-					data.put("member_id", member.getMember_id());
-					data.put("mdn", member.getMdn());
-					result = new ResultData<Map<String,Object>>(0, "success", data);
-				} catch (IOException e) {
-					result = new ResultData<Map<String,Object>>(200, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
-				} 
-			} else {
-				result = new ResultData<Map<String,Object>>(300, "입력하신 휴대폰번호를 확인하세요.");
-			}
+		//회원여부 조회
+		MemberVO myInfo = mobileService.signInOfWeb(in);
+		if(myInfo != null){
+			return new ResultData<MemberVO>(0, "success", myInfo);
+		}else{
+			return new ResultData<MemberVO>(100, "login failed", null);
 		}
-		return result;
 	}
 	
 	/**
@@ -220,11 +199,10 @@ public class AuraHomeController {
 	 * @param in
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getMemberInfo")
-	public ResultData<MemberVO> getMemberInfo(@RequestBody MemberVO in){
+	@RequestMapping(value="/home/api/getMember")
+	public ResultData<MemberVO> getMember(@RequestBody MemberVO in){
 		
-		MemberVO member = mobileService.getMemberByMdn(in);
-		return new ResultData<MemberVO>(0,"success", member);
+		return new ResultData<MemberVO>(0,"success", mobileService.selectMember(in));
 	}
 	
 	/**
@@ -265,7 +243,10 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@RequestMapping(value="/home/api/addChallenge")
-	public Result addChallenge(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result addChallenge(
+			HttpServletRequest request,
+			@RequestParam(value="data") String data,
+			@RequestParam(value="files", required=false) List<MultipartFile> files) {
 		logger.debug("/home/api/addChallenge---------------------------------------------------");
 		logger.debug("file size : " + files.size());
 		Gson gson = new Gson();
@@ -286,6 +267,118 @@ public class AuraHomeController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Result(200, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
+		}
+	}
+	
+	/**
+	 * 회원가입(아우라웹)
+	 * @param request
+	 * @param member
+	 * @return
+	 */
+	@RequestMapping("/home/api/signUpWeb")
+	public Result signUpWeb(
+			HttpServletRequest request,
+			@RequestParam(value="data") String data,
+			@RequestParam(value="profile", required=false) MultipartFile file) {
+		logger.debug("/home/api/signUpWeb----------------------------------------------------------------");
+		
+		Result rs = null;
+		try { 
+			Gson gson = new Gson();
+			MemberVO member = gson.fromJson(data, MemberVO.class);
+			
+			rs = mobileService.signUpWeb(member,file);
+			
+			return rs;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug("Exception");
+			return new Result(500, "server error");
+		}
+	}
+	
+	/**
+	 * 프로필 이미지 보기
+	 * @param member_id
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/profile/{member_id}")
+	public ResponseEntity<byte[]> showImage(
+			@PathVariable("member_id") int member_id
+			,HttpServletResponse response
+			,ModelMap model){
+		
+		Map<String,Object> rs = mobileService.getMemberProfile(member_id);
+		if(rs != null){
+			byte[] imageContent = (byte[])rs.get("photo");
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_GIF);
+			return new ResponseEntity<byte[]>(imageContent, headers, HttpStatus.OK);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 가족구성원 추가
+	 * @param request
+	 * @param data
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping("/home/api/addMember")
+	public Result addMember(HttpServletRequest request,
+			@RequestParam(value="data") String data,
+			@RequestParam(value="profile", required=false) MultipartFile file) {
+		logger.debug("/home/api/signUp----------------------------------------------------------------");
+		
+		Result rs = null;
+		try { 
+			Gson gson = new Gson();
+			MemberVO member = gson.fromJson(data, MemberVO.class);
+			
+			rs = mobileService.addMember(member,file);
+			
+			return rs;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug("Exception");
+			return new Result(500, "server error");
+		}
+	}
+	
+	/**
+	 * 가족구성원 수정
+	 * @param request
+	 * @param data
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping("/home/api/modMember")
+	public Result modMember(HttpServletRequest request,
+			@RequestParam(value="data") String data,
+			@RequestParam(value="profile", required=false) MultipartFile file) {
+		logger.debug("/home/api/signUp----------------------------------------------------------------");
+		
+		try { 
+			Gson gson = new Gson();
+			MemberVO member = gson.fromJson(data, MemberVO.class);
+			
+			long rs = mobileService.modMember(member,file);
+			
+			if(rs != 0){
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.debug("Exception");
+			return new Result(500, "server error");
 		}
 	}
 }
