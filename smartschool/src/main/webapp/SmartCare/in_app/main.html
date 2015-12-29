@@ -20,7 +20,8 @@
 					<li><a href="#!/app/info.html">정보</a></li>
 					<li><a href="#!/qna/list.html">서비스문의</a></li>
 					<li><a href="javascript:;" onclick="alert('고객센터로 문의하시기 바랍니다.\nTEL: 1544-1284 '); return false;">서비스탈퇴</a></li>
-				 </ul>
+					<li><a href="javascript:;" ng-click="logout()">로그아웃</a></li>
+				</ul>
 			</nav>
 		</div>
 	</section>
@@ -29,7 +30,7 @@
 		<nav class="main_nav">
 			<ul>
 				<li class="gnb01" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/height.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/height.html')">
 						<span class="menu">성장발달</span>
 						<span class="data">{{height!=null?height:0;}}cm</span>
 					</a>
@@ -41,7 +42,7 @@
 					</a>
 				</li>
 				<li class="gnb02" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/total.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/total.html')">
 						<span class="menu">종합건강점수</span>
 						<span class="data">{{growthGrade!=null?growthGrade:0}}점</span>
 					</a>
@@ -63,7 +64,7 @@
 					</a>
 				</li>
 				<li class="gnb05" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/weight.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/weight.html')">
 						<span class="menu">체중변화</span>
 						<span class="data">{{weight!=null?weight:0}}kg</span>
 					</a>
@@ -75,7 +76,7 @@
 					</a>
 				</li>
 				<li class="gnb06" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/muscle.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/muscle.html')">
 						<span class="menu">근육량</span>
 						<span class="data">{{muscle!=null?muscle:0}}%</span>
 					</a>
@@ -87,7 +88,7 @@
 					</a>
 				</li>
 				<li class="gnb07" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/ranking/height.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/ranking/height.html')">
 						<span class="menu">건강랭킹</span>
 					</a>
 				</li>
@@ -102,7 +103,7 @@
 					</a>
 				</li>
 				<li class="gnb09" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/obesity.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/obesity.html')">
 						<span class="menu">비만도</span>
 						<span class="data">{{bmi!=null?bmi:0}}</span>
 					</a>
@@ -114,7 +115,7 @@
 					</a>
 				</li>
 				<li class="gnb10" ng-if="pay_date!=null">
-					<a href="javascript:;" ng-click="checkStatus('/smoking.html')">
+					<a href="javascript:;" ng-click="checkMeasure('/smoking.html')">
 						<span class="menu">흡연지수</span>
 						<span class="data">{{cohd!=null?cohd:0}}</span>
 					</a>

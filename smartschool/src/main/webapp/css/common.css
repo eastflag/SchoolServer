@@ -190,7 +190,7 @@
 }
 
 /* 개인정보취급방침 */
-.p​olicy_layout {
+.policy_layout {
 	display:none;
 	position:fixed;
 	top:0;
@@ -199,7 +199,7 @@
 	height:100%;
 	z-index:100;
 }
-.p​olicy_layout .popup_bg {
+.policy_layout .popup_bg {
 	position:absolute;
 	top:0;
 	left:0;
@@ -209,7 +209,7 @@
 	opacity:.5;
 	filter:alpha(opacity=50);
 }
-.p​olicy_layout .pop-layer {
+.policy_layout .pop-layer {
 	display:block;
 }
 /* 개인정보 활용동의 */

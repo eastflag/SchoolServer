@@ -272,6 +272,8 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.logout = function() {
 		console.log('----------------- 로그아웃 --------------------');
 		$cookies.remove("member_info",{'path': '/'});
+		$scope.clearStudent();
+		
 		$scope.home_id = null;
 		$scope.member_id = null;
 		$scope.name = null;
@@ -359,11 +361,27 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.school_gubun2 = student.gubun2;
 		$scope.pay_date = student.pay_date;
 		
-		$cookies.putObject('student_info', student,{'path': '/'});
+		var student_info = {
+			member_id:student.member_id,
+			name:student.name,
+			school_id:student.school_id,
+			school_name:student.school_name,
+			gubun2:student.gubun2,
+			pay_date:student.pay_date
+		};
+		
+		$cookies.putObject('student_info', student_info,{'path': '/'});
 	}
 	//가족목록으로 이동 시, 설정된 학생정보 쿠키삭제
 	$scope.clearStudent = function(){
-		$cookies.remove('student_info');
+		$cookies.remove('student_info',{'path': '/'});
+		
+		$scope.student_id = null;
+		$scope.student_name = null;
+		$scope.student_school_id = null;
+		$scope.student_school_name = null;
+		$scope.school_gubun2 = null;
+		$scope.pay_date = null;
 	}
 	//학생정보획득(쿠키)
 	$scope.getStudent = function(){
@@ -378,11 +396,6 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.student_school_name = student_info.school_name;
 		$scope.school_gubun2 = student_info.gubun2;
 		$scope.pay_date = student_info.pay_date;
-		console.log('$scope.student_id => '+$scope.student_id);
-		console.log('$scope.student_name => '+$scope.student_name);
-		console.log('$scope.student_school_id => '+$scope.student_school_id);
-		console.log('$scope.school_gubun2 => '+$scope.school_gubun2);
-		console.log('$scope.pay_date => '+$scope.pay_date);
 	}
 	
 	$scope.yyyyMMdd = function(date) {
@@ -546,6 +559,7 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 								.success(function(response){
 									var data = response.data;
 									for(var i=0;i<data.length;i++){
+										console.log('index => '+i);
 										if(data[i].is_parent==0 && data[i].name == $scope.v_name){
 											$scope.setStudent(data[i]);
 											$location.path('/main.html');
@@ -871,7 +885,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			});
 	};
 	
-	if($scope.$parent.loggedIn()){
+	if($scope.loggedIn()){
 		$scope.clearStudent();
 		$scope.getFamilyList();
 	}
@@ -1095,7 +1109,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.getMeasureHistoryList = function(section){
 		if(section=='height'){
-			GrowthSvc.getHeightHistoryList({member_id:4821})
+			GrowthSvc.getHeightHistoryList({member_id:$scope.student_id})
 				.success(function(response){
 					if(response.result==0){
 						$scope.setGrowthInfo(response.data,section);
@@ -1105,7 +1119,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 					$window.alert("error : " + response.message);
 				});
 		}else if(section=='weight'){
-			GrowthSvc.getWeightHistoryList({member_id:4821})
+			GrowthSvc.getWeightHistoryList({member_id:$scope.student_id})
 				.success(function(response){
 					if(response.result==0){
 						$scope.setGrowthInfo(response.data,section);
@@ -1383,8 +1397,11 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	
-	$scope.replaceAll = function(str){
-		return str.replace(/k/gi,'&nbsp;&middot;&nbsp;');
+	$scope.replaceMenuString = function(str){
+		var tmp = str.replace(/k/gi,'');
+		tmp = str.split(/\n/gi);
+		var t = '&nbsp;&middot;&nbsp;'+tmp.join('<br />&nbsp;&middot;&nbsp;');
+		return t;
 	}
 	
 	$scope.convertDate = function(date){

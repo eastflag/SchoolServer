@@ -285,7 +285,7 @@ app.controller('RequestCtrl', ['$scope', '$rootScope', '$window', 'RequestSvc', 
 	
 	$scope.moveLogin = function(){
 		if(confirm("로그인 후에 이용가능합니다.\n\n로그인 페이지로 이동하시겠습니까?")){
-			$window.location.href = '/SmartCare/login.html';
+			$window.location.href = '#!/login.html';
 			return true;
 		}else{
 			return false;
