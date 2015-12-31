@@ -229,6 +229,17 @@ public class ApiController {
 		}
 	}
 	
+	//프로필이미지 삭제
+	@RequestMapping("/api/removeProfile")
+	public Result removeProfile(@RequestBody MemberVO in){
+		int rs = mobileService.removeProfile(in);
+		if(rs>0){
+			return new Result(0,"success");
+		}else{
+			return new Result(100,"failure");
+		}
+	}
+	
 	//홈아이디 변경하기
 	@RequestMapping("/api/modifyHome")
 	public Result modifyHome(@RequestBody SearchVO search) {

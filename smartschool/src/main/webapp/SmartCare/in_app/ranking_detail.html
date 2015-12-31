@@ -38,7 +38,7 @@
 		</nav>
 		<div class="info_area">
 			<div class="title">
-				<h2>신장</h2>	
+				<h2>{{ranking_title}}</h2>	
 				<p class="update">정보 Update {{measureDate}}</p>
 			</div>
 			
@@ -59,7 +59,7 @@
 						<th scope="col">랭킹</th>
 						<th scope="col">변동</th>
 						<th scope="col">학년</th>
-						<th scope="col">신장</th>
+						<th scope="col">{{ranking_title}}</th>
 						<th scope="col">변동</th>
 					</tr>
 				</thead>
@@ -67,13 +67,13 @@
 					<tr>
 						<td class="font_red">{{rankOfSchool}}위</td>
 						<td ng-class="schoolFontColor(rankOfSchool,beforeRankOfSchool)">
-							<span ng-if="schoolFontColor(rankOfSchool,beforeRankOfSchool) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}%</span>
-							<span ng-if="schoolFontColor(rankOfSchool,beforeRankOfSchool) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}%</span>
+							<span ng-if="schoolFontColor(rankOfSchool,beforeRankOfSchool) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}위</span>
+							<span ng-if="schoolFontColor(rankOfSchool,beforeRankOfSchool) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}위</span>
 							<span ng-if="schoolFontColor(rankOfSchool,beforeRankOfSchool) == ''"><strong>-</strong></span>
 						</td>
-						<td>2</td>
-						<td ng-class="schoolChange">{{value}}cm</td>
-						<td ng-class="schoolChange">{{value - beforeValue}}cm</td>
+						<td>{{school_grade}}</td>
+						<td ng-class="schoolChange">{{value}}{{ranking_unit}}</td>
+						<td ng-class="schoolChange">{{schoolValueDiff(value, beforeValue)}}{{ranking_unit}}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -98,11 +98,11 @@
 				<tbody>
 					<tr>
 						<td>{{nameOfLocal}}</td>
-						<td ng-class="fontColor(rankOfLocal,beforeRankOfLocal,totalOfLocal)">{{rankOfLocal}}%</td>
-						<td ng-class="fontColor(rankOfLocal,beforeRankOfLocal,totalOfLocal)">
-							<span ng-if="fontColor(rankOfLocal,beforeRankOfLocal,totalOfLocal) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
-							<span ng-if="fontColor(rankOfLocal,beforeRankOfLocal,totalOfLocal) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
-							<span ng-if="fontColor(rankOfLocal,beforeRankOfLocal,totalOfLocal) ==''"><strong>-</strong></span>
+						<td ng-class="localChange">{{rankOfLocal}}%</td>
+						<td ng-class="localChange">
+							<span ng-if="localChange =='up'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{diffRankOfLocal}}%</span>
+							<span ng-if="localChange =='down'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{diffRankOfLocal}}%</span>
+							<span ng-if="localChange ==''"><strong>-</strong></span>
 						</td>
 					</tr>
 				</tbody>
@@ -125,11 +125,11 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td ng-class="fontColor(rankOfNation,beforeRankOfNation,totalOfNation)">{{rankOfNation}}%</td>
-						<td ng-class="fontColor(rankOfNation,beforeRankOfNation,totalOfNation)">
-							<span ng-if="fontColor(rankOfNation,beforeRankOfNation,totalOfNation) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfNation,beforeRankOfNation,totalOfNation)}}%</span>
-							<span ng-if="fontColor(rankOfNation,beforeRankOfNation,totalOfNation) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfNation,beforeRankOfNation,totalOfNation)}}%</span>
-							<span ng-if="fontColor(rankOfNation,beforeRankOfNation,totalOfNation) ==''"><strong>-</strong></span>
+						<td ng-class="nationChange">{{rankOfNation}}%</td>
+						<td ng-class="nationChange">
+							<span ng-if="nationChange =='up'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{diffRankOfNation}}%</span>
+							<span ng-if="nationChange =='down'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{diffRankOfNation}}%</span>
+							<span ng-if="nationChange ==''"><strong>-</strong></span>
 						</td>
 					</tr>
 				</tbody>

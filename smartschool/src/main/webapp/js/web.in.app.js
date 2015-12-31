@@ -87,6 +87,10 @@ app.service('FamilySvc', function($http) {
 		console.log('----------------- 학교목록 가져오기 --------------------');
 		return $http.post('/api/getSchoolList', data);
 	};
+	this.removePhoto = function(data){
+		console.log('----------------- 학교목록 가져오기 --------------------');
+		return $http.post('/api/removeProfile', data);
+	};
 });
 
 app.service('StudentSvc', function($http) {
@@ -420,6 +424,9 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.init = function(){
 		var path = $location.path();
+		if(path==''){
+			$location.path('/index.html');
+		}
 		if(!$scope.loggedIn()){
 			switch(path){
 			case '/login.html':
@@ -433,6 +440,8 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		}
 	}
 	$scope.init();
+	
+	console.log('------------------ AuraCtrl ------------------');
 }]);
 
 app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', function($scope, $rootScope, $cookies, $window, $location, Upload){
@@ -589,7 +598,6 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, FamilySvc){
 	//프로필사진 변수
 	$scope.profile = null;
-	$scope.profile_text = null;
 	
 	$scope.family_edit_mode = null;
 	$scope.family_mode_text = '';
@@ -643,7 +651,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.clear = function(){
 		$scope.profile = null;
-		$scope.profile_text = null;
 		
 		$scope.family_edit_mode = null;
 		$scope.family_mode_text = '';
@@ -699,6 +706,20 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.family_mode_text2 = '학생정보 수정';
 		}
 	};
+	
+	$scope.removePhoto = function(){
+		console.log('member_id => '+$scope.v_member_id);
+		FamilySvc.removePhoto({member_id:$scope.v_member_id})
+			.success(function(response){
+				if(response.result==0){
+					$window.alert('프로필 사진이 삭제되었습니다.');
+					$scope.profile = null;
+				}
+			})
+			.error(function(response, state){
+				$window.alert("error : " + response.message);
+			});
+	}
 	
 	$scope.openSearchSchool = function(){
 		$scope.family_list_status = false;
@@ -871,23 +892,32 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	//가족구성원 삭제
 	$scope.removeMember = function(member){
-		AuraSvc.removeMember({member_id:member.member_id})
-			.success(function(response) {
-				if(response.result==0){
-					$window.alert('가족구성원이 삭제되었습니다.');
-					$window.location.reload();
-				}else{
-					$window.alert('가족구성원 삭제실패!\n잠시 수 다시 시도하세요.');
-				}
-			})
-			.error(function(response, state) {
-				$window.alert("error : " + response.message);
-			});
+		if(confirm('해당 가족구성원을 삭제하시겠습니까?')){
+			FamilySvc.removeMember({member_id:member.member_id})
+				.success(function(response) {
+					if(response.result==0){
+						$window.alert('가족구성원이 삭제되었습니다.');
+						$window.location.reload();
+					}else{
+						$window.alert('가족구성원 삭제실패!\n잠시 수 다시 시도하세요.');
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		}else{
+			return false;
+		}
 	};
 	
+	
 	if($scope.loggedIn()){
-		$scope.clearStudent();
-		$scope.getFamilyList();
+		if($scope.is_parent == 0){
+			$location.path('/main.html');
+		}else{
+			$scope.clearStudent();
+			$scope.getFamilyList();
+		}
 	}
 	
 	console.log('------------------ FamilyCtrl ------------------');
@@ -1283,8 +1313,9 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.noti_list = [];
-	$scope.getSchoolNotiList = function(category){
-		SchoolSvc.getSchoolNotiList({school_id:$scope.student_school_id, category:1,member_id:$scope.student_id})
+	$scope.category = null;
+	$scope.getSchoolNotiList = function(){
+		SchoolSvc.getSchoolNotiList({school_id:$scope.student_school_id, category:$scope.category,member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.noti_list = response.data;
@@ -1425,6 +1456,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			.success(function(response){
 				if(response.result==0){
 					$window.alert('게시물이 스크랩되었습니다.');
+					$window.location.reload();
 				}
 			})
 			.error(function(data, status) {
@@ -1438,14 +1470,16 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		case '/dining.html':
 			$scope.getSchoolMenuList();
 			break;
-		case '/school/message.html':
-			$scope.getSchoolNotiList(1);
-			break;
 		case '/school/schedule.html':
 			$scope.getSchoolScheduleList();
 			break;
+		case '/school/message.html':
+			$scope.category = 1;
+			$scope.getSchoolNotiList();
+			break;
 		case '/school/noti.html':
-			$scope.getSchoolNotiList(2);
+			$scope.category = 2;
+			$scope.getSchoolNotiList();
 			break;
 	}
 	console.log('------------------ SchoolCtrl ------------------');
@@ -1488,6 +1522,9 @@ app.controller('TrainingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 }]);
 
 app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'RankingSvc', function($scope, $rootScope, $cookies, $window, $location, RankingSvc){
+	$scope.ranking_title = null;
+	$scope.ranking_unit = null;
+	
 	$scope.tab_index = 0;
 	$scope.detail_url = null;
 	$scope.list_title = null;
@@ -1499,6 +1536,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.beforeValue = null;
 	$scope.school_grade = null;
 	$scope.nameOfSchool = null;
+	$scope.localChange = null;
 	
 	$scope.totalOfSchool = null;
 	$scope.rankOfSchool = null;
@@ -1509,13 +1547,13 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.rankOfLocal = null;
 	$scope.beforeRankOfLocal = null;
 	$scope.localChange = null;
-	$scope.diffRankOfLocal = null;
+	$scope.diffRankOfLocal = 0;
 
 	$scope.totalOfNation = null;
 	$scope.rankOfNation = null;
 	$scope.beforeRankOfNation = null;
 	$scope.nationChange = null;
-	$scope.diffRankOfNation = null;
+	$scope.diffRankOfNation = 0;
 	
 	$scope.setRankingData = function(data){
 		$scope.measureDate = data.measureDate.substring(0,7);
@@ -1528,31 +1566,38 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.totalOfSchool = data.totalOfSchool;
 		$scope.rankOfSchool = data.rankOfSchool;
 		$scope.beforeRankOfSchool = data.beforeRankOfSchool;
+		if($scope.rankOfSchool - $scope.beforeRankOfSchool == 0){
+			$scope.schoolChange = '';
+		}else if($scope.rankOfSchool - $scope.beforeRankOfSchool > 0){
+			$scope.schoolChange = 'up';
+		}else{
+			$scope.schoolChange = 'down';
+		}
 		
 		$scope.nameOfLocal = data.nameOfLocal;
 		$scope.totalOfLocal = data.totalOfLocal;
-		$scope.rankOfLocal = Math.round(data.rankOfLocal/data.totalOfLocal*1000)/10;
-		$scope.beforeRankOfLocal = Math.round(data.beforeRankOfLocal / data.totalOfLocal * 1000)/10;
+		$scope.rankOfLocal = (data.rankOfLocal/data.totalOfLocal*100).toFixed(2);
+		$scope.beforeRankOfLocal = (data.beforeRankOfLocal / data.totalOfLocal * 100).toFixed(2);
 		if($scope.rankOfLocal - $scope.beforeRankOfLocal == 0){
 			$scope.localChange = '';
-		}else if($scope.rankOfSchool - $scope.beforeRankOfSchool > 0){
-			$scope.localChange = 'down';
-		}else{
+		}else if($scope.rankOfLocal - $scope.beforeRankOfLocal > 0){
 			$scope.localChange = 'up';
+		}else{
+			$scope.localChange = 'down';
 		}
-		$scope.diffRankOfLocal = Math.abs($scope.rankOfLocal - $scope.beforeRankOfLocal);
+		$scope.diffRankOfLocal = Math.abs(($scope.rankOfLocal - $scope.beforeRankOfLocal).toFixed(2));
 
 		$scope.totalOfNation = data.totalOfNation;
-		$scope.rankOfNation = Math.round(data.rankOfNation/data.totalOfNation*1000)/10;
-		$scope.beforeRankOfNation = Math.round(data.beforeRankOfNation / data.totalOfLocal*1000)/10;
+		$scope.rankOfNation = (data.rankOfNation/data.totalOfNation*100).toFixed(2);
+		$scope.beforeRankOfNation = (data.beforeRankOfNation / data.totalOfNation*100).toFixed(2);
 		if($scope.rankOfNation - $scope.beforeRankOfNation == 0){
 			$scope.nationChange = '';
 		}else if($scope.rankOfNation - $scope.beforeRankOfNation  > 0){
-			$scope.nationChange = 'down';
-		}else{
 			$scope.nationChange = 'up';
+		}else{
+			$scope.nationChange = 'down';
 		}
-		$scope.diffRankOfNation = Math.abs($scope.rankOfNation - $scope.beforeRankOfNation);
+		$scope.diffRankOfNation = Math.abs(($scope.rankOfNation - $scope.beforeRankOfNation).toFixed(2));
 	}
 	
 	$scope.getRankingHeight = function(){
@@ -1624,7 +1669,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			rank:data.rank,
 			beforeRank:data.beforeRank,
 			total:data.total,
-			rank_rate:Math.round((data.rank/data.total)*1000)/10
+			rank_rate:(data.rank/data.total*100).toFixed(2)
 		}
 		$scope.rank_list = data.list;
 	};
@@ -1685,28 +1730,28 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	};
 	
 	$scope.schoolFontColor = function(rank, beforeRank){
+		console.log('rank =>' +rank);
 		if(parseInt(rank) > parseInt(beforeRank)){
-			return 'font_blue';
-		} else if(parseInt(rank) < parseInt(beforeRank)){
 			return 'font_red';
+		} else if(parseInt(rank) < parseInt(beforeRank)){
+			return 'font_blue';
 		} else {
 			return '';
 		}
 	}
 	
+	$scope.schoolValueDiff = function(value, before){
+		return Math.abs((value - before).toFixed(1));
+	}
+	
 	$scope.schoolRankDiff = function(rank, beforeRank){
-		Math.abs(rank - beforeRank);
-		
 		return Math.abs(rank - beforeRank);
 	}
 	
-	$scope.fontColor = function(rank, beforeRank, total){
-		var v_rank = Math.round(rank / total * 1000)/10;
-		var v_beforeRank = Math.round(beforeRank / total * 1000)/10;
-		
-		if(v_rank > v_beforeRank){
-			return 'font_blue';
-		} else if(v_rank > v_beforeRank){
+	$scope.fontColor = function(rank, beforeRank){
+		if(rank > beforeRank){
+			return 'font_red';
+		} else if(rank > beforeRank){
 			return 'font_red';
 		} else {
 			return '';
@@ -1714,15 +1759,14 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.changeRankDiff = function(rank, beforeRank, total){
-		var v_rank = Math.round(rank / total * 1000)/10;
-		var v_beforeRank = Math.round(beforeRank / total * 1000)/10;
-		
-		if(v_rank > v_beforeRank){
-			return Math.round((v_rank - v_beforeRank)*10)/10;
-		} else if(v_rank > v_beforeRank){
-			return Math.round((v_beforeRank - v_rank)*10)/10;
-		} else {
+		console.log('rank =>' +rank);
+		console.log('beforeRank =>' +beforeRank);
+		var v_rank = (rank/total*100).toFixed(2);
+		var v_beforeRank = (beforeRank/total*100).toFixed(2);
+		if(v_rank == v_beforeRank){
 			return '-';
+		} else {
+			return Math.abs((v_rank - v_beforeRank).toFixed(2));
 		}
 	}
 	
@@ -1743,56 +1787,81 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		
 		switch($location.path()){
 		case '/ranking/height.html':case '/ranking/height/detail.html':
+			$scope.ranking_title = '신장';
+			$scope.ranking_unit = 'cm';
 			$scope.getRankingHeight();
 			$scope.tab_index = 0;
 			$scope.detail_url = '#!/ranking/height/detail.html';
 			$scope.list_url = '#!/ranking/height/list.html';
 			break;
 		case '/ranking/weight.html':case '/ranking/weight/detail.html':
+			$scope.ranking_title = '체중';
+			$scope.ranking_unit = 'kg';
 			$scope.getRankingWeight();
 			$scope.tab_index = 1;
 			$scope.detail_url = '#!/ranking/weight/detail.html';
 			$scope.list_url = '#!/ranking/weight/list.html';
 			break;
 		case '/ranking/bmi.html':case '/ranking/bmi/detail.html':
+			$scope.ranking_title = 'BMI';
+			$scope.ranking_unit = null;
 			$scope.getRankingBmi();
 			$scope.tab_index = 2;
 			$scope.detail_url = '#!/ranking/bmi/detail.html';
 			$scope.list_url = '#!/ranking/bmi/list.html';
 			break;
 		case '/ranking/muscle.html':case '/ranking/muscle/detail.html':
+			$scope.ranking_title = '근육량';
+			$scope.ranking_unit = null;
 			$scope.getRankingMuscle();
 			$scope.tab_index = 3;
 			$scope.detail_url = '#!/ranking/muscle/detail.html';
 			$scope.list_url = '#!/ranking/muscle/list.html';
 			break;
 		case '/ranking/fat.html':case '/ranking/fat/detail.html':
+			$scope.ranking_title = '체지방율';
+			$scope.ranking_unit = '%';
 			$scope.getRankingFat();
 			$scope.tab_index = 4;
 			$scope.detail_url = '#!/ranking/fat/detail.html';
 			$scope.list_url = '#!/ranking/fat/list.html';
 			break;
 		case '/ranking/height/list.html':
+			$scope.ranking_title = '신장';
+			$scope.ranking_unit = 'cm';
+			$scope.tab_index = 0;
 			$scope.getRankingHeightList();
 			$scope.list_url = '#!/ranking/height/list.html';
 			$scope.list_title = '신장';
 			break;
 		case '/ranking/weight/list.html':
+			$scope.ranking_title = '체중';
+			$scope.ranking_unit = 'kg';
+			$scope.tab_index = 1;
 			$scope.getRankingWeightList();
 			$scope.list_url = '#!/ranking/weight/list.html';
 			$scope.list_title = '체중';
 			break;
 		case '/ranking/bmi/list.html':
+			$scope.ranking_title = 'BMI';
+			$scope.ranking_unit = null;
+			$scope.tab_index = 2;
 			$scope.getRankingBmiList();
 			$scope.list_url = '#!/ranking/bmi/list.html';
 			$scope.list_title = 'BMI';
 			break;
 		case '/ranking/muscle/list.html':
+			$scope.ranking_title = '근육량';
+			$scope.ranking_unit = null;
+			$scope.tab_index = 3;
 			$scope.getRankingMuscleList();
 			$scope.list_url = '#!/ranking/muscle/list.html';
 			$scope.list_title = '근육량';
 			break;
 		case '/ranking/fat/list.html':
+			$scope.ranking_title = '체지방율';
+			$scope.ranking_unit = '%';
+			$scope.tab_index = 4;
 			$scope.getRankingFatList();
 			$scope.list_url = '#!/ranking/fat/list.html';
 			$scope.list_title = '체지방률';
@@ -1882,6 +1951,18 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 					$scope.magazine_list = response.data;
 					$scope.magazine_recently = $scope.magazine_list[0];
 					$scope.magazine_recently.subTitle = '건강매거진 '+$scope.magazine_recently.month +'월호';
+					$scope.magazine_recently.images = [
+						{image: magazine.img_1!=null?path+magazine.img_1:null, description: 'Image 00'},
+						{image: magazine.img_2!=null?path+magazine.img_2:null, description: 'Image 01'},
+						{image: magazine.img_3!=null?path+magazine.img_3:null, description: 'Image 02'},
+						{image: magazine.img_4!=null?path+magazine.img_4:null, description: 'Image 03'},
+						{image: magazine.img_5!=null?path+magazine.img_5:null, description: 'Image 04'},
+						{image: magazine.img_6!=null?path+magazine.img_6:null, description: 'Image 05'},
+						{image: magazine.img_7!=null?path+magazine.img_7:null, description: 'Image 06'},
+						{image: magazine.img_8!=null?path+magazine.img_8:null, description: 'Image 07'},
+						{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
+						{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
+					];
 					
 					console.log($scope.magazine_recently);
 				}
@@ -1970,6 +2051,7 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 	$scope.challenge_mode = 'list';
 	
 	$scope.getChallengeList = function(){
+		$scope.clearChallenge();
 		ChallengeSvc.getChallengeList()
 			.success(function(response){
 				if(response.result == 0) {
@@ -2027,11 +2109,6 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 	
 	//도전!!건강!! 수기응모
 	$scope.addChallenge = function(){
-		console.log('attach files count => '+$scope.f.length);
-		console.log('$scope.member_id => '+$scope.student_id);
-		console.log('$scope.challenge_title => '+$scope.challenge.title);
-		console.log('$scope.challenge_content => '+$scope.challenge.content);
-		
 		if ($scope.challenge.title == null) {
 			$window.alert('제목을 입력하세요.');
 			return;

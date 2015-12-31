@@ -63,7 +63,7 @@
 							<th scope="col">학교</th>
 							<th scope="col">학년</th>
 							<th scope="col">이름</th>
-							<th scope="col">신장</th>
+							<th scope="col">{{ranking_title}}</th>
 							<th scope="col">변동</th>
 						</tr>
 					</thead>
@@ -73,7 +73,7 @@
 							<td>{{rank_info.schoolName}}</td>
 							<td>{{rank_info.schoolGrade}}</td>
 							<td>{{rank_info.name}}</td>
-							<td>{{rank_info.value}}cm</td>
+							<td>{{rank_info.value}}{{ranking_unit}}</td>
 							<td ng-class="schoolFontColor(rank_info.rank,rank_info.beforeRank)">
 								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(rank_info.rank,rank_info.beforeRank)}}</span>
 								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(rank_info.rank,rank_info.beforeRank)}}</span>
@@ -98,7 +98,7 @@
 								<th scope="col">학교</th>
 								<th scope="col">학년</th>
 								<th scope="col">이름</th>
-								<th scope="col">신장</th>
+								<th scope="col">{{ranking_title}}</th>
 								<th scope="col">변동</th>
 							</tr>
 						</thead>
@@ -108,7 +108,7 @@
 								<td>{{row.schoolName}}</td>
 								<td>{{row.schoolGrade}}</td>
 								<td>{{blindeName(row.name)}}</td>
-								<td>{{row.value}}cm</td>
+								<td>{{row.value}}{{ranking_unit}}</td>
 								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
@@ -122,7 +122,7 @@
 			<!-- 지역/전국 -->
 			<div ng-show="list_tab!='school'">
 				<h3 ng-if="list_tab=='local'">지역 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
-				<h3 ng-if="list_tab=='nation'">지역 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
+				<h3 ng-if="list_tab=='nation'">전국 랭킹 <span class="count">총 <em>{{rank_info.total}}</em>명중</span></h3>
 				<table class="gray_tbl">
 					<colgroup>
 						<col style="width:10%;" />
@@ -148,16 +148,16 @@
 							<td>{{rank_info.schoolName}}</td>
 							<td>{{rank_info.schoolGrade}}</td>
 							<td>{{rank_info.name}}</td>
-							<td>{{rank_info.value}}cm</td>
-							<td ng-class="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total)">
-								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
-								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rankOfLocal,beforeRankOfLocal,totalOfLocal)}}%</span>
-								<span ng-if="fontColor(rank_info.rank,rank_info.beforeRank,rank_info.total) ==''"><strong>-</strong></span>
+							<td>{{rank_info.value}}{{ranking_unit}}</td>
+							<td ng-class="schoolFontColor(rank_info.rank,rank_info.beforeRank)">
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.beforeRank,rank_info.total)}}</span>
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.beforeRank,rank_info.total)}}</span>
+								<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) ==''"><strong>-</strong></span>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div ng-scrollbars ng-scrollbars-config="config" style="height:263px; width:333px;">
+				<div ng-scrollbars ng-scrollbars-config="config" style="height:256px; width:333px;">
 					<table class="white_tbl mg_top10">
 						<colgroup>
 							<col style="width:10%;" />
@@ -173,7 +173,7 @@
 								<th scope="col">학교</th>
 								<th scope="col">학년</th>
 								<th scope="col">이름</th>
-								<th scope="col">신장</th>
+								<th scope="col">{{ranking_title}}</th>
 								<th scope="col">변동</th>
 							</tr>
 						</thead>
@@ -183,7 +183,7 @@
 								<td>{{row.schoolName}}</td>
 								<td>{{row.schoolGrade}}</td>
 								<td>{{blindeName(row.name)}}</td>
-								<td>{{row.value}}cm</td>
+								<td>{{row.value}}{{ranking_unit}}</td>
 								<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
 									<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>

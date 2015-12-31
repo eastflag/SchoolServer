@@ -1591,4 +1591,10 @@ select
 	 ) T
 	limit 10
 </select>
+
+<update id="deleteProfile" parameterType="MemberVO">
+	update member set
+		photo = null
+	where member_id = #{member_id}
+</update>
 </mapper>

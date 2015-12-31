@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko" ng-app="hybrid">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<meta property="og:title" content="GATI TAXI">
+		<meta name="format-detection" content="telephone=no">
+		<title>AURA</title>
+		<link rel="stylesheet" href="/css/reset.css">
+		<link rel="stylesheet" href="/css/hybrid.common.css">
+		
+		<!-- jQuery  -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="/js/hybrid/jquery-ui-1.10.3.custom.min.js" charset="utf-8"></script>
+		
+		<!-- Angular JS -->
+		<script src="/js/angularjs/1.4.7/angular.min.js"></script>
+		<script src="/js/angularjs/1.4.7/angular-animate.min.js"></script>
+		<script src="/js/angularjs/1.4.7/angular-touch.js"></script>
+		<script src="/js/angularjs/1.4.7/angular-route.js"></script>
+		<script src="/js/angularjs/1.4.7/angular-cookies.js"></script>
+		<script src="/js/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
+		<script src="/js/angularjs/ng-file-upload-shim.min.js"></script>
+		<script src="/js/angularjs/ng-file-upload.min.js"></script>
+		
+		<!-- slide css -->
+		<link rel="stylesheet" href="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" type="text/css"/>
+		<!-- slide js -->
+		<script src="/js/angularjs/tweenMax.1.10.3.min.js"></script>
+		<script src="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
+		<script src="/ng-scrollbars-gh-pages/bower_components/ng-scrollbars/src/scrollbars.js"></script>
+		<script src="/ng-scrollbars-gh-pages/javascripts/highlight.js"></script>
+		
+		<script src="/js/hybrid/native_support.js" charset="utf-8"></script>
+		<script src="/js/hybrid/utility.js" charset="utf-8"></script>
+		<script src="/js/hybrid/common.js" charset="utf-8"></script>
+		<script src="/js/hybrid.app.js" charset="utf-8"></script>
+		
+		<base href="/hybrid/index.html" />
+	</head>
+	
+	<body ng-class="badyClass" ng-controller="MainCtrl">
+		<div ng-show="!loggedIn()">
+			<article class="login_wrap">
+				<h1><img src="/images/aura_in_app/img_login_logo.png" alt="스마트 안전건강지킴이"></h1>
+				<form id="">
+					<fieldset>
+						<legend class="screen_out">로그인 정보</legend>
+						<div class="in_input">
+							<input type="text" ng-model="v_home_id" placeholder="가족명">
+						</div>
+						<div class="in_input">
+							<input type="text" ng-model="v_mdn" placeholder="전화번호">
+						</div>
+						<button type="button" class="btn_common_gray mg_top10" ng-click="login()">로그인</button>
+					</fieldset>
+				</form>
+				<div class="forget_account">
+					<a href="javascript:;" class="btn_forget_account">가족명을 잃어버리셨나요?</a>
+				</div>
+				<p class="join_message">아직 회원이 아니세요?</p>
+				<a href="javascript:;" class="btn_common_blue_line mg_top15">회원 가입하기</a>		
+			</article>
+		</div>
+		
+		<div ng-show="loggedIn()">
+			<header class="header">
+				<h1>{{header_title}}</h1>
+				<a href="javascript:;" class="btn_page_back" ng-click="historyBack()"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로"></a>
+				<button class="btn_gnb" onclick="gnbShow()" ng-if="menu_yn"></button>
+			</header>
+			
+			<section class="gnb_wrap">
+				<div class="dim_area" onclick="gnbHide()"></div>
+				<button type="button" class="btn_layer_close" onclick="gnbHide()"></button>
+				<div class="gnb_area">
+					<div class="info_area">
+						<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home">
+						<p class="name">동희네 하우스</p>
+						<a href="javascript:;" class="btn_modify" onclick="gnbHide(); commonLayerOpen('family_modify');">변경하기</a>
+					</div>
+					<nav class="menu_area">
+						 <ul>
+							<li><a href="javascript:;">공지사항</a></li>
+							<li><a href="javascript:;">Q&amp;A</a></li>
+							<li><a href="javascript:;">정보</a></li>
+							<li><a href="javascript:;">서비스문의</a></li>
+							<li><a href="javascript:;">서비스탈퇴</a></li>
+						 </ul>
+					</nav>
+				</div>
+			</section>
+			
+			<ng-view></ng-view>
+		</div>
+	</body>
+</html>

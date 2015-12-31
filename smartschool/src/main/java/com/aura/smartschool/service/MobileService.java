@@ -204,4 +204,5 @@ public interface MobileService {
 	public int getMeasureHistoryCount(SearchVO in);
 	public RankingItem getRanking(MemberVO in, String height);
 	public RankingListItem getRankingList(SearchVO in, String height);
+	public int removeProfile(MemberVO in);
 }

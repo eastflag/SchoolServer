@@ -56,7 +56,7 @@
 						<p class="infos school" ng-switch-when="0">{{row.school_name}} {{row.school_grade}}학년 {{row.school_class}}반</p>
 						<p class="infos place" ng-switch-when="0">위치정보없음</p>
 						<button type="button" class="btn modify_info" style="cursor:pointer;" ng-click="modFamily(row)">정보수정</button>
-						<button type="button" class="btn delete" style="cursor:pointer;" ng-click="removeMember(row)" ng-confirm-click="해당 가족구성원을 삭제하시겠습니까?" ng-show="{{row.is_parent == 0}}">삭제하기</button>
+						<button type="button" class="btn delete" style="cursor:pointer;" ng-click="removeMember(row)" ng-show="{{row.is_parent == 0}}">삭제하기</button>
 					</div>
 				</li>
 			</ul>
@@ -85,14 +85,13 @@
 				<fieldset>
 					<legend class="screen_out">{{family_mode_text2}}</legend>
 					<div class="in_photo">
-						<div ng-if="photo!=null">
-							<img ng-src="/profile/{{member_id}}"/>
+						<div ng-if="profile!=null">
+							<img ng-src="/profile/{{v_member_id}}"/>
 						</div>
-						<span ng-show="profile_text" style="display: block; margin-left: -16px; margin-top: 36px; text-align: center;">{{profile_text}}</span>
 					</div>
 					<div class="photo_add">
-						<label class="btn_photo_add" type="file" ngf-select="setProfile($file)" ngf-pattern="'.png,.jpg,.gif'" ngf-validate="{size:{min:'10B', max:'10MB'}}">사진등록</label>
-						<button type="button" class="btn_photo_delete" ng-show="family_edit_mode=='edit'">사진삭제</button>
+						<label class="btn_photo_add" type="file" ngf-select="setProfile($file)" ngf-pattern="'.png,.jpg,.gif'">사진등록</label>
+						<button type="button" class="btn_photo_delete" ng-show="family_edit_mode=='edit'" ng-click="removePhoto()">사진삭제</button>
 					</div>
 					<div class="in_input">
 						<input type="tel" ng-model="v_mdn" placeholder="phone number" />

@@ -12,11 +12,6 @@ app.run(['$rootScope', function($rootScope) {
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	/*$routeProvider
 		.when('/', {templateUrl: '/SmartCare/in_app/index.html'})
-		.when('/index.html', {templateUrl: '/SmartCare/in_app/index.html', controller:'AppMemberCtrl'})
-		.when('/login.html', {templateUrl: '/SmartCare/in_app/login.html', controller:'CommonCtrl'})
-		.when('/join.html', {templateUrl: '/SmartCare/in_app/join.html'})
-		.when('/measure.html', {templateUrl: '/SmartCare/in_app/measure.html'})
-		.when('/magazine/list.html', {templateUrl: '/SmartCare/in_app/magazine_list.html', controller:'CommonCtrl'})
 	*/
 	$locationProvider.html5Mode(true);
 }]);

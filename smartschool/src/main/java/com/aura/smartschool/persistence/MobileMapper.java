@@ -217,4 +217,5 @@ public interface MobileMapper {
 	//랭킹
 	public BodyMeasureGrade selectRankingByGubun(Map<String, Object> param);	//구분[학교,지역,전국]등수 및 학생수
 	public List<BodyMeasureGrade> selectRankingList(Map<String, Object> param);	//구분[학교,지역,전국] 랭킹목록
+	public int deleteProfile(MemberVO in);
 }

@@ -28,13 +28,13 @@
 	
 	<article class="megazine_list_wrap">
 		<section class="new">
-			<div class="photo"><img src="/images/aura_in_app/sample/img_megazine_sample.png" alt="" /></div>
+			<div class="photo"><img ng-if="magazine_recently.images[0].image" src="{{magazine_recently.images[0].image}}" alt="" /></div>
 			<div class="info">
 				<strong class="main_title">{{magazine_recently.title}}</strong>
 				<p class="sub_title">{{magazine_recently.subTitle}}</p>
 				<p class="subject">{{magazine_recently.subject}}</p>
 				<p class="cont">{{magazine_recently.content}}</p>
-				<a href="javascript:;" ng-click="magazineView(magazine_recently)" class="btn_detail_view">내용보기</a>
+				<a href="javascript:;" ng-if="magazine_recently" ng-click="magazineView(magazine_recently)" class="btn_detail_view">내용보기</a>
 			</div>
 		</section>
 		

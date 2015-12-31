@@ -1063,6 +1063,8 @@ public class MobileServiceImpl implements MobileService {
 			rank.setSchool_grade_id(summaryVO.getSchool_grade_id());
 			rank.setNameOfLocal(school.getSido());
 			
+			System.out.println("getSchool_grade_id => "+summaryVO.getSchool_grade_id());
+			
 			if(Constant.Height.equals(section)) {
 				rank.setValue(summaryVO.getHeight());
 			} else if(Constant.Weight.equals(section)) {
@@ -1224,6 +1226,11 @@ public class MobileServiceImpl implements MobileService {
 			return rank;
 		}
 		return null;
+	}
+
+	@Override
+	public int removeProfile(MemberVO in) {
+		return mobileMapper.deleteProfile(in);
 	}
 
 }
