@@ -288,12 +288,6 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$window.location.href = '/';
 	}
 	
-	//메뉴
-	$scope.setting_display = 'none';
-	$scope.toggleSetting = function(){
-		$scope.setting_display = $scope.setting_display == 'none'?'block':'none';
-	}
-	
 	$scope.new_home_id = null;
 	$scope.change_home_display = 'none';
 	
@@ -1951,17 +1945,18 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 					$scope.magazine_list = response.data;
 					$scope.magazine_recently = $scope.magazine_list[0];
 					$scope.magazine_recently.subTitle = '건강매거진 '+$scope.magazine_recently.month +'월호';
+					var path = '/upload/magazine/'+$scope.magazine_recently.year+'/'+$scope.magazine_recently.month+'/';
 					$scope.magazine_recently.images = [
-						{image: magazine.img_1!=null?path+magazine.img_1:null, description: 'Image 00'},
-						{image: magazine.img_2!=null?path+magazine.img_2:null, description: 'Image 01'},
-						{image: magazine.img_3!=null?path+magazine.img_3:null, description: 'Image 02'},
-						{image: magazine.img_4!=null?path+magazine.img_4:null, description: 'Image 03'},
-						{image: magazine.img_5!=null?path+magazine.img_5:null, description: 'Image 04'},
-						{image: magazine.img_6!=null?path+magazine.img_6:null, description: 'Image 05'},
-						{image: magazine.img_7!=null?path+magazine.img_7:null, description: 'Image 06'},
-						{image: magazine.img_8!=null?path+magazine.img_8:null, description: 'Image 07'},
-						{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
-						{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
+						{image: $scope.magazine_recently.img_1!=null?path+$scope.magazine_recently.img_1:null, description: 'Image 00'},
+						{image: $scope.magazine_recently.img_2!=null?path+$scope.magazine_recently.img_2:null, description: 'Image 01'},
+						{image: $scope.magazine_recently.img_3!=null?path+$scope.magazine_recently.img_3:null, description: 'Image 02'},
+						{image: $scope.magazine_recently.img_4!=null?path+$scope.magazine_recently.img_4:null, description: 'Image 03'},
+						{image: $scope.magazine_recently.img_5!=null?path+$scope.magazine_recently.img_5:null, description: 'Image 04'},
+						{image: $scope.magazine_recently.img_6!=null?path+$scope.magazine_recently.img_6:null, description: 'Image 05'},
+						{image: $scope.magazine_recently.img_7!=null?path+$scope.magazine_recently.img_7:null, description: 'Image 06'},
+						{image: $scope.magazine_recently.img_8!=null?path+$scope.magazine_recently.img_8:null, description: 'Image 07'},
+						{image: $scope.magazine_recently.img_9!=null?path+$scope.magazine_recently.img_9:null, description: 'Image 08'},
+						{image: $scope.magazine_recently.img_10!=null?path+$scope.magazine_recently.img_10:null, description: 'Image 09'},
 					];
 					
 					console.log($scope.magazine_recently);
@@ -2086,7 +2081,10 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 				(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
 		){
 			$window.alert('이미지파일만 등록가능합니다.');
-		}else{
+		} else if(file.size <10 || file.size > 1000*1000*10){
+			$console.log('10MB이하의 이미지만 등록가능합니다.');
+		}
+		else{
 			$scope.f[idx] = file;
 			$scope.filenames[idx].name = file.name;
 			console.log('attach file length => '+$scope.f.length);

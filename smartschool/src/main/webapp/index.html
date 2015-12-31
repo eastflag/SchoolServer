@@ -45,6 +45,18 @@
 		<script src="/js/common.js"></script>
 		<script src="/js/aura_in_app/common.js"></script>
 		<script src="/js/web.in.app.js"></script>
+		
+		<script type="text/javascript">
+		//in_app gnb
+		function gnbShow(){
+			$('.header').css({'z-index':'0'});
+			$('.gnb_wrap').fadeIn(200);
+		}
+		function gnbHide(){
+			$('.header').css({'z-index':'400'});
+			$('.gnb_wrap').fadeOut(200);
+		}
+		</script>
 
 		<base href="/" />
 	</head>

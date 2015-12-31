@@ -8,11 +8,11 @@
 <div class="load family_list" ng-show="loggedIn()" ng-style="family_list_status?{'display':'block'}:{'display':'none'}">
 	<header class="header">
 		<h1>{{home_id}}</h1>
-		<button class="btn_gnb" ng-click="toggleSetting()"></button>
+		<button class="btn_gnb" onclick="gnbShow()"></button>
 	</header>
-	<section class="gnb_wrap" style="display:{{setting_display}}">
-		<div class="dim_area" ng-click="toggleSetting();"></div>
-		<button type="button" class="btn_layer_close" ng-click="toggleSetting();"></button>
+	<section class="gnb_wrap">
+		<div class="dim_area" onclick="gnbHide()"></div>
+		<button type="button" class="btn_layer_close" onclick="gnbHide()"></button>
 		<div class="gnb_area">
 			<div class="info_area">
 				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
