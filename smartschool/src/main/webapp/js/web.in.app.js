@@ -1994,6 +1994,13 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 			{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
 			{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
 		];
+		$scope.image_size = 0;
+		for(var i=0; i<$scope.images.length; i++){
+			if($scope.images[i].image!=null){
+				$scope.image_size++;
+			}
+		}
+		console.log('$scope.image_size =>' + $scope.image_size);
 	}
 	
 	$scope.direction = 'left';
@@ -2013,12 +2020,12 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 	
 	$scope.prevSlide = function () {
 		$scope.direction = 'left';
-		$scope.currentIndex = ($scope.currentIndex < $scope.magazine_images.length - 1) ? ++$scope.currentIndex : 0;
+		$scope.currentIndex = ($scope.currentIndex < $scope.image_size - 1) ? ++$scope.currentIndex : 0;
 	};
 
 	$scope.nextSlide = function () {
 		$scope.direction = 'right';
-		$scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.magazine_images.length - 1;
+		$scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.image_size - 1;
 	};
 	
 	$scope.init();

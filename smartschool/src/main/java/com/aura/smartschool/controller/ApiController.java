@@ -842,7 +842,7 @@ public class ApiController {
 		Gson gson = new Gson();
 		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
+		String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
 		//String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
 		logger.debug("path : " + path);
 		logger.debug("data : " + data);

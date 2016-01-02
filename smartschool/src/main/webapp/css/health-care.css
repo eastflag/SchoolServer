@@ -394,3 +394,43 @@ table.dataTable thead .sorting:after {
 .panel-yellow a:hover {
     color: #df8a13;
 }
+
+/* 2016.01.01 추가 */
+.magazine-slide-wrap {
+	width:100%;
+}
+.magazine-slide-wrap .slide-wrapper {
+	width:404px;
+	height:556px;
+	overflow:hidden;
+	position:relative;
+	margin:0 auto;
+	border:3px solid #ccc;
+}
+.magazine-slide-wrap .slide-wrapper .nonDraggableImage{-webkit-user-drag: none;}
+.magazine-slide-wrap .slide-wrapper img {
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+.magazine-slide-wrap .arrow {
+	position: absolute;
+	z-index: 1002;
+	display: block;
+	top: 50%;
+	outline: none;
+	cursor: pointer;
+	font-size:100px;
+	margin-top:32px;
+	text-decoration:none;
+}
+.magazine-slide-wrap .arrow.prev {
+	left: 100px;
+	transition: 0.2s linear all;
+}
+.magazine-slide-wrap .arrow.next {
+	right: 100px;
+	transition: 0.2s linear all;
+}

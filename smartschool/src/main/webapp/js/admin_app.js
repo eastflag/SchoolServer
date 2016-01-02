@@ -1940,13 +1940,14 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	$scope.totalCount = 0;
 	$scope.currentPage = 1;
 	
-	$scope.mode = "";
+	$scope.mode = null;
 	$scope.mode_text = "메거진 추가";
 	
 	$scope.years = [];
 	$scope.months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
 	
 	$scope.getMagazineList = function(){
+		$scope.clearMagazine();
 		MagazineSvc.getMagazineList({start_index:($scope.currentPage - 1) * 10, page_size:10})
 		.success(function(response, status, headers) {
 			$rootScope.refreshToken(headers('X-Auth'));
@@ -1964,7 +1965,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	}
 
 	$scope.clearMagazine = function() {
-		$scope.mode = "";
+		$scope.mode = null;
 		$scope.mode_text = "건강매거진 추가";
 		
 		var cDate = new Date();
@@ -2101,7 +2102,7 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			});
 		}
 	}
-	
+
 	$scope.editMagazine = function(magazine){
 		console.log('건강매거진 수정');
 		$scope.magazine_id = magazine.magazine_id;
@@ -2126,6 +2127,56 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			{code:10, name:magazine.img_10}
 		];
 	}
+
+	$scope.slide_size = 0;
+	$scope.viewMagazine = function(magazine){
+		console.log('건강매거진 보기');
+		$scope.magazine_id = magazine.magazine_id;
+		$scope.mode = "view";
+		$scope.mode_text = "건강매거진 상세";
+		
+		$scope.year = magazine.year;
+		$scope.month = magazine.month;
+		$scope.title = magazine.title;
+		$scope.subject = magazine.subject;
+		$scope.content = magazine.content;
+		
+		var path = '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
+		$scope.slide_images = [
+			{image: magazine.img_1!=null?path+magazine.img_1:null, description: 'Image 00'},
+			{image: magazine.img_2!=null?path+magazine.img_2:null, description: 'Image 01'},
+			{image: magazine.img_3!=null?path+magazine.img_3:null, description: 'Image 02'},
+			{image: magazine.img_4!=null?path+magazine.img_4:null, description: 'Image 03'},
+			{image: magazine.img_5!=null?path+magazine.img_5:null, description: 'Image 04'},
+			{image: magazine.img_6!=null?path+magazine.img_6:null, description: 'Image 05'},
+			{image: magazine.img_7!=null?path+magazine.img_7:null, description: 'Image 06'},
+			{image: magazine.img_8!=null?path+magazine.img_8:null, description: 'Image 07'},
+			{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
+			{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
+		];
+		for(var i=0; i<$scope.slide_images.length; i++){
+			if($scope.slide_images[i].image!=null){
+				$scope.slide_size++;
+			}
+		}
+		console.log($scope.slide_size);
+	}
+	$scope.direction = 'left';
+	$scope.currentIndex = 0;
+
+	$scope.isCurrentSlideIndex = function (index) {
+		return $scope.currentIndex === index;
+	};
+	
+	$scope.prevSlide = function () {
+		$scope.direction = 'left';
+		$scope.currentIndex = ($scope.currentIndex < $scope.slide_size - 1) ? ++$scope.currentIndex : 0;
+	};
+
+	$scope.nextSlide = function () {
+		$scope.direction = 'right';
+		$scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.slide_size - 1;
+	};
 	
 	$scope.modifyMagazine = function(){
 		if($scope.year == ''){
@@ -2200,7 +2251,6 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				if(data.result == 0) {
 					$window.alert('건강매거진이 수정되었습니다.');
 					$scope.getMagazineList();
-					$scope.clearMagazine();
 				} else {
 					$window.alert(data.msg);
 				}
@@ -2211,6 +2261,15 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 					alert("error : " + data.message);
 				}
 			});
+		}
+	}
+	
+	$scope.getStatus = function(){
+		console.log('$scope.mode => '+$scope.mode);
+		if($scope.mode == 'view' || $scope.mode == null){
+			return false;
+		}else{
+			return true;
 		}
 	}
 	
@@ -2429,3 +2488,37 @@ app.controller('CkeditorCtrl', ['$scope', function ($scope) {
 		});
 	};
 }]);
+
+app.animation('.slide-animation', function () {
+	return {
+		beforeAddClass: function (element, className, done) {
+			var scope = element.scope();
+			if (className == 'ng-hide') {
+				var finishPoint = element.parent().width();
+				if(scope.direction !== 'right') {
+					finishPoint = -finishPoint;
+				}
+				TweenMax.to(element, 0.5, {left: finishPoint, onComplete: done });
+			}
+			else {
+				done();
+			}
+		},
+		removeClass: function (element, className, done) {
+			var scope = element.scope();
+			
+			if (className == 'ng-hide') {
+				element.removeClass('ng-hide');
+				var startPoint = element.parent().width();
+				if(scope.direction === 'right') {
+					startPoint = -startPoint;
+				}
+	
+				TweenMax.fromTo(element, 0.5, { left: startPoint }, {left: 0, onComplete: done });
+				}
+			else {
+				done();
+			}
+		}
+	};
+});

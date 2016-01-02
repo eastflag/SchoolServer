@@ -11,12 +11,12 @@
 				<div class="panel-heading">
 					<i class="fa fa-list fa-lg"></i> 건강매거진 목록
 					<div class="pull-right">
-						<button type="button" class="btn btn-default btn-xs" ng-click="clearMagazine()">매거진추가</button>
+						<button type="button" class="btn btn-default btn-xs" ng-click="mode='add'">매거진추가</button>
 					</div>
 				</div>
 				<table class="table table-striped">
 					<colgroup span="4">
-						<col width="20%" />
+						<col width="25%" />
 						<col width="20%" />
 						<col width="*" />
 						<col width="20%" />
@@ -30,29 +30,53 @@
 						</tr>
 					</thead>
 					<tbody>
-				<tr ng-repeat="magazine in magazines">
-					<td>
-						<button class="btn btn-default btn-xs" ng-click="editMagazine(magazine)">
-							<span class="glyphicon glyphicon-pencil"></span> 수 정
-						</button>
-						<button class="btn btn-default btn-xs" ng-click="removeMagazine(magazine)">
-							<span class="glyphicon glyphicon-remove-circle"></span> 삭 제
-						</button>
-					</td>
-					<td>{{magazine.title}}</td>
-					<td>{{magazine.subject}}</td>
-					<td>{{magazine.created | date: 'yyyy-MM-dd'}}</td>
-				</tr>
-				<tr>
-					<td colspan="7" style="text-align:center">
-							<pagination boundary-links="true" total-items="totalCount" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="pageChange()"></pagination>
-						</td>
-					</tr>
-				</tbody>
+						<tr ng-repeat="magazine in magazines">
+							<td>
+								<button class="btn btn-default btn-xs" ng-click="viewMagazine(magazine)">
+									<span class="glyphicon glyphicon-pencil"></span> 상 세
+								</button>
+								<button class="btn btn-default btn-xs" ng-click="editMagazine(magazine)">
+									<span class="glyphicon glyphicon-pencil"></span> 수 정
+								</button>
+								<button class="btn btn-default btn-xs" ng-click="removeMagazine(magazine)">
+									<span class="glyphicon glyphicon-remove-circle"></span> 삭 제
+								</button>
+							</td>
+							<td>{{magazine.title}}</td>
+							<td>{{magazine.subject}}</td>
+							<td>{{magazine.created | date: 'yyyy-MM-dd'}}</td>
+						</tr>
+						<tr>
+							<td colspan="7" style="text-align:center">
+								<pagination boundary-links="true" total-items="totalCount" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="pageChange()"></pagination>
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
+			<hr ng-show="mode=='view'"/>
+			<div class="panel panel-info" ng-show="mode=='view'">
+				<div class="panel-heading">
+					<i class="fa fa-list fa-lg"></i> {{mode_text}}
+				</div>
+				<div class="panel-body">
+					<div class="magazine-slide-wrap">
+						<div class="slide-wrapper">
+							<img style="width:100%" ng-if="slide.image" ng-repeat="slide in slide_images" class="slide slide-animation nonDraggableImage" ng-swipe-right="prevSlide()" ng-swipe-left="nextSlide()" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{slide.image}}">
+						</div>
+						<a href="javascript:;" ng-if="slide_size>1" class="arrow prev" ng-click="nextSlide()">&lt;</a>
+						<a href="javascript:;" ng-if="slide_size>1" class="arrow next" ng-click="prevSlide()">&gt;</a>
+					</div>
+					<div style="margin-top:12px;">
+						<p>발행 : {{year}}년 {{month}}월호</p>
+						<p>제목 : {{title}}</p>
+						<p>주제 : {{subject}}</p>
+						<p>내용 : {{content}}</p>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="col-lg-4">
+		<div class="col-lg-4" ng-show="getStatus()">
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<i class="fa fa-edit fa-lg"></i> {{mode_text}}
@@ -112,10 +136,10 @@
 						<div class="col-lg-6" ng-switch-when="edit">
 							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-plus fa-lg"></i> Add </button>
 						</div>
-						<div class="col-lg-6" ng-switch-when="">
+						<div class="col-lg-6" ng-switch-when="add">
 							<button type="button" class="btn btn-info btn-block disabled"><i class="fa fa-save fa-lg"></i> Save</button>
 						</div>
-						<div class="col-lg-6" ng-switch-when="">
+						<div class="col-lg-6" ng-switch-when="add">
 							<button type="button" ng-click="addMagazine()" class="btn btn-info btn-block"><i class="fa fa-plus fa-lg"></i> Add </button>
 						</div>
 					</div>

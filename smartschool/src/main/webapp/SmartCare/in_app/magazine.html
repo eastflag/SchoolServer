@@ -100,10 +100,10 @@
 		<div ng-scrollbars ng-scrollbars-config="config" style="width:340px; height:554px;">
 			<div class="photo_wrap">
 				<div class="swiper-wrapper">
-					<img ng-if="slide.image" ng-repeat="slide in images" class="slide slide-animation nonDraggableImage" ng-swipe-right="nextSlide()" ng-swipe-left="prevSlide()" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{slide.image}}">
+					<img ng-if="slide.image" ng-repeat="slide in images" class="slide slide-animation nonDraggableImage" ng-swipe-right="prevSlide()" ng-swipe-left="nextSlide()" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{slide.image}}">
 				</div>
-				<a href="javascript:;" class="arrow prev" ng-click="prevSlide()"></a>
-				<a href="javascript:;" class="arrow next" ng-click="nextSlide()"></a>
+				<a href="javascript:;" ng-if="image_size>1" class="arrow prev" ng-click="nextSlide()"></a>
+				<a href="javascript:;" ng-if="image_size>1" class="arrow next" ng-click="prevSlide()"></a>
 			</div>
 			<div class="cont_box">
 				<p class="title">{{title}}</p>
