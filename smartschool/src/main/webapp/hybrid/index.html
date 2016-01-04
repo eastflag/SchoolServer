@@ -4,15 +4,47 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-		<meta property="og:title" content="GATI TAXI">
+		<meta property="og:title" content="스마튼안전건강지킴이">
 		<meta name="format-detection" content="telephone=no">
 		<title>AURA</title>
 		<link rel="stylesheet" href="/css/reset.css">
 		<link rel="stylesheet" href="/css/hybrid.common.css">
 		
+		<style>
+		.track3 {
+			width: 10px;
+			background: rgba(0, 0, 0, 0);
+			margin-right: 2px;
+			border-radius: 10px;
+			-webkit-transition: background 250ms linear;
+			transition: background 250ms linear;
+		}
+	
+		.track3:hover,
+		.track3.dragging {
+			background: #d9d9d9; /* Browsers without rgba support */
+			background: rgba(0, 0, 0, 0.15);
+		}
+	
+		.handle3 {
+			width: 7px;
+			right: 0;
+			background: #999;
+			background: rgba(0, 0, 0, 0.4);
+			border-radius: 7px;
+			-webkit-transition: width 250ms;
+			transition: width 250ms;
+		}
+	
+		.track3:hover .handle3,
+		.track3.dragging .handle3 {
+			width: 10px;
+		}
+		</style>
+		
 		<!-- jQuery  -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script src="/js/hybrid/jquery-ui-1.10.3.custom.min.js" charset="utf-8"></script>
+		<script src="/js/jquery/jquery.1.11.2.min.js"></script>
+		<script src="/js/jquery/jquery-ui-1.10.3.custom.min.js"></script>
 		
 		<!-- Angular JS -->
 		<script src="/js/angularjs/1.4.7/angular.min.js"></script>
@@ -23,14 +55,12 @@
 		<script src="/js/angularjs/1.5.0-beta.1/angular-sanitize.js"></script>
 		<script src="/js/angularjs/ng-file-upload-shim.min.js"></script>
 		<script src="/js/angularjs/ng-file-upload.min.js"></script>
-		
-		<!-- slide css -->
-		<link rel="stylesheet" href="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" type="text/css"/>
-		<!-- slide js -->
 		<script src="/js/angularjs/tweenMax.1.10.3.min.js"></script>
-		<script src="/ng-scrollbars-gh-pages/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.js"></script>
-		<script src="/ng-scrollbars-gh-pages/bower_components/ng-scrollbars/src/scrollbars.js"></script>
-		<script src="/ng-scrollbars-gh-pages/javascripts/highlight.js"></script>
+		
+		<!-- scrollbar css -->
+		<link rel="stylesheet" href="/css/jquery.custom-scrollbar.css" type="text/css"/>
+		<!-- scrollbar js -->
+		<script src="/js/enscroll-0.6.1.min.js"></script>
 		
 		<script src="/js/hybrid/native_support.js" charset="utf-8"></script>
 		<script src="/js/hybrid/utility.js" charset="utf-8"></script>
@@ -65,9 +95,9 @@
 		</div>
 		
 		<div ng-show="loggedIn()">
-			<header class="header">
+			<header class="header" ng-style="loggedIn()?{'display':'block'}:{'display':'none'}">
 				<h1>{{header_title}}</h1>
-				<a href="javascript:;" class="btn_page_back" ng-click="historyBack()"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로"></a>
+				<a href="javascript:;" class="btn_page_back" ng-click="historyBack()" ng-if="backBtnSttus"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로"></a>
 				<button class="btn_gnb" onclick="gnbShow()" ng-if="menu_yn"></button>
 			</header>
 			
@@ -77,7 +107,7 @@
 				<div class="gnb_area">
 					<div class="info_area">
 						<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home">
-						<p class="name">동희네 하우스</p>
+						<p class="name">{{home_id}}</p>
 						<a href="javascript:;" class="btn_modify" onclick="gnbHide(); commonLayerOpen('family_modify');">변경하기</a>
 					</div>
 					<nav class="menu_area">

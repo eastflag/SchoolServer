@@ -769,11 +769,11 @@
 .common_layer .layer_box .input_group .in_input {float:left; margin-left:3.5%; width:31%;}
 .common_layer .layer_box .input_group .in_input:first-child {margin-left:0;}
 .common_layer .layer_box .input_group .in_input input {width:80%;}
+.common_layer .layer_box .input_group .in_input select {width:100%; border:0;}
 /* family add */
 .common_layer.family_add01 .layer_box {top:25px;}
-.common_layer.family_add01 .layer_box form {padding:0 5% 15px;}
+.common_layer .layer_box form {padding:0 5% 15px;}
 .common_layer.family_add02 .layer_box {top:25px;}
-.common_layer.family_add02 .layer_box form {padding:0 5% 15px;}
 /* use rule */
 .common_layer.use_rule .layer_box {height:80%;}
 .common_layer.use_rule .layer_box h3 {height:60px; line-height:60px; letter-spacing:-1px; color:#fff; font-size:1.25em; font-weight:normal; text-align:center; background:#1f8fd0; border-radius:5px 5px 0 0;}

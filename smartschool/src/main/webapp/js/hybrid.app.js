@@ -1,7 +1,4 @@
-var app = angular.module('hybrid', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngScrollbars','ngAnimate','ngTouch']);
-app.factory('highlighter', function () {
-	return new Scrollbars.Highlighter();
-})
+var app = angular.module('hybrid', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngAnimate','ngTouch']);
 
 app.run(['$rootScope', function($rootScope) {
 	$rootScope.rootPath = "/hybrid/index.html";
@@ -13,15 +10,16 @@ app.run(['$rootScope', function($rootScope) {
 	$rootScope.is_parent = null;
 	
 	//current student info
-	$scope.student_id = null;
-	$scope.student_name = null;
+	$rootScope.student_id = null;
+	$rootScope.student_name = null;
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
+		.when('/family', {templateUrl: '/hybrid/templates/family.html', controller:'FamilyCtrl'})
+		.when('/student', {templateUrl: '/hybrid/templates/student.html', controller:'StudentCtrl'})
 	/*
 		.when('/index.html', {templateUrl: '/SmartCare/in_app/index.html', controller:'FamilyCtrl'})
-		.when('/login.html', {templateUrl: '/SmartCare/in_app/login.html', controller:'LoginCtrl'})
 		.when('/join.html', {templateUrl: '/SmartCare/in_app/join.html', controller:'JoinCtrl'})
 		.when('/main.html', {templateUrl: '/SmartCare/in_app/main.html', controller:'StudentCtrl'})
 		.when('/height.html', {templateUrl: '/SmartCare/in_app/height.html', controller:'GrowthCtrl'})
@@ -232,33 +230,35 @@ app.service('QnaSvc', function($http) {
 	};
 });
 
-app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'MainSvc', function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, MainSvc){
-	//기본정보(쿠기에 담기는 정보)
+app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'MainSvc', function($scope, $rootScope, $cookies, $window, $location, Upload, MainSvc){
+	//기본정보(로그인 정보)
 	$scope.home_id = null;
 	$scope.member_id = null;
 	$scope.mdn = null;
 	$scope.is_parent = null;
 	
+	//학생정보
+	$scope.student_id = null;
+	$scope.student_name = null;
+	
 	$scope.badyClass = null;		//body bg-color class
 	
-	$scope.header_title = null;
+	$scope.header_title = null;		//header title text
+	$scope.backBtnSttus = true;
 	
 	//로그인 상태체크
 	$scope.loggedIn = function() {
-		var hyrid_info = $cookies.getObject("hyrid_info");
-		if (hyrid_info != null && hyrid_info != undefined) {
-			$scope.home_id = hyrid_info.home_id;
-			$scope.member_id = hyrid_info.member_id;
-			$scope.mdn = hyrid_info.mdn;
-			$scope.is_parent = hyrid_info.is_parent;
+		var user_info = $cookies.getObject("user_info");
+		if (user_info != null && user_info != undefined) {
+			$scope.home_id = user_info.home_id;
+			$scope.member_id = user_info.member_id;
+			$scope.mdn = user_info.mdn;
+			$scope.is_parent = user_info.is_parent;
 			
 			$rootScope.home_id = $scope.home_id;
 			$rootScope.member_id = $scope.member_id;
 			$rootScope.mdn = $scope.mdn;
 			$rootScope.is_parent = $scope.is_parent;
-			
-			var hyrid_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
-			$cookies.putObject("hyrid_info", hyrid_info,{'path': '/hybrid'});
 			console.log('로그인 상태 => '+true);
 			return true;
 		}else{
@@ -270,8 +270,6 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	//로그인
 	$scope.v_home_id = null;
 	$scope.v_mdn = null;
-	$scope.family_list = [];
-	
 	$scope.login = function(){
 		if($scope.v_home_id == null || $scope.v_home_id == '') {
 			$window.alert("가족명을 입력하세요.");
@@ -285,32 +283,31 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			MainSvc.login({home_id:$scope.v_home_id, mdn:$scope.v_mdn})
 				.success(function(response){
 					if(response.result == 0) {
-						console.log(response.data);
-						/*
-						var hyrid_info = {home_id:$scope.home_id, member_id:$scope.member_id, is_parent:$scope.is_parent, mdn:$scope.mdn};
-						$cookies.putObject("hyrid_info", member_info,{'path': '/', 'expires':expires});
+						var family_list = response.data;
 						
-						if($scope.is_parent==0){
-							console.log('자녀일 경우');
-							FamilySvc.getFamilyList({home_id:$scope.home_id})
-								.success(function(response){
-									var data = response.data;
-									for(var i=0;i<data.length;i++){
-										console.log('index => '+i);
-										if(data[i].is_parent==0 && data[i].name == $scope.v_name){
-											$scope.setStudent(data[i]);
-											$location.path('/main.html');
-											break;
-										}
-									}
-								})
-								.error(function(response, state){
-									$window.alert("error : " + response.message);
-								});
-						}else{
-							$location.path('/index.html');
+						//로그인 사용자 설정
+						for(var i=0; i<family_list.length; i++){
+							if($scope.v_mdn == family_list[i].mdn){
+								$scope.home_id = family_list[i].home_id;
+								$scope.member_id = family_list[i].member_id;
+								$scope.mdn = family_list[i].mdn;
+								$scope.is_parent = family_list[i].is_parent;
+								
+								$rootScope.home_id = $scope.home_id;
+								$rootScope.member_id = $scope.member_id;
+								$rootScope.mdn = $scope.mdn;
+								$rootScope.is_parent = $scope.is_parent;
+								
+								var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
+								$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
+								break;
+							}
 						}
-						*/
+						if($scope.is_parent==0){
+							$location.path('student');
+						}else{
+							$location.path('family');
+						}
 					} else {
 						$window.alert(response.msg);
 					}
@@ -324,7 +321,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	//로그아웃
 	$scope.logout = function() {
 		console.log('----------------- 로그아웃 --------------------');
-		$cookies.remove("hyrid_info",{'path': '/hybrid'});
+		$cookies.remove("user_info",{'path': '/hybrid'});
 		$scope.clearStudent();
 		
 		$scope.home_id = null;
@@ -347,18 +344,27 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		}
 	}
 	
-	//메뉴
-	$scope.setting_display = 'none';
-	$scope.toggleSetting = function(){
-		$scope.setting_display = $scope.setting_display == 'none'?'block':'none';
-	}
-	
 	$scope.new_home_id = null;
 	$scope.change_home_display = 'none';
 	
 	$scope.editHomeId = function(){
 		$scope.toggleSetting();
 		$scope.change_home_display = 'block';
+	}
+	
+	//헤더 타이틀 설정
+	$scope.setHeaderTitle = function(title){
+		$scope.header_title = title;
+	}
+	//뒤로가기버튼 상태
+	$scope.setBackBtnStatus = function(status){
+		$scope.backBtnSttus = status;
+	}
+	
+	//목록 높이값 설정
+	$scope.getListWrapperHeight = function(target,diff){
+		console.log($window.innerHeight);
+		$(target).height($window.innerHeight - diff);
 	}
 	
 	//가족명 변경
@@ -372,27 +378,21 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 					if(response.result==0){
 						$window.alert('가족명이 변경되었습니다.');
 						//쿠키값 갱신
-						var hyrid_info = $cookies.getObject("hyrid_info");
-						$cookies.remove("hyrid_info",{'path': '/hybrid'});
+						var user_info = $cookies.getObject("user_info");
+						$cookies.remove("user_info",{'path': '/hybrid'});
 						
 						$scope.home_id = $scope.new_home_id;
-						$scope.member_id = hyrid_info.member_id;
-						$scope.name = hyrid_info.name;
-						$scope.mdn = hyrid_info.mdn;
-						$scope.email = hyrid_info.email;
-						$scope.is_parent = hyrid_info.is_parent;
+						$scope.member_id = user_info.member_id;
+						$scope.mdn = user_info.mdn;
+						$scope.is_parent = user_info.is_parent;
 						
 						$rootScope.home_id = $scope.home_id;
 						$rootScope.member_id = $scope.member_id;
-						$rootScope.name = $scope.name;
 						$rootScope.mdn = $scope.mdn;
-						$rootScope.email = $scope.email;
 						$rootScope.is_parent = $scope.is_parent;
 						
-						var loadDt = new Date();
-						var expires = new Date(Date.parse(loadDt) + 1000 * 60*30);  //30분후
-						var hyrid_info = {home_id:$scope.home_id, member_id:$scope.member_id, name:$scope.name, is_parent:$scope.is_parent, mdn:$scope.mdn, email:$scope.email};
-						$cookies.putObject("hyrid_info", hyrid_info, {'path': '/hybrid', 'expires':expires});
+						var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
+						$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
 						
 						$scope.new_home_id = null;
 						$scope.change_home_display = 'none';
@@ -470,21 +470,9 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		return d[0]+"."+d[1]+"."+d[2];
 	};
 	
-	//setting scrollbar
-	$scope.config = {
-		autoHideScrollbar: false,
-		theme: 'minimal-dark',
-		advanced:{
-			updateOnContentResize: true
-		},
-		scrollInertia: 0
-	}
-	highlighter.highlight();
-	
 	$scope.setBodyClass = function(){
-		console.log('path => '+$location.path());
 		switch($location.path()){
-		case 'dining': case 'training':
+		case '/dining': case '/training':
 			break;
 		default:
 			$scope.badyClass = null;
@@ -492,9 +480,338 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	}
 	
 	$scope.init = function(){
-		var path = $location.path();
-		
 		$scope.setBodyClass();
+		var path = $location.path();
+		if(path!=='' && !$scope.loggedIn()){
+			$window.location.href = '/hybrid/index.html';
+		}
+		
 	}
 	$scope.init();
+}]);
+
+
+app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, Upload, FamilySvc){
+	$scope.setHeaderTitle($scope.home_id);		//header title text
+	$scope.setBackBtnStatus(false);
+	$scope.family_list = [];
+	
+	//가족구성원 등록/수정 변수
+	$scope.v_is_parent = null;
+	$scope.v_member_id = null;
+	$scope.v_mdn = null;
+	$scope.v_name = null;
+	$scope.v_relation = null;
+	$scope.v_birth_date = null;
+	$scope.v_school_id = null;
+	$scope.v_school_name = null;
+	$scope.v_school_grade = null;
+	$scope.v_school_class = null;
+	$scope.v_sex = null;
+	
+	$scope.family_edit_mode = null;
+	$scope.family_mode_text = '';
+	$scope.family_mode_text2 = '';
+	$scope.family_relation_text = '';
+	
+	$scope.clear = function(){
+		$scope.profile = null;
+		
+		$scope.family_edit_mode = null;
+		$scope.family_mode_text = '';
+		$scope.family_mode_text2 = '';
+		$scope.family_relation_text = '';
+
+		$scope.v_is_parent = null;
+		$scope.v_member_id = null;
+		$scope.v_mdn = null;
+		$scope.v_name = null;
+		$scope.v_relation = null;
+		$scope.v_birth_date = null;
+		$scope.v_school_id = null;
+		$scope.v_school_name = null;
+		$scope.v_school_grade = null;
+		$scope.v_school_class = null;
+		$scope.v_sex = null;
+		
+		commonLayerClose('common_layer');
+	}
+	
+	$scope.getFamilyList = function(){
+		$scope.clear();
+		$scope.getListWrapperHeight('#family_list_wrapper',200);
+		FamilySvc.getFamilyList({home_id:$scope.home_id})
+			.success(function(response){
+				if(response.result==0){
+					$scope.family_list = response.data;
+				}
+			})
+			.error(function(response, status) {
+				if (status >= 400) {
+					$cookies.remove("member_info",{'path': '/'});
+				} else {
+					$window.alert("error : " + response.message);
+				}
+			});
+	};
+	
+	$scope.addFamily = function(is_parent){
+		$scope.v_is_parent = is_parent;
+		$scope.family_edit_mode = 'add';
+		$scope.family_mode_text = '가족 구성원 추가';
+		if($scope.v_is_parent == 1){
+			$scope.family_mode_text2 = '부모정보 등록';
+			$scope.family_relation_text = '관계, 예)엄마, 아빠';
+		}else{
+			$scope.family_mode_text2 = '학생정보 등록';
+			$scope.family_relation_text = '관계, 예)아들, 딸';
+		}
+		commonLayerOpen('common_layer');
+	}
+	
+	//가족구성원 수정화면 값설정
+	$scope.modFamily = function(member){
+		$scope.v_is_parent = member.is_parent;
+		$scope.v_member_id = member.member_id;
+		$scope.v_mdn = member.mdn;
+		$scope.v_name = member.name;
+		$scope.v_relation = member.relation;
+		$scope.v_birth_date = member.birth_date;
+		$scope.v_school_id = member.school_id;
+		$scope.v_school_name = member.school_name;
+		$scope.v_school_grade = member.school_grade;
+		$scope.v_school_class = member.school_class;
+		$scope.v_sex = member.sex;
+		$scope.profile = member.photo;
+		
+		$scope.family_edit_mode = 'edit';
+		$scope.family_mode_text = '가족 구성원 수정';
+		if($scope.v_is_parent == 1){
+			$scope.family_mode_text2 = '부모정보 수정';
+		}else{
+			$scope.family_mode_text2 = '학생정보 수정';
+		}
+		commonLayerOpen('common_layer');
+	};
+	
+	//프로필사진 변수
+	$scope.profile = null;
+	$scope.setProfile = function(file) {
+		if(file  && file.$error && 
+			(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
+		){
+			$window.alert('이미지파일만 등록가능합니다.');
+		}else{
+			$scope.profile = file;
+			$scope.profile_text = file.name;
+		}
+	}
+	
+	$scope.removeProfile = function(){
+		console.log('member_id => '+$scope.v_member_id);
+		FamilySvc.removePhoto({member_id:$scope.v_member_id})
+			.success(function(response){
+				if(response.result==0){
+					$window.alert('프로필 사진이 삭제되었습니다.');
+					$scope.profile = null;
+				}
+			})
+			.error(function(response, state){
+				$window.alert("error : " + response.message);
+			});
+	}
+
+	$scope.family_list_status = true;		//가족목록 노출 상태
+	$scope.search_school_status = false;	//학교검색 노출 상태
+	$scope.openSearchSchool = function(){
+		$scope.family_list_status = false;
+		$scope.search_school_status = true;
+		$scope.getListWrapperHeight('#school_list_wrapper',100);
+	};
+	$scope.closeSearchSchool = function(){
+		$scope.family_list_status = true;
+		$scope.search_school_status = false;
+	};
+	
+	$scope.search_text = null;
+	$scope.school_list = [];
+	
+	//학교목록 조회
+	$scope.searchSchool = function(){
+		if($scope.search_text != null){
+			FamilySvc.getSchoolList({school_name:$scope.search_text})
+				.success(function(response){
+					$scope.school_list = [];
+					if(response.result == 0){
+						$scope.school_list = response.data;
+					}
+				})
+				.error(function(data, status) {
+					$window.alert("error : " + data.message);
+				});
+		}
+	};
+	$scope.setSchool = function(school){
+		$scope.v_school_id = school.school_id;
+		$scope.v_school_name = school.school_name;
+		$scope.family_list_status = true;
+		$scope.search_school_status = false;
+		$scope.search_text = null;
+		$scope.school_list = [];
+	};
+	
+	//가족구성원 추가
+	$scope.addMember = function(){
+		if($scope.v_mdn==null){
+			$window.alert('휴대전화번호을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_name==null){
+			$window.alert('이름을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_relation==null){
+			$window.alert('관계를 입력하세요.');
+			return false;
+		}
+		else if($scope.v_is_parent==0){
+			if($scope.v_birth_date==null){
+				$window.alert('생년월일을 입력하세요.');
+				return false;
+			}else if($scope.v_school_id==null || $scope.v_school_name==null){
+				$window.alert('학교명을 입력하세요.');
+				return false;
+			}else if($scope.v_school_grade==null){
+				$window.alert('학년을 입력하세요.');
+				return false;
+			}else if($scope.v_school_class == null){
+				$window.alert('반을 입력하세요.');
+				return false;
+			}else if($scope.v_sex == null || $scope.v_sex == ''){
+				$window.alert('성별을 선택하세요.');
+				return false;
+			}
+		}
+		
+		var data = null;
+		if($scope.v_is_parent==1){
+			data = {
+				home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name,
+				relation:$scope.v_relation, is_parent:$scope.v_is_parent
+			};
+		}else{
+			data = {
+				home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name, relation:$scope.v_relation,
+				is_parent:$scope.v_is_parent, sex:$scope.v_sex, birth_date:$scope.v_birth_date,
+				school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
+			};
+		}
+		
+		$scope.upload = Upload.upload({
+			url: '/home/api/addMember',
+			method: 'POST',
+			file:$scope.profile,
+			data : JSON.stringify(data),
+			fileFormDataName : 'profile'
+		}).success(function(response) {
+			if(response.result==0){
+				$window.alert('가족구성원이 추가되었습니다.');
+				$window.location.reload();
+			}else{
+				$window.alert(response.msg);
+			}
+			$scope.profile = null;
+		}).error(function(data, status) {
+			$window.alert("error : " + data.message);
+		});
+	};
+	
+	//가족구성원 정보수정
+	$scope.modMember = function(){
+		if($scope.v_mdn==null){
+			$window.alert('휴대전화번호을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_name==null){
+			$window.alert('이름을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_relation==null){
+			$window.alert('관계를 입력하세요.');
+			return false;
+		}
+		else if($scope.v_is_parent==0){
+			if($scope.v_birth_date==null){
+				$window.alert('생년월일을 입력하세요.');
+				return false;
+			}else if($scope.v_school_id==null || $scope.v_school_name==null){
+				$window.alert('학교명을 입력하세요.');
+				return false;
+			}else if($scope.v_school_grade==null){
+				$window.alert('학년을 입력하세요.');
+				return false;
+			}else if($scope.v_school_class == null){
+				$window.alert('반을 입력하세요.');
+				return false;
+			}else if($scope.v_sex == null || $scope.v_sex == ''){
+				$window.alert('성별을 선택하세요.');
+				return false;
+			}
+		}
+		
+		var data = null;
+		if($scope.v_is_parent==1){
+			data = {
+				home_id:$scope.home_id, member_id:$scope.v_member_id, mdn:$scope.v_mdn,
+				name:$scope.v_name, relation:$scope.v_relation, is_parent:$scope.v_is_parent
+			};
+		}else{
+			data = {
+				home_id:$scope.home_id, member_id:$scope.v_member_id, mdn:$scope.v_mdn, name:$scope.v_name,
+				relation:$scope.v_relation, is_parent:$scope.v_is_parent, sex:$scope.v_sex, birth_date:$scope.v_birth_date,
+				school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
+			};
+		}
+		
+		$scope.upload = Upload.upload({
+			url: '/home/api/modMember',
+			method: 'POST',
+			file:$scope.profile,
+			data : JSON.stringify(data),
+			fileFormDataName : 'profile'
+		}).success(function(response) {
+			if(response.result==0){
+				$window.alert('가족구성원 정보가 수정되었습니다.');
+				$window.location.reload();
+			}else{
+				$window.alert('가족구성원 정보수정 실패!\n잠시 후 다시 시도하세요.');
+			}
+			$scope.profile = null;
+		}).error(function(data, status) {
+			$window.alert("error : " + data.message);
+		});
+	};
+	
+	//가족구성원 삭제
+	$scope.removeMember = function(member){
+		if(confirm('해당 가족구성원을 삭제하시겠습니까?')){
+			FamilySvc.removeMember({member_id:member.member_id})
+				.success(function(response) {
+					if(response.result==0){
+						$window.alert('가족구성원이 삭제되었습니다.');
+						$window.location.reload();
+					}else{
+						$window.alert('가족구성원 삭제실패!\n잠시 수 다시 시도하세요.');
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		}else{
+			return false;
+		}
+	};
+	
+	$scope.init();
+	$scope.getFamilyList();
 }]);
