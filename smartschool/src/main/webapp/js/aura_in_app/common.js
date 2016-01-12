@@ -22,6 +22,22 @@ function currControl(thisClass){
 	}
 }
 
+//gnb
+function gnbShow(){
+	$('.header').css({'z-index':'0'});
+	$('.gnb_wrap').css('display','block');
+	$('.gnb_wrap .dim_area').fadeIn(300);
+	$('.gnb_wrap .btn_layer_close').animate({'left':'11px'}, 300);
+	$('.gnb_wrap .gnb_area').animate({'right':'0%'}, 300);
+}
+function gnbHide(){
+	$('.gnb_wrap .dim_area').fadeOut(300);
+	$('.gnb_wrap .btn_layer_close').animate({'left':'-20px'}, 300);
+	$('.gnb_wrap .gnb_area').animate({'right':'-199px'}, 300);
+	$('.header').css({'z-index':'400'});
+	setTimeout(function(){$('.gnb_wrap').css('display','none')},300);
+}
+
 //layer popup
 function commonLayerOpen(thisClass){
 	$('.'+thisClass).fadeIn();
@@ -40,7 +56,6 @@ function animateGrowthDetail(section){
 	}else if(section=='weight'){
 		diff = 20;
 	}
-	console.log('diff => '+diff);
 	setTimeout(function(){
 			var standard = $('.growth_detail_wrap .standard_bar').html();
 			$('.growth_detail_wrap .standard_bar').css({'bottom':standard-diff+'%'});
@@ -62,4 +77,22 @@ function animateGrowthDetail(section){
 function slide(object,distance,direction){
 	var list = object.find('.swiper-slide');
 	console.log('object =>'+object+' ,distance => '+distance+', direction=>'+direction);
+}
+
+function setSwiper(){
+	setTimeout(function(){
+		var imgHeight = $('.photo_wrap .swiper-slide img').height();
+		$('.megazine_view_wrap .photo_wrap').css({'height':imgHeight});
+		var swiper = new Swiper('.megazine_view_wrap .photo_wrap', {
+			loop: true,
+			grabCursor: true,
+			pagination : '.indicator'
+		});
+		swiper.params.onSlideChangeEnd = function(){
+			//다음 이미지 높이 세팅
+			var i = $('.indicator .swiper-active-switch').index()+1;
+			var currImgHeignt = $('.photo_wrap .swiper-slide').eq(i).children('img').height();
+			$('.megazine_view_wrap .photo_wrap').animate({'height':currImgHeignt}, 300);
+		}	
+	}, 300);
 }

@@ -45,7 +45,7 @@
 				<div class="row_top">
 					<a href="{{detail_url}}" class="ranking_circle">
 						<img src="/images/aura_in_app/ico_ranking_school.png" alt="" class="school" />
-						<h3>학교 랭킹</h3>
+						<h3 style="margin-top:0;">학교 랭킹</h3>
 						<strong class="rank" ng-class="schoolChange">{{rankOfSchool}}위</strong>
 						<span class="change" ng-class="schoolChange" ng-if="schoolChange!=''">{{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}위</span>
 						<span class="change" ng-class="schoolChange" ng-if="schoolChange==''" style="padding:0; text-align:center;">-</span>
@@ -54,14 +54,14 @@
 				<div class="row_bottom">
 					<a href="{{detail_url}}" class="ranking_circle">
 						<img src="/images/aura_in_app/ico_ranking_area.png" alt="" class="area" />
-						<h3>지역 랭킹</h3>
+						<h3 style="margin-top:0;">지역 랭킹</h3>
 						<strong class="rank" ng-class="localChange">{{rankOfLocal}}%</strong>
 						<span class="change" ng-class="localChange" ng-if="localChange!=''">{{diffRankOfLocal}}%</span>
 						<span class="change" ng-class="localChange" ng-if="localChange==''" style="padding:0; text-align:center;">-</span>
 					</a>
 					<a href="{{detail_url}}" class="ranking_circle">
 						<img src="/images/aura_in_app/ico_ranking_all_area.png" alt="" class="all_area" />
-						<h3>전국 랭킹</h3>
+						<h3 style="margin-top:0;">전국 랭킹</h3>
 						<strong class="rank" ng-class="nationChange">{{rankOfNation}}%</strong>
 						<span class="change" ng-class="nationChange" ng-if="nationChange!=''">{{diffRankOfNation}}%</span>
 						<span class="change" ng-class="nationChange" ng-if="nationChange==''" style="padding:0; text-align:center;">-</span>

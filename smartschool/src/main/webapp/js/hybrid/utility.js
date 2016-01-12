@@ -247,20 +247,6 @@ var UTIL = function() {
 	};
 	
 	/**
-	 * 공유하기 
-	 * UTIL.shared(공유타입, function(data){}, function(){});
-	 */
-	var _shared = function(linkType, success, error) {
-		var data = {
-			'type'		: NATIVE.CONST_COMMAND_EXTERNAL_SHARED,
-			'linkType'	: linkType,
-			'msg'		: "주식의 정석 공유",
-			'linkUrl'	: 'http://allthestock.com/user/index.do' // 나중에 스토어 이동
-		};
-		NATIVE.HYBRID.EXECUTE(data, success, error);
-	};
-	
-	/**
 	 * 단말 타입과 토큰정보 가져오기 
 	 */
 	var _getDeviceTypeAndToken = function(success, error) {
@@ -315,62 +301,6 @@ var UTIL = function() {
 	var _logout = function() {
 		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_USER_LOGOUT});
 	};
-	
-	/**
-	 * 친구추가 
-	 * UTIL.addFriend();
-	 */
-	var _addFriend = function(success, cancel) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_GET_FRIENDS}, success, cancel);
-	};
-	
-	/**
-	 * 오디오 사용여부 
-	 * UTIL.useAudio(false/true);
-	 */
-	var _useAudio = function(flag) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_USE_TTS, 'use':(flag ? 'Y':'N')});
-	};
-	
-	/**
-	 * 로그 코드  
-	 * UTIL.startWalk(function, function); 
-	 */
-	var _setLogCode = function(logCode) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_SET_LOG_CODE, 'code':logCode});
-	};
-	
-	/**
-	 * 걷기 시작 
-	 * UTIL.startWalk(function, function); 
-	 */
-	var _startWalk = function(success, cancel) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_START_STOP_WALK, 'flag':'Y'}, success, cancel);
-	};
-	
-	/**
-	 * 걷기 종료 
-	 * UTIL.stopWalk(function, function); 
-	 */
-	var _stopWalk = function(success, cancel) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_START_STOP_WALK, 'flag':'N'}, success, cancel);
-	};
-	
-	/**
-	 * 사용자 키 몸무게
-	 * UTIL.setUserStrenght(키, 모무게, function, function);
-	 */
-	var _setUserStrenght = function(height, weight, success, error) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_USER_STRENGHT, 'height':(''+height), 'weight':(''+weight)}, success, error);
-	};
-	
-	/**
-	 * 사용자 목표 설정
-	 * UTIL.setUserGoals(목표걸음, 목표거리, 목표칼로리, function, function); 
-	 */
-	var _setUserGoals = function(count, kilometer, kcalorie, success, error) {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_SET_USER_GOALS, 'count':(''+count), 'kilometer':(''+kilometer), 'kcalorie':(''+kcalorie)}, success, error);
-	}
 	
 	/**
 	 * Session Storage
@@ -460,7 +390,6 @@ var UTIL = function() {
 		isMobile		: _isMobile,
 		alert		: _alert,
 		confirm		: _confirm,
-		shared		: _shared,
 		getDeviceTypeAndToken : _getDeviceTypeAndToken,
 		getUserID	: _getUserID,
 		SESSION		: _session,
@@ -468,13 +397,6 @@ var UTIL = function() {
 		hideIndicator:_hideIndicator,
 		setAutoLogin : _setAutoLogin,
 		logout		: _logout,
-		addFriend	: _addFriend,
-		useAudio	: _useAudio,
-		setLogCode	: _setLogCode,
-		startWalk	: _startWalk,
-		stopWalk	: _stopWalk,
-		setUserStrenght : _setUserStrenght,
-		setUserGoals : _setUserGoals,
 		getDateDays : _getDateDays,
 		comma : _comma
 	};

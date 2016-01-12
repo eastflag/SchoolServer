@@ -195,6 +195,7 @@ public interface MobileMapper {
 	//건강매거진 관리
 	public int countMagazineList(SearchVO search);
 	public List<MagazineVO> selectMagazineList(SearchVO search);
+	public MagazineVO selectMagazine(MagazineVO in);
 	public int checkMagazine(MagazineVO magazine);
 	public int insertMagazine(MagazineVO magazine) throws PersistenceException;
 	public int updateMagazine(MagazineVO magazine) throws PersistenceException;
@@ -207,8 +208,7 @@ public interface MobileMapper {
 	public int insertChallenge(ChallengeVO challenge);
 	public int releaseChallengeRank(int rank) throws PersistenceException;
 	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
-	public void updateMemberPhoto(Map<String, Object> param);
-	public Map<String, Object> selectMemberProfile(int member_id);
+	public MemberVO selectMemberProfile(int member_id);
 	
 	//성장발달상세
 	public Map<String,Object> selectChangeGrowth(Map<String,Object> in);	//키, 체중 변화량(학생)

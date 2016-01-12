@@ -1,0 +1,19 @@
+<article class="megazine_view_wrap">
+	<div ng-scrollbars ng-scrollbars-config="config" id="megazine_view_wrapper" style="width:100%">
+		<div class="list">
+			<div class="photo_wrap">
+				<div class="swiper-wrapper">
+					<div ng-if="slide.image" class="swiper-slide" ng-repeat="slide in images" >
+						<img ng-src="{{slide.image}}"/>
+					</div>
+				</div>
+				<div class="indicator"></div>
+			</div>
+			<div class="cont_box">
+				<p class="title">{{title}}</p>
+				<p class="subject">{{subject}}</p>
+				<p class="cont">{{content}}</p>
+			</div>
+		</div>
+	</div>
+</article>

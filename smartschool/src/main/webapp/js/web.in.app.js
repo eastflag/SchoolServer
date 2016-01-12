@@ -1,4 +1,4 @@
-var app = angular.module('home', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngScrollbars','ngAnimate','ngTouch']);
+var app = angular.module('home', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngScrollbars','ngAnimate','ngTouch','ngImgCrop']);
 app.factory('highlighter', function () {
 	return new Scrollbars.Highlighter();
 })
@@ -21,10 +21,12 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 		.when('/join.html', {templateUrl: '/SmartCare/in_app/join.html', controller:'JoinCtrl'})
 		.when('/main.html', {templateUrl: '/SmartCare/in_app/main.html', controller:'StudentCtrl'})
 		.when('/height.html', {templateUrl: '/SmartCare/in_app/height.html', controller:'GrowthCtrl'})
+		.when('/height/history.html', {templateUrl: '/SmartCare/in_app/height_history.html', controller:'GrowthCtrl'})
 		.when('/total.html', {templateUrl: '/SmartCare/in_app/total.html', controller:'StudentCtrl'})
 		.when('/dining.html', {templateUrl: '/SmartCare/in_app/dining.html', controller:'SchoolCtrl'})
 		.when('/training.html', {templateUrl: '/SmartCare/in_app/training.html', controller:'TrainingCtrl'})
 		.when('/weight.html', {templateUrl: '/SmartCare/in_app/weight.html', controller:'GrowthCtrl'})
+		.when('/weight/history.html', {templateUrl: '/SmartCare/in_app/weight_history.html', controller:'GrowthCtrl'})
 		.when('/muscle.html', {templateUrl: '/SmartCare/in_app/muscle.html', controller:'StudentCtrl'})
 		.when('/ranking/height.html', {templateUrl: '/SmartCare/in_app/ranking_main.html', controller:'RankingCtrl'})
 		.when('/ranking/weight.html', {templateUrl: '/SmartCare/in_app/ranking_main.html', controller:'RankingCtrl'})
@@ -43,8 +45,10 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 		.when('/ranking/fat/list.html', {templateUrl: '/SmartCare/in_app/ranking_list.html', controller:'RankingCtrl'})
 		.when('/obesity.html', {templateUrl: '/SmartCare/in_app/obesity.html', controller:'StudentCtrl'})
 		.when('/smoking.html', {templateUrl: '/SmartCare/in_app/smoking.html', controller:'StudentCtrl'})
+		.when('/assistance.html', {templateUrl: '/SmartCare/in_app/assistance.html', controller:'StudentCtrl'})
 		.when('/activity.html', {templateUrl: '/SmartCare/in_app/activity.html', controller:'ActivityCtrl'})
 		.when('/magazine.html', {templateUrl: '/SmartCare/in_app/magazine.html', controller:'MagazineCtrl'})
+		.when('/magazine/view.html', {templateUrl: '/SmartCare/in_app/magazine_view.html', controller:'MagazineCtrl'})
 		.when('/challenge.html', {templateUrl: '/SmartCare/in_app/challenge.html', controller:'ChallengeCtrl'})
 		.when('/school/message.html', {templateUrl: '/SmartCare/in_app/school_message.html', controller:'SchoolCtrl'})
 		.when('/school/schedule.html', {templateUrl: '/SmartCare/in_app/school_schedule.html', controller:'SchoolCtrl'})
@@ -70,7 +74,7 @@ app.service('AuraSvc', function($http) {
 app.service('LoginSvc', function($http) {
 	this.login = function(data){
 		console.log('----------------- 로그인 --------------------');
-		return $http.post('/home/api/login', data);
+		return $http.post('/web/api/login', data);
 	};
 });
 
@@ -87,8 +91,8 @@ app.service('FamilySvc', function($http) {
 		console.log('----------------- 학교목록 가져오기 --------------------');
 		return $http.post('/api/getSchoolList', data);
 	};
-	this.removePhoto = function(data){
-		console.log('----------------- 학교목록 가져오기 --------------------');
+	this.removeProfile = function(data){
+		console.log('----------------- 프로필사진 삭제 --------------------');
 		return $http.post('/api/removeProfile', data);
 	};
 });
@@ -207,6 +211,10 @@ app.service('MagazineSvc', function($http) {
 	this.getMagazineList = function(data){
 		console.log('----------------- 건강매거진 목록 가져오기 --------------------');
 		return $http.post('/api/getMagazineList',data);
+	};
+	this.getMagazineView = function(data){
+		console.log('----------------- 건강매거진 상세 --------------------');
+		return $http.post('/api/getMagazine',data);
 	};
 });
 
@@ -384,10 +392,6 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	//학생정보획득(쿠키)
 	$scope.getStudent = function(){
 		var student_info = $cookies.getObject("student_info");
-		if(typeof student_info == 'undefined'){
-			$window.location.href="#!/index.html";
-			return false;
-		}
 		$scope.student_id = student_info.member_id;
 		$scope.student_name = student_info.name;
 		$scope.student_school_id = student_info.school_id;
@@ -439,17 +443,55 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 }]);
 
 app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', function($scope, $rootScope, $cookies, $window, $location, Upload){
+	//회원가입 변수
 	$scope.v_home_id=null;
 	$scope.v_name=null;
 	$scope.v_relation=null;
-	//프로필사진 변수
-	$scope.profile = null;
-	$scope.profile_text = null;
-	
-	//회원가입변수
 	$scope.agree1 = false;
 	$scope.agree2 = false;
 	$scope.agree3 = false;
+	
+	//프로필사진 변수
+	$scope.profile = null;
+	$scope.cropped_profile = null;
+	$scope.saved_profile = null;
+	
+	$scope.crop_state = false;
+	$scope.crop_init = function(){
+		$scope.clearProfile();
+
+		var handleFileSelect=function(evt) {
+			$scope.crop_state = true;
+			commonLayerOpen('profile-crop-area');
+			
+			var file=evt.currentTarget.files[0];
+			
+			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
+				var reader = new FileReader();
+				reader.onload = function (evt) {
+					$scope.$apply(function($scope){
+						$scope.profile=evt.target.result;
+					});
+				};
+				reader.readAsDataURL(file);
+			}else{
+				$window.alert('jpg이미지만 등록가능합니다.');
+			}
+			
+		};
+		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
+	}
+	
+	$scope.clearCrop = function(){
+		$scope.saved_profile = $scope.cropped_profile;
+		commonLayerClose('profile-crop-area');
+	}
+	
+	$scope.clearProfile = function(){
+		$scope.profile = null;
+		$scope.cropped_profile = null;
+		$scope.crop_state = false;
+	}
 	
 	//회원가입
 	$scope.join = function(){
@@ -470,27 +512,30 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			return false;
 		}
 		else{
-			var data = {home_id:$scope.v_home_id,name:$scope.v_name,relation:$scope.v_relation,is_parent:1};
+			var param = {home_id:$scope.v_home_id,name:$scope.v_name,relation:$scope.v_relation,is_parent:1};
+			var data = null;
+			if($scope.crop_state){
+				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
+			}else{
+				data = {profile:null, data:JSON.stringify(param)};
+			}
 			
-			Upload.upload({
-				url: '/home/api/signUpWeb',
-				method: 'POST',
-				file:$scope.profile,
-				data : JSON.stringify(data),
-				fileFormDataName : 'profile'
+			$scope.upload = $Upload.upload({
+				url: '/web/api/signUpWeb',
+				data : data
 			}).success(function(response, status, headers, config) {
 				if(response.result==0){
+					$scope.clearProfile();
 					$window.alert('회원가입 완료!\n가입하신 가족명, 이름으로 로그인하시기 바랍니다.');
 					$location.path('/login.html');
 				}else{
 					$window.alert(response.msg);
 				}
-				$scope.profile = null;
 			})
 			.error(function(data, status) {
+				$scope.clearProfile();
 				$window.alert("error : " + data.message);
 			});
-			return false;
 		}
 	}
 	
@@ -506,16 +551,7 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		}
 	}
 	
-	$scope.setProfile = function(file) {
-		if(file  && file.$error && 
-			(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-		){
-			$window.alert('이미지파일만 등록가능합니다.');
-		}else{
-			$scope.profile = file;
-			$scope.profile_text = file.name;
-		}
-	}
+	$scope.crop_init();
 	
 	console.log('------------------ JoinCtrl ------------------');
 }]);
@@ -590,14 +626,6 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 }]);
 
 app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, FamilySvc){
-	//프로필사진 변수
-	$scope.profile = null;
-	
-	$scope.family_edit_mode = null;
-	$scope.family_mode_text = '';
-	$scope.family_mode_text2 = '';
-	$scope.family_relation_text = '';
-
 	$scope.member_list = [];		//가족구성원 목록
 	
 	$scope.family_list_status = true;		//가족목록 노출 상태
@@ -615,19 +643,77 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.v_school_grade = null;
 	$scope.v_school_class = null;
 	$scope.v_sex = null;
+	$scope.v_photo = null;
 	
-	$scope.setProfile = function(file) {
-		if(file  && file.$error && 
-			(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-		){
-			$window.alert('이미지파일만 등록가능합니다.');
-		}else{
-			$scope.profile = file;
-			$scope.profile_text = file.name;
-		}
+	$scope.family_edit_mode = null;
+	$scope.family_mode_text = '';
+	$scope.family_mode_text2 = '';
+	$scope.family_relation_text = '';
+	
+	//프로필사진 변수
+	$scope.profile = null;
+	$scope.cropped_profile = null;
+	$scope.saved_profile = null;
+	$scope.crop_state = false;
+	$scope.crop_init = function(){
+		$scope.clearProfile();
+
+		var handleFileSelect=function(evt) {
+			$scope.profile = null;
+			$scope.cropped_profile = null;
+			$scope.saved_profile = null;
+			$scope.crop_state = true;
+			commonLayerClose('family_add01');
+			commonLayerOpen('profile-crop-area');
+			
+			var file=evt.currentTarget.files[0];
+			
+			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
+				var reader = new FileReader();
+				reader.onload = function (evt) {
+					$scope.$apply(function($scope){
+						$scope.profile=evt.target.result;
+					});
+				};
+				reader.readAsDataURL(file);
+			}else{
+				$window.alert('jpg이미지만 등록가능합니다.');
+			}
+			
+		};
+		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
+	}
+	
+	$scope.clearCrop = function(){
+		$scope.saved_profile = $scope.cropped_profile;
+		commonLayerClose('profile-crop-area');
+		commonLayerOpen('family_add01');
+	}
+	
+	$scope.clearProfile = function(){
+		$scope.profile = null;
+		$scope.cropped_profile = null;
+		$scope.saved_profile = null;
+		$scope.crop_state = false;
+		angular.element(document.querySelector('#add_photo')).val(null);
+	}
+	
+	$scope.removeProfile = function(){
+		FamilySvc.removeProfile({member_id:$scope.v_member_id})
+			.success(function(response){
+				if(response.result==0){
+					$scope.v_photo = null;
+				}
+			})
+			.error(function(response, state){
+				$window.alert("error : " + response.message);
+			});
 	}
 	
 	$scope.getFamilyList = function(){
+		$scope.clear();
+		$scope.member_list = [];
+		
 		FamilySvc.getFamilyList({home_id:$scope.home_id})
 			.success(function(response){
 				if(response.result==0){
@@ -644,7 +730,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	};
 	
 	$scope.clear = function(){
-		$scope.profile = null;
+		$scope.clearProfile();
 		
 		$scope.family_edit_mode = null;
 		$scope.family_mode_text = '';
@@ -662,9 +748,13 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		$scope.v_school_grade = null;
 		$scope.v_school_class = null;
 		$scope.v_sex = null;
+		$scope.v_photo = null;
+		
+		commonLayerClose('family_add01');
 	}
 	
 	$scope.addFamily = function(is_parent){
+		$scope.crop_state = false;
 		$scope.v_is_parent = is_parent;
 		$scope.family_edit_mode = 'add';
 		$scope.family_mode_text = '가족 구성원 추가';
@@ -675,10 +765,13 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.family_mode_text2 = '학생정보 등록';
 			$scope.family_relation_text = '관계, 예)아들, 딸';
 		}
+		
+		commonLayerOpen('family_add01');
 	}
 	
 	//가족구성원 수정화면 값설정
 	$scope.modFamily = function(member){
+		$scope.crop_state = false;
 		$scope.v_is_parent = member.is_parent;
 		$scope.v_member_id = member.member_id;
 		$scope.v_mdn = member.mdn;
@@ -690,7 +783,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		$scope.v_school_grade = member.school_grade;
 		$scope.v_school_class = member.school_class;
 		$scope.v_sex = member.sex;
-		$scope.profile = member.photo;
+		$scope.v_photo = member.photo;
 		
 		$scope.family_edit_mode = 'edit';
 		$scope.family_mode_text = '가족 구성원 수정';
@@ -699,21 +792,9 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		}else{
 			$scope.family_mode_text2 = '학생정보 수정';
 		}
+		
+		commonLayerOpen('family_add01');
 	};
-	
-	$scope.removePhoto = function(){
-		console.log('member_id => '+$scope.v_member_id);
-		FamilySvc.removePhoto({member_id:$scope.v_member_id})
-			.success(function(response){
-				if(response.result==0){
-					$window.alert('프로필 사진이 삭제되었습니다.');
-					$scope.profile = null;
-				}
-			})
-			.error(function(response, state){
-				$window.alert("error : " + response.message);
-			});
-	}
 	
 	$scope.openSearchSchool = function(){
 		$scope.family_list_status = false;
@@ -784,7 +865,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				return false;
 			}
 		}
-		
 		var data = null;
 		if($scope.v_is_parent==1){
 			data = {
@@ -800,19 +880,17 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		}
 		
 		$scope.upload = Upload.upload({
-			url: '/home/api/addMember',
-			method: 'POST',
-			file:$scope.profile,
-			data : JSON.stringify(data),
-			fileFormDataName : 'profile'
+			url: '/web/api/addMember',
+			data : {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(data)}
 		}).success(function(response) {
 			if(response.result==0){
 				$window.alert('가족구성원이 추가되었습니다.');
-				$window.location.reload();
+				$scope.getFamilyList();
 			}else{
 				$window.alert(response.msg);
 			}
 			$scope.profile = null;
+			$scope.cropped_profile = null;
 		}).error(function(data, status) {
 			$window.alert("error : " + data.message);
 		});
@@ -850,7 +928,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				return false;
 			}
 		}
-		
 		var data = null;
 		if($scope.v_is_parent==1){
 			data = {
@@ -864,21 +941,19 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
 			};
 		}
-		
+			
 		$scope.upload = Upload.upload({
-			url: '/home/api/modMember',
-			method: 'POST',
-			file:$scope.profile,
-			data : JSON.stringify(data),
-			fileFormDataName : 'profile'
+			url: '/web/api/modMember',
+			data : {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(data)}
 		}).success(function(response) {
 			if(response.result==0){
 				$window.alert('가족구성원 정보가 수정되었습니다.');
-				$window.location.reload();
+				$scope.getFamilyList();
 			}else{
 				$window.alert('가족구성원 정보수정 실패!\n잠시 후 다시 시도하세요.');
 			}
 			$scope.profile = null;
+			$scope.cropped_profile = null;
 		}).error(function(data, status) {
 			$window.alert("error : " + data.message);
 		});
@@ -911,7 +986,12 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		}else{
 			$scope.clearStudent();
 			$scope.getFamilyList();
+			$scope.crop_init();
 		}
+	}else{
+		setTimeout(function(){
+			$('.pannel').fadeIn('slow').delay( 3000 ).fadeOut('slow');
+		},3000);
 	}
 	
 	console.log('------------------ FamilyCtrl ------------------');
@@ -1098,6 +1178,7 @@ app.controller('StudentCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 }]);
 
 app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'GrowthSvc', function($scope, $rootScope, $cookies, $window, $location, GrowthSvc){
+	$scope.section = null;
 	$scope.history_count = 0;
 	
 	$scope.growth_info = {
@@ -1115,48 +1196,37 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		beforeRank: null,
 		beforeTotal: null
 	};
+	$scope.measure_year = null;
 	
-	$scope.view_mode = false;
 	$scope.clear = function(){
-		$scope.view_mode = false;
+		$scope.list = null;
+		$scope.growth = null;
+		$scope.averageOfLocal = null;
+		$scope.avgOfNation = null;
 	}
 	
-	$scope.setGrowthInfo = function(info,section){
-		$scope.view_mode = true;
-		$scope.list = info.list;
-		$scope.growth = info.growth;
-		$scope.averageOfLocal = info.avgOfLocal;
-		$scope.avgOfNation = info.avgOfNation;
-		
-		animateGrowthDetail(section);
-	}
-	
-	$scope.getMeasureHistoryList = function(section){
-		if(section=='height'){
-			GrowthSvc.getHeightHistoryList({member_id:$scope.student_id})
-				.success(function(response){
-					if(response.result==0){
-						$scope.setGrowthInfo(response.data,section);
-					}
-				})
-				.error(function(response, state) {
-					$window.alert("error : " + response.message);
-				});
-		}else if(section=='weight'){
-			GrowthSvc.getWeightHistoryList({member_id:$scope.student_id})
-				.success(function(response){
-					if(response.result==0){
-						$scope.setGrowthInfo(response.data,section);
-					}
-				})
-				.error(function(response, state) {
-					$window.alert("error : " + response.message);
-				});
-		}
+	$scope.setGrowthData = function(data){
+		$scope.growth_info = {
+			value: data.value,
+			beforeValue:data.beforeValue,
+			gradeId: data.gradeId,
+			gradeString: data.gradeString,
+			measure_date: data.measure_date,
+			averageOfSchool: data.averageOfSchool,
+			averageOfLocal: data.averageOfLocal,
+			averageOfNation: data.averageOfNation,
+			averageOfStandard: data.averageOfStandard,
+			rank: data.rank,
+			total: data.total,
+			beforeRank: data.beforeRank,
+			beforeTotal: data.beforeTotal
+		};
+		$scope.measure_year = $scope.growth_info.measure_date.substring(0,4);
+		$scope.getMeasureHistoryCount();
 	}
 	
 	$scope.getMeasureHistoryCount = function(){
-		GrowthSvc.getMeasureHistoryCount({member_id:$scope.student_id})
+		GrowthSvc.getMeasureHistoryCount({member_id:$scope.student_id,search_year:$scope.measure_year})
 			.success(function(response){
 				$scope.history_count = response.data;
 			})
@@ -1165,74 +1235,85 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			});
 	}
 	
-	$scope.getHeight = function(){
-		GrowthSvc.getHeight({member_id:$scope.student_id})
-			.success(function(response){
-				if(response.result == 0){
-					$scope.growth_info = {
-						value: response.data.value,
-						beforeValue: response.data.beforeValue,
-						gradeId: response.data.gradeId,
-						gradeString: response.data.gradeString,
-						measure_date: response.data.measure_date,
-						averageOfSchool: response.data.averageOfSchool,
-						averageOfLocal: response.data.averageOfLocal,
-						averageOfNation: response.data.averageOfNation,
-						averageOfStandard: response.data.averageOfStandard,
-						rank: response.data.rank,
-						total: response.data.total,
-						beforeRank: response.data.beforeRank,
-						beforeTotal: response.data.beforeTotal
-					};
-					
-					setTimeout(function(){
-						var k = $('.chart > div').length;
-						for(var i = 0; i < k; i++){
-							var data = $('.chart > div').eq(i).children('span').children('em').html();
-							var transData = data-100 + '%';
-							$('.chart > div').eq(i).children('span').animate({'height':transData}, 500);
-						}
-					}, 500);
-				}
-			})
-			.error(function(response, state) {
-				$window.alert("error : " + response.message);
-			});
+	$scope.getGrowth = function(){
+		var data = {member_id:$scope.student_id};
+		if($scope.section=='height'){
+			GrowthSvc.getHeight(data)
+				.success(function(response){
+					if(response.result == 0){
+						$scope.setGrowthData(response.data);
+						
+						setTimeout(function(){
+							var k = $('.chart > div').length;
+							for(var i = 0; i < k; i++){
+								var data = $('.chart > div').eq(i).children('span').children('em').html();
+								var transData = data-100 + '%';
+								$('.chart > div').eq(i).children('span').animate({'height':transData}, 500);
+							}
+						}, 500);
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		} else if($scope.section=='weight'){
+			GrowthSvc.getWeight(data)
+				.success(function(response){
+					if(response.result == 0){
+						$scope.setGrowthData(response.data);
+						
+						setTimeout(function(){
+							var k = $('.chart > div').length;
+							for(var i = 0; i < k; i++){
+								var data = $('.chart > div').eq(i).children('span').children('em').html();
+								var transData = ((data/100) * 100) - 20 + '%';
+								$('.chart > div').eq(i).children('span').animate({'height':transData}, 300);
+							}
+						}, 500);
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		}
 	}
 	
-	$scope.getWeight = function(){
-		GrowthSvc.getWeight({member_id:$scope.student_id})
-			.success(function(response){
-				if(response.result == 0){
-					$scope.growth_info = {
-						value: response.data.value,
-						beforeValue: response.data.beforeValue,
-						gradeId: response.data.gradeId,
-						gradeString: response.data.gradeString,
-						measure_date: response.data.measure_date,
-						averageOfSchool: response.data.averageOfSchool,
-						averageOfLocal: response.data.averageOfLocal,
-						averageOfNation: response.data.averageOfNation,
-						averageOfStandard: response.data.averageOfStandard,
-						rank: response.data.rank,
-						total: response.data.total,
-						beforeRank: response.data.beforeRank,
-						beforeTotal: response.data.beforeTotal
-					};
-					
-					setTimeout(function(){
-						var k = $('.chart > div').length;
-						for(var i = 0; i < k; i++){
-							var data = $('.chart > div').eq(i).children('span').children('em').html();
-							var transData = ((data/100) * 100) - 20 + '%';
-							$('.chart > div').eq(i).children('span').animate({'height':transData}, 300);
-						}
-					}, 500);
-				}
-			})
-			.error(function(response, state) {
-				$window.alert("error : " + response.message);
-			});
+	$scope.setGrowthInfo = function(info){
+		$scope.list = info.list;
+		$scope.growth = info.growth;
+		$scope.avgOfStandard = info.avgOfStandard;
+		$scope.averageOfLocal = info.avgOfLocal;
+		$scope.avgOfNation = info.avgOfNation;
+		
+		animateGrowthDetail($scope.section);
+	}
+	
+	$scope.getMeasureHistoryList = function(){
+		$scope.clear();
+		$scope.measure_year = $location.search().y;
+		var data = {member_id:$scope.student_id, search_year:$scope.measure_year};
+		
+		if($scope.section=='height'){
+			GrowthSvc.getHeightHistoryList(data)
+				.success(function(response){
+					if(response.result==0){
+						$scope.setGrowthInfo(response.data);
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		}else if($scope.section=='weight'){
+			GrowthSvc.getWeightHistoryList(data)
+				.success(function(response){
+					if(response.result==0){
+						$scope.setGrowthInfo(response.data);
+					}
+				})
+				.error(function(response, state) {
+					$window.alert("error : " + response.message);
+				});
+		}
 	}
 	
 	$scope.convertRound = function(data){
@@ -1241,26 +1322,42 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.init();
 	$scope.getStudent();
-	$scope.getMeasureHistoryCount();
+	
 	switch($location.path()){
 	case '/height.html':
-		$scope.getHeight();
+		$scope.section='height';
+		$scope.getGrowth();
+		break;
+	case '/height/history.html':
+		$scope.section='height';
+		$scope.getMeasureHistoryList();
 		break;
 	case '/weight.html':
-		$scope.getWeight();
+		$scope.section='weight';
+		$scope.getGrowth();
+		break;
+	case '/weight/history.html':
+		$scope.section='weight';
+		$scope.getMeasureHistoryList();
 		break;
 	}
+	
+	console.log('------------------ StudentCtrl ------------------');
 }]);
 
 app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'SchoolSvc', function($scope, $rootScope, $cookies, $window, $location, SchoolSvc){
 	$scope.yyyy = null;
 	$scope.MM = null;
 	
-	$scope.menu_list = [];
-	$scope.getSchoolMenuList = function(){
+	$scope.setYearMonth = function(){
 		var date = new Date();
 		$scope.yyyy = date.getFullYear();
 		$scope.MM = date.getMonth()+1;
+	}
+	
+	$scope.menu_list = [];
+	$scope.getSchoolMenuList = function(){
+		$scope.setYearMonth();
 		
 		SchoolSvc.getSchoolMenuList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
 			.success(function(response){
@@ -1279,15 +1376,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.yyyy = $scope.yyyy - 1;
 			$scope.MM = 12;
 		}
-		SchoolSvc.getSchoolMenuList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
-			.success(function(response){
-				if(response.result==0){
-					$scope.menu_list = response.data;
-				}
-			})
-			.error(function(data, status) {
-				alert("error : " + data.message);
-			});
+		$scope.getSchoolMenuList();
 	}
 	$scope.nextMonth = function(){
 		$scope.MM  = $scope.MM + 1;
@@ -1295,15 +1384,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.yyyy = $scope.yyyy + 1;
 			$scope.MM = 1;
 		}
-		SchoolSvc.getSchoolMenuList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
-			.success(function(response){
-				if(response.result==0){
-					$scope.menu_list = response.data;
-				}
-			})
-			.error(function(data, status) {
-				alert("error : " + data.message);
-			});
+		$scope.getSchoolMenuList();
 	}
 	
 	$scope.noti_list = [];
@@ -1312,6 +1393,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		SchoolSvc.getSchoolNotiList({school_id:$scope.student_school_id, category:$scope.category,member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
+					$scope.noti_list = [];
 					$scope.noti_list = response.data;
 				}
 			})
@@ -1364,10 +1446,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		}
 	}
 	$scope.getSchoolScheduleList = function(){
-		var date = new Date();
-		$scope.yyyy = date.getFullYear();
-		$scope.MM = date.getMonth()+1;
-		
 		SchoolSvc.getSchoolScheduleList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
 		.success(function(response){
 			if(response.result==0){
@@ -1389,15 +1467,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.yyyy = $scope.yyyy - 1;
 			$scope.MM = 12;
 		}
-		SchoolSvc.getSchoolScheduleList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
-			.success(function(response){
-				if(response.result==0){
-					$scope.setScheduleData(response.data);
-				}
-			})
-			.error(function(data, status) {
-				alert("error : " + data.message);
-			});
+		$scope.getSchoolScheduleList();
 	}
 	
 	$scope.nextMMSchedule = function(){
@@ -1406,15 +1476,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			$scope.yyyy = $scope.yyyy + 1;
 			$scope.MM = 1;
 		}
-		SchoolSvc.getSchoolScheduleList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
-			.success(function(response){
-				if(response.result==0){
-					$scope.setScheduleData(response.data);
-				}
-			})
-			.error(function(data, status) {
-				alert("error : " + data.message);
-			});
+		$scope.getSchoolScheduleList();
 	}
 	
 	$scope.getDayOfWeek = function(idx){
@@ -1424,7 +1486,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.replaceMenuString = function(str){
 		var tmp = str.replace(/k/gi,'');
-		tmp = str.split(/\n/gi);
+		tmp = tmp.split(/\n/gi);
 		var t = '&nbsp;&middot;&nbsp;'+tmp.join('<br />&nbsp;&middot;&nbsp;');
 		return t;
 	}
@@ -1440,17 +1502,13 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		return "https://aurasystem.kr:9000/upload/"+encodeURI(filename);
 	}
 	
-	$scope.setTabMenu = function(tab){
-		$scope.tab_menu = tab;
-	}
-	
 	$scope.clipping = function(noti){
 		console.log('스크랩하기');
 		SchoolSvc.addNotiBookmark({noti_seq:noti.noti_seq, member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$window.alert('게시물이 스크랩되었습니다.');
-					$window.location.reload();
+					$scope.getSchoolNotiList();
 				}
 			})
 			.error(function(data, status) {
@@ -1462,9 +1520,11 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.getStudent();
 	switch($location.path()){
 		case '/dining.html':
+			$scope.setYearMonth();
 			$scope.getSchoolMenuList();
 			break;
 		case '/school/schedule.html':
+			$scope.setYearMonth();
 			$scope.getSchoolScheduleList();
 			break;
 		case '/school/message.html':
@@ -1530,11 +1590,11 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.beforeValue = null;
 	$scope.school_grade = null;
 	$scope.nameOfSchool = null;
-	$scope.localChange = null;
 	
 	$scope.totalOfSchool = null;
 	$scope.rankOfSchool = null;
 	$scope.beforeRankOfSchool = null;
+	$scope.schoolChange = null;
 	
 	$scope.nameOfLocal = null;
 	$scope.totalOfLocal = null;
@@ -1560,11 +1620,11 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.totalOfSchool = data.totalOfSchool;
 		$scope.rankOfSchool = data.rankOfSchool;
 		$scope.beforeRankOfSchool = data.beforeRankOfSchool;
-		if($scope.rankOfSchool - $scope.beforeRankOfSchool == 0){
+		if($scope.rankOfSchool == $scope.beforeRankOfSchool){
 			$scope.schoolChange = '';
-		}else if($scope.rankOfSchool - $scope.beforeRankOfSchool > 0){
+		}else if($scope.rankOfSchool < $scope.beforeRankOfSchool){
 			$scope.schoolChange = 'up';
-		}else{
+		}else if($scope.rankOfSchool > $scope.beforeRankOfSchool){
 			$scope.schoolChange = 'down';
 		}
 		
@@ -1572,11 +1632,11 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.totalOfLocal = data.totalOfLocal;
 		$scope.rankOfLocal = (data.rankOfLocal/data.totalOfLocal*100).toFixed(2);
 		$scope.beforeRankOfLocal = (data.beforeRankOfLocal / data.totalOfLocal * 100).toFixed(2);
-		if($scope.rankOfLocal - $scope.beforeRankOfLocal == 0){
+		if($scope.rankOfLocal == $scope.beforeRankOfLocal){
 			$scope.localChange = '';
-		}else if($scope.rankOfLocal - $scope.beforeRankOfLocal > 0){
+		}else if($scope.rankOfLocal < $scope.beforeRankOfLocal){
 			$scope.localChange = 'up';
-		}else{
+		}else if($scope.rankOfLocal > $scope.beforeRankOfLocal){
 			$scope.localChange = 'down';
 		}
 		$scope.diffRankOfLocal = Math.abs(($scope.rankOfLocal - $scope.beforeRankOfLocal).toFixed(2));
@@ -1584,11 +1644,11 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.totalOfNation = data.totalOfNation;
 		$scope.rankOfNation = (data.rankOfNation/data.totalOfNation*100).toFixed(2);
 		$scope.beforeRankOfNation = (data.beforeRankOfNation / data.totalOfNation*100).toFixed(2);
-		if($scope.rankOfNation - $scope.beforeRankOfNation == 0){
+		if($scope.rankOfNation == $scope.beforeRankOfNation){
 			$scope.nationChange = '';
-		}else if($scope.rankOfNation - $scope.beforeRankOfNation  > 0){
+		}else if($scope.rankOfNation < $scope.beforeRankOfNation){
 			$scope.nationChange = 'up';
-		}else{
+		}else if($scope.rankOfNation > $scope.beforeRankOfNation){
 			$scope.nationChange = 'down';
 		}
 		$scope.diffRankOfNation = Math.abs(($scope.rankOfNation - $scope.beforeRankOfNation).toFixed(2));
@@ -1725,9 +1785,9 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	
 	$scope.schoolFontColor = function(rank, beforeRank){
 		console.log('rank =>' +rank);
-		if(parseInt(rank) > parseInt(beforeRank)){
+		if(parseInt(rank) < parseInt(beforeRank)){
 			return 'font_red';
-		} else if(parseInt(rank) < parseInt(beforeRank)){
+		} else if(parseInt(rank) > parseInt(beforeRank)){
 			return 'font_blue';
 		} else {
 			return '';
@@ -1743,7 +1803,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.fontColor = function(rank, beforeRank){
-		if(rank > beforeRank){
+		if(rank < beforeRank){
 			return 'font_red';
 		} else if(rank > beforeRank){
 			return 'font_red';
@@ -1894,6 +1954,7 @@ app.controller('ActivityCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 								for(var j=pre_pos, idx2=0;j<=i;j++, idx2++){
 									tmp_date_list[idx2] = tmp_list[j];
 								}
+								tmp_step += tmp_list[i].step;
 								var yyyymm = yyyy_mm.substring(0,4)+'년 '+yyyy_mm.substring(5,7)+'월';
 								$scope.activity_list[idx++] = ({'yyyymm':yyyymm,'total_step':tmp_step, 'list':tmp_date_list});
 							}else{
@@ -1933,9 +1994,30 @@ app.controller('ActivityCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 
 app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'MagazineSvc', function($scope, $rootScope, $cookies, $window, $location, MagazineSvc){
 	$scope.order = 'desc';
-	$scope.magazine_mode = 'list';
 	$scope.magazine_recently = null;
 	$scope.magazine_list = [];
+	
+	$scope.getPath = function(magazine){
+		return '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
+	}
+	
+	$scope.setRecentlyMagazine = function(magazine){
+		var path = $scope.getPath(magazine);
+		$scope.magazine_recently = magazine;
+		$scope.magazine_recently.subTitle = '건강매거진 '+magazine.month +'월호';
+		$scope.magazine_recently.images = [
+			{image: magazine.img_1!=null?path+magazine.img_1:null},
+			{image: magazine.img_2!=null?path+magazine.img_2:null},
+			{image: magazine.img_3!=null?path+magazine.img_3:null},
+			{image: magazine.img_4!=null?path+magazine.img_4:null},
+			{image: magazine.img_5!=null?path+magazine.img_5:null},
+			{image: magazine.img_6!=null?path+magazine.img_6:null},
+			{image: magazine.img_7!=null?path+magazine.img_7:null},
+			{image: magazine.img_8!=null?path+magazine.img_8:null},
+			{image: magazine.img_9!=null?path+magazine.img_9:null},
+			{image: magazine.img_10!=null?path+magazine.img_10:null},
+		];
+	}
 	
 	//매거진 목록 가져오기
 	$scope.getMagazineList = function(){
@@ -1943,23 +2025,8 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 			.success(function(response){
 				if(response.result==0){
 					$scope.magazine_list = response.data;
-					$scope.magazine_recently = $scope.magazine_list[0];
-					$scope.magazine_recently.subTitle = '건강매거진 '+$scope.magazine_recently.month +'월호';
-					var path = '/upload/magazine/'+$scope.magazine_recently.year+'/'+$scope.magazine_recently.month+'/';
-					$scope.magazine_recently.images = [
-						{image: $scope.magazine_recently.img_1!=null?path+$scope.magazine_recently.img_1:null, description: 'Image 00'},
-						{image: $scope.magazine_recently.img_2!=null?path+$scope.magazine_recently.img_2:null, description: 'Image 01'},
-						{image: $scope.magazine_recently.img_3!=null?path+$scope.magazine_recently.img_3:null, description: 'Image 02'},
-						{image: $scope.magazine_recently.img_4!=null?path+$scope.magazine_recently.img_4:null, description: 'Image 03'},
-						{image: $scope.magazine_recently.img_5!=null?path+$scope.magazine_recently.img_5:null, description: 'Image 04'},
-						{image: $scope.magazine_recently.img_6!=null?path+$scope.magazine_recently.img_6:null, description: 'Image 05'},
-						{image: $scope.magazine_recently.img_7!=null?path+$scope.magazine_recently.img_7:null, description: 'Image 06'},
-						{image: $scope.magazine_recently.img_8!=null?path+$scope.magazine_recently.img_8:null, description: 'Image 07'},
-						{image: $scope.magazine_recently.img_9!=null?path+$scope.magazine_recently.img_9:null, description: 'Image 08'},
-						{image: $scope.magazine_recently.img_10!=null?path+$scope.magazine_recently.img_10:null, description: 'Image 09'},
-					];
 					
-					console.log($scope.magazine_recently);
+					$scope.setRecentlyMagazine(response.data[0]);
 				}
 			})
 			.error(function(response, state) {
@@ -1972,65 +2039,48 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 		$scope.getMagazineList();
 	}
 	
-	$scope.magazine_images = [];
-	$scope.magazineView = function(magazine){
-		console.log('----- view magazine ------');
-		$scope.magazine_mode = 'view';
-		console.log('$scope.magazine_mode => '+$scope.magazine_mode);
-		$scope.title = magazine.title;
-		$scope.subTitle = '건강매거진 '+magazine.month +'월호';
-		$scope.subject = magazine.subject;
-		$scope.content = magazine.content;
-		var path = '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
-		$scope.images = [
-			{image: magazine.img_1!=null?path+magazine.img_1:null, description: 'Image 00'},
-			{image: magazine.img_2!=null?path+magazine.img_2:null, description: 'Image 01'},
-			{image: magazine.img_3!=null?path+magazine.img_3:null, description: 'Image 02'},
-			{image: magazine.img_4!=null?path+magazine.img_4:null, description: 'Image 03'},
-			{image: magazine.img_5!=null?path+magazine.img_5:null, description: 'Image 04'},
-			{image: magazine.img_6!=null?path+magazine.img_6:null, description: 'Image 05'},
-			{image: magazine.img_7!=null?path+magazine.img_7:null, description: 'Image 06'},
-			{image: magazine.img_8!=null?path+magazine.img_8:null, description: 'Image 07'},
-			{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
-			{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
-		];
-		$scope.image_size = 0;
-		for(var i=0; i<$scope.images.length; i++){
-			if($scope.images[i].image!=null){
-				$scope.image_size++;
-			}
-		}
-		console.log('$scope.image_size =>' + $scope.image_size);
+	$scope.getMagazineView = function(magazine_id){
+		MagazineSvc.getMagazineView({magazine_id:magazine_id})
+			.success(function(response){
+				if(response.result == 0){
+					var magazine = response.data;
+					var path = $scope.getPath(magazine);
+					
+					$scope.title = magazine.title;
+					$scope.subTitle = '건강매거진 '+magazine.month +'월호';
+					$scope.subject = magazine.subject;
+					$scope.content = magazine.content;
+					$scope.images = [
+						{image: magazine.img_1!=null?path+magazine.img_1:null},
+						{image: magazine.img_2!=null?path+magazine.img_2:null},
+						{image: magazine.img_3!=null?path+magazine.img_3:null},
+						{image: magazine.img_4!=null?path+magazine.img_4:null},
+						{image: magazine.img_5!=null?path+magazine.img_5:null},
+						{image: magazine.img_6!=null?path+magazine.img_6:null},
+						{image: magazine.img_7!=null?path+magazine.img_7:null},
+						{image: magazine.img_8!=null?path+magazine.img_8:null},
+						{image: magazine.img_9!=null?path+magazine.img_9:null},
+						{image: magazine.img_10!=null?path+magazine.img_10:null},
+					];
+					setSwiper();
+				}
+			})
+			.error(function(response, state) {
+				$window.alert("error : " + response.message);
+			});
+			
 	}
-	
-	$scope.direction = 'left';
-	$scope.currentIndex = 0;
-	$scope.clearMagazine = function(){
-		$scope.magazine_view_mode = false;
-		$scope.magazine_title = null;
-		$scope.magazine_subTitle = null;
-		$scope.magazine_subject = null;
-		$scope.magazine_content = null;
-		$scope.magazine_images = [];
-	}
-
-	$scope.isCurrentSlideIndex = function (index) {
-		return $scope.currentIndex === index;
-	};
-	
-	$scope.prevSlide = function () {
-		$scope.direction = 'left';
-		$scope.currentIndex = ($scope.currentIndex < $scope.image_size - 1) ? ++$scope.currentIndex : 0;
-	};
-
-	$scope.nextSlide = function () {
-		$scope.direction = 'right';
-		$scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.image_size - 1;
-	};
 	
 	$scope.init();
-	$scope.getStudent();
-	$scope.getMagazineList();
+	
+	switch($location.path()){
+	case '/magazine.html':
+		$scope.getMagazineList();
+		break;
+	case '/magazine/view.html':
+		$scope.getMagazineView($location.search().p);
+		break;
+	}
 	
 	console.log('------------------ MagazineCtrl ------------------');
 }])
@@ -2141,11 +2191,7 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			
 			$scope.upload = Upload.upload({
 				url: '/api/addChallenge',
-				method: 'POST',
-				file:$scope.f,
-				//data 속성으로 별도의 데이터를 보냄.
-				data : JSON.stringify(challenge),
-				fileFormDataName : 'files',
+				data : {files:$scope.f,data:JSON.stringify(challenge)}
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
 				if(data.result == 0) {

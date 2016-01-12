@@ -1,0 +1,40 @@
+<article class="megazine_list_wrap">
+	<section class="new">
+		<div class="photo"><img ng-if="magazine_recently.images[0].image" ng-src="{{magazine_recently.images[0].image}}" alt="" /></div>
+		<div class="info">
+			<strong class="main_title">{{magazine_recently.title}}</strong>
+			<p class="sub_title">{{magazine_recently.subTitle}}</p>
+			<p class="subject">{{magazine_recently.subject}}</p>
+			<p class="cont">{{magazine_recently.content}}</p>
+			<a href="#!/magazine_view?p={{magazine_recently.magazine_id}}" ng-if="magazine_recently" class="btn_detail_view">내용보기</a>
+		</div>
+	</section>
+	
+	<section class="history">
+		<div class="list_top">
+			<strong class="count">전체<span>({{magazine_list.length}})</span></strong>
+			<div class="in_select">
+				<label for="select01">최신순</label>
+				<select id="select01" ng-model="order" ng-change="orderChange()">
+					<option value="desc">최신순</option>
+					<option value="asc">발행순</option>
+				</select>
+			</div>
+		</div>
+		
+		<div ng-scrollbars ng-scrollbars-config="config" id="magazine_list_wrapper">
+			<ul class="list">
+				<li ng-repeat="magazine in magazine_list">
+					<a href="#!/magazine_view?p={{magazine.magazine_id}}">
+						<div class="photo"><img ng-src="{{getPath(magazine)+magazine.img_1}}" alt="" /></div>
+						<div class="info">
+							<p class="subject">{{magazine.subject}}</p>
+							<p class="cont">{{magazine.content}}</p>
+							<span class="date">{{yyyyMMdd(magazine.created)}}</span>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</section>
+</article>

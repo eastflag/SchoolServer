@@ -174,7 +174,7 @@
 </insert>
 
 <update id="updateHome" parameterType="SearchVO">
-	UPDATE HOME
+	UPDATE home
 	SET home_id = #{new_home_id},
 		use_yn=#{use_yn}
 	WHERE home_id = #{home_id}
@@ -1255,11 +1255,16 @@ select
 </select>
 
 <select id="selectMagazineList" parameterType="SearchVO" resultType="MagazineVO">
-	SELECT * FROM magazine
+	select * from magazine
 	ORDER BY created DESC
 	<if test=" page_size !=0 ">
 	Limit #{start_index}, #{page_size}
 	</if>
+</select>
+
+<select id="selectMagazine" parameterType="MagazineVO" resultType="MagazineVO">
+	select * from magazine
+	where magazine_id = #{magazine_id}
 </select>
 
 <select id="checkMagazine" parameterType="MagazineVO" resultType="int">
@@ -1398,14 +1403,7 @@ select
 	WHERE challenge_id = #{challenge_id}
 </update>
 
-<update id="updateMemberPhoto" parameterType="Map">
-	UPDATE member SET
-		photo = #{photo}
-	WHERE home_id = #{home_id}
-	AND name = HEX(AES_ENCRYPT(#{name}, 'aura'))
-</update>
-
-<select id="selectMemberProfile" parameterType="int" resultType="java.util.Map">
+<select id="selectMemberProfile" parameterType="int" resultType="MemberVO">
 	SELECT photo FROM member
 	WHERE member_id = #{member_id}
 </select>

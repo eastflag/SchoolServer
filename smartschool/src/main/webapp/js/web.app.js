@@ -113,7 +113,7 @@ app.controller('CommonCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 app.service('NoticeSvc', function($http) {
 	this.getNotiList = function(data) {
 		console.log('----------------- 공지사항 목록 --------------------');
-		return $http.post('home/api/getNotiList', data);
+		return $http.post('/web/api/getNotiList', data);
 	};
 });
 
@@ -164,17 +164,18 @@ app.controller('NoticeCtrl', ['$scope', 'NoticeSvc', 'CommonSvc', function ($sco
 		return CommonSvc.yyyyMMdd(date);
 	};
 	
+	
 	$scope.getNotiList();
 }]);
 
 app.service('PressSvc', function($http) {
 	this.getPressList = function(data){
 		console.log('-----------------언론자료 목록 --------------------');
-		return $http.post('home/api/getPressList', data);
+		return $http.post('/web/api/getPressList', data);
 	}
 	this.viewPress = function(data){
 		console.log('-----------------언론자료 상세 --------------------');
-		return $http.post('home/api/getPress', data);
+		return $http.post('/web/api/getPress', data);
 	}
 });
 
@@ -252,6 +253,10 @@ app.controller('PressCtrl', ['$scope', '$sce', 'PressSvc', 'CommonSvc', function
 		$scope.getPressList();
 	};
 	
+	$scope.stringToHtml = function(str){
+		return $sce.trustAsHtml(str);
+	}
+	
 	$scope.toggleContent = function(idx){
 		CommonSvc.toggleContent(idx);
 	}
@@ -265,10 +270,10 @@ app.controller('PressCtrl', ['$scope', '$sce', 'PressSvc', 'CommonSvc', function
 
 app.service('RequestSvc', function($http) {
 	this.getMemberInfo = function(data){
-		return $http.post('home/api/getMemberInfo', data);
+		return $http.post('/web/api/getMemberInfo', data);
 	};
 	this.requestQnA = function(data) {
-		return $http.post('home/api/requestQnA', data);
+		return $http.post('/web/api/requestQnA', data);
 	};
 });
 app.controller('RequestCtrl', ['$scope', '$rootScope', '$window', 'RequestSvc', function ($scope, $rootScope, $window, RequestSvc) {

@@ -1,0 +1,52 @@
+<article class="growth_main_wrap">
+	<div class="row_top">
+		<p class="title"><span class="name">{{student_name}}님</span>의 성장발달 정보입니다.</p>
+		<a href="javascript:;" class="btn_detail_view" ng-show="history_count == 0" onclick="alert('2번 이상 측정 시 보여집니다.');"><img src="/images/aura_in_app/ico_chart.png" alt="" /> 상세이력</a>
+		<a href="#!/heightHistory?y={{measure_year}}" class="btn_detail_view" ng-show="history_count > 0"><img src="/images/aura_in_app/ico_chart.png" alt="" /> 상세이력</a>
+	</div>
+	<div class="row_middle">
+		<div class="chart_area">
+			<div class="row_label">
+				<span><em>200.0</em></span>
+				<span><em>190.0</em></span>
+				<span><em>180.0</em></span>
+				<span><em>170.0</em></span>
+				<span><em>160.0</em></span>
+				<span><em>150.0</em></span>
+				<span><em>140.0</em></span>
+				<span><em>130.0</em></span>
+				<span><em>120.0</em></span>
+				<span><em>110.0</em></span>
+			</div>
+			<div class="chart">
+				<div class="data01"><span><em>{{growth_info.value}}</em></span></div>
+				<div class="data02"><span><em>{{growth_info.averageOfStandard}}</em></span></div>
+				<div class="data03"><span><em>{{growth_info.averageOfSchool}}</em></span></div>
+				<div class="data04"><span><em>{{growth_info.averageOfLocal}}</em></span></div>
+				<div class="data05"><span><em>{{growth_info.averageOfNation}}</em></span></div>
+			</div>
+		</div>
+		<div class="col_label">
+			<span>나</span>
+			<span>표준</span>
+			<span>학교평균</span>
+			<span>지역평균</span>
+			<span>전국평균</span>
+		</div>
+	</div>
+	<div class="row_bottom">
+		<dl class="data01">
+			<dt>전국 백분율</dt>
+			<dd>상위 {{growth_info.rank}}%</dd>
+		</dl>
+		<dl class="data02">
+			<dt>전월 대비</dt>
+			<dd>{{convertRound(growth_info.value - growth_info.beforeValue)}}cm증가</dd>
+		</dl>
+		<dl class="data03">
+			<dt>종합평가</dt>
+			<dd>{{growth_info.gradeString}}</dd>
+		</dl>
+	</div>
+	<a href="#!/training?p={{growth_info.gradeId}}" class="btn_recommend_exercise"><img src="/images/aura_in_app/img_health_tool.png" alt=""> 신장 추천 운동</a>
+</article>

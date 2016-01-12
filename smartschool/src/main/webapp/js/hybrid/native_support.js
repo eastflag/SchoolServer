@@ -15,12 +15,6 @@ var NATIVE = function(){
 	var _CONST_COMMAND_GET_USER_KEY			= 'GET_USER_KEY'; // 네이티브에 저장되어있는 사용자 키 가져오기 
 	var _CONST_COMMAND_GET_USER_KEY_AND_TOKEN = 'GET_USER_KEY_AND_TOKEN'; // 네이티브에 저장되어있는 사용자 정보 및 푸시토큰 데이터 받기 
 	var _CONST_COMMAND_EXTERNAL_BROWSER		= 'EXTERNAL_BROWSER';
-	var _CONST_COMMAND_GET_FRIENDS			= 'GET_FRIENDS';
-	var _CONST_COMMAND_USE_TTS				= 'USE_TTS';
-	var _CONST_COMMAND_START_STOP_WALK		= 'START_STOP_WALK';
-	var _CONST_COMMAND_USER_STRENGHT		= 'USER_STRENGHT';
-	var _CONST_COMMAND_SET_USER_GOALS		= 'SET_USER_GOLS';
-	var _CONST_COMMAND_SET_LOG_CODE			= 'SET_LOG_CODE';
 
 	/*
 	 * NATIVE.HYBRID : HYBRID js
@@ -118,39 +112,6 @@ var NATIVE = function(){
 							'linkParam'	: param.linkParam
 						};	
 					}
-					else if ( commandType == _CONST_COMMAND_USE_TTS ) {
-						sendData = {
-							'type'		: commandType,
-							'use'		: param.use
-						};	
-					}
-					else if ( commandType == _CONST_COMMAND_START_STOP_WALK ) {
-						sendData = {
-								'type'		: commandType,
-								'flag'		: param.flag
-						};	
-					}
-					else if ( commandType == _CONST_COMMAND_SET_LOG_CODE ) {
-						sendData = {
-								'type'		: commandType,
-								'code'		: param.code
-						};	
-					}
-					else if ( commandType == _CONST_COMMAND_USER_STRENGHT ) {
-						sendData = {
-							'type'		: commandType,
-							'height'	: param.height,
-							'weight'	: param.weight
-						};
-					}
-					else if ( commandType == _CONST_COMMAND_SET_USER_GOALS ) {
-						sendData = {
-							'type'		: commandType,
-							'count'		: param.count,
-							'kilometer'	: param.kilometer,
-							'kcalorie'	: param.kcalorie
-						};
-					}
 					else {
 						// 단순한 type만 보낼것들...
 						/*
@@ -216,11 +177,5 @@ var NATIVE = function(){
 		CONST_COMMAND_GET_USER_KEY			: _CONST_COMMAND_GET_USER_KEY,
 		CONST_COMMAND_GET_USER_KEY_AND_TOKEN: _CONST_COMMAND_GET_USER_KEY_AND_TOKEN,
 		CONST_COMMAND_EXTERNAL_BROWSER		: _CONST_COMMAND_EXTERNAL_BROWSER,
-		CONST_COMMAND_GET_FRIENDS			: _CONST_COMMAND_GET_FRIENDS,
-		CONST_COMMAND_START_STOP_WALK		: _CONST_COMMAND_START_STOP_WALK,
-		CONST_COMMAND_USE_TTS				: _CONST_COMMAND_USE_TTS,
-		CONST_COMMAND_USER_STRENGHT			: _CONST_COMMAND_USER_STRENGHT,
-		CONST_COMMAND_SET_USER_GOALS		: _CONST_COMMAND_SET_USER_GOALS,
-		CONST_COMMAND_SET_LOG_CODE			: _CONST_COMMAND_SET_LOG_CODE
 	};
 }();

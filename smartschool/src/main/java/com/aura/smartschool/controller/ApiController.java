@@ -783,8 +783,11 @@ public class ApiController {
 	public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {
 		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
 		OsInfoVO osInfo = mobileService.getOsInfo(inOsInfo);
-		
-		return new ResultData<OsInfoVO>(0, "success", osInfo);
+		if(osInfo!=null){
+			return new ResultData<OsInfoVO>(0, "success", osInfo);
+		}else{
+			return new ResultData<OsInfoVO>(100, "data does not exist", null);
+		}
 	}
 	
 	//급식 등록
@@ -868,6 +871,17 @@ public class ApiController {
 			return new ResultData<List<MagazineVO>>(0, "success", list);
 		}else{
 			return new ResultData<List<MagazineVO>>(100, "data does not exist", null);
+		}
+	}
+	
+	//건강메거진 상세
+	@RequestMapping("/api/getMagazine")
+	public ResultData<MagazineVO> getMagazineView(@RequestBody MagazineVO in){
+		MagazineVO vo = mobileService.getMagazine(in);
+		if(vo != null){
+			return new ResultData<MagazineVO>(0, "success", vo);
+		}else{
+			return new ResultData<MagazineVO>(100, "data does not exist", null);
 		}
 	}
 	

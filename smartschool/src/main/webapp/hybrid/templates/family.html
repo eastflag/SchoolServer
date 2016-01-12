@@ -1,114 +1,148 @@
-<div ng-style="family_list_status?{'display':'block'}:{'display':'none'}">
-	<article class="family_list_wrap">
-		<h2>가족리스트</h2>
-		<div id="family_list_wrapper">
-			<ul>
-				<li class="my_info" ng-repeat="row in family_list">
-					<div class="photo_wrap" ng-switch="row.is_parent">
-						<div class="photo" ng-switch-when="1">
+<article class="family_list_wrap" ng-show="loggedIn()">
+	<h2>가족리스트</h2>
+	<div ng-scrollbars ng-scrollbars-config="config" id="family_list_wrapper">
+		<ul class="list">
+			<li class="my_info" ng-repeat="row in family_list">
+				<div class="photo_wrap" ng-switch="row.is_parent">
+					<div class="photo" ng-switch-when="1">
+						<img ng-src="/profile/{{row.member_id}}" ng-if="row.photo != null"/>
+					</div>
+					<div class="photo" ng-switch-when="0">
+						<a href="#!/student" ng-click="setStudent(row)">
 							<img ng-src="/profile/{{row.member_id}}" ng-if="row.photo != null"/>
-						</div>
-						<div class="photo" ng-switch-when="0">
-							<a href="#!/student" ng-click="setStudent(row)">
-								<img ng-src="/profile/{{row.member_id}}" ng-if="row.photo != null"/>
-							</a>
-						</div>
-						<span class="level" ng-if="row.is_parent==0" ng-class="pay_date==null?'blue':'orange'">{{pay_date==null?'기본':'프리미엄'}}</span>
+						</a>
 					</div>
-					
-					<div class="info" ng-switch="row.is_parent">
-						<p class="name" ng-switch-when="1">{{row.relation}} / {{row.name}}</p>
-						<p class="name" ng-switch-when="0"><a href="#!/main.html" ng-click="setStudent(row)">{{row.relation}} / {{row.name}}</a></p>
-						<p class="infos tel">{{row.mdn}}</p>
-						<p class="infos school" ng-switch-when="0">{{row.school_name}} {{row.school_grade}}학년 {{row.school_class}}반</p>
-						<p class="infos place" ng-switch-when="0">위치정보없음</p>
-						<button type="button" class="btn modify_info" style="cursor:pointer;" ng-click="modFamily(row)">정보수정</button>
-						<button type="button" class="btn delete" style="cursor:pointer;" ng-click="removeMember(row)" ng-show="{{row.is_parent == 0}}">삭제하기</button>
-					</div>
-				</li>
-			</ul>
-		</div>
-		<button type="button" class="btn_common_blue_line mg_top15" ng-click="addFamily(1)">+ 가족구성원추가</button>
-	</article>
-	
-	<!-- 가족구성원 추가/수정 레이어 -->
-	<section class="common_layer">
-		<div class="dim_area" ng-click="clear()"></div>
-		<div class="layer_box" ng-switch="family_edit_mode">
-			<h3>{{family_mode_text}}</h3>
-			<ul class="main_tab" ng-switch-when="add" ng-switch="v_is_parent">
-				<li ng-switch-when="1" class="curr"><a href="javascript:;">부모</a></li>
-				<li ng-switch-when="1"><a href="javascript:;" ng-click="addFamily(0)">학생</a></li>
-				<li ng-switch-when="0"><a href="javascript:;" ng-click="addFamily(1)">부모</a></li>
-				<li ng-switch-when="0" class="curr"><a href="javascript:;">학생</a></li>
-			</ul>
-			<ul class="main_tab" ng-switch-when="edit" ng-switch="v_is_parent">
-				<li ng-switch-when="1" class="curr"><a href="javascript:;">부모</a></li>
-				<li ng-switch-when="1"><a href="javascript:;" style="cursor:no-drop;">학생</a></li>
-				<li ng-switch-when="0"><a href="javascript:;" style="cursor:no-drop;">부모</a></li>
-				<li ng-switch-when="0" class="curr""><a href="javascript:;">학생</a></li>
-			</ul>
-			<form id="">
+					<span class="level" ng-if="row.is_parent==0" ng-class="pay_date==null?'blue':'orange'">{{pay_date==null?'기본':'프리미엄'}}</span>
+				</div>
 				
-				<fieldset>
-					<legend class="screen_out">{{family_mode_text2}}</legend>
-					<div class="in_photo">
-						<div ng-if="profile!=null">
-							<img ng-src="/profile/{{v_member_id}}"/>
-						</div>
-					</div>
-					<div class="photo_add">
-						<label class="btn_photo_add" type="file" ngf-select="setProfile($file)" ngf-pattern="'.png,.jpg,.gif'">사진등록</label>
-						<button type="button" ng-if="profile" class="btn_photo_delete" ng-show="family_edit_mode=='edit'" ng-click="removeProfile()">사진삭제</button>
-					</div>
+				<div class="info" ng-switch="row.is_parent">
+					<p class="name" ng-switch-when="1"><a href="#!/student">{{row.relation}} / {{row.name}}</a></p>
+					<p class="name" ng-switch-when="0"><a href="#!/student" ng-click="setStudent(row)">{{row.relation}} / {{row.name}}</a></p>
+					<p class="infos tel">{{row.mdn}}</p>
+					<p class="infos school" ng-switch-when="0">{{row.school_name}} {{row.school_grade}}학년 {{row.school_class}}반</p>
+					<p class="infos place" ng-switch-when="0">위치정보없음</p>
+					<button type="button" class="btn modify_info" style="cursor:pointer;" ng-click="modFamily(row)">정보수정</button>
+					<button type="button" class="btn delete" style="cursor:pointer;" ng-click="removeMember(row)" ng-show="{{row.is_parent == 0}}">삭제하기</button>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<button type="button" class="btn_common_blue_line mg_top15" ng-click="addFamily(1)">+ 가족구성원추가</button>
+</article>
+
+<!-- 가족구성원 추가/수정 레이어 -->
+<section class="common_layer family_add01">
+	<div class="dim_area" ng-click="clear()"></div>
+	<div class="layer_box" ng-switch="family_edit_mode">
+		<h3>{{family_mode_text}}</h3>
+		<ul class="main_tab" ng-switch-when="add" ng-switch="v_is_parent">
+			<li ng-switch-when="1" class="curr"><a href="javascript:;">부모</a></li>
+			<li ng-switch-when="1"><a href="javascript:;" ng-click="addFamily(0)">학생</a></li>
+			<li ng-switch-when="0"><a href="javascript:;" ng-click="addFamily(1)">부모</a></li>
+			<li ng-switch-when="0" class="curr"><a href="javascript:;">학생</a></li>
+		</ul>
+		<ul class="main_tab" ng-switch-when="edit" ng-switch="v_is_parent">
+			<li ng-switch-when="1" class="curr"><a href="javascript:;">부모</a></li>
+			<li ng-switch-when="1"><a href="javascript:;" style="cursor:no-drop;">학생</a></li>
+			<li ng-switch-when="0"><a href="javascript:;" style="cursor:no-drop;">부모</a></li>
+			<li ng-switch-when="0" class="curr""><a href="javascript:;">학생</a></li>
+		</ul>
+		
+		<form id="">
+			<fieldset>
+				<legend class="screen_out">{{family_mode_text2}}</legend>
+				<div class="in_photo">
+					<img ng-show="v_photo" ng-src="{{v_photo?'/profile/'+v_member_id:''}}" />
+					<img ng-show="crop_state" ng-src="{{saved_profile}}" />
+				</div>
+				<div class="photo_add">
+					<input type="file" name="add_photo" id="add_photo" accept="image/*">
+					<label class="btn_photo_add" for="add_photo" ng-show="!crop_state && v_photo==null" >사진등록</label>
+					<button type="button" class="btn_photo_delete" ng-show="crop_state" ng-click="clearProfile()">사진삭제</button>
+					<button type="button" class="btn_photo_delete" ng-show="v_photo" ng-click="removeProfile()">사진삭제</button>
+				</div>
+				<div class="in_input">
+					<input type="tel" ng-model="v_mdn" placeholder="phone number" />
+				</div>
+				<div class="in_input">
+					<input type="text" ng-model="v_name" placeholder="이름" />
+				</div>
+				<div class="in_input">
+					<input type="text" ng-model="v_relation" placeholder="{{family_relation_text}}" />
+				</div>
+				<div class="in_input" ng-show="v_is_parent==0">
+					<input type="text" ng-model="v_birth_date" placeholder="생년월일" />
+				</div>
+				<div class="in_input" ng-show="v_is_parent==0">
+					<input type="text" ng-model="v_school_name" placeholder="학교명" readonly="readonly" ng-click="openSearchSchool()"/>
+				</div>
+				<div class="input_group" ng-show="v_is_parent==0">
 					<div class="in_input">
-						<input type="tel" ng-model="v_mdn" placeholder="phone number" />
-					</div>
+						<input type="tel" ng-model="v_school_grade" size="1" placeholder="학년" />
+					</div>	
 					<div class="in_input">
-						<input type="text" ng-model="v_name" placeholder="이름" />
-					</div>
+						<input type="tel" ng-model="v_school_class" size="2" placeholder="반" />
+					</div>	
 					<div class="in_input">
-						<input type="text" ng-model="v_relation" placeholder="{{family_relation_text}}" />
+						<select ng-model="v_sex">
+							<option value="">성별</option>
+							<option value="M">남</option>
+							<option value="F">여</option>
+						</select>
 					</div>
-					<div class="in_input" ng-show="v_is_parent==0">
-						<input type="text" ng-model="v_birth_date" placeholder="생년월일" />
-					</div>
-					<div class="in_input" ng-show="v_is_parent==0">
-						<input type="text" ng-model="v_school_name" placeholder="학교명" readonly="readonly" ng-click="openSearchSchool()"/>
-					</div>
-					<div class="input_group" ng-show="v_is_parent==0">
-						<div class="in_input">
-							<input type="tel" ng-model="v_school_grade" size="1" placeholder="학년" />
-						</div>	
-						<div class="in_input">
-							<input type="tel" ng-model="v_school_class" size="2" placeholder="반" />
-						</div>	
-						<div class="in_input">
-							<select ng-model="v_sex">
-								<option value="">성별</option>
-								<option value="M">남</option>
-								<option value="F">여</option>
-							</select>
-						</div>
-					</div>
-					<button type="button" class="btn_common_blue_line mg_top15" ng-click="addMember()" ng-show="family_edit_mode=='add'">구성원 추가</button>
-					<button type="button" class="btn_common_blue_line mg_top15" ng-click="modMember()" ng-show="family_edit_mode=='edit'">구성원 수정</button>
-				</fieldset>
-			</form>
-		</div>
-	</section>
-	
-	<script type="text/javascript">
-	$('#family_list_wrapper').enscroll({
-		showOnHover: true,
-		verticalTrackClass: 'track3',
-		verticalHandleClass: 'handle3'
-	});
-	</script>
+				</div>
+				<button type="button" class="btn_common_blue_line mg_top15" ng-click="addMember()" ng-show="family_edit_mode=='add'">구성원 추가</button>
+				<button type="button" class="btn_common_blue_line mg_top15" ng-click="modMember()" ng-show="family_edit_mode=='edit'">구성원 수정</button>
+			</fieldset>
+		</form>
+	</div>
+</section>
+
+<!-- 프로필 이미지 crop 레이어 -->
+<div class="common_layer profile-crop-area">
+	<div class="dim_area" ng-click="clearCrop()"></div>
+	<div class="crop-area">
+		<img-crop image="profile" result-image="cropped_profile" area-type="circle" area-min-size="100" result-image-format="image/jpeg"></img-crop>
+	</div>
+	<button type="button" class="btn delete" ng-click="clearCrop()">확인</button>
 </div>
 
+<!-- 가족구성원 추가 완료 레이어 -->
+<section class="common_layer add_member_complete">
+	<div class="dim_area"></div>
+	<div class="layer_box">
+		<div class="row_top pd_bottom15">
+			<img src="/images/aura_in_app/img_symbol.png" alt="" class="symbol" />
+			<p class="text01">가입절차가 모두 완료 되었습니다.</p>
+			<p class="text02">정상적인 이용을 위해 가족 모두 <br />어플리케이션 설치 후 사용해주세요.</p>
+			<div class="no_view">
+				<input type="checkbox" id="view_control" name="view_control" ng-model="add_complete_yn"/>
+				<label for="view_control">다시보지 않음</label>
+			</div>
+		</div>
+		<div class="row_bottom">
+			<a href="javascript:;" class="btn_common_blue_line" ng-click="confirmAddMember()">확인</a>
+		</div>
+	</div>
+</section>
+		
+<!-- 부모회원가입 완료 레이어 -->
+<section class="common_layer join_complete">
+	<div class="dim_area"></div>
+	<div class="layer_box">
+		<div class="row_top">
+			<img src="/images/aura_in_app/img_symbol.png" alt="" class="symbol" />
+			<p class="text01">가족명 생성이 완료되었습니다.</p>
+			<p class="text02">계속해서 자녀 정보를 함께 입력해주세요.</p>
+		</div>
+		<div class="row_bottom">
+			<a href="javascript:;" class="btn_common_blue_line" ng-click="joinCompleteAddMember();">+ 가족구성원추가</a>
+		</div>
+	</div>
+</section>
+
 <!-- 학교검색 -->
-<div class="layer_school_search" ng-style="search_school_status?{'display':'block'}:{'display':'none'}">
+<div class="layer_school_search" ng-style="search_school_status?{'display':'block'}:{'display':'none'}" style="position:absolute;left:0;top:0;width:100%;height:100%;background-color:#fff;display:none;">
 	<header class="header">
 		<a href="javascript:;" class="btn_page_back" ng-click="closeSearchSchool()"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
 		<div class="search_box">
@@ -118,8 +152,8 @@
 	</header>
 	
 	<article class="search_result_list">
-		<div id="school_list_wrapper">
-			<ul>
+		<div ng-scrollbars ng-scrollbars-config="config" id="school_list_wrapper">
+			<ul class="list">
 				<li ng-repeat="row in school_list">
 					<a href="javascript:;" ng-click="setSchool(row)">
 						<p class="name">{{row.school_name}}</p>
@@ -129,11 +163,4 @@
 			</ul>
 		</div>
 	</article>
-	<script type="text/javascript">
-	$('#school_list_wrapper').enscroll({
-		showOnHover: true,
-		verticalTrackClass: 'track3',
-		verticalHandleClass: 'handle3'
-	});
-	</script>
 </div>

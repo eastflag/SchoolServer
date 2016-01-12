@@ -1,17 +1,11 @@
 package com.aura.smartschool.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
-
+import org.apache.commons.codec.binary.Base64;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -789,6 +783,11 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
+	public MagazineVO getMagazine(MagazineVO in) {
+		return mobileMapper.selectMagazine(in);
+	}
+
+	@Override
 	public int checkMagazine(MagazineVO magazine) {
 		return mobileMapper.checkMagazine(magazine);
 	}
@@ -900,15 +899,10 @@ public class MobileServiceImpl implements MobileService {
 			//홈아이디 생성
 			mobileMapper.insertHome(home);
 			//멤버 생성
-			mobileMapper.insertMember(member);
 			if(file != null) {
-				Map<String,Object> param = new HashMap<String,Object>();
-				param.put("home_id", member.getHome_id());
-				param.put("name", member.getName());
-				param.put("photo", new SerialBlob(file.getBytes()));
-				
-				mobileMapper.updateMemberPhoto(param);
+				member.setPhoto(Base64.encodeBase64String(file.getBytes()));
 			}
+			mobileMapper.insertMember(member);
 
 			msg = "success";
 		}
@@ -916,7 +910,7 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public Map<String, Object> getMemberProfile(int member_id) {
+	public MemberVO getMemberProfile(int member_id) {
 		return mobileMapper.selectMemberProfile(member_id);
 	}
 
@@ -937,16 +931,11 @@ public class MobileServiceImpl implements MobileService {
 			if(mobileMapper.checkMemberExistInHome(member) > 0) {
 				return new Result(100, "중복된 전화번호가 존재하거나 가족명내에 동일한 이름이 존재합니다.");
 			} else {
+				if(file != null) {
+					member.setPhoto(Base64.encodeBase64String(file.getBytes()));
+				}
 				//멤버 생성
 				mobileMapper.insertMember(member);
-				if(file != null) {
-					Map<String,Object> param = new HashMap<String,Object>();
-					param.put("home_id", member.getHome_id());
-					param.put("name", member.getName());
-					param.put("photo", new SerialBlob(file.getBytes()));
-					
-					mobileMapper.updateMemberPhoto(param);
-				}
 				msg = "success";
 			}
 		}
@@ -959,18 +948,10 @@ public class MobileServiceImpl implements MobileService {
 		HomeVO home = new HomeVO();
 		home.setHome_id(member.getHome_id());
 		
-			//멤버 생성
-		long rs = mobileMapper.updateMember(member);
 		if(file != null) {
-			Map<String,Object> param = new HashMap<String,Object>();
-			param.put("home_id", member.getHome_id());
-			param.put("name", member.getName());
-			param.put("photo", new SerialBlob(file.getBytes()));
-			
-			mobileMapper.updateMemberPhoto(param);
+			member.setPhoto(Base64.encodeBase64String(file.getBytes()));
 		}
-		
-		return rs;
+		return mobileMapper.updateMember(member);
 	}
 
 	@Override
@@ -1017,6 +998,15 @@ public class MobileServiceImpl implements MobileService {
 			//키,체중 변화 - 학생
 			Map<String,Object> growth = mobileMapper.selectChangeGrowth(param);
 			growthInfo.setGrowth(String.valueOf(growth.get("value")));
+			
+			//키,체중 - 표준
+			StatisticsParam param1 = new StatisticsParam();
+			param1.setSex(member.getSex());
+			param1.setSchoolGradeId(member.getSchool_grade());
+			param1.setSection(section);
+			param1.setMeasureDate(this.standardDate); //2012년 세팅
+			AverageItem standardItem = mobileMapper.selectAveragePerStandard(param1);
+			growthInfo.setAvgOfStandard(standardItem.getValue());
 			
 			//키,체중 변화 - 지역평균 구하기
 			Map<String,Object> local = mobileMapper.selectGrowthAverageOfLocal(param);
@@ -1199,6 +1189,7 @@ public class MobileServiceImpl implements MobileService {
 			}
 			
 			//순위[1~10]
+			param.put("measureDate",summaryVO.getMeasure_date());
 			List<BodyMeasureGrade> ranklist = mobileMapper.selectRankingList(param);
 			//------------------- 이전 등수 가져오기 ------------------------------------------
 			for(BodyMeasureGrade row : ranklist){

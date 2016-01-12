@@ -1,0 +1,23 @@
+<article class="my_active_mass_wrap">
+	<div ng-scrollbars ng-scrollbars-config="config" id="my_active_mass_wrap">
+		<ul class="month_list list">
+			<li class="none" ng-show="activity_list.length==0">등록된 활동정보가 없습니다.</li>
+			<li ng-repeat="row in activity_list">
+				<dl class="month_total">
+					<dt class="date">{{row.yyyymm}}</dt>
+					<dd class="walking_count">총 <span>{{row.total_step | number}}</span> 걸음</dd>
+				</dl>
+				<ul class="day_list">
+					<li ng-repeat="item in row.list">
+						<p class="date">{{item.activity_date}}</p>
+						<div class="walking_info">
+							<strong class="count" ng-pattern="number">{{item.step | number}} 걸음</strong>
+							<span class="kcal">{{item.calory | number}}Kcal</span>
+							<span class="km">{{item.distance/1000}}km</span>
+						</div>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</article>

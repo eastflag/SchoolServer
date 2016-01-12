@@ -7,7 +7,8 @@ public class GrowthInfo {
 
 	private List<Map<String,Object>> list;
 	private String growth;
-	private String avgeOfLocal;
+	private String avgOfStandard;
+	private String avgOfLocal;
 	private String avgOfNation;
 	public List<Map<String, Object>> getList() {
 		return list;
@@ -21,11 +22,17 @@ public class GrowthInfo {
 	public void setGrowth(String growth) {
 		this.growth = growth;
 	}
-	public String getAvgOfLocal() {
-		return avgeOfLocal;
+	public String getAvgOfStandard() {
+		return avgOfStandard;
 	}
-	public void setAvgOfLocal(String avgeOfLocal) {
-		this.avgeOfLocal = avgeOfLocal;
+	public void setAvgOfStandard(String avgOfStandard) {
+		this.avgOfStandard = avgOfStandard;
+	}
+	public String getAvgOfLocal() {
+		return avgOfLocal;
+	}
+	public void setAvgOfLocal(String avgOfLocal) {
+		this.avgOfLocal = avgOfLocal;
 	}
 	public String getAvgOfNation() {
 		return avgOfNation;

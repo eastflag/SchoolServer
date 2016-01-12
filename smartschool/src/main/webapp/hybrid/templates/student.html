@@ -1,0 +1,128 @@
+<div ng-scrollbars ng-scrollbars-config="config" id="student_main_wrap">
+	<article class="main_wrap">
+		<nav class="main_nav">
+			<ul>
+				<li class="gnb01" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/height')">
+						<span class="menu">성장발달</span>
+						<span class="data">{{height!=null?height:0;}}cm</span>
+					</a>
+				</li>
+				<li class="gnb01" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">성장발달</span>
+						<span class="data">{{height!=null?height:0;}}cm</span>
+					</a>
+				</li>
+				<li class="gnb02" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/total')">
+						<span class="menu">종합건강점수</span>
+						<span class="data">{{growthGrade!=null?growthGrade:0}}점</span>
+					</a>
+				</li>
+				<li class="gnb02" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">종합건강점수</span>
+						<span class="data">{{growthGrade!=null?growthGrade:0}}점</span>
+					</a>
+				</li>
+				<li class="gnb03">
+					<a href="#!/dining">
+						<span class="menu">식단/영양</span>
+					</a>
+				</li>
+				<li class="gnb04">
+					<a href="#!/training">
+						<span class="menu">개인별맞춤운동</span>
+					</a>
+				</li>
+				<li class="gnb05" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/weight')">
+						<span class="menu">체중변화</span>
+						<span class="data">{{weight!=null?weight:0}}kg</span>
+					</a>
+				</li>
+				<li class="gnb05" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">체중변화</span>
+						<span class="data">{{weight!=null?weight:0}}kg</span>
+					</a>
+				</li>
+				<li class="gnb06" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/muscle')">
+						<span class="menu">근육량</span>
+						<span class="data">{{muscle!=null?muscle:0}}%</span>
+					</a>
+				</li>
+				<li class="gnb06" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">근육량</span>
+						<span class="data">{{muscle!=null?muscle:0}}%</span>
+					</a>
+				</li>
+				<li class="gnb07" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/rankingHeight')">
+						<span class="menu">건강랭킹</span>
+					</a>
+				</li>
+				<li class="gnb07" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">건강랭킹</span>
+					</a>
+				</li>
+				<li class="gnb08">
+					<a href="javascript:;" onclick="UTIL.alert('업데이트 예정')">
+						<span class="menu">두뇌발달분석</span>
+					</a>
+				</li>
+				<li class="gnb09" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/obesity')">
+						<span class="menu">비만도</span>
+						<span class="data">{{bmi!=null?bmi:0}}</span>
+					</a>
+				</li>
+				<li class="gnb09" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">비만도</span>
+						<span class="data">{{bmi!=null?bmi:0}}</span>
+					</a>
+				</li>
+				<li class="gnb10" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/smoking')">
+						<span class="menu">흡연지수</span>
+						<span class="data">{{cohd!=null?cohd:0}}</span>
+					</a>
+				</li>
+				<li class="gnb10" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">흡연지수</span>
+						<span class="data">{{cohd!=null?cohd:0}}</span>
+					</a>
+				</li>
+				<li class="gnb11" ng-if="pay_date!=null">
+					<a href="javascript:;" ng-click="checkMeasure('/activity')">
+						<span class="menu">나의활동량</span>
+					</a>
+				</li>
+				<li class="gnb11" ng-if="pay_date==null">
+					<a href="javascript:;" ng-click="alertPayment()">
+						<span class="menu">나의활동량</span>
+					</a>
+				</li>
+				<li class="gnb12">
+					<a href="#!/magazine">
+						<span class="menu">건강매거진</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<nav class="etc_nav">
+			<ul>
+				<li class="etc01"><a href="#!/safeGuard">안전지킴이</a></li>
+				<li class="etc02"><a href="#!/consult">모바일상담</a></li>
+				<li class="etc03"><a href="#!/schoolMessage">학교정보알리미</a></li>
+				<li class="etc04"><a href="#!/challenge">도전!!!건강!!</a></li>
+			</ul>
+		</nav>
+	</article>
+</div>

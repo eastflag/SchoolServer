@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,12 +79,12 @@ public class AuraHomeController {
 	 * @param rphone
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getSmsCertifyKey")
+	@RequestMapping(value="/web/api/getSmsCertifyKey")
 	public Result requestSmsCertifyKey(
 			@RequestBody MemberVO in,
 			HttpServletRequest reqst,
 			HttpSession session){
-		logger.debug("/home/api/getSmsCertifyKey");
+		logger.debug("/web/api/getSmsCertifyKey");
 		//회원여부 확인
 		MemberVO member = mobileService.getMemberByMdn(in);
 		if(member==null){
@@ -124,9 +125,9 @@ public class AuraHomeController {
 	 * @param HttpSession session
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/login")
+	@RequestMapping(value="/web/api/login")
 	public ResultData<MemberVO> login(@RequestBody MemberVO in){
-		logger.debug("/home/api/login------------------------------------");
+		logger.debug("/web/api/login------------------------------------");
 		
 		//회원여부 조회
 		MemberVO myInfo = mobileService.signInOfWeb(in);
@@ -142,9 +143,9 @@ public class AuraHomeController {
 	 * @param SearchVO search
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getNotiList")
+	@RequestMapping(value="/web/api/getNotiList")
 	public ResultDataTotal<List<NotiVO>> getNotiList(@RequestBody SearchVO search) {
-		logger.debug("/home/api/getNotiList");
+		logger.debug("/web/api/getNotiList");
 		List<NotiVO> notiList = new ArrayList<NotiVO>();
 		int total = mobileService.countNotiList(search);
 		logger.debug("Total Count : "+total);
@@ -164,10 +165,10 @@ public class AuraHomeController {
 	 * @param SearchVO search
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getPressList")
+	@RequestMapping(value="/web/api/getPressList")
 	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
 		List<PressVO> pressList = new ArrayList<PressVO>();
-		logger.debug("/home/api/getPressList");
+		logger.debug("/web/api/getPressList");
 		int total = mobileService.countPressList(search);
 		if(total > 0){
 			pressList = mobileService.getPressList(search);
@@ -199,7 +200,7 @@ public class AuraHomeController {
 	 * @param in
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getMember")
+	@RequestMapping(value="/web/api/getMember")
 	public ResultData<MemberVO> getMember(@RequestBody MemberVO in){
 		
 		return new ResultData<MemberVO>(0,"success", mobileService.selectMember(in));
@@ -210,7 +211,7 @@ public class AuraHomeController {
 	 * @param BoardVO in
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/requestQnA")
+	@RequestMapping(value="/web/api/requestQnA")
 	public Result requestQnA(@RequestBody BoardVO in){
 		try {
 			in.setBoard_type(1);
@@ -230,7 +231,7 @@ public class AuraHomeController {
 	 * @param search
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/getChallengeTop5List")
+	@RequestMapping(value="/web/api/getChallengeTop5List")
 	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
 		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
 	}
@@ -242,12 +243,12 @@ public class AuraHomeController {
 	 * @param files
 	 * @return
 	 */
-	@RequestMapping(value="/home/api/addChallenge")
+	@RequestMapping(value="/web/api/addChallenge")
 	public Result addChallenge(
 			HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="files", required=false) List<MultipartFile> files) {
-		logger.debug("/home/api/addChallenge---------------------------------------------------");
+		logger.debug("/web/api/addChallenge---------------------------------------------------");
 		logger.debug("file size : " + files.size());
 		Gson gson = new Gson();
 		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
@@ -276,12 +277,12 @@ public class AuraHomeController {
 	 * @param member
 	 * @return
 	 */
-	@RequestMapping("/home/api/signUpWeb")
+	@RequestMapping("/web/api/signUpWeb")
 	public Result signUpWeb(
 			HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="profile", required=false) MultipartFile file) {
-		logger.debug("/home/api/signUpWeb----------------------------------------------------------------");
+		logger.debug("/web/api/signUpWeb----------------------------------------------------------------");
 		
 		Result rs = null;
 		try { 
@@ -311,11 +312,11 @@ public class AuraHomeController {
 			,HttpServletResponse response
 			,ModelMap model){
 		
-		Map<String,Object> rs = mobileService.getMemberProfile(member_id);
-		if(rs != null){
-			byte[] imageContent = (byte[])rs.get("photo");
+		MemberVO member = mobileService.getMemberProfile(member_id);
+		if(member != null){
+			byte[] imageContent = Base64.decodeBase64(member.getPhoto());
 			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.IMAGE_GIF);
+			headers.setContentType(MediaType.IMAGE_JPEG);
 			return new ResponseEntity<byte[]>(imageContent, headers, HttpStatus.OK);
 		} else {
 			return null;
@@ -330,11 +331,11 @@ public class AuraHomeController {
 	 * @param file
 	 * @return
 	 */
-	@RequestMapping("/home/api/addMember")
+	@RequestMapping("/web/api/addMember")
 	public Result addMember(HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="profile", required=false) MultipartFile file) {
-		logger.debug("/home/api/signUp----------------------------------------------------------------");
+		logger.debug("/web/api/signUp----------------------------------------------------------------");
 		
 		Result rs = null;
 		try { 
@@ -358,11 +359,11 @@ public class AuraHomeController {
 	 * @param file
 	 * @return
 	 */
-	@RequestMapping("/home/api/modMember")
+	@RequestMapping("/web/api/modMember")
 	public Result modMember(HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="profile", required=false) MultipartFile file) {
-		logger.debug("/home/api/signUp----------------------------------------------------------------");
+		logger.debug("/web/api/signUp----------------------------------------------------------------");
 		
 		try { 
 			Gson gson = new Gson();

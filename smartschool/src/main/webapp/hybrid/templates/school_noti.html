@@ -1,0 +1,46 @@
+<article class="school_info_wrap">
+	<nav class="main_tab fix_tab">
+		<ul>
+			<li><a href="#!/schoolMessage">가정통신문</a></li>
+			<li><a href="#!/schoolSchedule">월간일정표</a></li>
+			<li class="curr" ><a href="javascript:;">학교공지사항</a></li>
+		</ul>
+	</nav>
+	
+	<div ng-scrollbars ng-scrollbars-config="config" id="school_info_wrap">
+		<ul class="school_news_list">
+			<li ng-repeat="row in noti_list">
+				<div class="row_top">
+					<p class="title">
+						<span class="school">{{student_school_name}}</span>
+						<span class="tit">{{noti_gubun}}</span>
+					</p>
+					<p>
+						<time class="date">{{convertDate(row.noti_date)}}</time>
+					</p>
+				</div>
+				<div class="row_middle">
+					<p class="subject">{{row.title}}</p>
+					<p class="cont">{{row.content}}</p>
+					<a ng-href="{{getDownloadUrl(row.filename)}}" class="btn_file_download" target="_self">{{row.filename}}</a>
+				</div>
+				<div class="row_bottom">
+					<button type="button" class="btn_scrap on" ng-if="row.member_id !=0" onclick="alert('이미 스크랩된 게시물입니다.');">스크랩</button>
+					<button type="button" class="btn_scrap" ng-if="row.member_id == 0" ng-click="setNotiId(row.noti_seq)">스크랩</button>
+					<button type="button" class="btn_share" onclick="alert('[스마트안전건강지킴이]앱을 이용하시기 바랍니다.'); return false;">공유</button>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<a href="javascript:;" class="fix_btn_scrap" ng-click="clipping()"><img src="/images/aura_in_app/btn_scrap.png" alt="스크랩"></a>
+</article>
+<script>
+setTimeout(function(){
+	$('.school_news_list .btn_scrap').bind('click', function(){
+		if($(this).hasClass('on')){
+			$(this).removeClass('on');
+		}else{
+			$(this).addClass('on');
+		}
+	});
+}, 500);</script>

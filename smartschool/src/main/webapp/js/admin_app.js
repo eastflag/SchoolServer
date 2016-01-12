@@ -1108,11 +1108,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 
     	$scope.upload = Upload.upload({
         	url: '/admin/api/modifySchoolNoti',
-        	method: 'POST',
-        	file:$scope.f,
-        	//data 속성으로 별도의 데이터를 보냄.
-        	data : JSON.stringify(noti),
-        	fileFormDataName : 'file',
+        	data : {file:$scope.f, data:JSON.stringify(noti)}
     	}).success(function(data, status, headers, config) {
     		console.log('data: ' + data + "," + data.result);
     		$scope.f = null;
@@ -1146,11 +1142,7 @@ app.controller('SchoolCtrl', ['$scope', '$rootScope', '$window', '$cookieStore',
 
     	$scope.upload = Upload.upload({
         	url: '/admin/api/addSchoolNoti',
-        	method: 'POST',
-        	file:$scope.f,
-        	//data 속성으로 별도의 데이터를 보냄.
-        	data : JSON.stringify(noti),
-        	fileFormDataName : 'file',
+        	data : {file:$scope.f, data:JSON.stringify(noti)}
     	}).success(function(data, status, headers, config) {
     		console.log('data: ' + data + "," + data.result);
     		if(data.result == 0) {
@@ -1776,11 +1768,7 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/addPress',
-				method: 'POST',
-				file:$scope.f,
-				//data 속성으로 별도의 데이터를 보냄.
-				data : JSON.stringify(press),
-				fileFormDataName : 'files',
+				data : {files:$scope.f,data:JSON.stringify(press)}
 			}).success(function(response) {
 				if(response.result == 0) {
 					$window.alert('언론자료가 등록되었습니다.');
@@ -1876,11 +1864,8 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyPress',
-				method: 'POST',
-				file:$scope.f,
 				//data 속성으로 별도의 데이터를 보냄.
-				data : JSON.stringify(press),
-				fileFormDataName : 'files',
+				data : {files:$scope.f, data:JSON.stringify(press)}
 			}).success(function(response) {
 				if(response.result == 0) {
 					$window.alert('언론자료가 수정되었습니다.');
@@ -2079,11 +2064,9 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/addMagazine',
-				method: 'POST',
 				file:$scope.f,
 				//data 속성으로 별도의 데이터를 보냄.
-				data : JSON.stringify(magazine),
-				fileFormDataName : 'files',
+				data : {files:$scope.f, data:JSON.stringify(magazine)}
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
 				if(data.result == 0) {
@@ -2242,10 +2225,8 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyMagazine',
 				method: 'POST',
-				file:$scope.f,
 				//data 속성으로 별도의 데이터를 보냄.
-				data : JSON.stringify(magazine),
-				fileFormDataName : 'files',
+				data : {files:$scope.f, data:JSON.stringify(magazine)}
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
 				if(data.result == 0) {

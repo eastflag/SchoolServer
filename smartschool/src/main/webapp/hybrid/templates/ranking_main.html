@@ -1,0 +1,44 @@
+<article class="peosonal_wrap ranking_view_step01">
+	<nav class="main_tab fix_tab">
+		<ul>
+			<li ng-class="tab_index==0?'curr':''"><a href="#!/rankingHeight">신장</a></li>
+			<li ng-class="tab_index==1?'curr':''"><a href="#!/rankingWeight">체중</a></li>
+			<li ng-class="tab_index==2?'curr':''"><a href="#!/rankingBmi">BMI</a></li>
+			<li ng-class="tab_index==3?'curr':''"><a href="#!/rankingMuscle">근육량</a></li>
+			<li ng-class="tab_index==4?'curr':''"><a href="#!/rankingFat">체지방률</a></li>
+		</ul>
+	</nav>
+	<div class="info_area">
+		<div class="title">
+			<h2>{{ranking_title}}</h2>	
+			<p class="update">정보 Update {{measureDate}}</p>
+		</div>
+		<div class="ranking_wrap">
+			<div class="row_top">
+				<a href="{{detail_url}}" class="ranking_circle">
+					<img src="/images/aura_in_app/ico_ranking_school.png" alt="" class="school" />
+					<h3 style="margin-top:0;">학교 랭킹</h3>
+					<strong class="rank" ng-class="schoolChange">{{rankOfSchool}}위</strong>
+					<span class="change" ng-class="schoolChange" ng-if="schoolChange!=''">{{schoolRankDiff(rankOfSchool, beforeRankOfSchool)}}위</span>
+					<span class="change" ng-class="schoolChange" ng-if="schoolChange==''" style="padding:0; text-align:center;">-</span>
+				</a>
+			</div>
+			<div class="row_bottom">
+				<a href="{{detail_url}}" class="ranking_circle">
+					<img src="/images/aura_in_app/ico_ranking_area.png" alt="" class="area" />
+					<h3 style="margin-top:0;">지역 랭킹</h3>
+					<strong class="rank" ng-class="localChange">{{rankOfLocal}}%</strong>
+					<span class="change" ng-class="localChange" ng-if="localChange!=''">{{diffRankOfLocal}}%</span>
+					<span class="change" ng-class="localChange" ng-if="localChange==''" style="padding:0; text-align:center;">-</span>
+				</a>
+				<a href="{{detail_url}}" class="ranking_circle">
+					<img src="/images/aura_in_app/ico_ranking_all_area.png" alt="" class="all_area" />
+					<h3 style="margin-top:0;">전국 랭킹</h3>
+					<strong class="rank" ng-class="nationChange">{{rankOfNation}}%</strong>
+					<span class="change" ng-class="nationChange" ng-if="nationChange!=''">{{diffRankOfNation}}%</span>
+					<span class="change" ng-class="nationChange" ng-if="nationChange==''" style="padding:0; text-align:center;">-</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</article>

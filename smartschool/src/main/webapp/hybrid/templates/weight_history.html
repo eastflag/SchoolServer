@@ -1,0 +1,46 @@
+<article class="growth_detail_wrap">
+	<div class="row_top">
+		<p class="title"><span class="name">{{student_name}}님</span>의 체중 상세이력입니다.</p>
+	</div>
+	<div class="row_middle">
+		<div class="chart_area">
+			<div class="row_label">
+				<span><em>120.0</em></span>
+				<span><em>110.0</em></span>
+				<span><em>100.0</em></span>
+				<span><em>90.0</em></span>
+				<span><em>80.0</em></span>
+				<span><em>70.0</em></span>
+				<span><em>60.0</em></span>
+				<span><em>50.0</em></span>
+				<span><em>40.0</em></span>
+				<span><em>30.0</em></span>
+			</div>
+			<div class="chart">
+				<!-- 표준 text -->
+				<div class="standard_txt">표준:{{avgOfStandard}}kg</div>
+				<!-- 평균 체중 -->
+				<div class="standard_bar">{{avgOfStandard}}</div>
+				<div class="data{{row.month}}" ng-repeat="row in list"><span ng-if="row.value"><em>{{row.value}}</em></span></div>
+			</div>
+		</div>
+		<div class="col_label">
+			<span ng-repeat="row in list">{{row.month}}</span>
+		</div>
+	</div>
+	<h2>{{measure_year}}년 체중 성장</h2>
+	<div class="row_bottom">
+		<dl class="data01">
+			<dt>전국평균</dt>
+			<dd>{{avgOfNation}}kg</dd>
+		</dl>
+		<dl class="data02">
+			<dt>지역평균</dt>
+			<dd>{{averageOfLocal}}kg</dd>
+		</dl>
+		<dl class="data03">
+			<dt>나의성장</dt>
+			<dd>{{growth}}kg</dd>
+		</dl>
+	</div>
+</article>

@@ -39,3 +39,46 @@ function commonLayerClose(thisClass){
 	$('.header').css({'z-index':'400'});
 	$('.'+thisClass).fadeOut();
 }
+
+function setSwiper(){
+	setTimeout(function(){
+		var imgHeight = $('.photo_wrap .swiper-slide img').height();
+		$('.megazine_view_wrap .photo_wrap').css({'height':imgHeight});
+		var swiper = new Swiper('.megazine_view_wrap .photo_wrap', {
+			loop: true,
+			grabCursor: true,
+			pagination : '.indicator'
+		});
+		swiper.params.onSlideChangeEnd = function(){
+			//다음 이미지 높이 세팅
+			var i = $('.indicator .swiper-active-switch').index()+1;
+			var currImgHeignt = $('.photo_wrap .swiper-slide').eq(i).children('img').height();
+			$('.megazine_view_wrap .photo_wrap').animate({'height':currImgHeignt}, 300);
+		}	
+	}, 300);
+}
+
+function animateGrowthDetail(section){
+	var diff = 0;
+	if(section=='height'){
+		diff = 100;
+	}else if(section=='weight'){
+		diff = 20;
+	}
+	setTimeout(function(){
+			var standard = $('.growth_detail_wrap .standard_bar').html();
+			$('.growth_detail_wrap .standard_bar').css({'bottom':standard-diff+'%'});
+			var k = $('.chart > div').length;
+			for(var i = 0; i < k; i++){
+				var data = $('.growth_detail_wrap .chart > div').eq(i).children('span').children('em').html();
+				transData = "";
+				if(section=='height'){
+					transData = data-diff + '%';
+				}else if(section=='weight'){
+					transData = ((data/100) * 100) - diff + '%';
+				}
+				var transData = data-diff + '%';
+				$('.growth_detail_wrap .chart > div').eq(i).children('span').animate({'height':transData}, 500);
+			}
+	}, 500);
+}

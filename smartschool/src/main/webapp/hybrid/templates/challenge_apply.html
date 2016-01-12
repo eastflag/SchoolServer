@@ -1,0 +1,23 @@
+<div ng-scrollbars ng-scrollbars-config="config" id="challenge_app_wrap">
+	<article class="challenge_app_wrap">
+		<form>
+			<fieldset>
+				<legend class="screen_out">도전건강 응모</legend>
+				<div class="in_input">
+					<input type="text" ng-model="challenge.title" placeholder="제목을 입력하세요" />
+				</div>
+				<div class="in_textarea">
+					<textarea ng-model="challenge.content" placeholder="내용을 입력하세요"></textarea>
+				</div>
+				<div class="in_file" ng-repeat="attach in filenames">
+					<input type="text" placeholder="이미지 (ex A.jpg / D.jpg, 10MB이하)" ng-model="filenames[$index].name" readonly="readonly" />
+					<label class="btn_file" type="file" ngf-select="uploadFiles($file,$index)" ngf-pattern="'.png,.jpg,.gif'" ngf-validate="{size:{min:'10B', max:'10MB'}}">찾아보기</label>
+				</div>
+				<div class="half_wrap mg_top15">
+					<button type="submit" class="btn_common_blue box_round" ng-click="addChallenge()">확인</button>
+					<button type="button" class="btn_common_blue_line box_round" ng-click="clearChallenge()">취소</button>
+				</div>
+			</fieldset>
+		</form>
+	</article>
+</div>

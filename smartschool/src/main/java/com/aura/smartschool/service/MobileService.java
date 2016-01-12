@@ -182,6 +182,7 @@ public interface MobileService {
 	//건강매거진 관리
 	public int checkMagazine(MagazineVO magazine);
 	public List<MagazineVO> getMagazineList(SearchVO search);
+	public MagazineVO getMagazine(MagazineVO in);
 	public int countMagazineList(SearchVO search);
 	public int addMagazine(MagazineVO magazine) throws PersistenceException;
 	public int modifyMagazine(MagazineVO magazine) throws PersistenceException;
@@ -196,7 +197,7 @@ public interface MobileService {
 	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException;
 	public int setupChallengeRank(ChallengeVO challenge) throws PersistenceException;
 	public Result signUpWeb(MemberVO member, MultipartFile file) throws Exception;
-	public Map<String,Object> getMemberProfile(int member_id);
+	public MemberVO getMemberProfile(int member_id);
 	public Result addMember(MemberVO member, MultipartFile file) throws Exception;
 	public long modMember(MemberVO member, MultipartFile file) throws Exception;
 	

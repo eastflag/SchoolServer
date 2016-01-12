@@ -1,0 +1,37 @@
+<article class="menu_wrap">
+	<div class="top_area">
+		<p class="title">급식정보({{MM}}월)</p>
+		<span class="arrow left" ng-click="prevMonth()"></span>
+		<span class="arrow right" ng-click="nextMonth()"></span>
+	</div>
+	<div class="week_menu_list">
+		<div ng-scrollbars ng-scrollbars-config="config" id="school_menu_lsit">
+			<div class="list">
+				<dl ng-repeat="row in menu_list">
+					<dt>{{row.date}}</dt>
+					<dd>
+						<dl class="meal">
+							<dt>아침</dt>
+							<dd ng-bind-html="replaceMenuString(row.breakfast)"></dd>
+						</dl>
+						<dl class="meal">
+							<dt>점심</dt>
+							<dd ng-bind-html="replaceMenuString(row.lunch)"></dd>
+						</dl>
+						<dl class="meal">
+							<dt>저녁</dt>
+							<dd ng-bind-html="replaceMenuString(row.dinner)"></dd>
+						</dl>
+					</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+	<div class="allergy_info">
+		<dl>
+			<dt>알레르기정보</dt>
+			<dd>① 난류 ② 우유 ③ 메밀 ④ 땅콩 ⑤ 대두 ⑥ 밀 ⑦ 고등어 ⑧ 게 ⑨ 새우 ⑩ 돼지고기 ⑪ 복숭아 ⑫ 토마토 ⑬ 아황산염</dd>
+		</dl>
+	</div>
+	<div class="indicator"></div>
+</article>

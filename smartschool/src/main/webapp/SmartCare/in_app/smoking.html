@@ -1,105 +1,73 @@
-<div class="load smoking" ng-style="no_smoking_layer?{'display':'none'}:{'display':'block'}">
-	<header class="header">
-		<h1>흡연지수</h1>
-		<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
-		<button class="btn_gnb" onclick="gnbShow()"></button>
-	</header>
-	<section class="gnb_wrap">
-		<div class="dim_area" onclick="gnbHide()"></div>
-		<button type="button" class="btn_layer_close" onclick="gnbHide()"></button>
-		<div class="gnb_area">
-			<div class="info_area">
-				<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
-				<p class="name">{{home_id}}</p>
-				<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
-			</div>
-			<nav class="menu_area">
-				<ul>
-					<li><a href="#!/noti.html">공지사항</a></li>
-					<li><a href="#!/qna/list.html">Q&amp;A</a></li>
-					<li><a href="#!/app/info.html">정보</a></li>
-					<li><a href="#!/qna/list.html">서비스문의</a></li>
-					<li><a href="javascript:;" onclick="alert('고객센터로 문의하시기 바랍니다.\nTEL: 1544-1284 '); return false;">서비스탈퇴</a></li>
-					<li><a href="javascript:;" ng-click="logout()">로그아웃</a></li>
-				</ul>
-			</nav>
+<header class="header">
+	<h1>흡연지수</h1>
+	<a href="javascript:;" ng-click="movePrevUrl();" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+	<button class="btn_gnb" onclick="gnbShow()"></button>
+</header>
+<section class="gnb_wrap">
+	<div class="dim_area" onclick="gnbHide()"></div>
+	<button type="button" class="btn_layer_close" onclick="gnbHide()"></button>
+	<div class="gnb_area">
+		<div class="info_area">
+			<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+			<p class="name">{{home_id}}</p>
+			<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
 		</div>
-	</section>
-	
-	<article class="smoking_wrap">
-		<div class="smoking_row_top">
-			<!-- stat01 ~ stat04 -->
-			<div class="my_status" ng-switch="smokeStatus">
-				<img ng-switch-when="정상" src="/images/aura_in_app/img_smoking_stat01.png" alt="정상" />
-				<img ng-switch-when="간접초기흡연" src="/images/aura_in_app/img_smoking_stat02.png" alt="간접초기흡연" />
-				<img ng-switch-when="흡연중" src="/images/aura_in_app/img_smoking_stat03.png" alt="흡연중" />
-				<img ng-switch-when="과다흡연" src="/images/aura_in_app/img_smoking_stat04.png" alt="과다흡연" />
-				<img ng-switch-default src="/images/aura_in_app/img_smoking_stat01.png" alt="정상" />
-			</div>
-			<p class="summary">{{student_name}}님의 흡연지수는 <span class="stat01">{{smokeStatus}}</span>입니다.</p>
-			<div class="charticle">
-				<ul>
-					<li class="stat01" ng-class="smokeStatus=='비흡연'?'check':''"><span></span>정상</li>
-					<li class="stat02" ng-class="smokeStatus=='간접초기흡연'?'check':''"><span></span>간접초기흡연</li>
-					<li class="stat03" ng-class="smokeStatus=='흡연중'?'check':''"><span></span>흡연중</li>
-					<li class="stat04" ng-class="smokeStatus=='과다흡연'?'check':''"><span></span>과다흡연</li>
-				</ul>
-			</div>
-		</div>
-		<div class="smoking_row_bottom">
-			<div class="left">
-				<h2>PPM</h2>
-				<strong class="data">{{ppm}}</strong>
-				<dl>
-					<dt>PPM란?</dt>
-					<dd>Parts Per Million의 줄임말.
-					신선한 공기의 양에 대한
-					유해가스의 비율을 측정할때
-					사용되는 부피 단위입니다.</dd>
-				</dl>
-			</div>
-			<div class="right">
-				<h2>COHB</h2>
-				<strong class="data">{{cohd}}%</strong>
-				<dl>
-					<dt>COHB(%)란?</dt>
-					<dd>
-					Carboxy Hemoglobin의 줄임말.
-					혈류속의 일산화탄소 농도를
-					의미합니다.</dd>
-				</dl>
-			</div>
-		</div>
-		<a href="javascript:;" class="btn_stop_smoking_help" ng-click="no_smoking_layer=true;"><img src="/images/aura_in_app/ico_stop_smoking.png" alt=""> 금연 도움 사이트</a>
-	</article>
-</div>
+		<nav class="menu_area">
+			<ul>
+				<li><a href="#!/noti.html">공지사항</a></li>
+				<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+				<li><a href="#!/app/info.html">정보</a></li>
+				<li><a href="#!/qna/list.html">서비스문의</a></li>
+				<li><a href="javascript:;" onclick="alert('고객센터로 문의하시기 바랍니다.\nTEL: 1544-1284 '); return false;">서비스탈퇴</a></li>
+				<li><a href="javascript:;" ng-click="logout()">로그아웃</a></li>
+			</ul>
+		</nav>
+	</div>
+</section>
 
-<!-- 금연 도움 사이트 -->
-<div class="load stop_smoking_site" ng-style="no_smoking_layer?{'display':'block'}:{'display':'none'}">
-	<header class="header">
-		<h1>금연 도움 사이트</h1>
-		<a href="javascript:;" class="btn_page_back" ng-click="no_smoking_layer=false;"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
-	</header>
-	<article class="stop_smoking_site_wrap">
-		<ul>
-			<li>
-				<a href="javascript:;" target="_blank">
-					<p class="site_name">청소년 금연짱</p>
-					<p class="summary">금연교육자료, 금연 노하우, 통계자료 등</p>
-				</a>
-			</li>
-			<li>
-				<a href="javascript:;" target="_blank">
-					<p class="site_name">한국 금연 운동 협의회</p>
-					<p class="summary">금연뉴스, 금연방법, 금연교육자료 등</p>
-				</a>
-			</li>
-			<li>
-				<a href="javascript:;" target="_blank">
-					<p class="site_name">청소년 흡연음주 예방협회</p>
-					<p class="summary">금연활동 및 홍보 동영상, 금연교육신청 등</p>
-				</a>
-			</li>
-		</ul>
-	</article>
-</div>
+<article class="smoking_wrap">
+	<div class="smoking_row_top">
+		<!-- stat01 ~ stat04 -->
+		<div class="my_status" ng-switch="smokeStatus">
+			<img ng-switch-when="정상" src="/images/aura_in_app/img_smoking_stat01.png" alt="정상" />
+			<img ng-switch-when="간접초기흡연" src="/images/aura_in_app/img_smoking_stat02.png" alt="간접초기흡연" />
+			<img ng-switch-when="흡연중" src="/images/aura_in_app/img_smoking_stat03.png" alt="흡연중" />
+			<img ng-switch-when="과다흡연" src="/images/aura_in_app/img_smoking_stat04.png" alt="과다흡연" />
+			<img ng-switch-default src="/images/aura_in_app/img_smoking_stat01.png" alt="정상" />
+		</div>
+		<p class="summary">{{student_name}}님의 흡연지수는 <span class="stat01">{{smokeStatus}}</span>입니다.</p>
+		<div class="charticle">
+			<ul>
+				<li class="stat01" ng-class="smokeStatus=='비흡연'?'check':''"><span></span>정상</li>
+				<li class="stat02" ng-class="smokeStatus=='간접초기흡연'?'check':''"><span></span>간접초기흡연</li>
+				<li class="stat03" ng-class="smokeStatus=='흡연중'?'check':''"><span></span>흡연중</li>
+				<li class="stat04" ng-class="smokeStatus=='과다흡연'?'check':''"><span></span>과다흡연</li>
+			</ul>
+		</div>
+	</div>
+	<div class="smoking_row_bottom">
+		<div class="left">
+			<h2>PPM</h2>
+			<strong class="data">{{ppm}}</strong>
+			<dl>
+				<dt>PPM란?</dt>
+				<dd>Parts Per Million의 줄임말.
+				신선한 공기의 양에 대한
+				유해가스의 비율을 측정할때
+				사용되는 부피 단위입니다.</dd>
+			</dl>
+		</div>
+		<div class="right">
+			<h2>COHB</h2>
+			<strong class="data">{{cohd}}%</strong>
+			<dl>
+				<dt>COHB(%)란?</dt>
+				<dd>
+				Carboxy Hemoglobin의 줄임말.
+				혈류속의 일산화탄소 농도를
+				의미합니다.</dd>
+			</dl>
+		</div>
+	</div>
+	<a href="#!/assistance.html" class="btn_stop_smoking_help"><img src="/images/aura_in_app/ico_stop_smoking.png" alt=""> 금연 도움 사이트</a>
+</article>

@@ -1,0 +1,67 @@
+<article class="school_info_wrap">
+	<nav class="main_tab fix_tab">
+		<ul>
+			<li><a href="#!/schoolMessage">가정통신문</a></li>
+			<li class="curr"><a href="javascript:;">월간일정표</a></li>
+			<li><a href="#!/schoolNoti">학교공지사항</a></li>
+		</ul>
+	</nav>
+	<div class="month_control">
+		<p class="month">학사일정({{MM}}월)</p>
+		<button type="button" class="btn prev" ng-click="prevMMSchedule()"></button>
+		<button type="button" class="btn next" ng-click="nextMMSchedule()"></button>
+		<button type="button" class="btn_list_view_type" ng-click="toggleScheduleType()"></button>
+	</div>
+	<!-- 학교정보알리미 (월간일정표-달력) -->
+	<div class="calendar_area" ng-show="schedule_mode=='calendar'">
+		<table class="calendar_tbl">
+			<colgroup>
+				<col style="width:14.3%;" />
+				<col style="width:14.3%;" />
+				<col style="width:14.3%;" />
+				<col style="width:14.3%;" />
+				<col style="width:14.3%;" />
+				<col style="width:14.3%;" />
+				<col style="width:14.2%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col" class="sun">일</th>
+					<th scope="col">월</th>
+					<th scope="col">화</th>
+					<th scope="col">수</th>
+					<th scope="col">목</th>
+					<th scope="col">금</th>
+					<th scope="col">토</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="week in schedule_calendar">
+					<td class="{{row.type}}" ng-class="getDayOfWeek($index)" ng-repeat="row in week">
+						<span>{{row.date}}</span>
+						<p class="cont" ng-if="row.schedule" ng-bind-html="row.schedule"></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<!-- 학교정보알리미 (월간일정표-list) -->
+	<div class="schedule_list_area">
+		<div ng-show="schedule_mode=='list'" ng-scrollbars ng-scrollbars-config="config" id="schedule_list_area">
+			<div class="list">
+				<table class="list_tbl">
+					<colgroup>
+						<col style="width:10%;" />
+						<col style="width:90%;" />
+					</colgroup>
+					<thead>
+						<tr ng-repeat="row in schedule_list">
+							<th scope="row">{{row.day}}</th>
+							<td><p>{{row.schedule}}</p></td>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</article>
