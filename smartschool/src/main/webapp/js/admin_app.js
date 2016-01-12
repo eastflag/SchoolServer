@@ -1866,7 +1866,6 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyPress',
-				//data 속성으로 별도의 데이터를 보냄.
 				data : {files:$scope.f, data:JSON.stringify(press)}
 			}).success(function(response) {
 				if(response.result == 0) {
@@ -2066,8 +2065,6 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/addMagazine',
-				file:$scope.f,
-				//data 속성으로 별도의 데이터를 보냄.
 				data : {files:$scope.f, data:JSON.stringify(magazine)}
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
@@ -2226,8 +2223,6 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyMagazine',
-				method: 'POST',
-				//data 속성으로 별도의 데이터를 보냄.
 				data : {files:$scope.f, data:JSON.stringify(magazine)}
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
