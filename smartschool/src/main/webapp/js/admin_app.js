@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor', 'toaster', 'ngAnimate'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor', 'toaster', 'ngAnimate', 'angular-jwt'
 ]);
 
 app.run(['$rootScope', '$cookieStore', '$http', 'toaster', function($rootScope, $cookieStore, $http, toaster) {
@@ -240,7 +240,7 @@ app.filter('changeCategoryName', function() {
 	}
 });
 
-app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MainSvc', function ($scope, $http, $rootScope, $cookieStore, MainSvc) {
+app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'MainSvc', 'jwtHelper', function ($scope, $http, $rootScope, $cookieStore, MainSvc, jwtHelper) {
 	$scope.token = null;
 	$scope.error = null;
 	$scope.role_id = null;
@@ -277,15 +277,23 @@ app.controller('MainCtrl', ['$scope', '$http', '$rootScope', '$cookieStore', 'Ma
 	$scope.loggedIn = function() {
 		if ($cookieStore.get("auth_info") != null && $cookieStore.get("auth_info") != undefined) {
 			var auth_info = $cookieStore.get("auth_info");
+			//expire time 검증
+			var token = auth_info.auth_token;
+			var isExpired = jwtHelper.isTokenExpired(token);
+			
+			if(isExpired) {
+				return false;
+			} else {
+				$rootScope.auth_token = auth_info.auth_token;
+				$rootScope.role_id = auth_info.role_id;
+				$scope.role_id = auth_info.role_id;
 
-			$rootScope.auth_token = auth_info.auth_token;
-			$rootScope.role_id = auth_info.role_id;
-			$scope.role_id = auth_info.role_id;
-
-			$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
-		};
-
-        return $rootScope.auth_token !== null;
+				$http.defaults.headers.post['X-Auth'] = $rootScope.auth_token;
+				return true
+			}
+		} else {
+			return false;
+		}
     }
 
     $scope.logOut = function() {
