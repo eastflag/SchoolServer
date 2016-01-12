@@ -49,6 +49,8 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	.when('/press', {templateUrl: '/admin/templates/press.html'})
 	.when('/magazine', {templateUrl: '/admin/templates/magazine.html'})
 	.when('/challenge', {templateUrl: '/admin/templates/challenge.html'})
+	.when('/statistic', {templateUrl: '/admin/templates/statistic.html'})
+	
 	
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -2503,3 +2505,6 @@ app.animation('.slide-animation', function () {
 		}
 	};
 });
+
+app.controller('StatiscticCtrl',['$scope',function($scope){
+}]);
