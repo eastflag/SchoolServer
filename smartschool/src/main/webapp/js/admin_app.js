@@ -2527,4 +2527,3 @@ app.animation('.slide-animation', function () {
 
 app.controller('StatiscticCtrl',['$scope',function($scope){
 }]);
-}
