@@ -1,23 +1,32 @@
 <article class="cunsulting_room">
 	<div class="day_group">
-		<ul class="message_list">
-			<li class="other" ng-class="row.who==0?'my':'other'" ng-repeat="row in consult_list">
-				<div class="cont">
-					<span class="admin_name">상담원</span>
-					<div class="message_cont">
-						<div class="row">
-							<p class="message">안녕하세요. 스마트안전지킴이입니다.</p>
-						</div>
-						<div class="row">
-							<span class="time">2014/04/30</span>
+		<div ng-scrollbars ng-scrollbars-config="config" id="cunsulting_list_wrap">
+			<ul class="message_list">
+				<li ng-class="row.who==0?'my':'other'" ng-repeat="row in consult_list">
+					<div class="cont" ng-if="row.who==1">
+						<span class="admin_name">상담원</span>
+						<div class="message_cont">
+							<div class="row">
+								<p class="message">{{row.content}}</p>
+							</div>
+							<div class="row">
+								<span class="time">{{getCreated(row.created)}}</span>
+							</div>
 						</div>
 					</div>
-				</div>
-			</li>
-		</ul>
+					<div class="row" ng-if="row.who==0">
+						<p class="message_cont">{{row.content}}</p>
+					</div>
+					<div class="row" ng-if="row.who==0">
+						<span class="time">{{getCreated(row.created)}}</span>
+					</div>
+				</li>
+			</ul>
+		</div>
 	</div>
 </article>
 <section class="reply_write_wrap">
+	<button class="btn_estimation" onclick="commonLayerOpen('')">평가</button>
 	<div class="in_input">
 		<label for="reply_write" class="reply_write"></label>
 		<textarea id="reply_write" ng-model="chat_message" autocorrect="off" autocapitalize="off" style="height: 24px;"></textarea>
@@ -25,22 +34,36 @@
 	<a href="javascript:;" class="btn_ok" ng-click="sendMessage()">전송</a>
 </section>
 <script>
+var toggle = false;
 function setMessageBox(){
-	$('.reply_write_wrap').css({'bottom':'0'});
-	$('.reply_write_wrap .in_input').css({'height':'65px'});
-	$('.reply_write_wrap .in_input textarea').css({'height':'60px'});
-	$('.reply_write_wrap .btn_ok').css({'height':'75px','line-height':'75px'});
-	$('.message_room_wrap').css({'padding-bottom':'155px'});
+	$('.cunsulting_room').animate({top:'-=36'},200,function(){
+		$('.reply_write_wrap .btn_estimation').animate({'height':'+=36'},200);
+		$('.reply_write_wrap .in_input').animate({'height':'+=36'},200);
+		$('.reply_write_wrap .in_input textarea').animate({'height':'+=36'},200);
+		$('.reply_write_wrap .btn_ok').animate({'height':'+=36','line-height':'+=36'},200);
+		toggle = true;
+	});
 }
 function setListBox(){
-	$('.reply_write_wrap').css({'bottom':'0'});
-	$('.reply_write_wrap .in_input').css({'height':'29px'});
-	$('.reply_write_wrap .in_input textarea').css({'height':'24px'});
-	$('.reply_write_wrap .btn_ok').css({'height':'39px','line-height':'39px'});
-	$('.message_room_wrap').css({'padding-bottom':'55px'});
+	if(toggle){
+		$('.cunsulting_room').animate({top:'+=36'},200,function(){
+			$('.reply_write_wrap .btn_estimation').animate({'height':'-=36'},200);
+			$('.reply_write_wrap .in_input').animate({'height':'-=36'},200);
+			$('.reply_write_wrap .in_input textarea').animate({'height':'-=36'},200);
+			$('.reply_write_wrap .btn_ok').animate({'height':'-=36','line-height':'-=36'},200);
+			toggle = false;
+		});
+	}
 }
 //메시지 입력 (높이, 여백 세팅)
-$('#reply_write').click(function(){
-	setMessageBox();
+$('#reply_write').bind('focus',function(){
+	if(!toggle){
+		setMessageBox();
+	}
+});
+$('.cunsulting_room').click(function(){
+	if(toggle){
+		setListBox();
+	}
 });
 </script>

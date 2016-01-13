@@ -23,6 +23,8 @@ public class SmsVO {
 	private String returnurl;		//메시지 전송 후 이동할 페이지
 	private String nointeractive;
 	
+	private String certifyKey;		//인증번호
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -115,5 +117,11 @@ public class SmsVO {
 	}
 	public void setNointeractive(String nointeractive) {
 		this.nointeractive = nointeractive;
+	}
+	public String getCertifyKey() {
+		return certifyKey;
+	}
+	public void setCertifyKey(String certifyKey) {
+		this.certifyKey = certifyKey;
 	}
 }

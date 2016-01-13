@@ -14,22 +14,6 @@ var UTIL = function() {
 		}
 	};
 	
-	var _getDateDays = function(date){
-		var dateDays = "";
-		var enWeekstr = ['일','월','화','수','목','금','토'];
-		
-		var temp = date.replace(/[^0-9]/gi,'');
-		var year = temp.substr(0,4);
-		var month = temp.substr(4,2);
-		var day = temp.substr(6,2);
-		
-		var newDay = new Date(parseInt(year), parseInt(month)-1, parseInt(day));
-		
-		dateDays = year+"년 "+month+"월 "+day+"일 "+enWeekstr[newDay.getDay()]+"요일";
-		
-		return dateDays;
-	}
-	
 	var _comma = function(price) {
 		var result = "";
 		
@@ -283,23 +267,18 @@ var UTIL = function() {
 	};
 	
 	/**
-	 * 자동 로그인 저장
-	 * UTIL.setAutoLogin(Y or N);
+	 * GPS 데이터를 가져온다.
+	 * UTIL.getGPSData(function(data){}, function(){});
+	 * 
+	 * success의 데이터
+	 * {
+	 * 		"result"	: "success",
+	 * 		"latitude" 	: "1.123123",
+	        "longitude"	: "28.123123"
+	 * }
 	 */
-	var _setAutoLogin = function(flag) {
-		var data = {
-			'type':NATIVE.CONST_COMMAND_SET_AUTO_LOGIN,
-			'isauto':flag
-		};
-		NATIVE.HYBRID.EXECUTE(data);
-	};
-
-	/**
-	 * 로그아웃
-	 * UTIL.logout();
-	 */
-	var _logout = function() {
-		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_USER_LOGOUT});
+	var _getGPSData = function(success, error) {		
+		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_GET_GPS_DATA}, success, error);
 	};
 	
 	/**
@@ -395,9 +374,7 @@ var UTIL = function() {
 		SESSION		: _session,
 		showIndicator: _showIndicator,
 		hideIndicator:_hideIndicator,
-		setAutoLogin : _setAutoLogin,
-		logout		: _logout,
-		getDateDays : _getDateDays,
+		getGPSData : _getGPSData,
 		comma : _comma
 	};
 }();

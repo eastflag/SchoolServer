@@ -66,6 +66,7 @@ public interface MobileMapper {
 	public long insertLocation(LocationVO location) throws PersistenceException;
 	public LocationVO selectLastLocation(MemberVO member);
 	public List<LocationVO> selectLocationList(MemberVO member);
+	public List<LocationVO> selectChildLocation(HomeVO home);
 	
 	//위치 정보 기록하기
 	public long insertLocationAccess(LocationAccessVO accessVO);

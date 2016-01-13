@@ -76,6 +76,14 @@ app.service('LoginSvc', function($http) {
 		console.log('----------------- 로그인 --------------------');
 		return $http.post('/web/api/login', data);
 	};
+	this.requestSmsCertifyKey = function(data){
+		console.log('----------------- 인증번호요청 --------------------');
+		return $http.post('/web/api/getSmsCertifyKey', data);
+	};
+	this.confirmCertify = function(data){
+		console.log('----------------- 인증번호요청 --------------------');
+		return $http.post('/web/api/confirmCertify', data);
+	};
 });
 
 app.service('FamilySvc', function($http) {
@@ -293,7 +301,7 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.email = null;
 		$scope.is_parent = null;
 		
-		$window.location.href = '/';
+		$location.path('/login.html');
 	}
 	
 	$scope.new_home_id = null;
@@ -621,6 +629,72 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 				});
 		}
 	};
+	
+	$scope.phone = null;
+	$scope.certifyKey = null;
+	$scope.certify_statue = false;
+	
+	$scope.clearLayer = function(){
+		$scope.phone = null;
+		$scope.certifyKey = null;
+		$scope.certify_statue = false;
+		
+		commonLayerClose('find_family');
+	}
+	
+	$scope.checkStatus = function(){
+		if($scope.phone==null || $scope.phone=='' || $scope.phone.lenght < 4){
+			$scope.certify_statue = false;
+		}
+	}
+	
+	$scope.getCertifyNumber = function(){
+		if($scope.certify_statue){
+			$window.alert('인증번호 요청중입니다.');
+			return false;
+		}
+		if($scope.phone==null || $scope.phone ==''){
+			$window.alert('전화번호를 입력하세요.');
+			return false;
+		}else{
+			LoginSvc.requestSmsCertifyKey({mdn:$scope.phone})
+				.success(function(response){
+					if(response.result!=0){
+						$window.alert('등록된 회원이 아닙니다.');
+					}else{
+						$scope.certify_statue = true;
+					}
+				})
+				.error(function(response, state){
+					$window.alert("error : " + response.message);
+				});
+		}
+	}
+	
+	$scope.confirmCertify = function(){
+		if(!$scope.certify_statue){
+			$window.alert('인증번호 요청을 먼저 진행하세요.');
+			return false;
+		} else if ($scope.certifyKey==null || $scope.certifyKey==''){
+			$window.alert('인증번호를 입력하세요.');
+			return false;
+		}else{
+			$scope.certify_statue = false;
+			LoginSvc.confirmCertify({certifyKey:$scope.certifyKey})
+				.success(function(response){
+					if(response.result==0){
+						commonLayerClose('find_family');
+						$scope.clearLayer();
+						$scope.v_home_id = response.data.home_id;
+					}
+				})
+				.error(function(response, state){
+					$scope.certify_statue = false;
+					$window.alert("error : " + response.message);
+				});
+		}
+		
+	}
 	
 	console.log('------------------ LoginCtrl ------------------');
 }]);

@@ -749,7 +749,8 @@
 .common_layer .layer_box .photo_add .btn_photo_delete {display:inline-block; width:77px; height:26px; color:#535353; font-size:11px; border:1px solid #898989; background:#fff;}
 .common_layer .layer_box .photo_add input[type="file"] {position:absolute; top:0; left:-9999px;}
 .common_layer .layer_box .in_input {height:41px; line-height:41px; border-bottom:1px solid #d5d5d6;}
-.common_layer .layer_box .in_input input {width:223px; color:#7a7a7a; font-size:15.7px; border:none;}
+.common_layer .layer_box .in_input input {width:100%; color:#7a7a7a; font-size:15.7px; border:none;}
+.common_layer .layer_box .in_input input.disabled{background-color:#f4f4f4}
 .common_layer .layer_box .input_group {zoom:1;}
 .common_layer .layer_box .input_group:after {display:block; content:""; clear:both;}
 .common_layer .layer_box .input_group .in_input {float:left; margin-left:3.5%; width:31%;}
@@ -777,6 +778,10 @@
 /* family modify */
 .common_layer.family_modify .layer_box {top:25px;}
 .common_layer.family_modify .layer_box form {padding:0 5% 15px;}
+/* find family name */
+.common_layer.find_family .layer_box {top:25px;}
+.common_layer.find_family .layer_box .txt_guide {padding:20px 5%; line-height:18px; color:#434343; font-size:1em; border-bottom:1px solid #dfdfdf;}
+.common_layer.find_family .layer_box form {padding:0 5% 15px;}
 /* join complete01 */
 .common_layer.join_complete .layer_box {background:#1f8fd0;}
 .common_layer.join_complete .layer_box .row_top {padding:38px 0 32px; text-align:center;}
@@ -798,7 +803,8 @@
 .half_wrap:after {display:block; content:""; clear:both;}
 .half_wrap > * {float:right; width:49% !important;}
 .half_wrap > *:first-child {float:left;}
-
+button.btn_common_white {width:100%; height:39px; color:#494949; font-size:0.981em; background:#fff; border:1px solid #808080;}
+button.btn_common_white.disabled {background-color:#f4f4f4}
 button.btn_common_gray {width:100%; height:39px; line-height:39px; color:#fbfbfa; font-size:15.7px; background:#919191; border:1px solid #8a8a8a;}
 button.btn_common_blue {width:100%; height:39px; line-height:39px; color:#fbfbfa; font-size:15.7px; background:#1f8fd0; border:1px solid #256b94;}
 a.btn_common_blue_line {display:block; width:100%; height:39px; line-height:39px; color:#1f8fd0; font-size:15.7px; text-align:center; border:1px solid #2a94d2; box-sizing:border-box; background:#fff;}

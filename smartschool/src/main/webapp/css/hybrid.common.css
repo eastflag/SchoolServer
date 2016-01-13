@@ -425,12 +425,26 @@
 
 /* 안전지킴이 */
 .safe_guard_wrap {padding:50px 0 0;}
-.safe_guard_wrap .guide_box {position:fixed; top:50px; left:0; width:92.8%; padding:15px 3.6% 10px; border-bottom:1px solid #c3c1be; background:#fff; opacity:0.9;}
+.safe_guard_wrap .guide_box {position:fixed; top:50px; left:0; width:92.8%; padding:15px 3.6% 10px; border-bottom:1px solid #c3c1be; background:#fff; opacity:0.9; z-index:9}
 .safe_guard_wrap .guide_box h2 {margin-bottom:12px; color:#3a3a3a; font-size:1.156em; text-align:center;}
 .safe_guard_wrap .guide_box ul li {margin-top:4px; line-height:15px; letter-spacing:-1px; color:#525252; font-size:0.77em;}
 .safe_guard_wrap .guide_box ul li:first-child {margin-top:0;}
 .safe_guard_wrap .map_area {width:100%;}
-.safe_guard_wrap .map_area img {display:block; width:100%; height:100%;}
+.safe_guard_wrap .btn_send_location {
+	background: #fff none repeat scroll 0 0;
+	border: 1px solid #2a94d2;
+	box-sizing: border-box;
+	color: #1f8fd0;
+	display: block;
+	font-size: 0.981em;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	position:fixed;
+	bottom:1px;
+	left:0;
+	width: 100%;
+}
 
 /* 모바일상담 메인 */
 .mobile_consult_wrap {padding:50px 3.6% 34px; background:#eeeeed;}
@@ -456,8 +470,9 @@
 
 /* 모바일상담 채팅방 */
 .consult_view {background:#eeeeed;}
-.cunsulting_room {padding:50px 3%;}
+.cunsulting_room {position:fixed; top:50px; width:100%;}
 .cunsulting_room .day_group {margin:10px 0 8px;}
+.cunsulting_room .day_group ul{padding:0 3%;}
 .cunsulting_room .day_group .day {padding:15px 0; text-align:center;}
 .cunsulting_room .day_group .day .date {display:inline-block; padding:0 8px; height:26px; line-height:26px; color:#fff; font-size:0.725em; background:#4c1878; border:1px solid #47225a; border-radius:6px;}
 .cunsulting_room .day_group .message_list {}
@@ -475,8 +490,9 @@
 .cunsulting_room .day_group .message_list li.my .time {display:inline-block; margin:8px 8px 0 0; color:#a3a3a3; font-size:0.831em;}
 .cunsulting_room .day_group .message_list li:first-child {padding-top:0;}
 .reply_write_wrap {position:fixed; bottom:0; left:0; padding:6px 3%; width:94%; background:#e5e5e0; border-top:1px solid #cbcbcb;}
-.reply_write_wrap .in_input {position:relative; padding:9px 3.5% 0; width:75%; height:29px; line-height:39px; background:#f5f6f5; border:1px solid #ccccca;}
-.reply_write_wrap .in_input textarea {width:95%; height:24px; letter-spacing:-1px; color:#858585; font-size:0.831em; background:#f5f6f5; border:0;}
+.reply_write_wrap .btn_estimation{position:absolute; top:6px; left:3%; width:13%; height:39px; border:1px solid #d91919; line-height:39px; color:#d91919; font-size:0.875em; text-align:center; background:#fff;}
+.reply_write_wrap .in_input {position:relative; left:16%; padding:9px 3.5% 0; width:61%; height:29px; line-height:39px; background:#f5f6f5; border:1px solid #ccccca;}
+.reply_write_wrap .in_input textarea {width:100%; height:24px; letter-spacing:-1px; color:#858585; font-size:0.831em; background:#f5f6f5; border:0;}
 .reply_write_wrap .btn_ok {display:block; position:absolute; top:6px; right:3%; width:13%; height:39px; line-height:39px; color:#fff; font-size:0.875em; text-align:center; background:#e98425;}
 
 /* 학교정보알리미 - 가정통신문 */
@@ -768,7 +784,8 @@
 .common_layer .layer_box .photo_add .btn_photo_delete {display:inline-block; width:77px; height:26px; color:#535353; font-size:0.725em; border:1px solid #898989; background:#fff;}
 .common_layer .layer_box .photo_add input[type="file"] {position:absolute; top:0; left:-9999px;}
 .common_layer .layer_box .in_input {height:41px; line-height:41px; border-bottom:1px solid #d5d5d6;}
-.common_layer .layer_box .in_input input {width:90%; color:#7a7a7a; font-size:1.037em; border:none;}
+.common_layer .layer_box .in_input input {width:100%; color:#7a7a7a; font-size:1.037em; border:none;}
+.common_layer .layer_box .in_input input.disabled{background-color:#f4f4f4}
 .common_layer .layer_box .input_group {zoom:1;}
 .common_layer .layer_box .input_group:after {display:block; content:""; clear:both;}
 .common_layer .layer_box .input_group .in_input {float:left; margin-left:3.5%; width:31%;}
@@ -800,6 +817,10 @@
 /* family modify */
 .common_layer.family_modify .layer_box {top:25px;}
 .common_layer.family_modify .layer_box form {padding:0 5% 15px;}
+/* find family name */
+.common_layer.find_family .layer_box {top:25px;}
+.common_layer.find_family .layer_box .txt_guide {padding:20px 5%; line-height:18px; color:#434343; font-size:1em; border-bottom:1px solid #dfdfdf;}
+.common_layer.find_family .layer_box form {padding:0 5% 15px;}
 /* join member complete */
 .common_layer.join_complete .layer_box {position:fixed; background:#1f8fd0;}
 .common_layer.join_complete .layer_box .row_top {padding:38px 0 32px; text-align:center;}
@@ -828,6 +849,8 @@
 .half_wrap:after {display:block; content:""; clear:both;}
 .half_wrap > * {float:right; width:49% !important;}
 .half_wrap > *:first-child {float:left;}
+button.btn_common_white {width:100%; height:39px; color:#494949; font-size:0.981em; background:#fff; border:1px solid #808080;}
+button.btn_common_white.disabled {background-color:#f4f4f4}
 button.btn_common_gray {width:100%; height:39px; color:#fbfbfa; font-size:0.981em; background:#919191; border:1px solid #8a8a8a;}
 button.btn_common_blue {width:100%; height:39px; color:#fbfbfa; font-size:0.981em; background:#1f8fd0; border:1px solid #256b94;}
 a.btn_common_blue_line {display:block; width:100%; height:39px; line-height:39px; color:#1f8fd0; font-size:0.981em; text-align:center; border:1px solid #2a94d2; box-sizing:border-box; background:#fff;}

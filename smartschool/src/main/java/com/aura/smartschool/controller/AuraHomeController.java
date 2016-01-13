@@ -104,8 +104,9 @@ public class AuraHomeController {
 			
 			//SMS 전송
 			try {
+				session.setAttribute("member", member);
+				
 				String[] rMsg = SmsUtil.smsSend(sms);
-				logger.debug(rMsg[0]);
 				session.setAttribute("certifyKey", certifyKey);
 				Map<String,Object> data = new HashMap<String,Object>();
 				data.put("rsCode", rMsg[0]);
@@ -116,6 +117,31 @@ public class AuraHomeController {
 				e.printStackTrace();
 				return new Result(200, e.getMessage());
 			}
+		}
+	}
+	
+	@RequestMapping("/web/api/confirmCertify")
+	public ResultData<Map<String,Object>> confirmCertify(
+			@RequestBody SmsVO sms,
+			HttpServletRequest reqst,
+			HttpSession session){
+		
+		String certifyKey = String.valueOf(session.getAttribute("certifyKey"));
+		logger.info("session certifyKey => "+certifyKey);
+		logger.info("params certifyKey => "+sms.getCertifyKey());
+		
+		if(certifyKey.equals(sms.getCertifyKey())){
+			MemberVO myInfo = (MemberVO)session.getAttribute("member");
+			
+			session.removeAttribute("certifyKey");
+			session.removeAttribute("member");
+			
+			Map<String,Object> data = new HashMap<String,Object>();
+			data.put("home_id", myInfo.getHome_id());
+			
+			return new ResultData<Map<String,Object>>(0, "success", data);
+		}else{
+			return new ResultData<Map<String,Object>>(100, "confirm failed", null);
 		}
 	}
 	

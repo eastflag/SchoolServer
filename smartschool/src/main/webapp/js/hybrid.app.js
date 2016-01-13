@@ -12,10 +12,6 @@ app.run(['$rootScope', function($rootScope) {
 	$rootScope.member_id = null;
 	$rootScope.mdn = null;
 	$rootScope.is_parent = null;
-	
-	//current student info
-	$rootScope.student_id = null;
-	$rootScope.student_name = null;
 }]);
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
@@ -65,6 +61,7 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 		.when('/qna', {templateUrl: '/hybrid/templates/qna.html', controller:'QnaCtrl'})
 		.when('/inquiry', {templateUrl: '/hybrid/templates/inquiry.html', controller:'QnaCtrl'})
 		.when('/info', {templateUrl: '/hybrid/templates/info.html', controller:'OsInfoCtrl'})
+		
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
 }]);
@@ -80,6 +77,14 @@ app.service('LoginSvc', function($http) {
 	this.login = function(data){
 		console.log('----------------- 로그인 --------------------');
 		return $http.post('/api/signInOfMobile', data);
+	};
+	this.requestSmsCertifyKey = function(data){
+		console.log('----------------- 인증번호요청 --------------------');
+		return $http.post('/web/api/getSmsCertifyKey', data);
+	};
+	this.confirmCertify = function(data){
+		console.log('----------------- 인증번호요청 --------------------');
+		return $http.post('/web/api/confirmCertify', data);
 	};
 });
 
@@ -274,6 +279,13 @@ app.service('ConsultSvc', function($http) {
 	this.getConsultHistory = function(data){
 		console.log('----------------- 상담이력 가져오기  --------------------');
 		return $http.post('/api/getConsultHistory',data);
+	};
+});
+
+app.service('SafeGuardSvc', function($http) {
+	this.getLastLocation = function(data){
+		console.log('----------------- 자녀위치정보 가져오기  --------------------');
+		return $http.post('/api/getLastLocation',data);
 	};
 });
 
@@ -514,7 +526,7 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 			return false;
 		}
 		else if($scope.v_mdn == null || $scope.v_mdn == ''){
-			UTIL.alert("이름을 입력하세요.");
+			UTIL.alert("전화번호를 입력하세요.");
 			return false;
 		}
 		else{
@@ -558,6 +570,72 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 				});
 		}
 	};
+	
+	$scope.phone = null;
+	$scope.certifyKey = null;
+	$scope.certify_statue = false;
+	
+	$scope.clearLayer = function(){
+		$scope.phone = null;
+		$scope.certifyKey = null;
+		$scope.certify_statue = false;
+		
+		commonLayerClose('find_family');
+	}
+	
+	$scope.checkStatus = function(){
+		if($scope.phone==null || $scope.phone=='' || $scope.phone.lenght < 4){
+			$scope.certify_statue = false;
+		}
+	}
+	
+	$scope.getCertifyNumber = function(){
+		if($scope.certify_statue){
+			$window.alert('인증번호 요청중입니다.');
+			return false;
+		}
+		if($scope.phone==null || $scope.phone ==''){
+			$window.alert('전화번호를 입력하세요.');
+			return false;
+		}else{
+			LoginSvc.requestSmsCertifyKey({mdn:$scope.phone})
+				.success(function(response){
+					if(response.result!=0){
+						$window.alert('등록된 회원이 아닙니다.');
+					}else{
+						$scope.certify_statue = true;
+					}
+				})
+				.error(function(response, state){
+					$window.alert("error : " + response.message);
+				});
+		}
+	}
+	
+	$scope.confirmCertify = function(){
+		if(!$scope.certify_statue){
+			$window.alert('인증번호 요청을 먼저 진행하세요.');
+			return false;
+		} else if ($scope.certifyKey==null || $scope.certifyKey==''){
+			$window.alert('인증번호를 입력하세요.');
+			return false;
+		}else{
+			$scope.certify_statue = false;
+			LoginSvc.confirmCertify({certifyKey:$scope.certifyKey})
+				.success(function(response){
+					if(response.result==0){
+						commonLayerClose('find_family');
+						$scope.clearLayer();
+						$scope.v_home_id = response.data.home_id;
+					}
+				})
+				.error(function(response, state){
+					$scope.certify_statue = false;
+					$window.alert("error : " + response.message);
+				});
+		}
+		
+	}
 	
 	$scope.init(null,null,false,false);
 	$scope.setWrappeDimension('#login_wrap',0);
@@ -1531,6 +1609,16 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			});
 	};
 	
+	$scope.sendLink = function(noti){
+		var message = noti.title+'\n\n'+noti.content;
+		console.log(message);
+		Kakao.init('0125df4c97f54bdc617e36b4b40dbb14');
+		
+		Kakao.Link.sendTalkLink({
+			label: message
+		});
+	}
+	
 	$scope.schedule_mode = 'calendar';
 	$scope.schedule_calendar = [];
 	$scope.schedule_list = [];
@@ -2503,11 +2591,15 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	$scope.consult_list = [];
 	$scope.chat_message = null;
 	
+	$scope.session_id = null;
+	$scope.rate = null;
+	
 	$scope.getConsultList = function(){
 		ConsultSvc.getConsultList({member_id:$scope.student_id,category:$scope.category})
 			.success(function(response){
 				if(response.result==0){
 					$scope.consult_list = response.data;
+					$scope.session_id = $scope.consult_list[0].session_id;
 				}
 			})
 			.error(function(data, status) {
@@ -2529,6 +2621,18 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 			});
 	}
 	
+	$scope.estimation = function(){
+		ConsultSvc.rateConsult({session_id:$scope.session_id,rate:$scope.rate})
+			.success(function(response){
+				$scope.session_id = null;
+				$scope.rate = null;
+				$location.path('/consult');
+			})
+			.error(function(data, status) {
+				UTIL.alert("error : " + data.message);
+			});
+	}
+	
 	$scope.getConsultHistory = function(){
 		ConsultSvc.getConsultHistory()
 			.success(function(response){
@@ -2541,6 +2645,15 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 			});
 	}
 	
+	$scope.getCreated = function(date){
+		if(date == null || date ==''){
+			return '';
+		}
+		var tmp = date.substring(0,10);
+		var d = tmp.split("-");
+		return d[0]+"/"+d[1]+"/"+d[2];
+	}
+	
 	$scope.getStudent();
 	
 	switch($location.path()){
@@ -2548,6 +2661,8 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 		$scope.init('body_gray','모바일상담',true,true);
 		break;
 	case '/consultChat':
+		$scope.setWrappeDimension('.cunsulting_room',103);
+		$scope.setWrappeDimension('#cunsulting_list_wrap',121);
 		$scope.category = $location.search().p;
 		$scope.init(null,$scope.category_list[$scope.category-1],true,true);
 		break;
@@ -2556,11 +2671,260 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	console.log('------------------ ConsultCtrl ------------------');
 }]);
 
-app.controller('SafeGuardCtrl',['$scope', '$window', '$location', function($scope, $window, $location){
+app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$timeout', 'SafeGuardSvc', function($scope, $window, $location, $interval, $timeout, SafeGuardSvc){
+	$scope.curr_address = null;
+	$scope.created = null;
+	$scope.passed_time = null;
+	$scope.content = null;
 	
+	$scope.child_position = [];
+	$scope.getLastLocation = function(){
+		SafeGuardSvc.getLastLocation({member_id:7065})
+			.success(function(response){
+				if(response.result==0){
+					$scope.curr_lat = response.data.lat;
+					$scope.curr_lng = response.data.lng;
+					$scope.curr_address = response.data.address;
+					$scope.created = response.data.created_date;
+					
+					$scope.content = $scope.curr_address==null?'':$scope.curr_address;
+					$scope.passed_time = $scope.getPassedTime($scope.created);
+					
+					if($scope.passed_time!=null){
+						$scope.content +='('+$scope.passed_time+')';
+					}
+					
+					$scope.addMarker(new google.maps.LatLng($scope.curr_lat, $scope.curr_lng),$scope.content);
+					console.log('$scope.map,',$scope.map);
+				}
+			})
+			.error(function(data, status) {
+				UTIL.alert("error : " + data.message);
+			});
+	}
+	
+	$scope.getPassedTime = function(time){
+		if(time == null || time == undefined){
+			return null;
+		}
+		var temp = time.split('.');
+		var today = new Date();
+		
+		var h,m,s;
+		
+		var c_hh = today.getHours();
+		var c_mm = today.getMinutes();
+		var c_ss = today.getSeconds();
+		
+		var hh = parseInt(temp[0].substring(11,13));
+		var mm = parseInt(temp[0].substring(14,16));
+		var ss = parseInt(temp[0].substring(17,19));
+		
+		if(c_ss >= ss){
+			s = c_ss-ss;
+		}else{
+			s = c_ss-ss+60;
+			c_mm--;
+		}
+		if(c_mm >= mm){
+			m = c_mm - mm;
+		}else{
+			m = c_mm - mm + 60;
+			c_hh--;
+		}
+		if(c_hh >= hh){
+			h = c_hh - hh;
+		}
+		
+		var result = '';
+		if(h>0){
+			result+= h+'시간 '+m+'분 '+s+'초 전';
+		}else{
+			if(m>0){
+				result+= m+'분 '+s+'초 전';
+			}else{
+				result+= s+'초 전';
+			}
+		}
+		
+		return result;
+	}
+	
+	//기본값, 서울
+	$scope.latitude = 37.561192;
+	$scope.longitude = 127.030487;
+	
+	$scope.map = null;
+	$scope.curr_lat = 0;
+	$scope.curr_lng = 0;
+	$scope.marker = null;
+	$scope.address = null;
+	
+	$scope.initMap = function(){
+		UTIL.getGPSData(function(data) {
+			console.log(data.result);
+			if (data.result == 'success') {
+				var latitude = data.latitude;
+				var longitude = data.longitude;
+				
+				if ((latitude == undefined || latitude == 0) && (longitude == undefined || longitude == 0)) {
+					UTIL.alert('GPS를 활성화시켜주세요.');
+				} else {
+					var pos = new google.maps.LatLng(latitude, longitude);
+					
+					$scope.map = new google.maps.Map(document.getElementById('google-map'), {
+						center: pos,
+						zoom: 16,
+						streetViewControl: false,
+						mapTypeControl:false
+					});
+					$scope.addMarker(pos,null);
+				}
+			}
+		});
+		
+		$timeout(function(){
+			console.log('$scope.map',$scope.map);
+			if($scope.map==null || typeof $scope.map == 'undefined'){
+				// Try HTML5 geolocation.
+				var pos;
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+						$scope.map = new google.maps.Map(document.getElementById('google-map'), {
+							center: pos,
+							zoom: 16,
+							streetViewControl: false,
+							mapTypeControl:false
+						});
+						$scope.addMarker(pos,null);
+					}, function(){});
+				} else {
+					pos = new google.maps.LatLng($scope.latitude, $scope.longitude);
+					$scope.map = new google.maps.Map(document.getElementById('google-map'), {
+						center: pos,
+						zoom: 16,
+						streetViewControl: false,
+						mapTypeControl: false
+					});
+					$scope.addMarker(pos,null);
+				}
+			}
+		},2000);
+	}
+	
+	$scope.sendLocation = function(){
+		$scope.getAddress();
+		$timeout(function(){
+			console.log('$scope.address,',$scope.address);
+			SafeGuardSvc.addLocation({member_id:$student_id,lat:$scope.map.getCenter().lat(),lng:$scope.map.getCenter().lng(),address:$scope.address})
+				.success(function(response){
+					if(response.result==0){
+						UTIL.alert('위치전송이 완료되었습니다.');
+					}
+				})
+				.error(function(data, status) {
+					UTIL.alert("error : " + data.message);
+				});
+		},1000);
+	}
+	
+	$scope.addMarker = function(pos,content){
+		console.log('-------------------------- Add Marker --------------------------');
+		if ($scope.marker != null) {
+			$scope.marker.setMap(null);
+		}
+		
+		$scope.marker = new google.maps.Marker({
+			position: pos,
+			map: $scope.map,
+			draggable: false
+		});
+		
+		if(content!=null){
+			var infowindow = new google.maps.InfoWindow({
+				content: content
+			});
+			infowindow.open($scope.map,$scope.marker);
+		}
+	}
+	
+	$scope.moveMaker = function(pos){
+		console.log('-------------------------- Move Marker --------------------------');
+		if($scope.marker!=null){
+			$scope.marker.setPosition(pos);
+		} else {
+			$scope.addMarker(pos, null);
+		}
+	}
+	
+	$scope.getAddress = function(){
+		var lat = $scope.map.getCenter().lat();
+		var lng = $scope.map.getCenter().lng();
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode({'latLng' : new google.maps.LatLng(lat,lng)}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				if (results[1]) {
+					$scope.address = results[1].formatted_address.replace('대한민국 ','');
+				}
+			}
+		});
+	}
+	
+	$scope.interval;
+	$scope.setCurrentPosition = function(){
+		if($location.path()=='/safeGuard'){
+			UTIL.getGPSData(function(data) {
+				console.log(data.result);
+				if (data.result == 'success') {
+					if ((data.latitude == undefined || data.latitude == 0) && (data.longitude == undefined || data.longitude == 0)) {
+						UTIL.alert('GPS를 활성화시켜주세요.');
+					}else{
+						var pos = {
+							lat: data.latitude,
+							lng: data.longitude
+						};
+						$scope.map.setCenter(pos);
+						$scope.moveMaker(pos);
+					}
+				}
+			});
+			$timeout(function(){
+				// Try HTML5 geolocation.
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						var pos = {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+						};
+						$scope.map.setCenter(pos);
+						$scope.moveMaker(pos);
+					}, function() {
+					
+					});
+				}
+			},1000);
+		}else{
+			$interval.cancel($scope.interval);
+		}
+	}
+	
+	$scope.getStudent();
+	if($scope.is_parent==1){
+		$scope.setWrappeDimension('#google-map-wrap',50);
+	}else{
+		$scope.setWrappeDimension('#google-map-wrap',92);
+	}
+	$scope.initMap();
 	$scope.init(null,'안전지킴이',true,true);
-	
-	$scope.setWrappeDimension('#google-map',50);
-	
+	if($scope.is_parent==1){
+		$scope.getLastLocation();
+	} else {
+		$timeout(function(){
+			$scope.interval = $interval(function(){
+				$scope.setCurrentPosition();
+			},3000);
+		},5000);
+	}
 	console.log('------------------ ConsultCtrl ------------------');
 }]);

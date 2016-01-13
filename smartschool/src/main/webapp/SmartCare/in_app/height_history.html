@@ -1,0 +1,73 @@
+<header class="header">
+	<h1>성장발달</h1>
+	<a href="javascript:;" ng-click="movePrevUrl()" class="btn_page_back"><img src="/images/aura_in_app/btn_page_back.png" alt="뒤로" /></a>
+	<button class="btn_gnb" onclick="gnbShow()"></button>
+</header>
+<section class="gnb_wrap">
+	<div class="dim_area" onclick="gnbHide()"></div>
+	<button type="button" class="btn_layer_close" onclick="gnbHide()"></button>
+	<div class="gnb_area">
+		<div class="info_area">
+			<img src="/images/aura_in_app/ico_gnb_home.png" alt="" class="ico_home" />
+			<p class="name">{{home_id}}</p>
+			<a href="javascript:;" class="btn_modify" ng-click="editHomeId()">변경하기</a>
+		</div>
+		<nav class="menu_area">
+			<ul>
+				<li><a href="#!/noti.html">공지사항</a></li>
+				<li><a href="#!/qna/list.html">Q&amp;A</a></li>
+				<li><a href="#!/app/info.html">정보</a></li>
+				<li><a href="#!/qna/list.html">서비스문의</a></li>
+				<li><a href="javascript:;" onclick="alert('고객센터로 문의하시기 바랍니다.\nTEL: 1544-1284 '); return false;">서비스탈퇴</a></li>
+				<li><a href="javascript:;" ng-click="logout()">로그아웃</a></li>
+			</ul>
+		</nav>
+	</div>
+</section>
+
+<article class="growth_detail_wrap">
+	<div class="row_top">
+		<p class="title"><span class="name">{{student_name}}님</span>의 신장 상세이력입니다.</p>
+	</div>
+	<div class="row_middle">
+		<div class="chart_area">
+			<div class="row_label">
+				<span><em>200.0</em></span>
+				<span><em>190.0</em></span>
+				<span><em>180.0</em></span>
+				<span><em>170.0</em></span>
+				<span><em>160.0</em></span>
+				<span><em>150.0</em></span>
+				<span><em>140.0</em></span>
+				<span><em>130.0</em></span>
+				<span><em>120.0</em></span>
+				<span><em>110.0</em></span>
+			</div>
+			<div class="chart">
+				<!-- 표준 text -->
+				<div class="standard_txt">표준:{{avgOfStandard}}cm</div>
+				<!-- 평균 키 -->
+				<div class="standard_bar">{{avgOfStandard}}</div>
+				<div class="data{{row.month}}" ng-repeat="row in list"><span ng-if="row.value"><em>{{row.value}}</em></span></div>
+			</div>
+		</div>
+		<div class="col_label">
+			<span ng-repeat="row in list">{{row.month}}</span>
+		</div>
+	</div>
+	<h2>{{measure_year}}년 신장 성장</h2>
+	<div class="row_bottom">
+		<dl class="data01">
+			<dt>전국평균</dt>
+			<dd>{{avgOfNation}}cm</dd>
+		</dl>
+		<dl class="data02">
+			<dt>지역평균</dt>
+			<dd>{{averageOfLocal}}cm</dd>
+		</dl>
+		<dl class="data03">
+			<dt>나의성장</dt>
+			<dd>{{growth}}cm</dd>
+		</dl>
+	</div>
+</article>
