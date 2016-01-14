@@ -1437,7 +1437,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.getMeasureHistoryCount = function(){
-		GrowthSvc.getMeasureHistoryCount({member_id:7729, search_year:$scope.measure_year})
+		GrowthSvc.getMeasureHistoryCount({member_id:$scope.student_id, search_year:$scope.measure_year})
 			.success(function(response){
 				$scope.history_count = response.data;
 			})
@@ -1447,7 +1447,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.getGrowth = function(section){
-		var data = {member_id:7729};
+		var data = {member_id:$scope.studnet_id};
 		if($scope.section=='height'){
 			GrowthSvc.getHeight(data)
 				.success(function(response){
@@ -1500,7 +1500,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.getMeasureHistoryList = function(){
 		$scope.clear();
 		$scope.measure_year = $location.search().y;
-		var data = {member_id:7729, search_year:$scope.measure_year};
+		var data = {member_id:$scope.studnet_id, search_year:$scope.measure_year};
 		
 		if($scope.section=='height'){
 			GrowthSvc.getHeightHistoryList(data)
@@ -1612,7 +1612,8 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.sendLink = function(noti){
 		var message = noti.title+'\n\n'+noti.content;
 		console.log(message);
-		Kakao.init('0125df4c97f54bdc617e36b4b40dbb14');
+		//Kakao.init('0125df4c97f54bdc617e36b4b40dbb14');
+		Kakao.init('ab23989bb865cbdfde2474688e36488f');
 		
 		Kakao.Link.sendTalkLink({
 			label: message
@@ -1891,7 +1892,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.getRankingHeight = function(){
-		RankingSvc.getRankingHeight({member_id:1711})
+		RankingSvc.getRankingHeight({member_id:$scope.studnet_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1902,7 +1903,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingWeight = function(){
-		RankingSvc.getRankingWeight({member_id:1711})
+		RankingSvc.getRankingWeight({member_id:$scope.studnet_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1913,7 +1914,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingBmi = function(){
-		RankingSvc.getRankingBmi({member_id:1711})
+		RankingSvc.getRankingBmi({member_id:$scope.studnet_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1924,7 +1925,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingMuscle = function(){
-		RankingSvc.getRankingMuscle({member_id:1711})
+		RankingSvc.getRankingMuscle({member_id:$scope.studnet_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1935,7 +1936,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingFat = function(){
-		RankingSvc.getRankingFat({member_id:1711})
+		RankingSvc.getRankingFat({member_id:$scope.studnet_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1964,7 +1965,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.rank_list = data.list;
 	};
 	$scope.getRankingHeightList = function(){
-		RankingSvc.getRankingHeightList({member_id:1711,search_key:$scope.list_tab})
+		RankingSvc.getRankingHeightList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -1976,7 +1977,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingWeightList = function(){
-		RankingSvc.getRankingWeightList({member_id:1711,search_key:$scope.list_tab})
+		RankingSvc.getRankingWeightList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -1988,7 +1989,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingBmiList = function(){
-		RankingSvc.getRankingBmiList({member_id:1711,search_key:$scope.list_tab})
+		RankingSvc.getRankingBmiList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2000,7 +2001,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingMuscleList = function(){
-		RankingSvc.getRankingMuscleList({member_id:1711,search_key:$scope.list_tab})
+		RankingSvc.getRankingMuscleList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2012,7 +2013,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingFatList = function(){
-		RankingSvc.getRankingFatList({member_id:1711,search_key:$scope.list_tab})
+		RankingSvc.getRankingFatList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2679,7 +2680,7 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	
 	$scope.child_position = [];
 	$scope.getLastLocation = function(){
-		SafeGuardSvc.getLastLocation({member_id:7065})
+		SafeGuardSvc.getLastLocation({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.curr_lat = response.data.lat;
