@@ -595,33 +595,33 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 	
 	$scope.getCertifyNumber = function(){
 		if($scope.certify_statue){
-			$window.alert('인증번호 요청중입니다.');
+			UTIL.alert('인증번호 요청중입니다.');
 			return false;
 		}
 		if($scope.phone==null || $scope.phone ==''){
-			$window.alert('전화번호를 입력하세요.');
+			UTIL.alert('전화번호를 입력하세요.');
 			return false;
 		}else{
 			LoginSvc.requestSmsCertifyKey({mdn:$scope.phone})
 				.success(function(response){
 					if(response.result!=0){
-						$window.alert('등록된 회원이 아닙니다.');
+						UTIL.alert('등록된 회원이 아닙니다.');
 					}else{
 						$scope.certify_statue = true;
 					}
 				})
 				.error(function(response, state){
-					$window.alert("error : " + response.message);
+					UTIL.alert("error : " + response.message);
 				});
 		}
 	}
 	
 	$scope.confirmCertify = function(){
 		if(!$scope.certify_statue){
-			$window.alert('인증번호 요청을 먼저 진행하세요.');
+			UTIL.alert('인증번호 요청을 먼저 진행하세요.');
 			return false;
 		} else if ($scope.certifyKey==null || $scope.certifyKey==''){
-			$window.alert('인증번호를 입력하세요.');
+			UTIL.alert('인증번호를 입력하세요.');
 			return false;
 		}else{
 			$scope.certify_statue = false;
@@ -635,7 +635,7 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 				})
 				.error(function(response, state){
 					$scope.certify_statue = false;
-					$window.alert("error : " + response.message);
+					UTIL.alert("error : " + response.message);
 				});
 		}
 		
@@ -2462,7 +2462,7 @@ app.controller('NotiCtrl',['$scope', '$window', '$location', 'NotiSvc', function
 				}
 			})
 			.error(function(data, status) {
-				alert("error : " + data.message);
+				UTIL.alert("error : " + data.message);
 			});
 	};
 	
@@ -2577,12 +2577,21 @@ app.controller('OsInfoCtrl',['$scope', '$window', '$location', 'OsInfoSvc', func
 			});
 	}
 	
-	$scope.getCurrentOsInfo  = function(){
-		console.log()
+	$scope.getCurrentAppVersion  = function(){
+		UTIL.getAppVersion(
+			function(data){
+				if(data.result=='success'){
+					$scope.current_version = data.version;
+				}
+			},
+			function(){
+				console.log('오류가 발생하였습니다.');
+			}
+		)
 	}
 	
 	$scope.init('body_gray','정보',false,true);
-	$scope.getOsInfo();
+	$scope.getCurrentAppVersion();
 	$scope.setWrappeDimension('#os_info_wrap',0);
 	
 	console.log('------------------ OsInfoCtrl ------------------');
@@ -2697,9 +2706,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 					if($scope.passed_time!=null){
 						$scope.content +='('+$scope.passed_time+')';
 					}
-					
-					$scope.addMarker(new google.maps.LatLng($scope.curr_lat, $scope.curr_lng),$scope.content);
-					console.log('$scope.map,',$scope.map);
 				}
 			})
 			.error(function(data, status) {
@@ -2765,27 +2771,32 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	$scope.address = null;
 	
 	$scope.initMap = function(){
-		UTIL.getGPSData(function(data) {
-			console.log(data.result);
-			if (data.result == 'success') {
-				var latitude = data.latitude;
-				var longitude = data.longitude;
-				
-				if ((latitude == undefined || latitude == 0) && (longitude == undefined || longitude == 0)) {
-					UTIL.alert('GPS를 활성화시켜주세요.');
-				} else {
-					var pos = new google.maps.LatLng(latitude, longitude);
+		UTIL.getGPSData(
+			function(data) {
+				console.log(data.result);
+				if (data.result == 'success') {
+					var latitude = data.latitude;
+					var longitude = data.longitude;
 					
-					$scope.map = new google.maps.Map(document.getElementById('google-map'), {
-						center: pos,
-						zoom: 16,
-						streetViewControl: false,
-						mapTypeControl:false
-					});
-					$scope.addMarker(pos,null);
+					if ((latitude == undefined || latitude == 0) && (longitude == undefined || longitude == 0)) {
+						UTIL.alert('GPS를 활성화시켜주세요.');
+					} else {
+						var pos = new google.maps.LatLng(latitude, longitude);
+						
+						$scope.map = new google.maps.Map(document.getElementById('google-map'), {
+							center: pos,
+							zoom: 16,
+							streetViewControl: false,
+							mapTypeControl:false
+						});
+						$scope.addMarker(pos);
+					}
 				}
+			},
+			function(){
+				console.log('오류가 발생하였습니다.');
 			}
-		});
+		);
 		
 		$timeout(function(){
 			console.log('$scope.map',$scope.map);
@@ -2801,7 +2812,7 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 							streetViewControl: false,
 							mapTypeControl:false
 						});
-						$scope.addMarker(pos,null);
+						$scope.addMarker(pos);
 					}, function(){});
 				} else {
 					pos = new google.maps.LatLng($scope.latitude, $scope.longitude);
@@ -2811,13 +2822,13 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 						streetViewControl: false,
 						mapTypeControl: false
 					});
-					$scope.addMarker(pos,null);
+					$scope.addMarker(pos);
 				}
 			}
 		},2000);
 	}
 	
-	$scope.addMarker = function(pos,content){
+	$scope.addMarker = function(pos){
 		console.log('-------------------------- Add Marker --------------------------');
 		if ($scope.marker != null) {
 			$scope.marker.setMap(null);
@@ -2829,9 +2840,9 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 			draggable: false
 		});
 		
-		if(content!=null){
+		if($scope.content!=null){
 			var infowindow = new google.maps.InfoWindow({
-				content: content
+				content: $scope.content
 			});
 			infowindow.open($scope.map,$scope.marker);
 		}
@@ -2842,7 +2853,7 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		if($scope.marker!=null){
 			$scope.marker.setPosition(pos);
 		} else {
-			$scope.addMarker(pos, null);
+			$scope.addMarker(pos);
 		}
 	}
 	
@@ -2867,22 +2878,27 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	$scope.setCurrentPosition = function(){
 		var gps_statue = false;
 		if($location.path()=='/safeGuard'){
-			UTIL.getGPSData(function(data) {
-				console.log(data.result);
-				if (data.result == 'success') {
-					if ((data.latitude == undefined || data.latitude == 0) && (data.longitude == undefined || data.longitude == 0)) {
-						gps_statue = false;
-					}else{
-						var pos = {
-							lat: data.latitude,
-							lng: data.longitude
-						};
-						$scope.map.setCenter(pos);
-						$scope.moveMaker(pos);
-						gps_statue = true;
+			UTIL.getGPSData(
+				function(data) {
+					console.log(data.result);
+					if (data.result == 'success') {
+						if ((data.latitude == undefined || data.latitude == 0) && (data.longitude == undefined || data.longitude == 0)) {
+							gps_statue = false;
+						}else{
+							var pos = {
+								lat: data.latitude,
+								lng: data.longitude
+							};
+							$scope.map.setCenter(pos);
+							$scope.moveMaker(pos);
+							gps_statue = true;
+						}
 					}
+				},
+				function(){
+					console.log('오류가 발생하였습니다.');
 				}
-			});
+			);
 			$timeout(function(){
 				if (navigator.geolocation && !gps_statue) {
 					navigator.geolocation.getCurrentPosition(function(position) {

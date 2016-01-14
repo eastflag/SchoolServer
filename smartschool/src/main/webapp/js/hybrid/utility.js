@@ -282,6 +282,20 @@ var UTIL = function() {
 	};
 	
 	/**
+	 * 설치된 앱의 버전 데이터를 가져온다.
+	 * getAppVersion(function(data){}, function(){});
+	 * 
+	 * success의 데이터
+	 * {
+	 * 		"result"	: "success",
+	        "version"	: "1.0.0"
+	 * }
+	 */
+	var _getAppVersion = function(success, error) {
+		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_GET_VERSION_DATA}, success, error);
+	};
+	
+	/**
 	 * Session Storage
 	 * UTIL.SESSION.....
 	 */

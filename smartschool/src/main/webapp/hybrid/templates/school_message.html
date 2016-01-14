@@ -25,7 +25,7 @@
 					<a ng-href="{{getDownloadUrl(row.filename)}}" class="btn_file_download" target="_self">{{row.filename}}</a>
 				</div>
 				<div class="row_bottom">
-					<button type="button" class="btn_scrap on" ng-if="row.member_id !=0" onclick="alert('이미 스크랩된 게시물입니다.');">스크랩</button>
+					<button type="button" class="btn_scrap on" ng-if="row.member_id !=0" onclick="UTIL.alert('이미 스크랩된 게시물입니다.');">스크랩</button>
 					<button type="button" class="btn_scrap" ng-if="row.member_id == 0" ng-click="setNotiId(row.noti_seq)">스크랩</button>
 					<button type="button" class="btn_share" ng-click="sendLink(row);">공유</button>
 				</div>
