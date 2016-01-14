@@ -287,6 +287,10 @@ app.service('SafeGuardSvc', function($http) {
 		console.log('----------------- 자녀위치정보 가져오기  --------------------');
 		return $http.post('/api/getLastLocation',data);
 	};
+	this.addLocation = function(data){
+		console.log('----------------- 자녀위치 전송  --------------------');
+		return $http.post('/api/addLocation',data);
+	};
 });
 
 app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'MainSvc', function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, MainSvc){
@@ -1612,7 +1616,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.sendLink = function(noti){
 		var message = noti.title+'\n\n'+noti.content;
 		console.log(message);
-		//Kakao.init('0125df4c97f54bdc617e36b4b40dbb14');
 		Kakao.init('ab23989bb865cbdfde2474688e36488f');
 		
 		Kakao.Link.sendTalkLink({
@@ -2814,22 +2817,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		},2000);
 	}
 	
-	$scope.sendLocation = function(){
-		$scope.getAddress();
-		$timeout(function(){
-			console.log('$scope.address,',$scope.address);
-			SafeGuardSvc.addLocation({member_id:$student_id,lat:$scope.map.getCenter().lat(),lng:$scope.map.getCenter().lng(),address:$scope.address})
-				.success(function(response){
-					if(response.result==0){
-						UTIL.alert('위치전송이 완료되었습니다.');
-					}
-				})
-				.error(function(data, status) {
-					UTIL.alert("error : " + data.message);
-				});
-		},1000);
-	}
-	
 	$scope.addMarker = function(pos,content){
 		console.log('-------------------------- Add Marker --------------------------');
 		if ($scope.marker != null) {
@@ -2860,26 +2847,31 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	}
 	
 	$scope.getAddress = function(){
-		var lat = $scope.map.getCenter().lat();
-		var lng = $scope.map.getCenter().lng();
-		var geocoder = new google.maps.Geocoder();
-		geocoder.geocode({'latLng' : new google.maps.LatLng(lat,lng)}, function(results, status) {
-			if (status == google.maps.GeocoderStatus.OK) {
-				if (results[1]) {
-					$scope.address = results[1].formatted_address.replace('대한민국 ','');
+		if($scope.map!=null && typeof $scope.map.getCenter() != 'undefined'){
+			var lat = $scope.map.getCenter().lat();
+			var lng = $scope.map.getCenter().lng();
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode({'latLng' : new google.maps.LatLng(lat,lng)}, function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+					if (results[1]) {
+						$scope.address = results[1].formatted_address.replace('대한민국 ','');
+					}
 				}
-			}
-		});
+			});
+		}else{
+			$scope.address = null;
+		}
 	}
 	
 	$scope.interval;
 	$scope.setCurrentPosition = function(){
+		var gps_statue = false;
 		if($location.path()=='/safeGuard'){
 			UTIL.getGPSData(function(data) {
 				console.log(data.result);
 				if (data.result == 'success') {
 					if ((data.latitude == undefined || data.latitude == 0) && (data.longitude == undefined || data.longitude == 0)) {
-						UTIL.alert('GPS를 활성화시켜주세요.');
+						gps_statue = false;
 					}else{
 						var pos = {
 							lat: data.latitude,
@@ -2887,12 +2879,12 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 						};
 						$scope.map.setCenter(pos);
 						$scope.moveMaker(pos);
+						gps_statue = true;
 					}
 				}
 			});
 			$timeout(function(){
-				// Try HTML5 geolocation.
-				if (navigator.geolocation) {
+				if (navigator.geolocation && !gps_statue) {
 					navigator.geolocation.getCurrentPosition(function(position) {
 						var pos = {
 							lat: position.coords.latitude,
@@ -2900,6 +2892,7 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 						};
 						$scope.map.setCenter(pos);
 						$scope.moveMaker(pos);
+						gps_statue = false;
 					}, function() {
 					
 					});
@@ -2910,21 +2903,46 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		}
 	}
 	
-	$scope.getStudent();
-	if($scope.is_parent==1){
-		$scope.setWrappeDimension('#google-map-wrap',50);
-	}else{
-		$scope.setWrappeDimension('#google-map-wrap',92);
+	$scope.interval2;
+	$scope.sendLocation = function(){
+		if($location.path()=='/safeGuard'){
+			$scope.getAddress();
+			$timeout(function(){
+				console.log('$scope.address,',$scope.address);
+				SafeGuardSvc.addLocation({member_id:$scope.student_id,lat:$scope.map.getCenter().lat(),lng:$scope.map.getCenter().lng(),address:$scope.address})
+					.success(function(response){
+						if(response.result==0){
+							UTIL.alert('위치전송이 완료되었습니다.');
+						}
+					})
+					.error(function(data, status) {
+						UTIL.alert("error : " + data.message);
+					});
+			},2000);
+		}else{
+			$interval.cancel($scope.interval2);
+		}
 	}
+	
+	$scope.getStudent();
+	$scope.setWrappeDimension('#google-map-wrap',50);
 	$scope.initMap();
 	$scope.init(null,'안전지킴이',true,true);
 	if($scope.is_parent==1){
 		$scope.getLastLocation();
 	} else {
 		$timeout(function(){
+			$scope.sendLocation();		//안전지킴이 진입시 첫 위치 전송
+			//3초 주기로 현재위치 갱신
 			$scope.interval = $interval(function(){
 				$scope.setCurrentPosition();
 			},3000);
+			
+			
+			//10분 주기로 전송
+			$scope.interval2 = $interval(function(){
+				$scope.sendLocation();
+			},1000*60*10);
 		},5000);
 	}
 	console.log('------------------ ConsultCtrl ------------------');
