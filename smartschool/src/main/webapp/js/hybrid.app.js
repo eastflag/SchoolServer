@@ -335,7 +335,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		gnbHide();
 		
 		//자동로그인 해제
-		$scope.setLoginData{home_id:$scope.home_id,mdn:$scope.mdn,isauto:'N'});
+		$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'N'});
 
 		$cookies.remove("user_info",{'path': '/hybrid'});
 		$scope.clearStudent();
@@ -662,33 +662,31 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 		}
 	}
 	
-	$scope.tmp_home_id = null;
-	$scope.tmp_mdn = null;
-	$scope.getLoginData = function(){
-		UTIL.getUserID(
-			function(data){
-				$scope.tmp_home_id = data.home_id;
-				$scope.tmp_mdn = data.mdn;
-			}
-			, function(){
-				
-			}
-		);
-	}
 	$scope.autoLogin = function(){
 		$timeout(function(){
-			$scope.getLoginData();
-			console.log('$scope.home_id => ,',$scope.home_id);
-			console.log('$scope.mdn => ,',$scope.mdn);
-			if(
-				($scope.tmp_home_id!=null && $scope.tmp_home_id!=undefined)
-				&& 
-				($scope.tmp_mdn!=null && $scope.tmp_mdn!=undefined)
-			){
-				$scope.v_home_id = $scope.tmp_home_id;
-				$scope.v_mdn = $scope.tmp_mdn;
-				$scope.login();
-			}
+			var home_id = null;
+			var mdn = null;
+			UTIL.getUserID(
+				function(data){
+					home_id = data.home_id;
+					mdn = data.mdn;
+				}
+				, function(){}
+			);
+			$timeout(function(){
+				console.log('$scope.home_id => ,',home_id);
+				console.log('$scope.mdn => ,',mdn);
+				if(
+					(home_id!=null && home_id!=undefined)
+					&& 
+					(mdn!=null && mdn!=undefined)
+				){
+					$scope.v_home_id = home_id;
+					$scope.v_mdn = mdn;
+					$scope.login();
+				}
+			},500);
+			console.log('----------------------- auto login -----------------------');
 		},500)
 	}
 	
