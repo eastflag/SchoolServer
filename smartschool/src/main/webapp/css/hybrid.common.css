@@ -447,7 +447,8 @@
 }
 
 /* 모바일상담 메인 */
-.mobile_consult_wrap {padding:50px 3.6% 34px; background:#eeeeed;}
+.mobile_consult_wrap {padding:50px 0 10px; background:#eeeeed;}
+.mobile_consult_wrap #consult_main_wrap{padding:0 3.6%;}
 .mobile_consult_wrap .chatting_type ul {zoom:1;}
 .mobile_consult_wrap .chatting_type ul:after {display:block; content:""; clear:both;}
 .mobile_consult_wrap .chatting_type ul li {float:left; margin-top:8px; width:31.3%; height:114px; text-align:center; background:#fff; border:1px solid #dcdcdc; border-radius:6px; box-shadow:0 0px 5px #e1e1e0;}
@@ -494,6 +495,27 @@
 .reply_write_wrap .in_input {position:relative; left:16%; padding:9px 3.5% 0; width:61%; height:29px; line-height:39px; background:#f5f6f5; border:1px solid #ccccca;}
 .reply_write_wrap .in_input textarea {width:100%; height:24px; letter-spacing:-1px; color:#858585; font-size:0.831em; background:#f5f6f5; border:0;}
 .reply_write_wrap .btn_ok {display:block; position:absolute; top:6px; right:3%; width:13%; height:39px; line-height:39px; color:#fff; font-size:0.875em; text-align:center; background:#e98425;}
+/* consult history */
+.common_layer.consult_history .layer_box {top:25px;}
+.common_layer.consult_history .row {padding:0 5%; border-bottom:1px solid #ddddde; zoom:1;}
+.common_layer.consult_history .row:after {display:block; content:""; clear:both;}
+.common_layer.consult_history .row dt,
+.common_layer.consult_history .row dd {display:inline-block; height:48px; line-height:48px;}
+.common_layer.consult_history .row dt {float:left; color:#454545; font-size:1em;}
+.common_layer.consult_history .row dd {float:right; color:#ff7127; font-size:1.125em;}
+.common_layer.consult_history .row.last {border-bottom:none;}
+.common_layer.consult_history .history_list {padding:0 5%; height:80px; overflow-y:auto;}
+.common_layer.consult_history .history_list li {margin-bottom:10px; color:#7a7a7a; font-size:0.831em;}
+.common_layer.consult_history .btn_wrap {padding:15px 0; text-align:center;}
+.common_layer.consult_history .btn_wrap button {width:50%;}
+/* consult evaluation */
+.common_layer.consult_evaluation .layer_box {top:25px;}
+.common_layer.consult_evaluation .evaluation {margin-top:24px; text-align:center;}
+.common_layer.consult_evaluation .evaluation .check {display:inline-block; width:30px; height:29px; background:url('/images/aura_in_app/bg_eval_off.png') no-repeat; background-size:30px 29px;}
+.common_layer.consult_evaluation .evaluation .check.on {background:url('/images/aura_in_app/bg_eval_on.png') no-repeat; background-size:30px 29px;}
+.common_layer.consult_evaluation .message {padding:20px 0 10px; color:#454545; font-size:1.125em; text-align:center;}
+.common_layer.consult_evaluation .btn_wrap {padding:15px 0; text-align:center;}
+.common_layer.consult_evaluation .btn_wrap button {width:50%;}
 
 /* 학교정보알리미 - 가정통신문 */
 .school_info_wrap {padding:92px 0 15px; background:#f6f7f7;}

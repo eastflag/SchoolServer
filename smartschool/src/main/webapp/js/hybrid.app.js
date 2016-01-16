@@ -276,8 +276,12 @@ app.service('ConsultSvc', function($http) {
 		console.log('----------------- 상담목록 가져오기  --------------------');
 		return $http.post('/api/getConsultList',data);
 	};
+	this.rateConsult = function(data){
+		console.log('----------------- 상담 평가하고 종료하기  --------------------');
+		return $http.post('/api/rateConsult',data);
+	};
 	this.getConsultHistory = function(data){
-		console.log('----------------- 상담이력 가져오기  --------------------');
+		console.log('----------------- 상담이력(부모) 가져오기  --------------------');
 		return $http.post('/api/getConsultHistory',data);
 	};
 });
@@ -329,6 +333,10 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.logout = function() {
 		console.log('----------------- 로그아웃 --------------------');
 		gnbHide();
+		
+		//자동로그인 해제
+		$scope.setLoginData{home_id:$scope.home_id,mdn:$scope.mdn,isauto:'N'});
+
 		$cookies.remove("user_info",{'path': '/hybrid'});
 		$scope.clearStudent();
 		
@@ -472,6 +480,16 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		UTIL.alert('통합서비스 신청시 이용가능합니다.\n고객센터로 문의하시기 바랍니다.\nTel : 1544-1284');
 	}
 	
+	$scope.setLoginData = function(params){
+		var loginData = {
+			'type'		: NATIVE.CONST_COMMAND_SET_USER_KEY,
+			'home_id'	: params.home_id,
+			'mdn'		: params.mdn,
+			'isauto'	: params.isauto
+		};	
+		NATIVE.HYBRID.EXECUTE(loginData);
+	}
+	
 	//setting scrollbar
 	$scope.config = {
 		autoHideScrollbar: false,
@@ -520,7 +538,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.setWrappeDimension('#loadWrapper', 0);
 }]);
 
-app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'LoginSvc', function($scope, $rootScope, $cookies, $window, $location, LoginSvc){
+app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'LoginSvc', function($scope, $rootScope, $cookies, $window, $location, $timeout, LoginSvc){
 	//로그인
 	$scope.v_home_id = null;
 	$scope.v_mdn = null;
@@ -559,6 +577,10 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 								break;
 							}
 						}
+						
+						//로그인정보 저장
+						$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'Y'});
+						
 						if($scope.is_parent==0){
 							$scope.setStudent(family_list[student_idx]);
 							$location.path('student');
@@ -638,11 +660,41 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 					UTIL.alert("error : " + response.message);
 				});
 		}
-		
+	}
+	
+	$scope.tmp_home_id = null;
+	$scope.tmp_mdn = null;
+	$scope.getLoginData = function(){
+		UTIL.getUserID(
+			function(data){
+				$scope.tmp_home_id = data.home_id;
+				$scope.tmp_mdn = data.mdn;
+			}
+			, function(){
+				
+			}
+		);
+	}
+	$scope.autoLogin = function(){
+		$timeout(function(){
+			$scope.getLoginData();
+			console.log('$scope.home_id => ,',$scope.home_id);
+			console.log('$scope.mdn => ,',$scope.mdn);
+			if(
+				($scope.tmp_home_id!=null && $scope.tmp_home_id!=undefined)
+				&& 
+				($scope.tmp_mdn!=null && $scope.tmp_mdn!=undefined)
+			){
+				$scope.v_home_id = $scope.tmp_home_id;
+				$scope.v_mdn = $scope.tmp_mdn;
+				$scope.login();
+			}
+		},500)
 	}
 	
 	$scope.init(null,null,false,false);
 	$scope.setWrappeDimension('#login_wrap',0);
+	$scope.autoLogin();
 	console.log('------------------ LoginCtrl ------------------');
 }]);
 
@@ -753,9 +805,14 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 								$scope.mdn = family_list[0].mdn;
 								$scope.is_parent = family_list[0].is_parent;
 								
+								//로그인설정
 								var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
 								$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
 								$cookies.putObject('parent_join_info', {join_date:new Date()},{'path': '/hybrid'});
+								
+								//로그인정보 저장
+								$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'Y'});
+								
 								$location.path('family');
 							}
 						})
@@ -2605,9 +2662,18 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	$scope.chat_message = null;
 	
 	$scope.session_id = null;
-	$scope.rate = null;
+	$scope.rate = 3;
+	$scope.rate_message = '보통이에요.';
+	
+	$scope.clear = function(){
+		$scope.consult_list = [];
+		$scope.chat_message = null;
+		$scope.session_id = null;
+		$scope.rate = null;
+	}
 	
 	$scope.getConsultList = function(){
+		$scope.clear();
 		ConsultSvc.getConsultList({member_id:$scope.student_id,category:$scope.category})
 			.success(function(response){
 				if(response.result==0){
@@ -2622,7 +2688,6 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	
 	$scope.sendMessage = function(){
 		setListBox();
-		return false;
 		ConsultSvc.addConsult({member_id:$scope.student_id,category:$scope.category,who:0,content:$scope.chat_message})
 			.success(function(response){
 				if(response.result==0){
@@ -2634,23 +2699,67 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 			});
 	}
 	
-	$scope.estimation = function(){
-		ConsultSvc.rateConsult({session_id:$scope.session_id,rate:$scope.rate})
-			.success(function(response){
-				$scope.session_id = null;
-				$scope.rate = null;
-				$location.path('/consult');
-			})
-			.error(function(data, status) {
-				UTIL.alert("error : " + data.message);
-			});
+	$scope.setRate = function(rate){
+		$scope.rate = rate;
+		switch(rate){
+		case 1:
+			$scope.rate_message='완전 불만족해요.';
+			break;
+		case 2:
+			$scope.rate_message='불만족해요.';
+			break;
+		case 3:
+			$scope.rate_message='보통이에요.';
+			break;
+		case 4:
+			$scope.rate_message='만족했어요.';
+			break;
+		case 5:
+			$scope.rate_message='완전 만족했어요.';
+			break;
+		}
 	}
 	
+	$scope.estimation = function(){
+		console.log('$scope.session_id =>',$scope.session_id);
+		if($scope.session_id != null){
+			commonLayerOpen('consult_evaluation');
+		}else{
+			UTIL.alert('상담 진행 후, 이용가능합니다.');
+		}
+	}
+	
+	$scope.rateConsult = function(){
+		if($scope.rate == 0){
+			UTIL.alert('평가점수를 입력하세요.');
+			return false;
+		} else{
+			ConsultSvc.rateConsult({session_id:$scope.session_id,rate:$scope.rate})
+				.success(function(response){
+					if(response.result==0){
+						$scope.session_id = null;
+						$scope.rate = null;
+						$location.path('/consult');
+					}
+					commonLayerClose('consult_evaluation')
+				})
+				.error(function(data, status) {
+					UTIL.alert("error : " + data.message);
+				});
+		}
+	}
+	
+	$scope.total_count = 0;
+	$scope.complete = 0;
+	$scope.progress = 0;
 	$scope.getConsultHistory = function(){
-		ConsultSvc.getConsultHistory()
+		ConsultSvc.getConsultHistory({member_id:191})
 			.success(function(response){
 				if(response.result==0){
-					
+					$scope.total_count = response.data.complete + response.data.progress;
+					$scope.complete = response.data.complete;
+					$scope.progress = response.data.progress;
+					commonLayerOpen('consult_history');
 				}
 			})
 			.error(function(data, status) {
@@ -2671,6 +2780,7 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	
 	switch($location.path()){
 	case '/consult':
+		$scope.setWrappeDimension('#consult_main_wrap',60);
 		$scope.init('body_gray','모바일상담',true,true);
 		break;
 	case '/consultChat':
@@ -2961,5 +3071,5 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 			},1000*60*10);
 		},5000);
 	}
-	console.log('------------------ ConsultCtrl ------------------');
+	console.log('------------------ SafeGuardCtrl ------------------');
 }]);

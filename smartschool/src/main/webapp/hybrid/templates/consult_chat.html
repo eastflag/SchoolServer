@@ -26,12 +26,30 @@
 	</div>
 </article>
 <section class="reply_write_wrap">
-	<button class="btn_estimation" onclick="commonLayerOpen('')">평가</button>
+	<button class="btn_estimation" ng-click="estimation()">평가</button>
 	<div class="in_input">
 		<label for="reply_write" class="reply_write"></label>
 		<textarea id="reply_write" ng-model="chat_message" autocorrect="off" autocapitalize="off" style="height: 24px;"></textarea>
 	</div>
 	<a href="javascript:;" class="btn_ok" ng-click="sendMessage()">전송</a>
+</section>
+<!-- 상담평가하기 레이어 -->
+<section class="common_layer consult_evaluation">
+	<div class="dim_area" onclick="commonLayerClose('consult_evaluation')"></div>
+	<div class="layer_box">
+		<h3>상담평가하기</h3>
+		<div class="evaluation">
+			<div class="check" ng-class="rate>0?'on':''" ng-click="setRate(1)"></div>
+			<div class="check" ng-class="rate>1?'on':''" ng-click="setRate(2)"></div>
+			<div class="check" ng-class="rate>2?'on':''" ng-click="setRate(3)"></div>
+			<div class="check" ng-class="rate>3?'on':''" ng-click="setRate(4)"></div>
+			<div class="check" ng-class="rate>4?'on':''" ng-click="setRate(5)"></div>
+		</div>
+		<p class="message">{{rate_message}}</p>
+		<div class="btn_wrap">
+			<button type="button" class="btn_common_blue" ng-click="rateConsult();">확인</button>
+		</div>
+	</div>
 </section>
 <script>
 var toggle = false;

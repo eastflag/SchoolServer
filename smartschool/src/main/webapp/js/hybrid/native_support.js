@@ -93,18 +93,17 @@ var NATIVE = function(){
 							'msg'		: param.msg
 						};	
 					}
+					else if ( commandType == _CONST_COMMAND_SET_USER_KEY ) {
+						sendData = {
+							'type'		: commandType,
+							'home_id'	: param.home_id,
+							'mdn'		: param.mdn,
+							'isauto'	: param.isauto
+						};	
+					}
 					else if ( commandType == _CONST_COMMAND_GET_PUSH_TOKEN || commandType == _CONST_COMMAND_GET_USER_KEY || commandType == _CONST_COMMAND_GET_USER_KEY_AND_TOKEN ) {
 						sendData = {
 							'type'		: commandType
-						};	
-					}
-					else if ( commandType == _CONST_COMMAND_SET_USER_KEY ) {
-						sendData = {
-								'type'		: commandType,
-								'userid'	: param.userid,
-								'userpwd'	: param.userpwd,
-								'userkey'	: param.userkey,
-								'isauto'	: param.isauto
 						};	
 					}
 					else if ( commandType == _CONST_COMMAND_EXTERNAL_BROWSER ) {
@@ -173,6 +172,7 @@ var NATIVE = function(){
 	return {
 		HYBRID								: _HYBRID,
 		CONST_COMMAND_ALERT_TYPE_NORMAL 	: _CONST_COMMAND_ALERT_TYPE_NORMAL,
+		CONST_COMMAND_SET_USER_KEY 			: _CONST_COMMAND_SET_USER_KEY,
 		CONST_COMMAND_ALERT_TYPE_CONFIRM 	: _CONST_COMMAND_ALERT_TYPE_CONFIRM,
 		CONST_COMMAND_GET_PUSH_TOKEN		: _CONST_COMMAND_GET_PUSH_TOKEN,
 		CONST_COMMAND_SET_USER_KEY 			: _CONST_COMMAND_SET_USER_KEY,

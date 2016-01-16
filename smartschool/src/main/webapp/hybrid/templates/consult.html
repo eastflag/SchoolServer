@@ -1,34 +1,58 @@
 <article class="mobile_consult_wrap">
-	<nav class="chatting_type" ng-switch="is_parent">
-		<ul ng-switch-when="1">
-			<li class="type01"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">학교폭력</a></li>
-			<li class="type02 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">성폭력</a></li>
-			<li class="type03"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">가정폭력</a></li>
-			<li class="type04"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">친구관계</a></li>
-			<li class="type05 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">학업상담</a></li>
-			<li class="type06"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">진로상담</a></li>
-			<li class="type07"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">심리상담</a></li>
-			<li class="type08 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">성장상담</a></li>
-			<li class="type09"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">흡연상담</a></li>
-		</ul>
-		<ul ng-switch-when="0">
-			<li class="type01" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">학교폭력</a></li>
-			<li class="type01" ng-if="pay_date!=null"><a href="#!/consultChat?p=7">학교폭력</a></li>
-			<li class="type02 center"><a href="#!/consultChat?p=1">성폭력</a></li>
-			<li class="type03" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">가정폭력</a></li>
-			<li class="type03" ng-if="pay_date!=null"><a href="#!/consultChat?p=9">가정폭력</a></li>
-			<li class="type04" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">친구관계</a></li>
-			<li class="type04" ng-if="pay_date!=null"><a href="#!/consultChat?p=8">친구관계</a></li>
-			<li class="type05 center"><a href="#!/consultChat?p=2">학업상담</a></li>
-			<li class="type06"><a href="#!/consultChat?p=3">진로상담</a></li>
-			<li class="type07"><a href="#!/consultChat?p=4">심리상담</a></li>
-			<li class="type08 center"><a href="#!/consultChat?p=5">성장상담</a></li>
-			<li class="type09"><a href="#!/consultChat?p=6">흡연상담</a></li>
-		</ul>
-	</nav>
-	<a href="javascript:;" class="btn_chat_history"><img src="/images/aura_in_app/ico_message.png" alt="" /> 상담기록내역</a>
-	<a href="tel:15441284" class="btn_call_center">
-		<p>스마트안전건강지킴이 상담센터</p>
-		<span class="tel">1544 - 1284</span>
-	</a>
+	<div id="consult_main_wrap" ng-scrollbars ng-scrollbars-config="config">
+		<nav class="chatting_type" ng-switch="is_parent">
+			<ul ng-switch-when="1">
+				<li class="type01"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">학교폭력</a></li>
+				<li class="type02 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">성폭력</a></li>
+				<li class="type03"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">가정폭력</a></li>
+				<li class="type04"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">친구관계</a></li>
+				<li class="type05 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">학업상담</a></li>
+				<li class="type06"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">진로상담</a></li>
+				<li class="type07"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">심리상담</a></li>
+				<li class="type08 center"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">성장상담</a></li>
+				<li class="type09"><a href="javascript:;" onclick="UTIL.alert('자녀 본인만 열람 가능합니다.');">흡연상담</a></li>
+			</ul>
+			<ul ng-switch-when="0">
+				<li class="type01" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">학교폭력</a></li>
+				<li class="type01" ng-if="pay_date!=null"><a href="#!/consultChat?p=7">학교폭력</a></li>
+				<li class="type02 center"><a href="#!/consultChat?p=1">성폭력</a></li>
+				<li class="type03" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">가정폭력</a></li>
+				<li class="type03" ng-if="pay_date!=null"><a href="#!/consultChat?p=9">가정폭력</a></li>
+				<li class="type04" ng-if="pay_date==null"><a href="javascript:;" ng-click="alertPayment()">친구관계</a></li>
+				<li class="type04" ng-if="pay_date!=null"><a href="#!/consultChat?p=8">친구관계</a></li>
+				<li class="type05 center"><a href="#!/consultChat?p=2">학업상담</a></li>
+				<li class="type06"><a href="#!/consultChat?p=3">진로상담</a></li>
+				<li class="type07"><a href="#!/consultChat?p=4">심리상담</a></li>
+				<li class="type08 center"><a href="#!/consultChat?p=5">성장상담</a></li>
+				<li class="type09"><a href="#!/consultChat?p=6">흡연상담</a></li>
+			</ul>
+		</nav>
+		<a href="javascript:;" class="btn_chat_history" ng-click="getConsultHistory()"><img src="/images/aura_in_app/ico_message.png" alt="" /> 상담기록내역</a>
+		<a href="tel:15441284" class="btn_call_center">
+			<p>스마트안전건강지킴이 상담센터</p>
+			<span class="tel">1544 - 1284</span>
+		</a>
+	</div>
 </article>
+<!-- 상담기록내역 -->
+<section class="common_layer consult_history">
+	<div class="dim_area" onclick="commonLayerClose('consult_history')"></div>
+	<div class="layer_box">
+		<h3>상담기록내역</h3>
+		<dl class="row">
+			<dt>총 상담횟수</dt>
+			<dd>{{total_count}}건</dd>
+		</dl>		
+		<dl class="row">
+			<dt>상담 진행 중</dt>
+			<dd>{{progress}}건</dd>
+		</dl>
+		<dl class="row last">
+			<dt>상담완료</dt>
+			<dd>{{complete}}건</dd>
+		</dl>
+		<div class="btn_wrap">
+			<button type="button" class="btn_common_blue" onclick="commonLayerClose('consult_history')">닫기</button>
+		</div>
+	</div>
+</section>
