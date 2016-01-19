@@ -3,6 +3,7 @@
 		<div ng-scrollbars ng-scrollbars-config="config" id="cunsulting_list_wrap">
 			<ul class="message_list">
 				<li ng-class="row.who==0?'my':'other'" ng-repeat="row in consult_list">
+					<img src="/images/aura_in_app/img_chat_admin.gif" ng-if="row.who==1" alt="admin" class="photo">
 					<div class="cont" ng-if="row.who==1">
 						<span class="admin_name">상담원</span>
 						<div class="message_cont">

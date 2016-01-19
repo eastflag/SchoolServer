@@ -99,7 +99,7 @@ var NATIVE = function(){
 							'home_id'	: param.home_id,
 							'mdn'		: param.mdn,
 							'isauto'	: param.isauto
-						};	
+						};
 					}
 					else if ( commandType == _CONST_COMMAND_GET_PUSH_TOKEN || commandType == _CONST_COMMAND_GET_USER_KEY || commandType == _CONST_COMMAND_GET_USER_KEY_AND_TOKEN ) {
 						sendData = {

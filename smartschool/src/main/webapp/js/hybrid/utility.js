@@ -245,7 +245,7 @@ var UTIL = function() {
 	 */
 	var _getUserID = function(success, error) {
 		var data = {
-			'type'		: NATIVE.CONST_COMMAND_GET_USER_ID
+			'type'		: NATIVE.CONST_COMMAND_GET_USER_KEY
 		};
 		NATIVE.HYBRID.EXECUTE(data, success, error);
 	};
