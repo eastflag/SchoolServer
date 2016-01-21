@@ -133,7 +133,8 @@ public class NetworkUtil {
 	
 	private static void sendAPNS(List<String> tokens, String message, Map<String, String> extra) {
 		List<Device> devices = Devices.asDevices(tokens);
-		String keystore = Constant.IOS_KEY_STORE_REAL;
+		//String keystore = Constant.IOS_KEY_STORE_REAL;
+		String keystore = Constant.IOS_KEY_STORE_DEVL;
 		String password = Constant.IOS_PASSWORD;
 		
 		Integer badge = 1;
