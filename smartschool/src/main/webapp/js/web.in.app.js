@@ -483,7 +483,7 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 				};
 				reader.readAsDataURL(file);
 			}else{
-				$window.alert('jpg이미지만 등록가능합니다.');
+				$window.alert('이미지 파일만 등록가능합니다.');
 			}
 			
 		};
@@ -520,7 +520,7 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			return false;
 		}
 		else{
-			var param = {home_id:$scope.v_home_id,name:$scope.v_name,relation:$scope.v_relation,is_parent:1};
+			var param = {home_id:$scope.v_home_id,name:$scope.v_name,relation:$scope.v_relation,is_parent:1, os_type:2, gcm_id:null};
 			var data = null;
 			if($scope.crop_state){
 				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
@@ -578,7 +578,8 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 			return false;
 		}
 		else{
-			LoginSvc.login({home_id:$scope.v_home_id, name:$scope.v_name})
+			var param = {home_id:$scope.v_home_id, name:$scope.v_name, os_type:2, gcm_id:null}
+			LoginSvc.login(param)
 				.success(function(response){
 					if(response.result == 0) {
 						$scope.home_id = response.data.home_id;

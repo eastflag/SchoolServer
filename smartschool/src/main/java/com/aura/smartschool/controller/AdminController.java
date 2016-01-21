@@ -4,7 +4,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -259,35 +262,44 @@ public class AdminController {
 		try {
 			long resultCount = mobileService.addNoti(inNoti);
 			if(resultCount > 0) {
-				//send gcm
-				List<MemberVO> memberList = mobileService.getAllMemberOfGcm();
 				
-				JsonObject jsonData = new JsonObject();
 				JsonObject value = new JsonObject();
 				value.addProperty("title", inNoti.getTitle());
 				value.addProperty("content", inNoti.getContent());
+				
+				//send gcm
+				//100건 단위로 나눠서 보낸다.
+				MemberVO in = new MemberVO();
+				in.setOs_type(0);
+				List<MemberVO> memberList1 = mobileService.getAllMemberOfGcm(in);
+				JsonObject jsonData = new JsonObject();
 				jsonData.addProperty("command", "appNoti");
 				jsonData.addProperty("value", value.toString());
-				
-				/*JsonArray array = new JsonArray(); //get gcm_id
-				for(MemberVO m : memberList) {
-					if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
-						array.add(new JsonPrimitive(m.getGcm_id()));
-					}
-				}*/
-				
-				//100건 단위로 나눠서 보낸다.
-				int loop = memberList.size()/100 + 1;
+				int loop = memberList1.size()/100 + 1;
 				for( int i=0; i < loop ; ++i) {
 					JsonArray array = new JsonArray();
 					for(int k=0; k < 100 ; ++k) {
-						if(k+100*i >= memberList.size()) break;
-						array.add(new JsonPrimitive(memberList.get(k + 100 * i).getGcm_id()));
+						if(k+100*i >= memberList1.size()) break;
+						array.add(new JsonPrimitive(memberList1.get(k + 100 * i).getGcm_id()));
 					}
 					NetworkUtil.requestGCM(array, jsonData);
 				}
 				
-				//NetworkUtil.requestGCM(array, jsonData);
+				//send apns
+				in.setOs_type(1);
+				List<MemberVO> memberList2 = mobileService.getAllMemberOfGcm(in);
+				List<String> tokens = new ArrayList<String>();
+				Map<String,String> extra = new HashMap<String,String>();
+				extra.put("command", "appNoti");
+				loop = memberList1.size()/100 + 1;
+				for( int i=0; i < loop ; ++i) {
+					for(int k=0; k < 100 ; ++k) {
+						if(k+100*i >= memberList2.size()) break;
+						tokens.add(memberList2.get(k + 100 * i).getGcm_id());
+					};
+					NetworkUtil.requestAPNS(tokens, value.toString(), extra);
+				}
+				
 				
 				return new Result(0, "success");
 			} else {
@@ -369,17 +381,8 @@ public class AdminController {
 		
 		long resultCount = mobileService.addSchoolNoti(notiVO);
 		if(resultCount > 0) {
-			//send gcm
 			SchoolVO school = mobileService.getSchoolById(notiVO.getSchool_id());
-			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
-			JsonArray array = new JsonArray(); //get gcm_id
-			for(MemberVO m : memberList) {
-				if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
-					array.add(new JsonPrimitive(m.getGcm_id()));
-				}
-			}
-			
-			JsonObject jsonData = new JsonObject();
+
 			JsonObject value = new JsonObject();
 			value.addProperty("school_id", school.getSchool_id());
 			value.addProperty("school_name", school.getSchool_name());
@@ -387,10 +390,29 @@ public class AdminController {
 			value.addProperty("title", notiVO.getTitle());
 			value.addProperty("content", notiVO.getContent());
 			value.addProperty("noti_date",notiVO.getNoti_date());
+			
+			List<MemberVO> memberList = mobileService.selectMemberOfSchool(school);
+			JsonArray array = new JsonArray(); //get gcm_id
+			List<String> tokens = new ArrayList<String>();
+			for(MemberVO m : memberList) {
+				if (m.getGcm_id() != null && !"".equals(m.getGcm_id())) {
+					if(m.getOs_type()==0){
+						array.add(new JsonPrimitive(m.getGcm_id()));
+					}else if(m.getOs_type()==1){
+						tokens.add(m.getGcm_id());
+					}
+				}
+			}
+			//send gcm
+			JsonObject jsonData = new JsonObject();
 			jsonData.addProperty("command", "school");
 			jsonData.addProperty("value", value.toString());
-			
 			NetworkUtil.requestGCM(array, jsonData);
+			
+			//send apns
+			Map<String,String> extra = new HashMap<String,String>();
+			extra.put("command", "school");
+			NetworkUtil.requestAPNS(tokens, value.toString(), extra);
 
 			return new Result(0, "success");
 		} else {
@@ -495,20 +517,31 @@ public class AdminController {
 		
 		//if who is 1, send gcm : member_id = > gcm id, content
 		if(inSession.getWho() == 1) {
-			JsonArray array = new JsonArray(); //get gcm_id
-			MemberVO m = new MemberVO();
-			m.setMember_id(inSession.getMember_id());
-			MemberVO member = mobileService.selectMember(m);
-			array.add(new JsonPrimitive(member.getGcm_id()));
-			
-			JsonObject data = new JsonObject();
 			JsonObject value = new JsonObject();
 			value.addProperty("category", inSession.getCategory());
 			value.addProperty("content", inSession.getContent());
-			data.addProperty("command", "consult");
-			data.addProperty("value", value.toString());
 			
-			NetworkUtil.requestGCM(array, data);
+			MemberVO m = new MemberVO();
+			m.setMember_id(inSession.getMember_id());
+			MemberVO member = mobileService.selectMember(m);
+			
+			m.setMember_id(inSession.getMember_id());
+			if(member.getOs_type()==0){		//android
+				JsonArray array = new JsonArray(); //get gcm_id
+				array.add(new JsonPrimitive(member.getGcm_id()));
+				
+				JsonObject data = new JsonObject();
+				data.addProperty("command", "consult");
+				data.addProperty("value", value.toString());
+				
+				NetworkUtil.requestGCM(array, data);
+			}else if(member.getOs_type()==1){	//iOS
+				List<String> tokens = new ArrayList<String>();
+				tokens.add(member.getGcm_id());
+				Map<String,String> extra = new HashMap<String,String>();
+				extra.put("command", "consult");
+				NetworkUtil.requestAPNS(tokens, value.toString(), extra);
+			}
 		}
 		
 		return new Result(0, "success");

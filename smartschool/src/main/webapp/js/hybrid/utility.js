@@ -251,6 +251,16 @@ var UTIL = function() {
 	};
 	
 	/**
+	 * 푸쉬 수신 시, command를 가져온다.
+	 */
+	var _getPushCommand = function(success, error) {
+		var data = {
+			'type'		: NATIVE.CONST_COMMAND_GET_PUSH_COMMAND
+		};
+		NATIVE.HYBRID.EXECUTE(data, success, error);
+	};
+	
+	/**
 	 * 로딩 Dialog를 보여준다.
 	 * UTIL.showIndicator();
 	 */

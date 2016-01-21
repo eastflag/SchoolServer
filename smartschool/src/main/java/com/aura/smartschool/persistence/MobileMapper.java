@@ -42,7 +42,7 @@ public interface MobileMapper {
 	public List<HomeVO> selectHomeList(SearchVO search);
 	public HomeVO selectHomeListByNumber(MemberVO member);
 	public int countHomeList(SearchVO search);
-	public List<MemberVO> selectAllMemberOfGcm();
+	public List<MemberVO> selectAllMemberOfGcm(MemberVO member);
 	public MemberVO selectMember(MemberVO member);
 	public MemberVO signInOfMobile(MemberVO member);
 	public MemberVO signInOfWeb(MemberVO member);

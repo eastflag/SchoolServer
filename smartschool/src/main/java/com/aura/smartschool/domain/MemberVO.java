@@ -4,6 +4,7 @@ public class MemberVO {
 	private String home_id;
 	private int member_id;
 	private String mdn;
+	private int os_type;
 	private String gcm_id;
 	private int is_parent; //0:학생, 1:부모
 	private String name;
@@ -52,6 +53,12 @@ public class MemberVO {
 	}
 	public void setMdn(String mdn) {
 		this.mdn = mdn;
+	}
+	public int getOs_type() {
+		return os_type;
+	}
+	public void setOs_type(int os_type) {
+		this.os_type = os_type;
 	}
 	public String getGcm_id() {
 		return gcm_id;

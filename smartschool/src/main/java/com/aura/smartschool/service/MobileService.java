@@ -53,7 +53,7 @@ public interface MobileService {
 	public List<HomeVO> selectHomeList(SearchVO search);
 	public int countHomeList(SearchVO search);
 	public HomeVO getHomeListByNumber(MemberVO member);
-	public List<MemberVO> getAllMemberOfGcm();
+	public List<MemberVO> getAllMemberOfGcm(MemberVO member);
 	public MemberVO selectMember(MemberVO member);
 	public MemberVO signInOfMobile(MemberVO member);
 	public MemberVO signInOfWeb(MemberVO member);

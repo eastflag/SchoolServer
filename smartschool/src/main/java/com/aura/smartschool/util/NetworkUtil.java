@@ -7,16 +7,30 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.json.JSONException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.util.StringUtils;
 
+import com.aura.smartschool.Constant;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import javapns.Push;
+import javapns.communication.exceptions.CommunicationException;
+import javapns.communication.exceptions.KeystoreException;
+import javapns.devices.Device;
+import javapns.devices.Devices;
+import javapns.notification.PayloadPerDevice;
+import javapns.notification.PushNotificationPayload;
 
 public class NetworkUtil {
 	
@@ -107,5 +121,62 @@ public class NetworkUtil {
 			}
 		}
 	}
+	
+	public static void requestAPNS(final List<String> tokens, final String message, final Map<String, String> extra) {
+		threadPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				sendAPNS(tokens, message, extra);
+			}
+		});
+	}
+	
+	private static void sendAPNS(List<String> tokens, String message, Map<String, String> extra) {
+		List<Device> devices = Devices.asDevices(tokens);
+		String keystore = Constant.IOS_KEY_STORE_REAL;
+		String password = Constant.IOS_PASSWORD;
+		
+		Integer badge = 1;
+		String sound = null;
+		boolean production = true;
+		
+		try {
+			List<PayloadPerDevice> payloadDevicePairs = new ArrayList<PayloadPerDevice>();
+			for (Device each : devices) {
+				PayloadPerDevice payloadPerDevice = new PayloadPerDevice(customPayload(message, badge, sound, extra), each);
+				payloadDevicePairs.add(payloadPerDevice);
+			}
+			Push.payloads(keystore, password, production, payloadDevicePairs);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (CommunicationException e) {
+			e.printStackTrace();
+		} catch (KeystoreException e) {
+			e.printStackTrace();
+		}
+	}
 
+	
+	private static PushNotificationPayload customPayload(String message
+			, Integer badge, String sound, Map<String, String> extra) throws JSONException {
+		PushNotificationPayload payload = PushNotificationPayload.complex();
+		if (!StringUtils.isEmpty(message)) {
+			payload.addAlert(message);
+		}
+		if (badge != null) {
+			payload.addBadge(badge);
+		}
+		if (StringUtils.isEmpty(sound)) sound = "default";
+		payload.addSound(sound);
+		if (extra != null && !extra.isEmpty()) {
+			Object[] keys = extra.keySet().toArray();
+			Object[] vals = extra.values().toArray();
+			if (keys != null && vals != null && keys.length == vals.length) {
+				for (int i = 0; i < extra.size(); i++) {
+					payload.addCustomDictionary(String.valueOf(keys[i]), String.valueOf(vals[i]));
+				}
+			}
+		}
+		return payload;
+	}
 }

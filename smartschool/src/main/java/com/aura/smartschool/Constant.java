@@ -7,4 +7,9 @@ public final class Constant {
 	public final static String BMI = "BMI";
 	public final static String Muscle = "Muscle";
 	public final static String Fat = "Fat";
+	
+	//아이폰 key store
+	public final static String IOS_PASSWORD = "aura!@";
+	public final static String IOS_KEY_STORE_REAL = "C:/web/git/SchoolServer/smartschool/APNS/apns_real.p12";
+	public final static String IOS_KEY_STORE_DEVL = "C:/web/git/SchoolServer/smartschool/APNS/apns_dev.p12";
 }

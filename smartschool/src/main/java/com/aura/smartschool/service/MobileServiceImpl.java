@@ -613,8 +613,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<MemberVO> getAllMemberOfGcm() {
-		return mobileMapper.selectAllMemberOfGcm();
+	public List<MemberVO> getAllMemberOfGcm(MemberVO member) {
+		return mobileMapper.selectAllMemberOfGcm(member);
 	}
 
 	@Override

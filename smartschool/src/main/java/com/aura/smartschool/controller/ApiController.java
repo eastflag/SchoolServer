@@ -610,20 +610,29 @@ public class ApiController {
 		
 		//if who is 1, send gcm : member_id = > gcm id, content
 		if(inSession.getWho() == 1) {
-			JsonArray array = new JsonArray(); //get gcm_id
-			MemberVO m = new MemberVO();
-			m.setMember_id(inSession.getMember_id());
-			MemberVO member = mobileService.selectMember(m);
-			array.add(new JsonPrimitive(member.getGcm_id()));
-			
-			JsonObject data = new JsonObject();
 			JsonObject value = new JsonObject();
 			value.addProperty("category", inSession.getCategory());
 			value.addProperty("content", inSession.getContent());
-			data.addProperty("command", "consult");
-			data.addProperty("value", value.toString());
 			
-			NetworkUtil.requestGCM(array, data);
+			MemberVO m = new MemberVO();
+			m.setMember_id(inSession.getMember_id());
+			MemberVO member = mobileService.selectMember(m);
+			if(member.getOs_type()==0){		//android
+				JsonArray array = new JsonArray(); //get gcm_id
+				array.add(new JsonPrimitive(member.getGcm_id()));
+				
+				JsonObject data = new JsonObject();
+				data.addProperty("command", "consult");
+				data.addProperty("value", value.toString());
+				
+				NetworkUtil.requestGCM(array, data);
+			}else if(member.getOs_type()==1){	//iOS
+				List<String> tokens = new ArrayList<String>();
+				tokens.add(member.getGcm_id());
+				Map<String,String> extra = new HashMap<String,String>();
+				extra.put("command", "consult");
+				NetworkUtil.requestAPNS(tokens, value.toString(), extra);
+			}
 		}
 		
 		return new Result(0, "success");
@@ -683,20 +692,29 @@ public class ApiController {
 			//send gcm
 			//check answer 
 			if(inBoard.getAnswer() != null || inBoard.getAnswer() != "") {
-				JsonArray array = new JsonArray(); //get gcm_id
 				MemberVO member = mobileService.getBoardGcm(inBoard);
-				array.add(new JsonPrimitive(member.getGcm_id()));
 				
-				JsonObject data = new JsonObject();
 				JsonObject value = new JsonObject();
 				value.addProperty("title", inBoard.getTitle());
 				value.addProperty("content", inBoard.getContent());
 				value.addProperty("answer", inBoard.getAnswer());
 				
-				data.addProperty("command", "qna");
-				data.addProperty("value", value.toString());
-				
-				NetworkUtil.requestGCM(array, data);
+				if(member.getOs_type()==0){		//Android
+					JsonArray array = new JsonArray(); //get gcm_id
+					array.add(new JsonPrimitive(member.getGcm_id()));
+					
+					JsonObject data = new JsonObject();
+					data.addProperty("command", "qna");
+					data.addProperty("value", value.toString());
+					
+					NetworkUtil.requestGCM(array, data);
+				}else if(member.getOs_type()==1){	//iOS
+					List<String> tokens = new ArrayList<String>();
+					tokens.add(member.getGcm_id());
+					Map<String,String> extra = new HashMap<String,String>();
+					extra.put("command", "qna");
+					NetworkUtil.requestAPNS(tokens, value.toString(), extra);
+				}
 			}
 			
 			return new Result(0, "success");

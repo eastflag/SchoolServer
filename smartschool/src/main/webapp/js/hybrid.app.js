@@ -538,10 +538,187 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.setWrappeDimension('#loadWrapper', 0);
 }]);
 
+app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'Upload', 'LoginSvc', 'JoinSvc', function($scope, $rootScope, $cookies, $window, $location, $timeout, Upload, LoginSvc, JoinSvc){
+	//회원가입변수
+	$scope.v_home_id=null;
+	$scope.v_name=null;
+	$scope.v_mdn=null;
+	$scope.v_relation=null;
+	
+	$scope.agree1 = false;
+	$scope.agree2 = false;
+	$scope.agree3 = false;
+	$scope.check_all = false;
+	
+	//디바이스 및 토큰정보
+	$scope.v_os_type = null;
+	$scope.v_gcm_id = null;
+	
+	//프로필사진 변수
+	$scope.profile = null;
+	$scope.cropped_profile = null;
+	$scope.saved_profile = null;
+	$scope.crop_state = false;
+	
+	$scope.crop_init = function(){
+		var handleFileSelect=function(evt) {
+			$scope.profile = null;
+			$scope.cropped_profile = null;
+			$scope.saved_profile = null;
+			$scope.crop_state = true;
+			commonLayerOpen('profile-crop-area');
+			
+			var file=evt.currentTarget.files[0];
+			
+			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
+				var reader = new FileReader();
+				reader.onload = function (evt) {
+					$scope.$apply(function($scope){
+						$scope.profile=evt.target.result;
+					});
+				};
+				reader.readAsDataURL(file);
+			}else{
+				UTIL.alert('이미지 파일만 등록가능합니다.');
+			}
+			
+		};
+		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
+	}
+	
+	$scope.clearCrop = function(){
+		$scope.saved_profile = $scope.cropped_profile;
+		commonLayerClose('profile-crop-area');
+	}
+	
+	$scope.clearProfile = function(){
+		$scope.profile = null;
+		$scope.cropped_profile = null;
+		$scope.crop_state = false;
+		$scope.saved_profile = null;
+		angular.element(document.querySelector('#add_photo')).val(null);
+	}
+	
+	//회원가입
+	$scope.join = function(){
+		if($scope.v_home_id==null){
+			UTIL.alert('가족명을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_name==null){
+			UTIL.alert('이름을 입력하세요.');
+			return false;
+		}
+		else if($scope.v_mdn==null){
+			UTIL.alert('전화번호를 입력하세요.');
+			return false;
+		}
+		else if($scope.v_relation==null){
+			UTIL.alert('관계를 입력하세요.');
+			return false;
+		}
+		else if($scope.agree1==false || $scope.agree2==false || $scope.agree3==false){
+			UTIL.alert('모든 약관에 동의하셔야 합니다.');
+			return false;
+		}
+		else{
+			var param = {home_id:$scope.v_home_id, name:$scope.v_name, mdn:$scope.v_mdn, relation:$scope.v_relation, is_parent:1, os_type:$scope.v_os_type, gcm_id:$scope.v_gcm_id};
+			var data = null;
+			if($scope.crop_state){
+				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
+			}else{
+				data = {profile:null, data:JSON.stringify(param)};
+			}
+			
+			$scope.upload = Upload.upload({
+				url: '/web/api/signUpWeb',
+				data : data
+			})
+			.success(function(response, status, headers, config) {
+				$scope.clearProfile();
+				if(response.result==0){
+					/* 회원가입 완료 후 로그인 처리 */
+					LoginSvc.login({home_id:$scope.v_home_id, mdn:$scope.v_mdn})
+						.success(function(response){
+							if(response.result == 0) {
+								var family_list = response.data;
+								
+								//로그인 사용자 설정
+								$scope.home_id = family_list[0].home_id;
+								$scope.member_id = family_list[0].member_id;
+								$scope.mdn = family_list[0].mdn;
+								$scope.is_parent = family_list[0].is_parent;
+								
+								//로그인설정
+								var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
+								$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
+								$cookies.putObject('parent_join_info', {join_date:new Date()},{'path': '/hybrid'});
+								
+								//로그인정보 저장
+								$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'Y'});
+								
+								$location.path('family');
+							}
+						})
+						.error(function(response, state){
+							UTIL.alert("error : " + response.message);
+						});
+				}else{
+					$scope.clearProfile();
+				}
+			})
+			.error(function(data, status) {
+				$scope.clearProfile();
+				UTIL.alert("error : " + data.message);
+			});
+		}
+	}
+	
+	$scope.getDeviceAndToken = function(){
+		$timeout(function(){
+			UTIL.getDeviceTypeAndToken(function(data){
+				$scope.v_os_type = 1;
+				$scope.v_gcm_id = data.token;
+			}, function(){});
+		},500);
+	}
+	
+	$scope.checkAgree = function(){
+		if($scope.agree1 && $scope.agree2 && $scope.agree3){
+			$scope.check_all=true;
+		}else{
+			$scope.check_all=false;
+		}
+	}
+	$scope.checkAll = function(){
+		if($scope.check_all==false){
+			$scope.agree1 = false;
+			$scope.agree2 = false;
+			$scope.agree3 = false;
+		}else{
+			$scope.agree1 = true;
+			$scope.agree2 = true;
+			$scope.agree3 = true;
+		}
+	}
+	
+	$scope.init(null,null,false,false);
+	$scope.setWrappeDimension('#join_wrap',65);
+	$scope.crop_init();
+	$scope.getDeviceAndToken();
+	
+	console.log('------------------ JoinCtrl ------------------');
+}]);
+
 app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'LoginSvc', function($scope, $rootScope, $cookies, $window, $location, $timeout, LoginSvc){
 	//로그인
 	$scope.v_home_id = null;
 	$scope.v_mdn = null;
+	
+	//디바이스 및 토큰정보
+	$scope.v_os_type = null;
+	$scope.v_gcm_id = null;
+	
 	$scope.login = function(){
 		if($scope.v_home_id == null || $scope.v_home_id == '') {
 			UTIL.alert("가족명을 입력하세요.");
@@ -552,13 +729,14 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 			return false;
 		}
 		else{
-			LoginSvc.login({home_id:$scope.v_home_id, mdn:$scope.v_mdn})
+			var param = {home_id:$scope.v_home_id, mdn:$scope.v_mdn, os_type:$scope.v_os_type, gcm_id:$scope.v_gcm_id};
+			LoginSvc.login(param)
 				.success(function(response){
 					if(response.result == 0) {
 						var family_list = response.data;
 						
 						//로그인 사용자 설정
-						var student_idx = 0;
+						var student_idx;
 						for(var i=0; i<family_list.length; i++){
 							if($scope.v_mdn == family_list[i].mdn){
 								student_idx = i;
@@ -583,9 +761,37 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 						
 						if($scope.is_parent==0){
 							$scope.setStudent(family_list[student_idx]);
-							$location.path('student');
+							var path = '';
+							$timeout(function(){
+								UTIL.getPushCommand(
+									function(data){
+										var command = data.command;
+										switch(commnad){
+										case 'consult':
+											path = '/consult';
+											break;
+										case 'qna':
+											path = '/qna';
+											break;
+										case 'appNoti':
+											path = '/noti';
+											break;
+										case 'school':
+											path = '/schoolNoti';
+											break;
+										default:
+											path = '/student';
+										}
+									}
+									,function(){}
+								);
+								if(path=='') {
+									path = '/student';
+								}
+								$location.path(path);
+							},500);
 						}else{
-							$location.path('family');
+							$location.path('/family');
 						}
 					} else {
 						UTIL.alert(response.msg);
@@ -664,28 +870,16 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 	
 	$scope.autoLogin = function(){
 		$timeout(function(){
-			var home_id = null;
-			var mdn = null;
 			UTIL.getUserID(
 				function(data){
-					home_id = data.home_id;
-					mdn = data.mdn;
+					$scope.v_home_id = data.home_id;
+					$scope.v_mdn = data.mdn;
+					$scope.v_os_type = 1;
+					$scope.v_gcm_id = data.token;
+					$scope.login();
 				}
 				, function(){}
 			);
-			$timeout(function(){
-				console.log('$scope.home_id => ,',home_id);
-				console.log('$scope.mdn => ,',mdn);
-				if(
-					(home_id!=null && home_id!=undefined)
-					&& 
-					(mdn!=null && mdn!=undefined)
-				){
-					$scope.v_home_id = home_id;
-					$scope.v_mdn = mdn;
-					$scope.login();
-				}
-			},500);
 			console.log('----------------------- auto login -----------------------');
 		},500)
 	}
@@ -694,163 +888,6 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 	$scope.setWrappeDimension('#login_wrap',0);
 	$scope.autoLogin();
 	console.log('------------------ LoginCtrl ------------------');
-}]);
-
-app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'LoginSvc', 'JoinSvc', function($scope, $rootScope, $cookies, $window, $location, Upload, LoginSvc, JoinSvc){
-	//회원가입변수
-	$scope.v_home_id=null;
-	$scope.v_name=null;
-	$scope.v_mdn=null;
-	$scope.v_relation=null;
-	
-	$scope.agree1 = false;
-	$scope.agree2 = false;
-	$scope.agree3 = false;
-	$scope.check_all = false;
-	
-	//프로필사진 변수
-	$scope.profile = null;
-	$scope.cropped_profile = null;
-	$scope.saved_profile = null;
-	$scope.crop_state = false;
-	
-	$scope.crop_init = function(){
-		var handleFileSelect=function(evt) {
-			$scope.profile = null;
-			$scope.cropped_profile = null;
-			$scope.saved_profile = null;
-			$scope.crop_state = true;
-			commonLayerOpen('profile-crop-area');
-			
-			var file=evt.currentTarget.files[0];
-			
-			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
-				var reader = new FileReader();
-				reader.onload = function (evt) {
-					$scope.$apply(function($scope){
-						$scope.profile=evt.target.result;
-					});
-				};
-				reader.readAsDataURL(file);
-			}else{
-				UTIL.alert('이미지 파일만 등록가능합니다.');
-			}
-			
-		};
-		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
-	}
-	
-	$scope.clearCrop = function(){
-		$scope.saved_profile = $scope.cropped_profile;
-		commonLayerClose('profile-crop-area');
-	}
-	
-	$scope.clearProfile = function(){
-		$scope.profile = null;
-		$scope.cropped_profile = null;
-		$scope.crop_state = false;
-		$scope.saved_profile = null;
-		angular.element(document.querySelector('#add_photo')).val(null);
-	}
-	
-	//회원가입
-	$scope.join = function(){
-		if($scope.v_home_id==null){
-			UTIL.alert('가족명을 입력하세요.');
-			return false;
-		}
-		else if($scope.v_name==null){
-			UTIL.alert('이름을 입력하세요.');
-			return false;
-		}
-		else if($scope.v_mdn==null){
-			UTIL.alert('전화번호를 입력하세요.');
-			return false;
-		}
-		else if($scope.v_relation==null){
-			UTIL.alert('관계를 입력하세요.');
-			return false;
-		}
-		else if($scope.agree1==false || $scope.agree2==false || $scope.agree3==false){
-			UTIL.alert('모든 약관에 동의하셔야 합니다.');
-			return false;
-		}
-		else{
-			var param = {home_id:$scope.v_home_id, name:$scope.v_name, mdn:$scope.v_mdn, relation:$scope.v_relation, is_parent:1};
-			var data = null;
-			if($scope.crop_state){
-				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
-			}else{
-				data = {profile:null, data:JSON.stringify(param)};
-			}
-			
-			$scope.upload = Upload.upload({
-				url: '/web/api/signUpWeb',
-				data : data
-			})
-			.success(function(response, status, headers, config) {
-				$scope.clearProfile();
-				if(response.result==0){
-					/* 회원가입 완료 후 로그인 처리 */
-					LoginSvc.login({home_id:$scope.v_home_id, mdn:$scope.v_mdn})
-						.success(function(response){
-							if(response.result == 0) {
-								var family_list = response.data;
-								
-								//로그인 사용자 설정
-								$scope.home_id = family_list[0].home_id;
-								$scope.member_id = family_list[0].member_id;
-								$scope.mdn = family_list[0].mdn;
-								$scope.is_parent = family_list[0].is_parent;
-								
-								//로그인설정
-								var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
-								$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
-								$cookies.putObject('parent_join_info', {join_date:new Date()},{'path': '/hybrid'});
-								
-								//로그인정보 저장
-								$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'Y'});
-								
-								$location.path('family');
-							}
-						})
-						.error(function(response, state){
-							UTIL.alert("error : " + response.message);
-						});
-				}else{
-					$scope.clearProfile();
-				}
-			})
-			.error(function(data, status) {
-				$scope.clearProfile();
-				UTIL.alert("error : " + data.message);
-			});
-		}
-	}
-	$scope.checkAgree = function(){
-		if($scope.agree1 && $scope.agree2 && $scope.agree3){
-			$scope.check_all=true;
-		}else{
-			$scope.check_all=false;
-		}
-	}
-	$scope.checkAll = function(){
-		if($scope.check_all==false){
-			$scope.agree1 = false;
-			$scope.agree2 = false;
-			$scope.agree3 = false;
-		}else{
-			$scope.agree1 = true;
-			$scope.agree2 = true;
-			$scope.agree3 = true;
-		}
-	}
-	
-	$scope.init(null,null,false,false);
-	$scope.setWrappeDimension('#join_wrap',65);
-	$scope.crop_init();
-	
-	console.log('------------------ JoinCtrl ------------------');
 }]);
 
 app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, Upload, FamilySvc){

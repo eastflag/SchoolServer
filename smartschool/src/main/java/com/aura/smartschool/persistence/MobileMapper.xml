@@ -4,7 +4,7 @@
 <mapper namespace="com.aura.smartschool.persistence.MobileMapper">
 
 <select id="signInOfMobile" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+	SELECT member_id, home_id, os_type, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
@@ -14,7 +14,7 @@
 </select>
 
 <select id="signInOfWeb" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+	SELECT member_id, home_id, os_type, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
@@ -23,14 +23,14 @@
 	Limit 1;
 </select>
 
-<select id="selectAllMemberOfGcm" resultType="MemberVO">
+<select id="selectAllMemberOfGcm" parameterType="MemberVO" resultType="MemberVO">
 	SELECT gcm_id FROM member
-	WHERE use_yn=1 and gcm_id is not null and home_id in (select home_id from home where use_yn=1)
+	WHERE use_yn=1 and os_type = #{os_type} and gcm_id is not null and home_id in (select home_id from home where use_yn=1)
 </select>
 
 <select id="selectMemberList" parameterType="HomeVO" resultType="MemberVO">
 	SELECT 
-		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
+		M.member_id, M.home_id, M.os_type, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
 		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
@@ -51,7 +51,7 @@
 
 <select id="selectAllMember" parameterType="SearchVO" resultType="MemberVO">
 	SELECT 
-		M.member_id, M.home_id, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
+		M.member_id, M.home_id, M.os_type, M.gcm_id, M.is_parent, M.relation, M.photo, M.school_grade, M.school_class, M.sex, M.use_yn,
 		CAST(AES_DECRYPT(unhex(M.mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(M.name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(M.birth_date), 'aura') AS CHAR(100)) as 'birth_date',
@@ -142,7 +142,7 @@
 </select> 
 
 <select id="selectMember" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
+	SELECT member_id, home_id, os_type, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, 
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as 'mdn',
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as 'name',
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
@@ -181,27 +181,42 @@
 </update>
 
 <insert id="insertMember" parameterType="MemberVO">
-	INSERT INTO 
-		member(home_id, mdn, gcm_id, is_parent, name, relation, photo, school_id, school_grade, school_class, sex, birth_date) 
-		VALUES(#{home_id}, 
-			HEX(AES_ENCRYPT(#{mdn}, 'aura')),
-			#{gcm_id}, 
-			#{is_parent}, 
-			HEX(AES_ENCRYPT(#{name}, 'aura')),
-			#{relation}, 
-			#{photo}, 
-			<choose>                                                                                                  
-				<when test="school_id == 0">                                                                     
-					null,                                                                                  
-				</when>                                                                                               
-				<otherwise>                                                                     
-					#{school_id},                                                                                
-				</otherwise>                                                                                               
-			</choose> 
-			#{school_grade}, 
-			#{school_class}, 
-			#{sex}, 
-			HEX(AES_ENCRYPT(#{birth_date}, 'aura')));
+	insert into member (
+		home_id,
+		mdn,
+		os_type,
+		gcm_id,
+		is_parent,
+		name,
+		relation,
+		photo,
+		school_id,
+		school_grade,
+		school_class,
+		sex,
+		birth_date
+	) values (
+		#{home_id}, 
+		HEX(AES_ENCRYPT(#{mdn}, 'aura')),
+		#{os_type},
+		#{gcm_id}, 
+		#{is_parent}, 
+		HEX(AES_ENCRYPT(#{name}, 'aura')),
+		#{relation}, 
+		#{photo}, 
+	<choose>                                                                                                  
+		<when test="school_id == 0">                                                                     
+		null,                                                                                  
+		</when>                                                                                               
+		<otherwise>                                                                     
+		#{school_id},                                                                                
+		</otherwise>                                                                                               
+	</choose> 
+		#{school_grade}, 
+		#{school_class}, 
+		#{sex}, 
+		HEX(AES_ENCRYPT(#{birth_date}, 'aura'))
+	);
 </insert>
 
 <update id="updateMember" parameterType="MemberVO">
@@ -242,7 +257,7 @@
 
 <update id="updateGcmId" parameterType="MemberVO">
 	UPDATE member
-		set gcm_id = #{gcm_id}, access_date = now()
+		set os_type = #{os_type}, gcm_id = #{gcm_id}, access_date = now()
 	WHERE home_id = #{home_id} and mdn = HEX(AES_ENCRYPT(#{mdn}, 'aura'))
 </update>
 
@@ -937,7 +952,7 @@ select
 	VALUES(#{member_id}, #{board_type}, #{title}, #{content});
 </insert>
 <select id="selectBoardGcm" parameterType="BoardVO" resultType="MemberVO">
-	SELECT gcm_id FROM Board B inner join Member M
+	SELECT os_type, gcm_id FROM Board B inner join Member M
 		ON B.member_id = M.member_id
 	Where B.board_id = #{board_id} 
 </select>
@@ -1164,7 +1179,7 @@ select
 
 <!-- 아우라 홈페이지 로그인 -->
 <select id="selectMemberByMdn" parameterType="MemberVO" resultType="MemberVO">
-	SELECT member_id, home_id, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
+	SELECT member_id, home_id, os_type, gcm_id, is_parent, relation, photo, school_id, school_grade, school_class, sex, email,
 		CAST(AES_DECRYPT(unhex(mdn), 'aura') AS CHAR(100)) as mdn,
 		CAST(AES_DECRYPT(unhex(name), 'aura') AS CHAR(100)) as name,
 		CAST(AES_DECRYPT(unhex(birth_date), 'aura') AS CHAR(100)) as 'birth_date'
