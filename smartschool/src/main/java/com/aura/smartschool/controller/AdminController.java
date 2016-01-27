@@ -718,7 +718,7 @@ public class AdminController {
 	public Result addPress(HttpServletRequest request, @ModelAttribute PressVO press) {
 		logger.debug("/admin/api/addPress---------------------------------------------------");
 		
-		String path = request.getServletContext().getRealPath("/upload") + "press";
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
 		logger.debug("path : " + path);
 		
 		try{
@@ -745,7 +745,7 @@ public class AdminController {
 	public Result modifyPress(HttpServletRequest request, @ModelAttribute PressVO press) {
 		logger.debug("/admin/api/modifyPress---------------------------------------------------");
 		
-		String path = request.getServletContext().getRealPath("/upload") + "press";
+		String path = request.getServletContext().getRealPath("/upload") + "/press";
 		logger.debug("path : " + path);
 		
 		try{
@@ -829,7 +829,7 @@ public class AdminController {
 	public Result addMagazine(HttpServletRequest request, @ModelAttribute MagazineVO magazine) {
 		logger.debug("/admin/api/addMagazine---------------------------------------------------");
 		
-		String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		
 		int chCnt = this.mobileService.checkMagazine(magazine);
@@ -857,7 +857,7 @@ public class AdminController {
 	public Result modifyMagazine(HttpServletRequest request, @ModelAttribute MagazineVO magazine) {
 		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
 		
-		String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "/magazine/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
 		
 		try {
@@ -881,7 +881,7 @@ public class AdminController {
 		logger.debug("/admin/api/removeMagazine---------------------------------------------------");
 		int rsCnt = this.mobileService.removeMagazine(magazine);
 		if (rsCnt > 0) {
-			String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+			String path = request.getServletContext().getRealPath("/upload") + "/magazine/" +magazine.getYear() + "/" + magazine.getMonth();
 			
 			//해당 디렉토리의 파일 삭제
 			File dir = new File(path);

@@ -860,7 +860,7 @@ public class ApiController {
 	@RequestMapping(value="/api/addChallenge")
 	public Result addChallenge(HttpServletRequest request, @ModelAttribute ChallengeVO challenge) {
 		logger.debug("/api/addChallenge---------------------------------------------------");
-		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
+		String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
 		logger.debug("path : " + path);
 		try{
 			int rs = this.mobileService.addChallenge(challenge, path);

@@ -178,7 +178,7 @@
 .growth_detail_wrap .row_middle .chart_area .chart:after {display:block; content:""; clear:both;}
 .growth_detail_wrap .row_middle .chart_area .chart > div {position:absolute; bottom:0; bottom:0; float:left; width:8.3%; height:100%;}
 .growth_detail_wrap .row_middle .chart_area .chart .standard_txt {top:10px; left:10px; width:100%; color:#248218; font-size:12px;}
-.growth_detail_wrap .row_middle .chart_area .chart .standard_bar {width:100%; height:4px; color:#fff; font-size:0; text-indent:-9999px; background:#268819;}
+.growth_detail_wrap .row_middle .chart_area .chart .standard_bar {width:100%; height:4px; color:#fff; font-size:0; text-indent:-9999px; background:#5cd74c;}
 .growth_detail_wrap .row_middle .chart_area .chart .data01 {left:0;}
 .growth_detail_wrap .row_middle .chart_area .chart .data02 {left:8.3%;}
 .growth_detail_wrap .row_middle .chart_area .chart .data03 {left:16.6%;}
@@ -192,7 +192,7 @@
 .growth_detail_wrap .row_middle .chart_area .chart .data11 {left:83%;}
 .growth_detail_wrap .row_middle .chart_area .chart .data12 {left:91.3%;}
 .growth_detail_wrap .row_middle .chart_area .chart > div span {display:block; position:absolute; bottom:0; left:50%; margin-left:-40%; width:80%; text-align:center; background:#e5571c;}
-.growth_detail_wrap .row_middle .chart_area .chart > div span em {display:block; margin:-14px 0 0 -6px; font-style:normal; color:#e4571c;}
+.growth_detail_wrap .row_middle .chart_area .chart > div span em {display:block; margin:-14px 0 0 -6px; letter-spacing:-1px; font-size:10.5px; font-style:normal; color:#e4571c;}
 .growth_detail_wrap .row_middle .col_label {padding-left:15%; zoom:1;}
 .growth_detail_wrap .row_middle .col_label:after {display:block; content:""; clear:both;}
 .growth_detail_wrap .row_middle .col_label span {display:block; float:left; padding-top:10px; width:8.3%; text-align:center;}
