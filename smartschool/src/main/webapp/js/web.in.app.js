@@ -305,11 +305,10 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	}
 	
 	$scope.new_home_id = null;
-	$scope.change_home_display = 'none';
 	
 	$scope.editHomeId = function(){
-		$scope.toggleSetting();
-		$scope.change_home_display = 'block';
+		gnbHide();
+		commonLayerOpen('family_modify');
 	}
 	
 	//가족명 변경
@@ -346,7 +345,7 @@ app.controller('AuraCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 						$cookies.putObject("member_info", member_info,{'path': '/', 'expires':expires});
 						
 						$scope.new_home_id = null;
-						$scope.change_home_display = 'none';
+						gnbHide();
 					}
 				})
 				.error(function(data, status) {
@@ -1432,8 +1431,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.menu_list = [];
 	$scope.getSchoolMenuList = function(){
-		$scope.setYearMonth();
-		
 		SchoolSvc.getSchoolMenuList({school_id:$scope.student_school_id, search_year:$scope.yyyy, search_month:$scope.MM})
 			.success(function(response){
 				if(response.result==0){
@@ -1537,6 +1534,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.prevMMSchedule = function(){
+		$scope.noti_list = [];
 		$scope.MM  = $scope.MM - 1;
 		if($scope.MM==0){
 			$scope.yyyy = $scope.yyyy - 1;
@@ -1546,6 +1544,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.nextMMSchedule = function(){
+		$scope.noti_list = [];
 		$scope.MM  = $scope.MM + 1;
 		if($scope.MM==13){
 			$scope.yyyy = $scope.yyyy + 1;
@@ -1859,7 +1858,6 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	};
 	
 	$scope.schoolFontColor = function(rank, beforeRank){
-		console.log('rank =>' +rank);
 		if(parseInt(rank) < parseInt(beforeRank)){
 			return 'font_red';
 		} else if(parseInt(rank) > parseInt(beforeRank)){
@@ -1888,7 +1886,6 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.changeRankDiff = function(rank, beforeRank, total){
-		console.log('rank =>' +rank);
 		console.log('beforeRank =>' +beforeRank);
 		var v_rank = (rank/total*100).toFixed(2);
 		var v_beforeRank = (beforeRank/total*100).toFixed(2);
@@ -2126,16 +2123,16 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 					$scope.subject = magazine.subject;
 					$scope.content = magazine.content;
 					$scope.images = [
-						{image: magazine.img_1!=null?path+magazine.img_1:null},
-						{image: magazine.img_2!=null?path+magazine.img_2:null},
-						{image: magazine.img_3!=null?path+magazine.img_3:null},
-						{image: magazine.img_4!=null?path+magazine.img_4:null},
-						{image: magazine.img_5!=null?path+magazine.img_5:null},
-						{image: magazine.img_6!=null?path+magazine.img_6:null},
-						{image: magazine.img_7!=null?path+magazine.img_7:null},
-						{image: magazine.img_8!=null?path+magazine.img_8:null},
-						{image: magazine.img_9!=null?path+magazine.img_9:null},
-						{image: magazine.img_10!=null?path+magazine.img_10:null},
+						{image: magazine.img_1==''?'':path+magazine.img_1},
+						{image: magazine.img_2==''?'':path+magazine.img_2},
+						{image: magazine.img_3==''?'':path+magazine.img_3},
+						{image: magazine.img_4==''?'':path+magazine.img_4},
+						{image: magazine.img_5==''?'':path+magazine.img_5},
+						{image: magazine.img_6==''?'':path+magazine.img_6},
+						{image: magazine.img_7==''?'':path+magazine.img_7},
+						{image: magazine.img_8==''?'':path+magazine.img_8},
+						{image: magazine.img_9==''?'':path+magazine.img_9},
+						{image: magazine.img_10==''?'':path+magazine.img_10}
 					];
 					setSwiper();
 				}
@@ -2202,7 +2199,7 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			{code:2, name:null},
 			{code:3, name:null},
 			{code:4, name:null},
-			{code:5, name:null},
+			{code:5, name:null}
 		];
 	}
 	
@@ -2260,20 +2257,25 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 				home_id: $scope.home_id,
 				member_id: $scope.member_id,
 				title: $scope.challenge.title,
-				content: $scope.challenge.content
+				content: $scope.challenge.content,
+				img_1: $scope.filenames[0].name,
+				img_2: $scope.filenames[1].name,
+				img_3: $scope.filenames[2].name,
+				img_4: $scope.filenames[3].name,
+				img_5: $scope.filenames[4].name,
+				files: $scope.f
 			}
-			console.log(challenge);
 			
 			$scope.upload = Upload.upload({
 				url: '/api/addChallenge',
-				data : {files:$scope.f,data:JSON.stringify(challenge)}
-			}).success(function(data, status, headers, config) {
-				console.log('data: ' + data + "," + data.result);
-				if(data.result == 0) {
+				data : challenge
+			}).success(function(response) {
+				console.log('response: ',  response);
+				if(response.result == 0) {
 					$window.alert('도전건강! 응모하기가 완료되었습니다.');
 					$scope.getChallengeList();
 				} else {
-					$window.alert(data.msg);
+					$window.alert(response.msg);
 				}
 			})
 			.error(function(data, status) {

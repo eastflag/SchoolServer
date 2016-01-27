@@ -76,11 +76,11 @@
 								<div class="row">
 									<div class="col-sm-8" ng-show="mode=='write'">
 										<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
-										<span ng-show="attachedfile != ''">{{row.name}}</span>
+										<span ng-show="row != ''">{{row.name}}</span>
 									</div>
 									<div class="col-sm-8" ng-show="mode=='edit'">
 										<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}" ng-show="row.name == null">Select File</button>
-										<span ng-show="attachedfile != ''">{{row.name}}</span>
+										<span ng-show="row != ''">{{row.name}}</span>
 									</div>
 									<div class="col-sm-4 text-right">
 										<button ng-show="row.name" class="btn btn-default btn-xs" ng-click="removeFile(row.code)" style="margin-left:100px;">Delete File</button>

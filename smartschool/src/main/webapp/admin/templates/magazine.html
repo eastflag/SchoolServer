@@ -11,7 +11,7 @@
 				<div class="panel-heading">
 					<i class="fa fa-list fa-lg"></i> 건강매거진 목록
 					<div class="pull-right">
-						<button type="button" class="btn btn-default btn-xs" ng-click="mode='add'">매거진추가</button>
+						<button type="button" class="btn btn-default btn-xs" ng-click="addMode()">매거진추가</button>
 					</div>
 				</div>
 				<table class="table table-striped">
@@ -62,10 +62,13 @@
 				<div class="panel-body">
 					<div class="magazine-slide-wrap">
 						<div class="slide-wrapper">
-							<img style="width:100%" ng-if="slide.image" ng-repeat="slide in slide_images" class="slide slide-animation nonDraggableImage" ng-swipe-right="prevSlide()" ng-swipe-left="nextSlide()" ng-hide="!isCurrentSlideIndex($index)" ng-src="{{slide.image}}">
+							<div class="swiper-wrapper">
+								<div ng-if="slide.image" class="swiper-slide" ng-repeat="slide in slide_images" >
+									<img ng-src="{{slide.image}}" width="340"/>
+								</div>
+							</div>
+							<div class="indicator"></div>
 						</div>
-						<a href="javascript:;" ng-if="slide_size>1" class="arrow prev" ng-click="nextSlide()">&lt;</a>
-						<a href="javascript:;" ng-if="slide_size>1" class="arrow next" ng-click="prevSlide()">&gt;</a>
 					</div>
 					<div style="margin-top:12px;">
 						<p>발행 : {{year}}년 {{month}}월호</p>
@@ -122,8 +125,9 @@
 						<div class="form-group" ng-repeat="row in filenames">
 							<label class="col-sm-4 control-label">이미지 {{row.code}}</label>
 							<div class="col-sm-8">
-								<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}">Select File</button>
-								<span ng-show="attachedfile != ''">{{row.name}}</span>
+								<button type="file" ngf-select="uploadFiles($file,$index)" ngf-validate="{size:{min:'10B', max:'10MB'}}" ng-show="!row.name">Select File</button>
+								<span ng-show="row.name != null">{{row.name}}</span>
+								<button ng-show="row.name" ng-click="deleteFile($index)">Delete File</button>
 							</div>
 						</div>
 					</form> 
@@ -148,3 +152,24 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+function setSwiper(){
+	setTimeout(function(){
+		var imgHeight = $('.slide-wrapper .swiper-slide img').height();
+		var imgWidth = $('.slide-wrapper .swiper-slide img').width();
+		$('.slide-wrapper').css({'height':imgHeight, 'width':imgWidth});
+		var swiper = new Swiper('.magazine-slide-wrap .slide-wrapper', {
+			loop: true,
+			grabCursor: true,
+			pagination : '.indicator'
+		});
+		swiper.params.onSlideChangeEnd = function(){
+			//다음 이미지 높이 세팅
+			var i = $('.indicator .swiper-active-switch').index()+1;
+			var currImgHeignt = $('.slide-wrapper .swiper-slide').eq(i).children('img').height();
+			var currImgWidth = $('.slide-wrapper .swiper-slide').eq(i).children('img').width();
+			$('.slide-wrapper').animate({'height':currImgHeignt, 'width':currImgWidth}, 300);
+		}	
+	}, 300);
+}
+</script>

@@ -174,9 +174,9 @@ public interface MobileService {
 	//언론자료 관리
 	public int countPressList(SearchVO search);
 	public List<PressVO> getPressList(SearchVO search);
-	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public int addPress(PressVO press, String path) throws Exception;
 	public PressVO getPress(PressVO in) ;
-	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception;
+	public int modifyPress(PressVO press, String path) throws Exception;
 	public int removePress(PressVO press) throws Exception;
 	
 	//건강매거진 관리
@@ -184,14 +184,14 @@ public interface MobileService {
 	public List<MagazineVO> getMagazineList(SearchVO search);
 	public MagazineVO getMagazine(MagazineVO in);
 	public int countMagazineList(SearchVO search);
-	public int addMagazine(MagazineVO magazine) throws PersistenceException;
-	public int modifyMagazine(MagazineVO magazine) throws PersistenceException;
+	public int addMagazine(MagazineVO magazine, String path) throws PersistenceException, IllegalStateException, IOException;
+	public int modifyMagazine(MagazineVO magazine, String path) throws PersistenceException, IllegalStateException, IOException;
 	public int removeMagazine(MagazineVO magazine) throws PersistenceException;
 	
 	//도전!건강! 관리
 	public int countChallengeList(SearchVO search);
 	public List<ChallengeVO> getChallengeList(SearchVO search);
-	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception;
+	public int addChallenge(ChallengeVO challenge, String path) throws Exception;
 	//5위까지의 도전건강 목록조회
 	public List<ChallengeVO> getChallengeTop5List();
 	public int releaseChallengeRank(ChallengeVO challenge) throws PersistenceException;

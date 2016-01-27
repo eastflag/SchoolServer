@@ -1,5 +1,6 @@
 package com.aura.smartschool.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -710,11 +711,12 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int addPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
-		int press_id = mobileMapper.insertPress(press);
+	public int addPress(PressVO press, String path) throws Exception {
+		mobileMapper.insertPress(press);
+		int press_id = press.getPress_id();
 		
-		if(files.size() > 0){
-			List<AttachVO> list = FileUtil.fileUpload(files, path);
+		if(press.getFiles() !=null && press.getFiles().size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(press.getFiles(), path);
 			
 			if (list.size() != 0){
 				for(AttachVO attach:list){
@@ -742,11 +744,11 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int modifyPress(PressVO press, List<MultipartFile> files, String path) throws Exception {
+	public int modifyPress(PressVO press, String path) throws Exception {
 		int rsCnt = mobileMapper.updatePress(press);
 		
-		if(files.size() > 0){
-			List<AttachVO> list = FileUtil.fileUpload(files, path);
+		if(press.getFiles() !=null && press.getFiles().size() > 0){
+			List<AttachVO> list = FileUtil.fileUpload(press.getFiles(), path);
 			
 			if (list.size() != 0){
 				for(AttachVO attach:list){
@@ -792,12 +794,18 @@ public class MobileServiceImpl implements MobileService {
 		return mobileMapper.checkMagazine(magazine);
 	}
 	@Override
-	public int addMagazine(MagazineVO magazine) throws PersistenceException {
+	public int addMagazine(MagazineVO magazine, String path) throws PersistenceException, IllegalStateException, IOException {
+		if (magazine.getFiles() !=null && magazine.getFiles().size() > 0) {
+			FileUtil.fileUploadOriginalName(magazine.getFiles(), path);
+		}
 		return mobileMapper.insertMagazine(magazine);
 	}
 
 	@Override
-	public int modifyMagazine(MagazineVO magazine) throws PersistenceException {
+	public int modifyMagazine(MagazineVO magazine, String path) throws PersistenceException, IllegalStateException, IOException {
+		if (magazine.getFiles() !=null && magazine.getFiles().size() > 0) {
+			FileUtil.fileUploadOriginalName(magazine.getFiles(), path);
+		}
 		return mobileMapper.updateMagazine(magazine);
 	}
 
@@ -823,10 +831,10 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public int addChallenge(ChallengeVO challenge, List<MultipartFile> files, String path) throws Exception {
+	public int addChallenge(ChallengeVO challenge, String path) throws Exception {
 		//파일 업로드
-		for(int i=0; i<files.size(); i++){
-			String name = FileUtil.fileUpload(files.get(i), path);
+		for(int i=0; i<challenge.getFiles().size(); i++){
+			String name = FileUtil.fileUpload(challenge.getFiles().get(i), path);
 			switch(i){
 				case 0: challenge.setImg_1(name); break;
 				case 1: challenge.setImg_2(name); break;
@@ -1062,9 +1070,9 @@ public class MobileServiceImpl implements MobileService {
 			} else if(Constant.BMI.equals(section)) {
 				rank.setValue(summaryVO.getBmi());
 			} else if(Constant.Muscle.equals(section)) {
-				rank.setValue(summaryVO.getBmi());
+				rank.setValue(summaryVO.getMuscle());
 			} else if(Constant.Fat.equals(section)) {
-				rank.setValue(summaryVO.getBmi());
+				rank.setValue(summaryVO.getFat());
 			}
 			
 			if(list.size()>1) {
@@ -1075,9 +1083,9 @@ public class MobileServiceImpl implements MobileService {
 				} else if(Constant.BMI.equals(section)) {
 					rank.setBeforeValue(list.get(1).getBmi());
 				} else if(Constant.Muscle.equals(section)) {
-					rank.setBeforeValue(list.get(1).getBmi());
+					rank.setBeforeValue(list.get(1).getMuscle());
 				} else if(Constant.Fat.equals(section)) {
-					rank.setBeforeValue(list.get(1).getBmi());
+					rank.setBeforeValue(list.get(1).getFat());
 				}
 			} else {
 				rank.setBeforeValue(rank.getValue());
@@ -1160,9 +1168,9 @@ public class MobileServiceImpl implements MobileService {
 			} else if(Constant.BMI.equals(section)) {
 				rank.setValue(summaryVO.getBmi());
 			} else if(Constant.Muscle.equals(section)) {
-				rank.setValue(summaryVO.getBmi());
+				rank.setValue(summaryVO.getMuscle());
 			} else if(Constant.Fat.equals(section)) {
-				rank.setValue(summaryVO.getBmi());
+				rank.setValue(summaryVO.getFat());
 			}
 			
 			//등수,학생수 구하기--------------------------------------------------------

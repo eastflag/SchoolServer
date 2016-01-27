@@ -1665,8 +1665,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			.success(function(response){
 				if(response.result==0){
 					$scope.menu_list = response.data;
-					
-					$scope.setWrappeDimension('#school_menu_lsit', 240);
 				}
 			})
 			.error(function(data, status) {
@@ -1778,6 +1776,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.prevMMSchedule = function(){
+		$scope.noti_list = [];
 		$scope.MM  = $scope.MM - 1;
 		if($scope.MM==0){
 			$scope.yyyy = $scope.yyyy - 1;
@@ -1787,6 +1786,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.nextMMSchedule = function(){
+		$scope.noti_list = [];
 		$scope.MM  = $scope.MM + 1;
 		if($scope.MM==13){
 			$scope.yyyy = $scope.yyyy + 1;
@@ -1848,6 +1848,7 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	if(path=='/dining'){
 			$scope.init('body_gray','식단/영양',true,true);
 			$scope.setYearMonth();
+			$scope.setWrappeDimension('#school_menu_lsit', 240);
 			$scope.getSchoolMenuList();
 	} else {
 		$scope.init('body_gray','학교정보알리미',true,true);
@@ -2340,7 +2341,7 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 			{image: magazine.img_7!=null?path+magazine.img_7:null},
 			{image: magazine.img_8!=null?path+magazine.img_8:null},
 			{image: magazine.img_9!=null?path+magazine.img_9:null},
-			{image: magazine.img_10!=null?path+magazine.img_10:null},
+			{image: magazine.img_10!=null?path+magazine.img_10:null}
 		];
 	}
 	
@@ -2376,16 +2377,16 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 					$scope.subject = magazine.subject;
 					$scope.content = magazine.content;
 					$scope.images = [
-						{image: magazine.img_1!=null?path+magazine.img_1:null},
-						{image: magazine.img_2!=null?path+magazine.img_2:null},
-						{image: magazine.img_3!=null?path+magazine.img_3:null},
-						{image: magazine.img_4!=null?path+magazine.img_4:null},
-						{image: magazine.img_5!=null?path+magazine.img_5:null},
-						{image: magazine.img_6!=null?path+magazine.img_6:null},
-						{image: magazine.img_7!=null?path+magazine.img_7:null},
-						{image: magazine.img_8!=null?path+magazine.img_8:null},
-						{image: magazine.img_9!=null?path+magazine.img_9:null},
-						{image: magazine.img_10!=null?path+magazine.img_10:null},
+						{image: magazine.img_1==''?'':path+magazine.img_1},
+						{image: magazine.img_2==''?'':path+magazine.img_2},
+						{image: magazine.img_3==''?'':path+magazine.img_3},
+						{image: magazine.img_4==''?'':path+magazine.img_4},
+						{image: magazine.img_5==''?'':path+magazine.img_5},
+						{image: magazine.img_6==''?'':path+magazine.img_6},
+						{image: magazine.img_7==''?'':path+magazine.img_7},
+						{image: magazine.img_8==''?'':path+magazine.img_8},
+						{image: magazine.img_9==''?'':path+magazine.img_9},
+						{image: magazine.img_10==''?'':path+magazine.img_10}
 					];
 					setSwiper();
 				}
@@ -2399,10 +2400,12 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 	$scope.init('body_gray', '건강매거진',true,true);
 	switch($location.path()){
 	case '/magazine':
+		$scope.setWrappeDimension('#magazine_list_wrapper',50);
 		$scope.getMagazineList();
 		break;
 	case '/magazine_view':
 		$scope.getMagazineView($location.search().p);
+		$scope.setWrappeDimension('#megazine_view_wrapper',50);
 		break;
 	}
 	
@@ -2502,22 +2505,29 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 		}
 		else {
 			var challenge = {
-				home_id: $scope.home_id,
-				member_id: $scope.member_id,
-				title: $scope.challenge.title,
-				content: $scope.challenge.content
-			}
-			
+					home_id: $scope.home_id,
+					member_id: $scope.member_id,
+					title: $scope.challenge.title,
+					content: $scope.challenge.content,
+					img_1: $scope.filenames[0].name,
+					img_2: $scope.filenames[1].name,
+					img_3: $scope.filenames[2].name,
+					img_4: $scope.filenames[3].name,
+					img_5: $scope.filenames[4].name,
+					files: $scope.f
+				}
+				
 			$scope.upload = Upload.upload({
 				url: '/api/addChallenge',
-				data : {files:$scope.f, data:JSON.stringify(challenge)}
-			}).success(function(data, status, headers, config) {
-				console.log('data: ' + data + "," + data.result);
-				if(data.result == 0) {
+				data : challenge
+			}).success(function(response) {
+				console.log('data: ' + response + "," + response.result);
+				if(response.result == 0) {
 					UTIL.alert('도전건강! 응모하기가 완료되었습니다.');
+					$scope.clearChallenge();
 					$location.path('challenge');
 				} else {
-					UTIL.alert(data.msg);
+					UTIL.alert(response.msg);
 				}
 			})
 			.error(function(data, status) {

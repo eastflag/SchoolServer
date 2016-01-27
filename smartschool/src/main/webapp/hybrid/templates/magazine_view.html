@@ -4,7 +4,7 @@
 			<div class="photo_wrap">
 				<div class="swiper-wrapper">
 					<div ng-if="slide.image" class="swiper-slide" ng-repeat="slide in images" >
-						<img ng-src="{{slide.image}}"/>
+						<img ng-src="{{slide.image}}" ng-show="slide.image !=''" />
 					</div>
 				</div>
 				<div class="indicator"></div>

@@ -1,5 +1,9 @@
 package com.aura.smartschool.domain;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 public class ChallengeVO {
 
 	private int challenge_id;
@@ -15,6 +19,8 @@ public class ChallengeVO {
 	private String img_5;
 	private int rank;
 	private String created;
+	
+	private List<MultipartFile> files;
 	
 	public int getChallenge_id() {
 		return challenge_id;
@@ -93,6 +99,12 @@ public class ChallengeVO {
 	}
 	public void setCreated(String created) {
 		this.created = created;
+	}
+	public List<MultipartFile> getFiles() {
+		return files;
+	}
+	public void setFiles(List<MultipartFile> files) {
+		this.files = files;
 	}
 
 }

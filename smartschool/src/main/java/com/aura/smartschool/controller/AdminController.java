@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -714,18 +715,14 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/addPress")
-	public Result addPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result addPress(HttpServletRequest request, @ModelAttribute PressVO press) {
 		logger.debug("/admin/api/addPress---------------------------------------------------");
-		logger.debug("file size : " + files.size());
-		Gson gson = new Gson();
-		PressVO press = gson.fromJson(data, PressVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		String path = request.getServletContext().getRealPath("/upload") + "press";
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
 		
 		try{
-			int rs = this.mobileService.addPress(press, files, path);
+			int rs = this.mobileService.addPress(press, path);
 			if (rs != 0) {
 				return new Result(0, "success");
 			}else{
@@ -745,18 +742,14 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/modifyPress")
-	public Result modifyPress(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result modifyPress(HttpServletRequest request, @ModelAttribute PressVO press) {
 		logger.debug("/admin/api/modifyPress---------------------------------------------------");
-		logger.debug("file size : " + files.size());
-		Gson gson = new Gson();
-		PressVO press = gson.fromJson(data, PressVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/press";
+		String path = request.getServletContext().getRealPath("/upload") + "press";
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
 		
 		try{
-			int rs = this.mobileService.modifyPress(press, files, path);
+			int rs = this.mobileService.modifyPress(press, path);
 			if (rs != 0) {
 				return new Result(0, "success");
 			}else{
@@ -833,28 +826,21 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/addMagazine")
-	public Result addMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result addMagazine(HttpServletRequest request, @ModelAttribute MagazineVO magazine) {
 		logger.debug("/admin/api/addMagazine---------------------------------------------------");
-		Gson gson = new Gson();
-		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
 		
 		int chCnt = this.mobileService.checkMagazine(magazine);
 		if (chCnt == 0) {
-			if (files.size() > 0) {
-				try {
-					FileUtil.fileUploadOriginalName(files, path);
-				} catch (IllegalStateException | IOException e) {
-					e.printStackTrace();
-					return new Result(200, "fail");
+			try {
+				int rsCnt = this.mobileService.addMagazine(magazine, path);
+				if (rsCnt > 0) {
+					return new Result(0, "success");
 				}
-			}
-			int rsCnt = this.mobileService.addMagazine(magazine);
-			if (rsCnt > 0) {
-				return new Result(0, "success");
+			} catch (PersistenceException | IllegalStateException | IOException e) {
+				e.printStackTrace();
 			}
 		}
 		return new Result(100, "fail");
@@ -868,29 +854,19 @@ public class AdminController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/api/modifyMagazine")
-	public Result modifyMagazine(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result modifyMagazine(HttpServletRequest request, @ModelAttribute MagazineVO magazine) {
 		logger.debug("/admin/api/modifyMagazine---------------------------------------------------");
-		Gson gson = new Gson();
-		MagazineVO magazine = gson.fromJson(data, MagazineVO.class);
 		
-		String path = request.getServletContext().getRealPath("/upload") + "/magazine"+"/" +magazine.getYear() + "/" + magazine.getMonth();
+		String path = request.getServletContext().getRealPath("/upload") + "magazine/" +magazine.getYear() + "/" + magazine.getMonth();
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
 		
-		int chCnt = this.mobileService.checkMagazine(magazine);
-		if (chCnt == 0) {
-			if (files.size() > 0) {
-				try {
-					FileUtil.fileUploadOriginalName(files, path);
-				} catch (IllegalStateException | IOException e) {
-					e.printStackTrace();
-					return new Result(200, "fail");
-				}
-			}
-			int rsCnt = this.mobileService.modifyMagazine(magazine);
+		try {
+			int rsCnt = this.mobileService.modifyMagazine(magazine,path);
 			if (rsCnt > 0) {
 				return new Result(0, "success");
 			}
+		} catch (PersistenceException | IllegalStateException | IOException e) {
+			e.printStackTrace();
 		}
 		return new Result(100, "fail");
 	}

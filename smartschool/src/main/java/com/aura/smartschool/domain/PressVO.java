@@ -2,6 +2,8 @@ package com.aura.smartschool.domain;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class PressVO {
 	private int press_id;
 	private String title;
@@ -9,6 +11,8 @@ public class PressVO {
 	private String created;
 	
 	private List<AttachVO> list;
+	
+	private List<MultipartFile> files;
 	
 	public int getPress_id() {
 		return press_id;
@@ -39,6 +43,12 @@ public class PressVO {
 	}
 	public void setList(List<AttachVO> list) {
 		this.list = list;
+	}
+	public List<MultipartFile> getFiles() {
+		return files;
+	}
+	public void setFiles(List<MultipartFile> files) {
+		this.files = files;
 	}
 
 }

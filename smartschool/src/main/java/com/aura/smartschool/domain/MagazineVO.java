@@ -1,5 +1,9 @@
 package com.aura.smartschool.domain;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 public class MagazineVO {
 
 	private int magazine_id;
@@ -21,6 +25,8 @@ public class MagazineVO {
 	private String img_10;
 	private String created;
 	private String updated;
+	
+	private List<MultipartFile> files;
 	
 	public int getMagazine_id() {
 		return magazine_id;
@@ -135,5 +141,11 @@ public class MagazineVO {
 	}
 	public void setUpdated(String updated) {
 		this.updated = updated;
+	}
+	public List<MultipartFile> getFiles() {
+		return files;
+	}
+	public void setFiles(List<MultipartFile> files) {
+		this.files = files;
 	}
 }

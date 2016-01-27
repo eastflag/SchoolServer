@@ -3,7 +3,7 @@ $(function() {
 });
 
 var app = angular.module('app', [
-    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor', 'toaster', 'ngAnimate', 'angular-jwt'
+    'ngRoute', 'ui.bootstrap', 'ngFileUpload', 'ngCookies', 'angularModalService', 'ckeditor', 'toaster', 'ngAnimate', 'angular-jwt', 'ngScrollbars', 'ngAnimate'
 ]);
 
 app.run(['$rootScope', '$cookieStore', '$http', 'toaster', function($rootScope, $cookieStore, $http, toaster) {
@@ -1762,23 +1762,11 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			return;
 		}
 		else {
-			var press = {
-				title: $scope.title,
-				content: $scope.content
-			}
-	
-			for(var i=0;i<$scope.f.length;i++){
-				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
-					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
-					$scope.f[i].$error = null;
-					$scope.f[i].$errorParam = "";
-					return;
-				}
-			}
-	
+			console.log({title: $scope.title, content: $scope.content, files : $scope.f});
+			
 			$scope.upload = Upload.upload({
 				url: '/admin/api/addPress',
-				data : {files:$scope.f,data:JSON.stringify(press)}
+				data : {title: $scope.title, content: $scope.content, files : $scope.f}
 			}).success(function(response) {
 				if(response.result == 0) {
 					$window.alert('언론자료가 등록되었습니다.');
@@ -1857,24 +1845,10 @@ app.controller('PressCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 
 			return;
 		}
 		else {
-			var press = {
-				press_id : $scope.press_id,
-				title: $scope.title,
-				content: $scope.content
-			}
-			
-			for(var i=0;i<$scope.f.length;i++){
-				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
-					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
-					$scope.f[i].$error = null;
-					$scope.f[i].$errorParam = "";
-					return;
-				}
-			}
-	
+			console.log({press_id : $scope.press_id, title: $scope.title, content: $scope.content, files : $scope.f});
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyPress',
-				data : {files:$scope.f, data:JSON.stringify(press)}
+				data : {press_id : $scope.press_id, title: $scope.title, content: $scope.content, files : $scope.f}
 			}).success(function(response) {
 				if(response.result == 0) {
 					$window.alert('언론자료가 수정되었습니다.');
@@ -1990,11 +1964,18 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		];
 	}
 	
+	$scope.addMode = function(){
+		$scope.clearMagazine();
+		$scope.mode = 'add';
+	}
+	
 	$scope.pageChange = function() {
 		$scope.getMagazineList();
 	};
 	
+	$scope.f = [];
 	$scope.uploadFiles = function(file,idx) {
+		console.log('index=> ',idx);
 		if (file != null && file.name != null) {
 			$scope.f.push(file);
 			$scope.filenames[idx].name = file.name;
@@ -2003,10 +1984,10 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 	$scope.checkImgName = function(){
 		for(var i=0; i<($scope.filenames.length-1); i++){
-			if($scope.filenames[i].name == null) continue;
+			if($scope.filenames[i].name == '') continue;
 			
 			for(var j=i+1; j<$scope.filenames.length; j++){
-				if($scope.filenames[j].name != null && $scope.filenames[j].name == $scope.filenames[i].name){
+				if($scope.filenames[j].name != '' && $scope.filenames[j].name == $scope.filenames[i].name){
 					return false;
 				}
 			}
@@ -2039,7 +2020,11 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
 			return;
 		}
-		else if($scope.filenames.length==0){
+		else if($scope.filenames[0].name==''){
+			$window.alert('첫번째 이미지가 없습니다.\n건강매거진 이미지를 선택하세요.');
+			return;
+		}
+		else if($scope.f.length==0){
 			$window.alert('선택된 이미지가 없습니다.\n건강매거진 이미지를 선택하세요.');
 			return;
 		}
@@ -2059,21 +2044,13 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				img_7:$scope.filenames[6].name,
 				img_8:$scope.filenames[7].name,
 				img_9:$scope.filenames[8].name,
-				img_10:$scope.filenames[9].name
+				img_10:$scope.filenames[9].name,
+				files : $scope.f
 			}
-	
-			for(var i=0;i<$scope.f.length;i++){
-				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
-					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
-					$scope.f[i].$error = null;
-					$scope.f[i].$errorParam = "";
-					return;
-				}
-			}
-	
+			
 			$scope.upload = Upload.upload({
 				url: '/admin/api/addMagazine',
-				data : {files:$scope.f, data:JSON.stringify(magazine)}
+				data : magazine
 			}).success(function(data, status, headers, config) {
 				console.log('data: ' + data + "," + data.result);
 				if(data.result == 0) {
@@ -2105,68 +2082,22 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		$scope.subject = magazine.subject;
 		$scope.content = magazine.content;
 		$scope.filenames = [
-			{code:1, name:magazine.img_1},
-			{code:2, name:magazine.img_2},
-			{code:3, name:magazine.img_3},
-			{code:4, name:magazine.img_4},
-			{code:5, name:magazine.img_5},
-			{code:6, name:magazine.img_6},
-			{code:7, name:magazine.img_7},
-			{code:8, name:magazine.img_8},
-			{code:9, name:magazine.img_9},
-			{code:10, name:magazine.img_10}
+			{code:1, name:magazine.img_1=='null'?'':magazine.img_1},
+			{code:2, name:magazine.img_2=='null'?'':magazine.img_2},
+			{code:3, name:magazine.img_3=='null'?'':magazine.img_3},
+			{code:4, name:magazine.img_4=='null'?'':magazine.img_4},
+			{code:5, name:magazine.img_5=='null'?'':magazine.img_5},
+			{code:6, name:magazine.img_6=='null'?'':magazine.img_6},
+			{code:7, name:magazine.img_7=='null'?'':magazine.img_7},
+			{code:8, name:magazine.img_8=='null'?'':magazine.img_8},
+			{code:9, name:magazine.img_9=='null'?'':magazine.img_9},
+			{code:10, name:magazine.img_10=='null'?'':magazine.img_10}
 		];
 	}
-
-	$scope.slide_size = 0;
-	$scope.viewMagazine = function(magazine){
-		console.log('건강매거진 보기');
-		$scope.magazine_id = magazine.magazine_id;
-		$scope.mode = "view";
-		$scope.mode_text = "건강매거진 상세";
-		
-		$scope.year = magazine.year;
-		$scope.month = magazine.month;
-		$scope.title = magazine.title;
-		$scope.subject = magazine.subject;
-		$scope.content = magazine.content;
-		
-		var path = '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
-		$scope.slide_images = [
-			{image: magazine.img_1!=null?path+magazine.img_1:null, description: 'Image 00'},
-			{image: magazine.img_2!=null?path+magazine.img_2:null, description: 'Image 01'},
-			{image: magazine.img_3!=null?path+magazine.img_3:null, description: 'Image 02'},
-			{image: magazine.img_4!=null?path+magazine.img_4:null, description: 'Image 03'},
-			{image: magazine.img_5!=null?path+magazine.img_5:null, description: 'Image 04'},
-			{image: magazine.img_6!=null?path+magazine.img_6:null, description: 'Image 05'},
-			{image: magazine.img_7!=null?path+magazine.img_7:null, description: 'Image 06'},
-			{image: magazine.img_8!=null?path+magazine.img_8:null, description: 'Image 07'},
-			{image: magazine.img_9!=null?path+magazine.img_9:null, description: 'Image 08'},
-			{image: magazine.img_10!=null?path+magazine.img_10:null, description: 'Image 09'},
-		];
-		for(var i=0; i<$scope.slide_images.length; i++){
-			if($scope.slide_images[i].image!=null){
-				$scope.slide_size++;
-			}
-		}
-		console.log($scope.slide_size);
-	}
-	$scope.direction = 'left';
-	$scope.currentIndex = 0;
-
-	$scope.isCurrentSlideIndex = function (index) {
-		return $scope.currentIndex === index;
-	};
 	
-	$scope.prevSlide = function () {
-		$scope.direction = 'left';
-		$scope.currentIndex = ($scope.currentIndex < $scope.slide_size - 1) ? ++$scope.currentIndex : 0;
-	};
-
-	$scope.nextSlide = function () {
-		$scope.direction = 'right';
-		$scope.currentIndex = ($scope.currentIndex > 0) ? --$scope.currentIndex : $scope.slide_size - 1;
-	};
+	$scope.deleteFile = function(idx){
+		$scope.filenames[idx].name='';
+	}
 	
 	$scope.modifyMagazine = function(){
 		if($scope.year == ''){
@@ -2193,8 +2124,8 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 			$window.alert('중복 이미지가 있습니다.\n이미지를 확인하세요.');
 			return;
 		}
-		else if($scope.filenames.length==0){
-			$window.alert('선택된 이미지가 없습니다.\n매거진 이미지를 선택하세요.');
+		else if($scope.filenames[0].name==''){
+			$window.alert('첫번째 이미지가 없습니다.\n건강매거진 이미지를 선택하세요.');
 			return;
 		}
 		else {
@@ -2216,29 +2147,20 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				img_7:$scope.filenames[6].name,
 				img_8:$scope.filenames[7].name,
 				img_9:$scope.filenames[8].name,
-				img_10:$scope.filenames[9].name
+				img_10:$scope.filenames[9].name,
+				files: $scope.f
 			}
-	
-			console.log('$scope.f.length : '+$scope.f.length);
-			for(var i=0;i<$scope.f.length;i++){
-				if ($scope.f[i].$error != null && $scope.f[i].$error != undefined) {
-					alert("첨부 파일은 10MB를 넘길 수 없습니다.");
-					$scope.f[i].$error = null;
-					$scope.f[i].$errorParam = "";
-					return;
-				}
-			}
-	
+			
+			console.log('magazine',magazine);
 			$scope.upload = Upload.upload({
 				url: '/admin/api/modifyMagazine',
-				data : {files:$scope.f, data:JSON.stringify(magazine)}
-			}).success(function(data, status, headers, config) {
-				console.log('data: ' + data + "," + data.result);
-				if(data.result == 0) {
+				data : magazine
+			}).success(function(response) {
+				if(response.result == 0) {
 					$window.alert('건강매거진이 수정되었습니다.');
 					$scope.getMagazineList();
 				} else {
-					$window.alert(data.msg);
+					$window.alert(response.msg);
 				}
 			}).error(function(data, status) {
 				if (status == 401) {
@@ -2248,6 +2170,35 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 				}
 			});
 		}
+	}
+
+	$scope.viewMagazine = function(magazine){
+		console.log('건강매거진 보기');
+		$scope.magazine_id = magazine.magazine_id;
+		$scope.mode = "view";
+		$scope.mode_text = "건강매거진 상세";
+		
+		$scope.year = magazine.year;
+		$scope.month = magazine.month;
+		$scope.title = magazine.title;
+		$scope.subject = magazine.subject;
+		$scope.content = magazine.content;
+		
+		var path = '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
+		$scope.slide_images = [
+			{image: magazine.img_1!=''?path+magazine.img_1:''},
+			{image: magazine.img_2!=''?path+magazine.img_2:''},
+			{image: magazine.img_3!=''?path+magazine.img_3:''},
+			{image: magazine.img_4!=''?path+magazine.img_4:''},
+			{image: magazine.img_5!=''?path+magazine.img_5:''},
+			{image: magazine.img_6!=''?path+magazine.img_6:''},
+			{image: magazine.img_7!=''?path+magazine.img_7:''},
+			{image: magazine.img_8!=''?path+magazine.img_8:''},
+			{image: magazine.img_9!=''?path+magazine.img_9:''},
+			{image: magazine.img_10!=''?path+magazine.img_10:''}
+		];
+		
+		setSwiper();
 	}
 	
 	$scope.getStatus = function(){

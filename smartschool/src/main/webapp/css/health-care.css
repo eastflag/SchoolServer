@@ -407,30 +407,5 @@ table.dataTable thead .sorting:after {
 	margin:0 auto;
 	border:3px solid #ccc;
 }
-.magazine-slide-wrap .slide-wrapper .nonDraggableImage{-webkit-user-drag: none;}
-.magazine-slide-wrap .slide-wrapper img {
-	height: 100%;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
-}
-.magazine-slide-wrap .arrow {
-	position: absolute;
-	z-index: 1002;
-	display: block;
-	top: 50%;
-	outline: none;
-	cursor: pointer;
-	font-size:100px;
-	margin-top:32px;
-	text-decoration:none;
-}
-.magazine-slide-wrap .arrow.prev {
-	left: 100px;
-	transition: 0.2s linear all;
-}
-.magazine-slide-wrap .arrow.next {
-	right: 100px;
-	transition: 0.2s linear all;
-}
+.magazine-slide-wrap .slide-wrapper .swiper-wrapper{position:relative;}
+.magazine-slide-wrap .slide-wrapper .swiper-wrapper .swiper-slide{float:left;}

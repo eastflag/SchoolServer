@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -270,22 +271,14 @@ public class AuraHomeController {
 	 * @return
 	 */
 	@RequestMapping(value="/web/api/addChallenge")
-	public Result addChallenge(
-			HttpServletRequest request,
-			@RequestParam(value="data") String data,
-			@RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result addChallenge(HttpServletRequest request, @ModelAttribute ChallengeVO challenge) {
 		logger.debug("/web/api/addChallenge---------------------------------------------------");
-		logger.debug("file size : " + files.size());
-		Gson gson = new Gson();
-		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
-		
 		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
 		//String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
 		
 		try{
-			int rs = this.mobileService.addChallenge(challenge, files, path);
+			int rs = this.mobileService.addChallenge(challenge, path);
 			if (rs != 0) {
 				return new Result(0, "success");
 			}else{
@@ -361,7 +354,7 @@ public class AuraHomeController {
 	public Result addMember(HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="profile", required=false) MultipartFile file) {
-		logger.debug("/web/api/signUp----------------------------------------------------------------");
+		logger.debug("/web/api/addMember----------------------------------------------------------------");
 		
 		Result rs = null;
 		try { 
@@ -389,7 +382,7 @@ public class AuraHomeController {
 	public Result modMember(HttpServletRequest request,
 			@RequestParam(value="data") String data,
 			@RequestParam(value="profile", required=false) MultipartFile file) {
-		logger.debug("/web/api/signUp----------------------------------------------------------------");
+		logger.debug("/web/api/modMember----------------------------------------------------------------");
 		
 		try { 
 			Gson gson = new Gson();

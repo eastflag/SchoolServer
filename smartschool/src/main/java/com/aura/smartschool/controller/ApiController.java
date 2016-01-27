@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -857,19 +858,12 @@ public class ApiController {
 
 	//도전건강! 응모하기
 	@RequestMapping(value="/api/addChallenge")
-	public Result addChallenge(HttpServletRequest request, @RequestParam(value="data") String data, @RequestParam(value="files", required=false) List<MultipartFile> files) {
+	public Result addChallenge(HttpServletRequest request, @ModelAttribute ChallengeVO challenge) {
 		logger.debug("/api/addChallenge---------------------------------------------------");
-		logger.debug("file size : " + files.size());
-		Gson gson = new Gson();
-		ChallengeVO challenge = gson.fromJson(data, ChallengeVO.class);
-		
-		String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
-		//String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
+		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
 		logger.debug("path : " + path);
-		logger.debug("data : " + data);
-		
 		try{
-			int rs = this.mobileService.addChallenge(challenge, files, path);
+			int rs = this.mobileService.addChallenge(challenge, path);
 			if(rs > 0) {
 				return new Result(0, "success");
 			} else {
@@ -1119,7 +1113,7 @@ public class ApiController {
 	@RequestMapping("/api/getRankingFatList")
 	public ResultData<RankingListItem> getRankingFatList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingFatList-----------------------------------------------------");
-		RankingListItem result = mobileService.getRankingList(in, Constant.Muscle);
+		RankingListItem result = mobileService.getRankingList(in, Constant.Fat);
 		if(result != null){
 			return new ResultData<RankingListItem>(0, "success", result);
 		}else{

@@ -69,8 +69,8 @@
 						<ng-view></ng-view>
 					
 						<!-- 가족명 변경 레이어 -->
-						<section class="common_layer family_modify" style="display:{{change_home_display}}">
-							<div class="dim_area" ng-click="change_home_display='none';"></div>
+						<section class="common_layer family_modify">
+							<div class="dim_area" onclick="commonLayerClose('family_modify')"></div>
 							<div class="layer_box">
 								<h3>가족명 변경</h3>
 								<form id="">
@@ -81,7 +81,7 @@
 										</div>
 										<div class="half_wrap mg_top10">
 											<button type="submit" class="btn_common_blue" ng-click="modHomeId()">확인</button>
-											<button type="button" class="btn_common_blue_line" ng-click="change_home_display='none';">취소</button>
+											<button type="button" class="btn_common_blue_line" onclick="commonLayerClose('family_modify')">취소</button>
 										</div>
 									</fieldset>
 								</form>
