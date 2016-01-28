@@ -43,6 +43,7 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.StatVO;
 import com.aura.smartschool.domain.StatisticsParam;
 import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
@@ -1230,6 +1231,31 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public int removeProfile(MemberVO in) {
 		return mobileMapper.deleteProfile(in);
+	}
+
+	@Override
+	public List<StatVO> getGugun(StatVO stat) {
+		return mobileMapper.selectGugun(stat);
+	}
+
+	@Override
+	public List<StatVO> getSchoolByAddress(StatVO stat) {
+		return mobileMapper.selectSchoolByAddress(stat);
+	}
+
+	@Override
+	public List<StatVO> getSchoolGrade(StatVO stat) {
+		return mobileMapper.selectSchoolGrade(stat);
+	}
+
+	@Override
+	public List<StatVO> getSchoolClass(StatVO stat) {
+		return mobileMapper.selectSchoolClass(stat);
+	}
+
+	@Override
+	public List<StatVO> getResult(StatVO stat) {
+		return mobileMapper.selectResult(stat);
 	}
 
 }

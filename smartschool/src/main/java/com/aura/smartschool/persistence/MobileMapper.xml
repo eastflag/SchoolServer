@@ -1610,4 +1610,131 @@ select
 		photo = null
 	where member_id = #{member_id}
 </update>
+
+<!-- 통계 -->
+<select id="selectGugun" parameterType="StatVO" resultType="StatVO">
+    select distinct(gugun) from school
+    <choose>
+        <when test="sido =='all'">where 1=1
+        </when>
+        <when test="sido !=null">where sido=#{sido}            
+        </when>
+
+    </choose>
+</select>
+
+<select id="selectSchoolByAddress" parameterType="StatVO" resultType="StatVO">
+    select distinct(s.school_name) from school as s 
+    inner join member as m 
+    on s.school_id=m.school_id 
+    <choose>
+        <when test="sido =='all'">where 1=1
+        </when>
+        <when test="sido !=null">where sido=#{sido}            
+        </when>
+    </choose>  
+    <choose>    
+         <when test="gugun =='all'">and  1=1
+        </when>
+        <when test="gugun !=null">and gugun=#{gugun}            
+        </when>
+    </choose>
+ </select>
+
+
+<select id="selectSchoolGrade" parameterType="StatVO" resultType="StatVO">
+    select distinct(school_grade) from member m
+    inner join school as s
+    on s.school_id=m.school_id 
+	where s.school_name = #{school_name}
+	<choose>	
+		<when test="gugun =='all'"> and 1=1</when> 
+		<when test ="gugun!=null">   and s.gugun=#{gugun} </when>
+	</choose>				  
+	order by school_grade asc;
+	
+</select>
+<select id="selectSchoolClass" parameterType="StatVO" resultType="StatVO">
+	select distinct(m.school_class) from member as m
+	inner join school as s on s.school_id=m.school_id  
+	where s.school_name = #{school_name}
+	<choose>	
+		<when test="gugun =='all'"> and 1=1</when> 
+		<when test ="gugun!=null">and s.gugun=#{gugun} </when>
+	</choose>		
+	and m.school_grade=#{school_grade}			
+	order by school_class asc;    
+</select>
+
+<select id="selectResult" parameterType="StatVO" resultType="StatVO">
+    select 
+
+    DATE_FORMAT(ii.DATETIMES, '%Y-%m') as measure_date
+    <choose>
+		<when test ="section2=='student'">										<!-- 명단 선택  -->
+	    	, s.school_name, m.school_grade,m.school_class, m.sex, m.name
+	    
+		    <choose>
+		        <when test ="section1=='HEIGHT'">,  truncate(ii.height, 1) as val </when>
+		        <when test="section1=='WEIGHT'">, truncate(ii.weight, 1) as val </when>
+<!-- 		        <when test="section1=='BMI'">,   as val </when>
+		        <when test="section1=='SMOKE'">,  as val </when>
+ -->		        
+		        
+		    </choose>
+		</when>
+		
+		<when test = "section2=='average'">
+		    <choose>
+		        <when test ="section1=='HEIGHT'">,  truncate(avg(height), 1) as val </when>
+		        <when test="section1=='WEIGHT'">, truncate(avg(weight), 1) as val </when>        
+		    </choose>    
+		</when>
+<!-- 		<when test = "section2=='ratio">
+		    <choose>
+		        <when test ="section1=='BMI'">,  as val </when>
+		        <when test="section1=='SMOKE'">,  as val </when>        
+		    </choose>
+		</when> -->
+	</choose>
+    from member as m
+	inner join school as s on s.school_id=m.school_id  
+	inner join measure_info as mi on m.member_id = mi.member_id
+	inner join inbody_info as ii on ii.Inbody_seq = mi.Inbody_seq
+	where 1=1
+	<choose>
+	    <when test="sex=='all'"> and 1=1</when>
+	    <when test="sex!=null"> and m.sex=#{sex}</when>
+	</choose>
+	
+	<if test="school_name != null"> and s.school_name =#{school_name}</if>
+	
+	<choose>
+	    <when test="school_grade=='all'"> and 1=1</when>
+	    <when test="school_grade !=null"> and m.school_grade=#{school_grade}</when>
+	</choose>
+	<choose>
+	    <when test="school_class=='all'"> and 1=1</when>
+	    <when test="school_class !=null"> and m.school_class=#{school_class}</when>
+	</choose>
+	<choose>
+	    <when test ="measure_date !=null"> and DATE_FORMAT(ii.DATETIMES, '%Y-%m')= #{measure_date}
+	    </when>
+	</choose>
+	
+	
+	<!--
+		select 
+		smoke_data.Smoke_Data_ID as gradeId,
+		smoke_data.DISCRIPTION as gradeDesc
+	from
+		healthcare_gwangmyeong.smoke_data
+	where
+		1 = 1
+		and (#{ppm} between smoke_data.Start_Int and smoke_data.End_Int); 
+	 -->
+	
+</select>
+				
+
 </mapper>

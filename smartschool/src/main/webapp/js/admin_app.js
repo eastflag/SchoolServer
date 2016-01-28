@@ -190,6 +190,29 @@ app.service('OsSvc', function($http) {
 	}
 });
 
+
+
+app.service('StatSvc', function($http){
+	this.getGugun = function(stat) {
+		return $http.post('/admin/api/getGugun',stat);
+	}
+	this.getSchoolByAddr = function(stat){
+		return $http.post('/admin/api/getSchoolByAddr',stat);
+	}
+	this.getSchoolGrade = function(stat){
+		return $http.post('/admin/api/getSchoolGrade',stat);
+	}	
+	this.getSchoolClass=function(stat){
+		return $http.post('/admin/api/getSchoolClass',stat);
+	}
+	this.getResult=function(stat){
+		return $http.post('/admin/api/getResult',stat);
+	}
+
+
+})
+
+
 app.directive('calendar', function () {
     return {
         require: 'ngModel',
@@ -2460,5 +2483,144 @@ app.animation('.slide-animation', function () {
 	};
 });
 
-app.controller('StatiscticCtrl',['$scope',function($scope){
+
+app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
+
+	
+//	var sido = {sido:"경기"};	//ok
+	
+	$scope.select_sido="";
+	$scope.select_gugun="";
+	$scope.select_school="";
+	$scope.select_grade="";
+
+
+ 	//시입력-구군 구하기
+	$scope.getGugun = function() {
+
+		var search = {sido:$scope.select_sido};
+
+
+		StatSvc.getGugun(search)
+		.success(function(datas){
+			$scope.gugunList = datas.data;
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+
+	}
+	$scope.getGugun();	//구 가져오기
+
+	//구군입력 - 학교 구하기
+
+
+	//구군입력 - 학교 구하기
+ 	$scope.getSchoolByAddr = function(){
+ 			var search = {
+ 				sido:$scope.select_sido,
+				gugun:$scope.select_gugun	};
+
+ 		var search_school="";
+
+
+		StatSvc.getSchoolByAddr(search)
+		.success(function(schoolDatas){
+			$scope.schoolList = schoolDatas.data;
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+
+ 	}
+ 	$scope.getSchoolByAddr();	
+
+ 	//학교입력 - 학년 출력하기.
+ 	$scope.getSchoolGrade = function(){
+ 		var search = {
+			gugun:$scope.select_gugun,
+			school_name:$scope.select_school
+		}
+
+
+		StatSvc.getSchoolGrade(search)
+		.success(function(gradeData){
+			$scope.gradeList = gradeData.data;
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+
+ 	}
+ 	$scope.getSchoolGrade();		
+// 	getSchoolClass
+ 	//학년입력 - 학반 출력하기.
+ 	$scope.getSchoolClass = function(){
+ 		var searchC = {
+			gugun:$scope.select_gugun,
+			school_name:$scope.select_school,
+			school_grade:$scope.select_grade
+		}
+
+
+		StatSvc.getSchoolClass(searchC)
+		.success(function(classData){
+			$scope.classList = classData.data;
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+
+ 	}
+ 	$scope.getSchoolClass();	
+
+
+
+ 	$scope.getResult = function(){
+ 		var search = {
+ 			sido:$scope.select_sido,
+			gugun:$scope.select_gugun,
+			sex:$scope.select_sex,
+			school_name:$scope.select_school,
+			school_grade:$scope.select_grade,
+			school_class:$scope.select_class,
+			section1:$scope.select_menu,
+			section2:$scope.stat,
+			val: $scope.val,
+			measure_date: $scope.measure_date
+		}
+
+
+		StatSvc.getResult(search)
+		.success(function(ResultData){
+			$scope.results = ResultData.data;
+
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+
+ 	}
+ 	$scope.getResult();	 	
+
+
+
+
+
+
 }]);
