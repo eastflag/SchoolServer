@@ -44,6 +44,7 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.StatVO;
 import com.aura.smartschool.domain.TokenVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
@@ -961,5 +962,51 @@ public class AdminController {
 			e.printStackTrace();
 			return new Result(200,"fail");
 		}
+	}
+	
+	/**
+	 * 시도를 선택하여 구군 가져오기
+	 */
+	@RequestMapping(value="admin/api/getGugun")
+	public ResultData<List<StatVO>> getGugun(@RequestBody StatVO inStat) {
+		logger.debug("/admin/api/getGugun--------------------------------------------------");
+		//int total = this.mobileService.countChallengeList(search);
+		List<StatVO> list = mobileService.getGugun(inStat);
+		return new ResultData<List<StatVO>>(0, "success", list);
+	}
+	//시도와 구군이용하여 학교목록 가져오기
+	@RequestMapping(value="admin/api/getSchoolByAddr")
+	public ResultData<List<StatVO>> getSchoolByAddress(@RequestBody StatVO inStat) {
+		logger.debug("/admin/api/getSchoolByAddr-------------------------------------------------");
+		
+		List<StatVO> list = mobileService.getSchoolByAddress(inStat);
+		return new ResultData<List<StatVO>>(0, "success", list);
+	}
+	
+	//구군과 학교명을 이용하여 측정기록이 있는 학년 가져오기
+	@RequestMapping(value="admin/api/getSchoolGrade")
+	public ResultData<List<StatVO>> getSchoolGrade(@RequestBody StatVO inStat) {
+		logger.debug("/admin/api/getSchoolGrade-------------------------------------------------");
+		
+		List<StatVO> list = mobileService.getSchoolGrade(inStat);
+		return new ResultData<List<StatVO>>(0, "success", list);
+	}
+	
+
+	//구군, 학교명, 학년 ->학반 가져오기
+	@RequestMapping(value="admin/api/getSchoolClass")
+	public ResultData<List<StatVO>> getSchoolClass(@RequestBody StatVO inStat) {
+		logger.debug("/admin/api/getSchoolClass-------------------------------------------------");
+		
+		List<StatVO> list = mobileService.getSchoolClass(inStat);
+		return new ResultData<List<StatVO>>(0, "success", list);
+	}
+	
+	@RequestMapping(value="/admin/api/getResult")
+	public ResultData<List<StatVO>> getResult(@RequestBody StatVO inStat) {
+		logger.debug("admin/api/getResult-------------------------------------------------");
+		
+		List<StatVO> list = mobileService.getResult(inStat);
+		return new ResultData<List<StatVO>>(0, "success", list);
 	}
 }

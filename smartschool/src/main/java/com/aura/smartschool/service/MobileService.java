@@ -39,6 +39,7 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.StatVO;
 import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
@@ -206,4 +207,12 @@ public interface MobileService {
 	public RankingItem getRanking(MemberVO in, String height);
 	public RankingListItem getRankingList(SearchVO in, String height);
 	public int removeProfile(MemberVO in);
+	
+	//통계
+	public List<StatVO> getGugun(StatVO stat);
+	public List<StatVO> getSchoolByAddress(StatVO stat);
+	public List<StatVO> getSchoolGrade(StatVO stat);
+	public List<StatVO> getSchoolClass(StatVO stat);
+	public List<StatVO> getResult(StatVO stat);
+	
 }

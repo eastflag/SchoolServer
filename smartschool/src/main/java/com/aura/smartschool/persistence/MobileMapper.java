@@ -32,6 +32,7 @@ import com.aura.smartschool.domain.SchoolNotiVO;
 import com.aura.smartschool.domain.SchoolVO;
 import com.aura.smartschool.domain.SearchVO;
 import com.aura.smartschool.domain.SessionVO;
+import com.aura.smartschool.domain.StatVO;
 import com.aura.smartschool.domain.StatisticsParam;
 import com.aura.smartschool.domain.VideoTimeVO;
 import com.aura.smartschool.domain.VideoTypeVO;
@@ -219,4 +220,12 @@ public interface MobileMapper {
 	public BodyMeasureGrade selectRankingByGubun(Map<String, Object> param);	//구분[학교,지역,전국]등수 및 학생수
 	public List<BodyMeasureGrade> selectRankingList(Map<String, Object> param);	//구분[학교,지역,전국] 랭킹목록
 	public int deleteProfile(MemberVO in);
+	
+	//통계
+	public List<StatVO> selectGugun(StatVO stat);			
+	public List<StatVO> selectSchoolByAddress(StatVO stat);
+	public List<StatVO> selectSchoolGrade(StatVO stat);
+	public List<StatVO> selectSchoolClass(StatVO stat);	
+	public List<StatVO> selectResult(StatVO stat);
+	
 }
