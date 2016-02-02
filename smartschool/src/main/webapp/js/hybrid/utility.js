@@ -251,6 +251,16 @@ var UTIL = function() {
 	};
 	
 	/**
+	 * crop image를 가져온다.
+	 */
+	var _getPhoto = function(success, error) {
+		var data = {
+			'type'		: NATIVE.CONST_COMMAND_GET_PHOTO
+		};
+		NATIVE.HYBRID.EXECUTE(data, success, error);
+	};
+	
+	/**
 	 * 푸쉬 수신 시, command를 가져온다.
 	 */
 	var _getPushCommand = function(success, error) {
@@ -395,6 +405,7 @@ var UTIL = function() {
 		confirm		: _confirm,
 		getDeviceTypeAndToken : _getDeviceTypeAndToken,
 		getUserID	: _getUserID,
+		getPushCommand	: _getPushCommand,
 		SESSION		: _session,
 		showIndicator: _showIndicator,
 		hideIndicator:_hideIndicator,

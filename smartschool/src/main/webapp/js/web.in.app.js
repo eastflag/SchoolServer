@@ -1557,7 +1557,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		return idx==0?'left':idx==6?'right':'';
 	}
 	
-	
 	$scope.replaceMenuString = function(str){
 		var tmp = str.replace(/k/gi,'');
 		tmp = tmp.split(/\n/gi);
@@ -1577,7 +1576,6 @@ app.controller('SchoolCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.clipping = function(noti){
-		console.log('스크랩하기');
 		SchoolSvc.addNotiBookmark({noti_seq:noti.noti_seq, member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
