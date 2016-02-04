@@ -12,21 +12,13 @@
 					<i class="fa fa-list fa-lg"></i> 평균 및 분포
 				</div>
 				
-<!--  				<ul ng-repeat="gugun in gugunList">
-					<li>{{gugun.gugun}}</li>
-				</ul>  -->
-				
-				
-				<table class="table table-striped">
-			    	<thead>
-			    		<tr>
-			    			<td>
-				    			<label>지역 </label>
-			    			</td>
-			    			<td>
-			    				<select id="sido" ng-model="select_sido" ng-change="resetAddr();getGugun()">
-			    					<option value=""  >--시 선택--</option>
-			    					<option value="all" >전국</option>
+				<div class="panel-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label class="control-label col-md-1" for="sido">지역</label>
+							<div class="col-md-1">
+								<select id="sido" class="form-control" ng-model="select_sido" ng-change="getGugun()">
+			    					<option value=""  >시 선택----</option>
 			    					<option value="서울" >서울</option>
 			    					<option value="부산">부산</option>
 			    					<option value="대구">대구</option>
@@ -45,101 +37,79 @@
 			    					<option value="세종">세종</option>
 			    					<option value="제주">제주</option>
 			    				</select>
-			    			</td>
-
- 			    			<td>
-							    <select ng-model="select_gugun" ng-change="getSchoolByAddr()">
-							    	<option value="" selected >--구 선택--</option>
-							    	<option value="all"selected >전체</option>
+							</div>
+							<div class="col-md-1">
+								<select class="form-control" ng-model="select_gugun" ng-change="getSchoolByAddr()" ng-disabled="gugunDisabled">
+							    	<option value="" selected >전체----</option>
 			    					<option value="{{gugun.gugun}}"  ng-repeat = "gugun in gugunList">{{gugun.gugun}}</option>
 			    				</select>
-			    			</td>	    			
-
-			    			<td>
-							    <select ng-model="select_school" ng-change="getSchoolGrade()">
-							    	<option value=""selected>--학교 선택--</option>
-							    	<option value="초등학교">초등학교</option>
-							    	<option value="중학교">중학교</option>
-							    	<option value="고등학교">고등학교</option>
-			    					<option value="{{school.school_name}}"  ng-repeat = "school in schoolList">{{school.school_name}}</option>
+							</div>
+							<div class="col-md-2">
+							    <select class="form-control" ng-model="select_school" ng-change="getSchoolGrade()" ng-disabled="schoolDisabled">
+							    	<option value="" selected>학교 선택----</option>
+			    					<option value="{{school.school_id}}"  ng-repeat = "school in schoolList">{{school.school_name}}</option>
 			    				</select>
-			    			</td>
-			    			<td>
-				    			<label>성별 </label>
-			    			</td>
-			    			<td>			    			
-							    <select ng-model="select_sex">
-							    	<option value="" selected >--성별--</option>
-							    	<option value="all">전체</option>
+							</div>
+							<label class="control-label col-md-1" for="sex">성별</label>
+							<div class="col-md-1">
+								<select id="sex" class="form-control" ng-model="select_sex">
+							    	<option value="" selected >전체</option>
 			    					<option value="M">남</option>
 			    					<option value="F">여</option>
 			    				</select>
-			    			</td>
-			    			<td>
-				    			<label >학년</label> <!-- 학교 선택 시, 초(1-6) 중,고(1-3) -->
-			    			</td>
-			    			<td>
-							    <select ng-model="select_grade" ng-change="getSchoolClass()">
-							    	<option value="" selected> --학년--</option>
-							    	<option value="all"> 전 학년</option>
+							</div>
+							<label class="control-label col-md-1" for="grade">학년</label>
+							<div class="col-md-1">
+								<select id="grade" class="form-control" ng-model="select_grade" ng-change="getSchoolClass()" ng-disabled="gradeDisabled">
+							    	<option value="" selected>전 학년</option>
 			    					<option value="{{grade.school_grade}}"  ng-repeat ="grade in gradeList">{{grade.school_grade}}학년</option>
-	
 			    				</select>
-			    			</td>
-			    			<td>
-				    			<label>반 </label> <!-- 해당학교 학년의 반  -->
-			    			</td>
-			    			<td>
-							    <select ng-model="select_class" >
-							    	<option value="" selected>--반--</option>
+							</div>
+							<label class="control-label col-md-1" for="class" ng-disabled="classDisabled">반</label>
+							<div class="col-md-1">
+								<select id="class" class="form-control" ng-model="select_class" ng-disabled="classDisabled">
+							    	<option value="" selected>전체</option>
 			    					<option value="{{class.school_class}}"  ng-repeat ="class in classList">{{class.school_class}}반</option>
-			    					
 			    				</select>
-			    			</td>
-			    		</tr>
-			    		<tr>
-			    			<td>
-			    				<label>정보 </label>
-			    			</td>
-			    			<td>
-							    <select  ng-model="select_menu">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label col-md-1" for="">정보</label>
+							<div class="col-md-1">
+								<select class="form-control" ng-model="select_menu">
 							    	<option value="" selected>--선 택--</option>
-			    					<option value="HEIGHT">신장</option>
-			    					<option value="WEIGHT">체중</option>
-			    					<option value="BMI">체형</option>
-			    					<option value="SMOKE">흡연</option>
-			    				</select>
-			    			</td>
-			    			<td>
-			    				<label>명단 및 통계 </label>
-			    			</td>
-			    			<td>
-							    <select ng-model="stat">
+									<option value="HEIGHT">신장</option>
+									<option value="WEIGHT">체중</option>
+									<option value="BMI">체형</option>
+									<option value="SMOKE">흡연</option>
+								</select>
+							</div>
+							<label class="control-label col-md-1" for="">명단 및 통계</label>
+							<div class="col-md-2">
+								<select class="form-control" ng-model="stat">
 							    	<option value="" selected>--선 택--</option>
 							    	<option value="student" >명단</option>
 							    	<option value="average">평균</option>
 			    					<option value="ratio">비율</option>
-			    					
 			    				</select>
-			    			</td>
-			    			<td>
-			    				<label>측정 월 </label>
-			    			</td>
-			    			<td>
-			    				<input type="text"  placeholder="ex)201512" ng-model="measureDate" ng-enter="getResult()"/>
-			    			</td>
-			    			<td colspan="4">
+							</div>
+							<label class="control-label col-md-1" for="">측정 월</label>
+							<div class="col-md-2">
+								<input type="text" class="form-control" placeholder="ex)201512" ng-model="measureDate" ng-enter="getResult()"/>
+							</div>
+							<div class="col-md-3">
 								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
-			    			</td>
-			    		</tr>			    		
-			    	</thead>
-
-			    </table>
-
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
-			
-			
-	
+		</div>
+	</div>  			
+
+	<div class="row">
+		<div class="col-lg-12">	
 			<div class="panel panel-info">
 				<div class="panel-heading">
 					<i class="fa fa-list fa-lg"></i> 결과 목록
@@ -164,12 +134,8 @@
 					<pagination boundary-links="true" total-items="totalSchoolListCount" ng-model="currentPageSchool" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="schoolPageChanged()"></pagination>
 				</div>
 				
-			</div>
-			
-			
-			
-			
-			
+			</div>	
 		</div>
+	</div>
 
 </div>

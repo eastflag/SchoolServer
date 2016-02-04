@@ -2485,25 +2485,35 @@ app.animation('.slide-animation', function () {
 
 
 app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
-
-	
-//	var sido = {sido:"경기"};	//ok
+	//입력폼 활성화, 비활성화 변수
+	$scope.gugunDisabled = true;
+	$scope.schoolDisabled = true;
+	$scope.gradeDisabled = true;
+	$scope.classDisabled = true;
 	
 	$scope.select_sido="";
 	$scope.select_gugun="";
 	$scope.select_school="";
 	$scope.select_grade="";
 
-
  	//시입력-구군 구하기
 	$scope.getGugun = function() {
+		//유효성 체크
+		if($scope.select_sido == "") {
+			$scope.gugunDisabled = true;
+			$scope.schoolDisabled = true;
+			$scope.select_gugun = "";
+			$scope.select_school = "";
+			return;
+		}
 
 		var search = {sido:$scope.select_sido};
-
 
 		StatSvc.getGugun(search)
 		.success(function(datas){
 			$scope.gugunList = datas.data;
+			//성공시 구선택 박스 활성화
+			$scope.gugunDisabled = false;
 		}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.logout();
@@ -2513,23 +2523,26 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		});
 
 	}
-	$scope.getGugun();	//구 가져오기
-
-	//구군입력 - 학교 구하기
-
 
 	//구군입력 - 학교 구하기
  	$scope.getSchoolByAddr = function(){
- 			var search = {
- 				sido:$scope.select_sido,
-				gugun:$scope.select_gugun	};
+ 		if($scope.select_gugun == "") {
+ 			$scope.schoolDisabled = true;
+ 			return;
+ 		}
+
+		var search = {
+			sido:$scope.select_sido,
+			gugun:$scope.select_gugun	
+		};
 
  		var search_school="";
-
 
 		StatSvc.getSchoolByAddr(search)
 		.success(function(schoolDatas){
 			$scope.schoolList = schoolDatas.data;
+			//성공시 학교선택 활성화
+			$scope.schoolDisabled = false;
 		}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.logout();
@@ -2539,19 +2552,25 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		});
 
  	}
- 	$scope.getSchoolByAddr();	
 
  	//학교입력 - 학년 출력하기.
  	$scope.getSchoolGrade = function(){
+ 		if($scope.select_school == "") {
+ 			$scope.gradeDisabled = true;
+ 			$scope.select_grade = "";
+ 			return;
+ 		}
+
  		var search = {
-			gugun:$scope.select_gugun,
-			school_name:$scope.select_school
+			school_id:$scope.select_school
 		}
 
 
 		StatSvc.getSchoolGrade(search)
 		.success(function(gradeData){
 			$scope.gradeList = gradeData.data;
+			//성공시 학년 선택 활성화
+			$scope.gradeDisabled = false;
 		}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.logout();
@@ -2561,13 +2580,17 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		});
 
  	}
- 	$scope.getSchoolGrade();		
-// 	getSchoolClass
+	
  	//학년입력 - 학반 출력하기.
  	$scope.getSchoolClass = function(){
+ 		if($scope.select_grade == "") {
+ 			$scope.classDisabled = true;
+ 			$scope.select_class = "";
+ 			return;
+ 		}
+
  		var searchC = {
-			gugun:$scope.select_gugun,
-			school_name:$scope.select_school,
+			school_id:$scope.select_school,
 			school_grade:$scope.select_grade
 		}
 
@@ -2575,6 +2598,8 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		StatSvc.getSchoolClass(searchC)
 		.success(function(classData){
 			$scope.classList = classData.data;
+			//성공시 반입력 활성화
+			$scope.classDisabled = false;
 		}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.logout();
@@ -2584,9 +2609,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		});
 
  	}
- 	$scope.getSchoolClass();	
-
-
 
  	$scope.getResult = function(){
  		var search = {
@@ -2616,11 +2638,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 		});
 
  	}
- 	$scope.getResult();	 	
-
-
-
-
 
 
 }]);

@@ -1614,56 +1614,31 @@ select
 <!-- 통계 -->
 <select id="selectGugun" parameterType="StatVO" resultType="StatVO">
     select distinct(gugun) from school
-    <choose>
-        <when test="sido =='all'">where 1=1
-        </when>
-        <when test="sido !=null">where sido=#{sido}            
-        </when>
-
-    </choose>
+	where sido=#{sido}            
 </select>
 
 <select id="selectSchoolByAddress" parameterType="StatVO" resultType="StatVO">
-    select distinct(s.school_name) from school as s 
-    inner join member as m 
-    on s.school_id=m.school_id 
-    <choose>
-        <when test="sido =='all'">where 1=1
-        </when>
-        <when test="sido !=null">where sido=#{sido}            
-        </when>
-    </choose>  
-    <choose>    
-         <when test="gugun =='all'">and  1=1
-        </when>
-        <when test="gugun !=null">and gugun=#{gugun}            
-        </when>
-    </choose>
+    select school.school_id, school.address, school.school_name from school inner join member
+	    on school.school_id=member.school_id 
+	where sido=#{sido} and gugun=#{gugun}       
+	group by school.school_id     
  </select>
 
 
 <select id="selectSchoolGrade" parameterType="StatVO" resultType="StatVO">
-    select distinct(school_grade) from member m
-    inner join school as s
-    on s.school_id=m.school_id 
-	where s.school_name = #{school_name}
-	<choose>	
-		<when test="gugun =='all'"> and 1=1</when> 
-		<when test ="gugun!=null">   and s.gugun=#{gugun} </when>
-	</choose>				  
-	order by school_grade asc;
+	SELECT school_grade FROM member inner join school
+	    on school.school_id=member.school_id 
+	WHERE school.school_id = #{school_id}
+	GROUP BY member.school_grade			  
+	ORDER BY member.school_grade ASC;
 	
 </select>
 <select id="selectSchoolClass" parameterType="StatVO" resultType="StatVO">
-	select distinct(m.school_class) from member as m
-	inner join school as s on s.school_id=m.school_id  
-	where s.school_name = #{school_name}
-	<choose>	
-		<when test="gugun =='all'"> and 1=1</when> 
-		<when test ="gugun!=null">and s.gugun=#{gugun} </when>
-	</choose>		
-	and m.school_grade=#{school_grade}			
-	order by school_class asc;    
+	SELECT member.school_class FROM member inner join school on school.school_id=member.school_id  
+	WHERE school.school_id = #{school_id}	
+		and member.school_grade=#{school_grade}
+	GROUP BY member.school_class	
+	order by member.school_class ASC;    
 </select>
 
 <select id="selectResult" parameterType="StatVO" resultType="StatVO">
