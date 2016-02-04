@@ -3,7 +3,7 @@
 		<div class="sports_list">
 			<ul>
 				<li ng-repeat="row in training_list">
-					<a href="javascript:;" ng-click="viewTraining(row)">
+					<a href="{{row.videoUrl}}">
 						<div class="photo"><img ng-src="{{row.thumbnailUrl}}" alt="" /></div>
 						<div class="info">
 							<p class="subject">{{row.title}}</p>

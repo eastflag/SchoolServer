@@ -555,48 +555,25 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.v_gcm_id = null;
 	
 	//프로필사진 변수
-	$scope.profile = null;
 	$scope.cropped_profile = null;
-	$scope.saved_profile = null;
 	$scope.crop_state = false;
 	
-	$scope.crop_init = function(){
-		var handleFileSelect=function(evt) {
-			$scope.profile = null;
-			$scope.cropped_profile = null;
-			$scope.saved_profile = null;
-			$scope.crop_state = true;
-			commonLayerOpen('profile-crop-area');
-			
-			var file=evt.currentTarget.files[0];
-			
-			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
-				var reader = new FileReader();
-				reader.onload = function (evt) {
-					$scope.$apply(function($scope){
-						$scope.profile=evt.target.result;
-					});
-				};
-				reader.readAsDataURL(file);
-			}else{
-				UTIL.alert('이미지 파일만 등록가능합니다.');
-			}
-			
-		};
-		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
-	}
-	
-	$scope.clearCrop = function(){
-		$scope.saved_profile = $scope.cropped_profile;
-		commonLayerClose('profile-crop-area');
-	}
-	
 	$scope.clearProfile = function(){
-		$scope.profile = null;
 		$scope.cropped_profile = null;
 		$scope.crop_state = false;
-		$scope.saved_profile = null;
-		angular.element(document.querySelector('#add_photo')).val(null);
+	}
+	
+	$scope.getPhoto = function(){
+		$scope.clearProfile();
+		UTIL.getPhoto(
+			function(data){
+				if(data.result=='success'){
+					$scope.cropped_profile = data.image;
+					$scope.crop_state = true;
+				}
+			}
+			, function(){}
+		);
 	}
 	
 	//회원가입
@@ -625,7 +602,7 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			var param = {home_id:$scope.v_home_id, name:$scope.v_name, mdn:$scope.v_mdn, relation:$scope.v_relation, is_parent:1, os_type:$scope.v_os_type, gcm_id:$scope.v_gcm_id};
 			var data = null;
 			if($scope.crop_state){
-				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
+				data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
 			}else{
 				data = {profile:null, data:JSON.stringify(param)};
 			}
@@ -704,7 +681,6 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.init(null,null,false,false);
 	$scope.setWrappeDimension('#join_wrap',65);
-	$scope.crop_init();
 	$scope.getDeviceAndToken();
 	
 	console.log('------------------ JoinCtrl ------------------');
@@ -915,50 +891,25 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.family_relation_text = '';
 
 	//프로필사진 변수
-	$scope.profile = null;
 	$scope.cropped_profile = null;
-	$scope.saved_profile = null;
 	$scope.crop_state = false;
 	
-	$scope.crop_init = function(){
-		$scope.profile = null;
-		$scope.cropped_profile = null;
-		
-		var handleFileSelect=function(evt) {
-			$scope.crop_state = true;
-			commonLayerClose('family_add01');
-			commonLayerOpen('profile-crop-area');
-			
-			var file=evt.currentTarget.files[0];
-			
-			if(file.name.indexOf('.jpg') > -1 || file.name.indexOf('.png') > -1 || file.name.indexOf('.gif') > -1){
-				var reader = new FileReader();
-				reader.onload = function (evt) {
-					$scope.$apply(function($scope){
-						$scope.profile=evt.target.result;
-					});
-				};
-				reader.readAsDataURL(file);
-			}else{
-				UTIL.alert('이미지 파일만 등록가능합니다.');
-			}
-			
-		};
-		angular.element(document.querySelector('#add_photo')).on('change',handleFileSelect);
-	}
-	
-	$scope.clearCrop = function(){
-		$scope.saved_profile = $scope.cropped_profile;
-		commonLayerClose('profile-crop-area');
-		commonLayerOpen('family_add01');
-	}
-	
 	$scope.clearProfile = function(){
-		$scope.profile = null;
 		$scope.cropped_profile = null;
-		$scope.saved_profile = null;
 		$scope.crop_state = false;
-		angular.element(document.querySelector('#add_photo')).val(null);
+	}
+	
+	$scope.getPhoto = function(){
+		$scope.clearProfile();
+		UTIL.getPhoto(
+			function(data){
+				if(data.result=='success'){
+					$scope.cropped_profile = data.image;
+					$scope.crop_state = true;
+				}
+			}
+			, function(){}
+		);
 	}
 	
 	$scope.removeProfile = function(){
@@ -1140,7 +1091,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				};
 			}
 			if($scope.crop_state){
-				data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
+				data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
 			}else{
 				data = {profile:null,data:JSON.stringify(param)};
 			}
@@ -1212,7 +1163,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			};
 		}
 		if($scope.crop_state){
-			data = {profile:Upload.dataUrltoBlob($scope.saved_profile), data:JSON.stringify(param)};
+			data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
 		}else{
 			data = {profile:null,data:JSON.stringify(param)};
 		}
@@ -1284,7 +1235,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	if($scope.loggedIn()){
 		$scope.init(null,$scope.home_id,true,false);
 		$scope.getFamilyList();
-		$scope.crop_init();
 		//부모회원 가입정보 확인. 가입정보 없을 경우 부모회원가입완료 레이어를 띄우지 않는다.
 		if($scope.getParentJoinData()){
 			commonLayerOpen('join_complete');
@@ -1325,11 +1275,14 @@ app.controller('StudentCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.checkMeasure = function(url){
 		if($scope.pay_date == null){
 			UTIL.alert('통합서비스 신청시 이용가능합니다.\n고객센터로 문의하시기 바랍니다.\nTel : 1544-1284');
+			return;
 		} else{
 			if(!$scope.recode_status){
 				UTIL.alert('건강정보 측정 기록이 없습니다.\n 측정 후 이용 바랍니다.');
+				return;
+			}else{
+				$location.path(url);
 			}
-			$location.path(url);
 		}
 	}
 	//비만도 단계설정
@@ -1543,7 +1496,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.getGrowth = function(section){
-		var data = {member_id:$scope.studnet_id};
+		var data = {member_id:$scope.student_id};
 		if($scope.section=='height'){
 			GrowthSvc.getHeight(data)
 				.success(function(response){
@@ -1596,7 +1549,7 @@ app.controller('GrowthCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.getMeasureHistoryList = function(){
 		$scope.clear();
 		$scope.measure_year = $location.search().y;
-		var data = {member_id:$scope.studnet_id, search_year:$scope.measure_year};
+		var data = {member_id:$scope.student_id, search_year:$scope.measure_year};
 		
 		if($scope.section=='height'){
 			GrowthSvc.getHeightHistoryList(data)
@@ -1896,10 +1849,6 @@ app.controller('TrainingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 				});
 		}
 	}
-
-	$scope.viewTraining = function(training){
-		console.log(training.videoUrl);
-	}
 	
 	$scope.getStudent();
 	$scope.init('body_gray',$scope.student_name,true,true);
@@ -1988,7 +1937,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.getRankingHeight = function(){
-		RankingSvc.getRankingHeight({member_id:$scope.studnet_id})
+		RankingSvc.getRankingHeight({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -1999,7 +1948,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingWeight = function(){
-		RankingSvc.getRankingWeight({member_id:$scope.studnet_id})
+		RankingSvc.getRankingWeight({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -2010,7 +1959,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingBmi = function(){
-		RankingSvc.getRankingBmi({member_id:$scope.studnet_id})
+		RankingSvc.getRankingBmi({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -2021,7 +1970,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingMuscle = function(){
-		RankingSvc.getRankingMuscle({member_id:$scope.studnet_id})
+		RankingSvc.getRankingMuscle({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -2032,7 +1981,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	}
 	$scope.getRankingFat = function(){
-		RankingSvc.getRankingFat({member_id:$scope.studnet_id})
+		RankingSvc.getRankingFat({member_id:$scope.student_id})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingData(response.data);
@@ -2061,7 +2010,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.rank_list = data.list;
 	};
 	$scope.getRankingHeightList = function(){
-		RankingSvc.getRankingHeightList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
+		RankingSvc.getRankingHeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2073,7 +2022,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingWeightList = function(){
-		RankingSvc.getRankingWeightList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
+		RankingSvc.getRankingWeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2085,7 +2034,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingBmiList = function(){
-		RankingSvc.getRankingBmiList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
+		RankingSvc.getRankingBmiList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2097,7 +2046,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingMuscleList = function(){
-		RankingSvc.getRankingMuscleList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
+		RankingSvc.getRankingMuscleList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2109,7 +2058,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingFatList = function(){
-		RankingSvc.getRankingFatList({member_id:$scope.studnet_id,search_key:$scope.list_tab})
+		RankingSvc.getRankingFatList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
 					$scope.setRankingListData(response.data);
@@ -2178,7 +2127,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.init_rank = function(){
-		$scope.list_tab = $location.search().gubun!=''?$location.search().gubun:'school';
+		$scope.list_tab = $location.search().gubun!=undefined?$location.search().gubun:'school';
 		var path = $location.path();
 		switch(path){
 		case '/rankingHeight': case '/rankingHeightDetail': case '/rankingHeightList':
@@ -2248,7 +2197,6 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			}
 			break;
 		}
-		
 		console.log('$scope.list_tab => '+$scope.list_tab);
 	}
 	$scope.getStudent();
@@ -2521,7 +2469,6 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 				url: '/api/addChallenge',
 				data : challenge
 			}).success(function(response) {
-				console.log('data: ' + response + "," + response.result);
 				if(response.result == 0) {
 					UTIL.alert('도전건강! 응모하기가 완료되었습니다.');
 					$scope.clearChallenge();
@@ -2766,7 +2713,6 @@ app.controller('ConsultCtrl',['$scope', '$window', '$location', 'ConsultSvc', fu
 	}
 	
 	$scope.estimation = function(){
-		console.log('$scope.session_id =>',$scope.session_id);
 		if($scope.session_id != null){
 			commonLayerOpen('consult_evaluation');
 		}else{
@@ -2928,7 +2874,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	$scope.initMap = function(){
 		UTIL.getGPSData(
 			function(data) {
-				console.log(data.result);
 				if (data.result == 'success') {
 					var latitude = data.latitude;
 					var longitude = data.longitude;
@@ -2954,7 +2899,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		);
 		
 		$timeout(function(){
-			console.log('$scope.map',$scope.map);
 			if($scope.map==null || typeof $scope.map == 'undefined'){
 				// Try HTML5 geolocation.
 				var pos;
@@ -3035,7 +2979,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		if($location.path()=='/safeGuard'){
 			UTIL.getGPSData(
 				function(data) {
-					console.log(data.result);
 					if (data.result == 'success') {
 						if ((data.latitude == undefined || data.latitude == 0) && (data.longitude == undefined || data.longitude == 0)) {
 							gps_statue = false;
@@ -3079,7 +3022,6 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		if($location.path()=='/safeGuard'){
 			$scope.getAddress();
 			$timeout(function(){
-				console.log('$scope.address,',$scope.address);
 				SafeGuardSvc.addLocation({member_id:$scope.student_id,lat:$scope.map.getCenter().lat(),lng:$scope.map.getCenter().lng(),address:$scope.address})
 					.success(function(response){
 						if(response.result==0){
