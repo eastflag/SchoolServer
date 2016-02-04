@@ -20,6 +20,8 @@ public class StatVO {
 	
 	private String val;
 	private String output_date;
+	private String count;
+	private String percent;
 
 	private String name;
 }

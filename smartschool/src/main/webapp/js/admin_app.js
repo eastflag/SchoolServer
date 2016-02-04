@@ -2501,6 +2501,7 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
 
 	$scope.submenuList;
 	$scope.outputList;
+	$scope.results = null;
 
  	//시입력-구군 구하기
 	$scope.getGugun = function() {
@@ -2617,6 +2618,8 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
 
  	//메뉴선택 - sub메뉴 출력하기
  	$scope.getSubmenu = function() {
+ 		$scope.results = null;
+ 		$scope.select_output = "";
  		if($scope.select_menu == "HEIGHT" || $scope.select_menu == "WEIGHT") {
  			$scope.submenuDisabled = true;
  			$scope.select_submenu = "";
@@ -2625,6 +2628,7 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
  			];
  		} else if ($scope.select_menu == "BMI") {
  			$scope.submenuDisabled = false;
+ 			$scope.select_submenu = "";
  			$scope.submenuList = [
  				'저체중', '정상', '과체중', '비만', '고도비만'
  			]
@@ -2633,6 +2637,7 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
  			];
  		} else if ($scope.select_menu == "SMOKE"){
  			$scope.submenuDisabled = false;
+ 			$scope.select_submenu = "";
 			$scope.submenuList = [
 				'비흡연', '간접흡연', '흡연중', '과다흡연'
 			]
@@ -2643,6 +2648,11 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
  			$scope.submenuDisabled = true;
  			$scope.select_submenu = "";
  		}
+ 	}
+
+ 	//출력형태 선택
+ 	$scope.getOutput = function() {
+ 		$scope.results = null;
  	}
 
  	$scope.getResult = function(){
