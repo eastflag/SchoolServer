@@ -2484,26 +2484,32 @@ app.animation('.slide-animation', function () {
 });
 
 
-app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
+app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($scope, StatSvc, $rootScope){
 	//입력폼 활성화, 비활성화 변수
 	$scope.gugunDisabled = true;
 	$scope.schoolDisabled = true;
 	$scope.gradeDisabled = true;
 	$scope.classDisabled = true;
+	$scope.submenuDisabled = true;
 	
 	$scope.select_sido="";
 	$scope.select_gugun="";
 	$scope.select_school="";
 	$scope.select_grade="";
+	$scope.select_menu="";
+	$scope.select_submenu="";
+
+	$scope.submenuList;
+	$scope.outputList;
 
  	//시입력-구군 구하기
 	$scope.getGugun = function() {
 		//유효성 체크
+		$scope.select_gugun = "";
+		$scope.select_school = "";
 		if($scope.select_sido == "") {
 			$scope.gugunDisabled = true;
 			$scope.schoolDisabled = true;
-			$scope.select_gugun = "";
-			$scope.select_school = "";
 			return;
 		}
 
@@ -2607,23 +2613,66 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 				alert("error : " + data.message);
 			}
 		});
+ 	}
 
+ 	//메뉴선택 - sub메뉴 출력하기
+ 	$scope.getSubmenu = function() {
+ 		if($scope.select_menu == "HEIGHT" || $scope.select_menu == "WEIGHT") {
+ 			$scope.submenuDisabled = true;
+ 			$scope.select_submenu = "";
+ 			$scope.outputList = [
+ 				'명단', '평균'
+ 			];
+ 		} else if ($scope.select_menu == "BMI") {
+ 			$scope.submenuDisabled = false;
+ 			$scope.submenuList = [
+ 				'저체중', '정상', '과체중', '비만', '고도비만'
+ 			]
+ 			$scope.outputList = [
+ 				'명단', '백분율'
+ 			];
+ 		} else if ($scope.select_menu == "SMOKE"){
+ 			$scope.submenuDisabled = false;
+			$scope.submenuList = [
+				'비흡연', '간접흡연', '흡연중', '과다흡연'
+			]
+			$scope.outputList = [
+ 				'명단', '백분율'
+ 			];
+ 		} else {
+ 			$scope.submenuDisabled = true;
+ 			$scope.select_submenu = "";
+ 		}
  	}
 
  	$scope.getResult = function(){
+ 		if($scope.select_sido == "" || $scope.select_gugun == "" || $scope.select_school == ""
+ 			|| $scope.select_menu == "" || $scope.select_output == "" || $scope.measure_date == null) {
+ 			$rootScope.pop('error', 'warning', '항목을 선택하세요.', 2000);
+ 			return;
+ 		}
+
  		var search = {
- 			sido:$scope.select_sido,
-			gugun:$scope.select_gugun,
-			sex:$scope.select_sex,
-			school_name:$scope.select_school,
-			school_grade:$scope.select_grade,
-			school_class:$scope.select_class,
+ 			/*sido:$scope.select_sido,
+			gugun:$scope.select_gugun,*/
+			school_id:$scope.select_school,
 			section1:$scope.select_menu,
-			section2:$scope.stat,
-			val: $scope.val,
+			output: $scope.select_output,
 			measure_date: $scope.measure_date
 		}
 
+		if($scope.select_sex != "") {
+			search.sex = $scope.select_sex;
+		}
+		if($scope.select_grade != "") {
+			search.school_grade = $scope.select_grade;
+		}
+		if($scope.select_class != "") {
+			search.school_class = $scope.select_class;
+		}
+		if($scope.select_submenu != "") {
+			search.section2 = $scope.select_submenu;
+		}
 
 		StatSvc.getResult(search)
 		.success(function(ResultData){
@@ -2636,8 +2685,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', function($scope, StatSvc){
 				alert("error : " + data.message);
 			}
 		});
-
  	}
-
 
 }]);

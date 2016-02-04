@@ -15,8 +15,11 @@ public class StatVO {
 	
 	private String section1;
 	private String section2;
+	private String output;
 	private String measure_date;
+	
 	private String val;
+	private String output_date;
 
 	private String name;
 }

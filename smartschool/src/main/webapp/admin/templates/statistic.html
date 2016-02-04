@@ -77,26 +77,30 @@
 						<div class="form-group">
 							<label class="control-label col-md-1" for="">정보</label>
 							<div class="col-md-1">
-								<select class="form-control" ng-model="select_menu">
-							    	<option value="" selected>--선 택--</option>
+								<select class="form-control" ng-model="select_menu" ng-change="getSubmenu()">
+							    	<option value="" selected>선 택----</option>
 									<option value="HEIGHT">신장</option>
 									<option value="WEIGHT">체중</option>
 									<option value="BMI">체형</option>
 									<option value="SMOKE">흡연</option>
 								</select>
 							</div>
+							<div class="col-md-1">
+								<select class="form-control" ng-model="select_submenu" ng-disabled="submenuDisabled">
+									<option value="" selected>선 택----</option>
+									<option value="{{submenu}}"  ng-repeat = "submenu in submenuList">{{submenu}}</option>
+			    				</select>
+							</div>
 							<label class="control-label col-md-1" for="">명단 및 통계</label>
-							<div class="col-md-2">
-								<select class="form-control" ng-model="stat">
-							    	<option value="" selected>--선 택--</option>
-							    	<option value="student" >명단</option>
-							    	<option value="average">평균</option>
-			    					<option value="ratio">비율</option>
+							<div class="col-md-1">
+								<select class="form-control" ng-model="select_output">
+									<option value="" selected>선 택----</option>
+									<option value="{{output}}"  ng-repeat = "output in outputList">{{output}}</option>
 			    				</select>
 							</div>
 							<label class="control-label col-md-1" for="">측정 월</label>
 							<div class="col-md-2">
-								<input type="text" class="form-control" placeholder="ex)201512" ng-model="measureDate" ng-enter="getResult()"/>
+								<input type="text" class="form-control" placeholder="ex)201512" ng-model="measure_date" ng-enter="getResult()"/>
 							</div>
 							<div class="col-md-3">
 								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
@@ -115,24 +119,30 @@
 					<i class="fa fa-list fa-lg"></i> 결과 목록
 				</div>
 				<table class="table table-striped">
+					<thead>
+						<tr>
+							<td>측정일</td>
+							<td ng-show="select_output=='명단'">이름</td>
+							<td ng-show="select_output=='명단'">학교명</td>
+							<td ng-show="select_output=='명단'">학년</td>
+							<td ng-show="select_output=='명단'">반</td>
+							<td ng-show="select_output=='명단'">성별</td>
+							<td>{{select_menu}}</td>
+						</tr>
+					</thead>
 
 			    	<tbody>
 					    <tr ng-repeat="r in results">
-					    	<td>{{ r.measure_date}}</td>
-					    	<td>{{ r.name}}</td>
-						    <td>{{ r.school_name}}</td>
-						    <td>{{ r.school_grade}}</td>
-						    <td>{{ r.school_class}}</td>
-						    <td>{{ r.sex}}</td>
+					    	<td>{{ r.output_date}}</td>
+					    	<td ng-show="select_output=='명단'">{{ r.name}}</td>
+						    <td ng-show="select_output=='명단'">{{ r.school_name}}</td>
+						    <td ng-show="select_output=='명단'">{{ r.school_grade}}</td>
+						    <td ng-show="select_output=='명단'">{{ r.school_class}}</td>
+						    <td ng-show="select_output=='명단'">{{ r.sex}}</td>
 						    <td>{{ r.val}}</td>
 					    </tr>
 				    </tbody>
 			    </table>
-
-
-				<div class="panel-footer" style="text-align:center; padding:0px;">	
-					<pagination boundary-links="true" total-items="totalSchoolListCount" ng-model="currentPageSchool" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-change="schoolPageChanged()"></pagination>
-				</div>
 				
 			</div>	
 		</div>
