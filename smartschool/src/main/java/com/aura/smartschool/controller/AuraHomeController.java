@@ -2,7 +2,9 @@ package com.aura.smartschool.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,6 +402,43 @@ public class AuraHomeController {
 			e.printStackTrace();
 			logger.debug("Exception");
 			return new Result(500, "server error");
+		}
+	}
+	
+	@RequestMapping("/web/api/profile/upload")
+	public Result profileUpload(
+			HttpServletRequest request,
+			HttpSession session,
+			@RequestParam("profile") MultipartFile profile){
+		
+		//String path = request.getServletContext().getRealPath("/upload");
+		try {
+			String[] t = profile.getOriginalFilename().split("\\.");
+			
+			//String name = String.valueOf(System.currentTimeMillis()+"."+t[1]);
+			//File f = new File(path,name);
+			//profile.transferTo(f);
+			
+			//Map<String,Object> data = new HashMap<String,Object>();
+			//data.put("binary", profile.getBytes());
+			
+			Map<String,Object> data = new HashMap<String,Object>();
+			data.put("binary", profile.getBytes());
+			
+			if(t[1].equals("jpg")){
+				data.put("type", "image/jpg");
+			} else if(t[1].equals("png")){
+				data.put("type", "image/png");
+			} else if(t[1].equals("gif")) {
+				data.put("type", "image/gif");
+			}
+			
+			return new ResultData<Map<String,Object>>(0, "success",data);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new Result(200, "fail");
+		} finally {
+			profile = null;
 		}
 	}
 }

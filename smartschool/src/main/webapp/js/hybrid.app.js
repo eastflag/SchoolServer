@@ -555,25 +555,47 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.v_gcm_id = null;
 	
 	//프로필사진 변수
+	$scope.profile = null;
 	$scope.cropped_profile = null;
+	$scope.saved_profile = null;
 	$scope.crop_state = false;
 	
 	$scope.clearProfile = function(){
+		$scope.profile = null;
 		$scope.cropped_profile = null;
+		$scope.saved_profile = null;
 		$scope.crop_state = false;
 	}
 	
-	$scope.getPhoto = function(){
-		$scope.clearProfile();
-		UTIL.getPhoto(
-			function(data){
-				if(data.result=='success'){
-					$scope.cropped_profile = data.image;
-					$scope.crop_state = true;
-				}
+	$scope.selectFile = function(file){
+		if(file){
+			if(file.$error && 
+					(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
+			){
+				UTIL.alert('이미지 파일만 등록가능합니다.');
 			}
-			, function(){}
-		);
+			else{
+				$scope.upload = Upload.upload({
+					url: '/web/api/profile/upload',
+					data : {profile:file}
+				}).success(function(response) {
+					if(response.result==0){
+						$scope.profile = 'data:'+response.data.type+';base64,'+response.data.binary;
+						commonLayerClose('family_add01');
+						commonLayerOpen('profile-crop-area');
+					}
+				}).error(function(data, status) {
+					UTIL.alert("error : " + data.message);
+				});
+			}
+		}
+	}
+	
+	$scope.clearCrop = function(){
+		$scope.crop_state = true;
+		$scope.saved_profile = $scope.cropped_profile;
+		commonLayerClose('profile-crop-area');
+		commonLayerOpen('family_add01');
 	}
 	
 	//회원가입
@@ -866,7 +888,7 @@ app.controller('LoginCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loc
 	console.log('------------------ LoginCtrl ------------------');
 }]);
 
-app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, Upload, FamilySvc){
+app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'Upload', 'FamilySvc', function($scope, $rootScope, $cookies, $window, $location, $timeout, Upload, FamilySvc){
 	$scope.add_complete_yn = false;		//구성원 추가 후, 추가완료 레이어 노출여부 설정
 	
 	$scope.family_list = [];
@@ -891,12 +913,47 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.family_relation_text = '';
 
 	//프로필사진 변수
+	$scope.profile = null;
 	$scope.cropped_profile = null;
+	$scope.saved_profile = null;
 	$scope.crop_state = false;
 	
 	$scope.clearProfile = function(){
+		$scope.profile = null;
 		$scope.cropped_profile = null;
+		$scope.saved_profile = null;
 		$scope.crop_state = false;
+	}
+	
+	$scope.selectFile = function(file){
+		if(file){
+			if(file.$error && 
+					(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
+			){
+				UTIL.alert('이미지 파일만 등록가능합니다.');
+			}
+			else{
+				$scope.upload = Upload.upload({
+					url: '/web/api/profile/upload',
+					data : {profile:file}
+				}).success(function(response) {
+					if(response.result==0){
+						$scope.profile = 'data:'+response.data.type+';base64,'+response.data.binary;
+						commonLayerClose('family_add01');
+						commonLayerOpen('profile-crop-area');
+					}
+				}).error(function(data, status) {
+					UTIL.alert("error : " + data.message);
+				});
+			}
+		}
+	}
+	
+	$scope.clearCrop = function(){
+		$scope.crop_state = true;
+		$scope.saved_profile = $scope.cropped_profile;
+		commonLayerClose('profile-crop-area');
+		commonLayerOpen('family_add01');
 	}
 	
 	$scope.getPhoto = function(){
@@ -981,6 +1038,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	//가족구성원 수정화면 값설정
 	$scope.modFamily = function(member){
+		console.log('$scope.crop_state => ',$scope.crop_state);
 		$scope.v_is_parent = member.is_parent;
 		$scope.v_member_id = member.member_id;
 		$scope.v_mdn = member.mdn;
@@ -1105,7 +1163,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 						$scope.clear();
 						commonLayerOpen('add_member_complete');
 					}else{
-						$scope.getFamilyList();
+						$window.location.reload();
 					}
 				}else{
 					UTIL.alert(response.msg);
@@ -1174,7 +1232,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		}).success(function(response) {
 			if(response.result==0){
 				UTIL.alert('가족구성원 정보가 수정되었습니다.');
-				$scope.getFamilyList();
+				$window.location.reload();
 			}else{
 				UTIL.alert('가족구성원 정보수정 실패!\n잠시 후 다시 시도하세요.');
 			}
