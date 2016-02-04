@@ -93,14 +93,14 @@
 							</div>
 							<label class="control-label col-md-1" for="">명단 및 통계</label>
 							<div class="col-md-1">
-								<select class="form-control" ng-model="select_output">
+								<select class="form-control" ng-model="select_output" ng-change="getOutput()">
 									<option value="" selected>선 택----</option>
 									<option value="{{output}}"  ng-repeat = "output in outputList">{{output}}</option>
 			    				</select>
 							</div>
 							<label class="control-label col-md-1" for="">측정 월</label>
 							<div class="col-md-2">
-								<input type="text" class="form-control" placeholder="ex)201512" ng-model="measure_date" ng-enter="getResult()"/>
+								<input type="text" datepicker-popup="yyyy-MM" class="form-control" placeholder="ex)2015-12" ng-model="measure_date" ng-enter="getResult()"/>
 							</div>
 							<div class="col-md-3">
 								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
@@ -127,7 +127,8 @@
 							<td ng-show="select_output=='명단'">학년</td>
 							<td ng-show="select_output=='명단'">반</td>
 							<td ng-show="select_output=='명단'">성별</td>
-							<td>{{select_menu}}</td>
+							<td ng-show="select_menu!=''">{{select_menu}}</td>
+							<td ng-show="select_output=='백분율'">백분율</td>
 						</tr>
 					</thead>
 
@@ -139,7 +140,8 @@
 						    <td ng-show="select_output=='명단'">{{ r.school_grade}}</td>
 						    <td ng-show="select_output=='명단'">{{ r.school_class}}</td>
 						    <td ng-show="select_output=='명단'">{{ r.sex}}</td>
-						    <td>{{ r.val}}</td>
+						    <td ng-show="select_menu!=''">{{ r.val}}</td>
+						    <td ng-show="select_output=='백분율'">{{r.count}}</td>
 					    </tr>
 				    </tbody>
 			    </table>

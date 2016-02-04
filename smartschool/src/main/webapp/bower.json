@@ -16,6 +16,11 @@
   "dependencies": {
     "metisMenu": "~1.1.3",
     "font-awesome": "~4.2.0",
-    "angular-jwt": "~0.0.9"
+    "angular-jwt": "~0.0.9",
+    "angular-bootstrap": "~1.1.2",
+    "angular": "~1.4.9",
+    "jquery": "~2.2.0",
+    "jquery-ui": "jqueryui#~1.11.4",
+    "angular-route": "~1.4.9"
   }
 }
