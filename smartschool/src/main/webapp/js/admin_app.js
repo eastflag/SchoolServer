@@ -2697,4 +2697,13 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
 		});
  	}
 
+ 	//datePicker 설정
+	$scope.maxDate = new Date(); //현재 날짜 이후는 선택 불가능하게 설정
+
+	$scope.isOpened = false;
+
+	$scope.openDatepicker = function() {
+ 		$scope.isOpened = true;
+	};
+
 }]);

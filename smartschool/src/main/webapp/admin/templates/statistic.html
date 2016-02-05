@@ -100,7 +100,12 @@
 							</div>
 							<label class="control-label col-md-1" for="">측정 월</label>
 							<div class="col-md-2">
-								<input type="text" datepicker-popup="yyyy-MM" class="form-control" placeholder="ex)2015-12" ng-model="measure_date" ng-enter="getResult()"/>
+								<div class="input-group">
+									<input type="text" uib-datepicker-popup="yyyy-MM" is-open="isOpened" max-date="maxDate" ng-required="true" close-text="Close" class="form-control" placeholder="ex)2015-12" ng-model="measure_date" ng-enter="getResult()"/>
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-default" ng-click="openDatepicker()"><i class="glyphicon glyphicon-calendar"></i></button>
+									</span>
+								</div>
 							</div>
 							<div class="col-md-3">
 								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
