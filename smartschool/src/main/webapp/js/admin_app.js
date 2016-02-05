@@ -2484,7 +2484,7 @@ app.animation('.slide-animation', function () {
 });
 
 
-app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($scope, StatSvc, $rootScope){
+app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', function($scope, StatSvc, $rootScope, $filter){
 	//입력폼 활성화, 비활성화 변수
 	$scope.gugunDisabled = true;
 	$scope.schoolDisabled = true;
@@ -2662,13 +2662,13 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', function($sc
  			return;
  		}
 
+ 		var formatted_date = $filter('date')($scope.measure_date,'yyyy-MM');
+
  		var search = {
- 			/*sido:$scope.select_sido,
-			gugun:$scope.select_gugun,*/
 			school_id:$scope.select_school,
 			section1:$scope.select_menu,
 			output: $scope.select_output,
-			measure_date: $scope.measure_date
+			measure_date: formatted_date
 		}
 
 		if($scope.select_sex != "") {

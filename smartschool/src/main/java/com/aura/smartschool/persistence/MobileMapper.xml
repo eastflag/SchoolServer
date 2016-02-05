@@ -1663,23 +1663,41 @@ select
 		    </choose> 
 		</when>
 		<when test = "section1=='SMOKE'"> 
+				, case(ppm)
+					when ppm between 0 and 2 then '비흡연'
+		            when ppm between 3 and 4 then '간접흡연'
+		            when ppm between 5 and 7 then '흡연중'
+				    else '과다흡연'
+		        end as 'val'
 			<choose>
 				<when test = "output=='명단'">, school.school_name, member.school_grade, member.school_class, member.sex, 
-		        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name',
-		        	case(ppm)
-						when ppm between 0 and 2 then '비흡연'
-			            when ppm between 3 and 4 then '간접흡연'
-			            when ppm between 5 and 7 then '흡연중'
-					    else '과다흡연'
-			        end as 'val'
+		        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name'
 		        </when>
-				<when test = "output=='백분율'">,
-					case(ppm)
-						when ppm between 0 and 2 then '비흡연'
-			            when ppm between 3 and 4 then '간접흡연'
-			            when ppm between 5 and 7 then '흡연중'
-					    else '과다흡연'
-			        end as 'val', count(*) as 'count'
+				<when test = "output=='백분율'">
+					, count(*) as 'count'
+				</when>
+			</choose>
+		</when>
+		<when test = "section1=='BMI'">
+			, (select 
+					ms.Srandard_Grade
+				from
+					healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
+			        on ms.ms_grade_id = standard.ms_grade_id
+				where
+					ms.Grade_ID = measure_info.school_grade_id
+					and ms.sex = member.sex
+					and ms.Section = 'BMI'
+					and standard.Year = '2012'
+					and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
+					and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'val'
+			<choose>
+				<when test = "output=='명단'">, 
+					, school.school_name, member.school_grade, member.school_class, member.sex, 
+			        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name'
+				</when>
+				<when test = "output=='백분율'">
+					, count(*) as 'count'
 				</when>
 			</choose>
 		</when>
@@ -1697,8 +1715,6 @@ select
 		</choose>
 
 	WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
-<!-- 		and school.sido = #{sido} 
-		and gugun = #{gugun} -->
 		and school.school_id = #{school_id}
 		<if test = "sex != null">and member.sex = #{sex}</if>
 		<if test = "school_grade != null">and member.school_grade = #{school_grade}</if>
