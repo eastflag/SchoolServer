@@ -409,3 +409,8 @@ table.dataTable thead .sorting:after {
 }
 .magazine-slide-wrap .slide-wrapper .swiper-wrapper{position:relative;}
 .magazine-slide-wrap .slide-wrapper .swiper-wrapper .swiper-slide{float:left;}
+
+/* mouse over pointer */
+.pointer {
+	cursor: pointer;
+}

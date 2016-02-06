@@ -15,8 +15,49 @@
 				<div class="panel-body">
 					<form class="form-horizontal" role="form">
 						<div class="form-group">
+							<label class="control-label col-md-1" for="">출력형태</label>
+							<div class="col-md-2">
+								<select class="form-control" ng-model="select_output" ng-change="getOutput()">
+									<option value="" selected>선 택---------</option>
+									<option value="명단">명단</option>
+									<option value="통계">통계</option>
+			    				</select>
+							</div>
+							<label class="control-label col-md-1" for="">측정 월</label>
+							<div class="col-md-2">
+								<div class="input-group">
+									<input type="text" uib-datepicker-popup="yyyy-MM" is-open="isOpened" max-date="maxDate" ng-required="true" close-text="Close" class="form-control" placeholder="ex)2015-12" ng-model="measure_date"/>
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-default" ng-click="openDatepicker()"><i class="glyphicon glyphicon-calendar"></i></button>
+									</span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
+							</div>
+						</div>
+						<hr />
+						<div class="form-group">
+							<label class="control-label col-md-1" for="">출력항목</label>
+							<div class="col-md-2">
+								<select class="form-control" ng-model="select_menu" ng-change="getSubmenu()">
+							    	<option value="" selected>선 택----</option>
+									<option value="HEIGHT">신장 및 체중</option>
+									<option value="BMI">체형</option>
+									<option value="SMOKE">흡연</option>
+								</select>
+							</div>
+							<label class="control-label col-md-1" for="">세부항목</label>
+							<div class="col-md-2">
+								<select class="form-control" ng-model="select_submenu" ng-disabled="submenuDisabled">
+									<option value="" selected>선 택----</option>
+									<option value="{{submenu}}"  ng-repeat = "submenu in submenuList">{{submenu}}</option>
+			    				</select>
+							</div>
+						</div>
+						<div class="form-group">
 							<label class="control-label col-md-1" for="sido">지역</label>
-							<div class="col-md-1">
+							<div class="col-md-2">
 								<select id="sido" class="form-control" ng-model="select_sido" ng-change="getGugun()">
 			    					<option value=""  >시 선택----</option>
 			    					<option value="서울" >서울</option>
@@ -74,43 +115,7 @@
 							</div>
 						</div>
 
-						<div class="form-group">
-							<label class="control-label col-md-1" for="">정보</label>
-							<div class="col-md-1">
-								<select class="form-control" ng-model="select_menu" ng-change="getSubmenu()">
-							    	<option value="" selected>선 택----</option>
-									<option value="HEIGHT">신장</option>
-									<option value="WEIGHT">체중</option>
-									<option value="BMI">체형</option>
-									<option value="SMOKE">흡연</option>
-								</select>
-							</div>
-							<div class="col-md-1">
-								<select class="form-control" ng-model="select_submenu" ng-disabled="submenuDisabled">
-									<option value="" selected>선 택----</option>
-									<option value="{{submenu}}"  ng-repeat = "submenu in submenuList">{{submenu}}</option>
-			    				</select>
-							</div>
-							<label class="control-label col-md-1" for="">명단 및 통계</label>
-							<div class="col-md-1">
-								<select class="form-control" ng-model="select_output" ng-change="getOutput()">
-									<option value="" selected>선 택----</option>
-									<option value="{{output}}"  ng-repeat = "output in outputList">{{output}}</option>
-			    				</select>
-							</div>
-							<label class="control-label col-md-1" for="">측정 월</label>
-							<div class="col-md-2">
-								<div class="input-group">
-									<input type="text" uib-datepicker-popup="yyyy-MM" is-open="isOpened" max-date="maxDate" ng-required="true" close-text="Close" class="form-control" placeholder="ex)2015-12" ng-model="measure_date"/>
-									<span class="input-group-btn">
-										<button type="button" class="btn btn-default" ng-click="openDatepicker()"><i class="glyphicon glyphicon-calendar"></i></button>
-									</span>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<button type="button" ng-click="getResult()" class="btn btn-info btn-block"></i>검색</button>
-							</div>
-						</div>
+						
 					</form>
 				</div>
 			</div>
@@ -126,19 +131,19 @@
 				<table class="table table-striped">
 					<thead>
 						<tr>
-							<td>측정일</td>
-							<td ng-show="select_output=='명단'">이름</td>
-							<td ng-show="select_output=='명단'">학교명</td>
-							<td ng-show="select_output=='명단'">학년</td>
-							<td ng-show="select_output=='명단'">반</td>
-							<td ng-show="select_output=='명단'">성별</td>
-							<td ng-show="select_menu!=''">{{select_menu}}</td>
-							<td ng-show="select_output=='백분율'">백분율</td>
+							<th>측정일</th>
+							<th ng-click="orderByColumn('name')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-alpha-asc"></i>이름</th>
+							<th ng-show="select_output=='명단'">학교명</th>
+							<th ng-click="orderByColumn('grade')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-alpha-asc">학년</th>
+							<th ng-click="orderByColumn('class')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-alpha-asc">반</th>
+							<th ng-click="orderByColumn('sex')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-alpha-asc">성별</th>
+							<th ng-click="orderByColumn('val')" ng-show="select_menu!=''" class="pointer"><i class="fa fa-sort-alpha-asc"></i>{{select_menu}}</th>
+							<th ng-click="orderByColumn('count')" ng-show="select_output=='백분율'" class="pointer"><i class="fa fa-sort-alpha-asc"></i>백분율</th>
 						</tr>
 					</thead>
 
 			    	<tbody>
-					    <tr ng-repeat="r in results">
+					    <tr ng-repeat="r in results | orderBy:column">
 					    	<td>{{ r.output_date}}</td>
 					    	<td ng-show="select_output=='명단'">{{ r.name}}</td>
 						    <td ng-show="select_output=='명단'">{{ r.school_name}}</td>

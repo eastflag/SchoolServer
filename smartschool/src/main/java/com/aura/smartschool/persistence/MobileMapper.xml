@@ -1644,93 +1644,108 @@ select
 </select>
 
 <select id="selectResult" parameterType="StatVO" resultType="StatVO">
-    SELECT 
-    	DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date
-    
-    <choose>
-		<when test ="section1=='HEIGHT'">
-		    <choose>
-		        <when test ="output=='평균'">, truncate(round(inbody_info.height*10)/10, 1) as 'val'</when>
-		        <when test="output=='명단'">, school.school_name, member.school_grade, member.school_class, member.sex, 
-		        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', truncate(round(inbody_info.height*10)/10, 1) as 'val' </when>
-		    </choose> 
-		</when>
-		<when test ="section1=='WEIGHT'">
-		    <choose>
-		        <when test ="output=='평균'">, truncate(round(inbody_info.weight*10)/10, 1) as val </when>
-		        <when test="output=='명단'">, school.school_name, member.school_grade, member.school_class, member.sex, 
-		        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', truncate(round(inbody_info.weight*10)/10, 1) as 'val' </when>
-		    </choose> 
-		</when>
-		<when test = "section1=='SMOKE'"> 
-				, case(ppm)
-					when ppm between 0 and 2 then '비흡연'
-		            when ppm between 3 and 4 then '간접흡연'
-		            when ppm between 5 and 7 then '흡연중'
-				    else '과다흡연'
-		        end as 'val'
-			<choose>
-				<when test = "output=='명단'">, school.school_name, member.school_grade, member.school_class, member.sex, 
-		        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name'
-		        </when>
-				<when test = "output=='백분율'">
-					, count(*) as 'count'
-				</when>
-			</choose>
-		</when>
-		<when test = "section1=='BMI'">
-			, (select 
-					ms.Srandard_Grade
-				from
-					healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
-			        on ms.ms_grade_id = standard.ms_grade_id
-				where
-					ms.Grade_ID = measure_info.school_grade_id
-					and ms.sex = member.sex
-					and ms.Section = 'BMI'
-					and standard.Year = '2012'
-					and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
-					and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'val'
-			<choose>
-				<when test = "output=='명단'">, 
-					, school.school_name, member.school_grade, member.school_class, member.sex, 
-			        	CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name'
-				</when>
-				<when test = "output=='백분율'">
-					, count(*) as 'count'
-				</when>
-			</choose>
-		</when>
-	</choose>
-	
-    FROM member inner join school on school.school_id=member.school_id  
-		inner join measure_info on measure_info.member_id = member.member_id
-		<choose>
-			<when test="section1=='SMOKE'">
-				inner join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
-			</when>
-			<otherwise>
-				inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
-			</otherwise>
-		</choose>
-
-	WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
-		and school.school_id = #{school_id}
-		<if test = "sex != null">and member.sex = #{sex}</if>
-		<if test = "school_grade != null">and member.school_grade = #{school_grade}</if>
-		<if test = "school_class != null">and member.school_class = #{school_class}</if>
-		<if test = "section2 != null"></if>
-	
 	<choose>
-		<when test ="output=='평균'">
-		    GROUP BY output_date
+		<when test = "output=='명단'">
+			SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
+		    	school.school_name, measure_info.school_grade, measure_info.school_ban as 'school_class', member.sex, 
+				CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', 
+				truncate(round(inbody_info.height*10)/10, 1) as 'HEIGHT',
+				truncate(round(inbody_info.weight*10)/10, 1) as 'WEIGHT',
+				case
+					when ppm = '0' or ppm = '1' or ppm = '2' then '비흡연'
+		            when ppm = '3' or ppm = '4' then '간접흡연'
+		            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
+				    else '데이터없음'
+        		end as 'SMOKE',
+        		(select ms.Srandard_Grade
+					from
+						healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
+				        on ms.ms_grade_id = standard.ms_grade_id
+					where
+						ms.Grade_ID = measure_info.school_grade_id
+						and ms.sex = member.sex
+						and ms.Section = 'BMI'
+						and standard.Year = '2012'
+						and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
+						and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'BMI'
+			FROM member inner join school on school.school_id=member.school_id  
+				inner join measure_info on measure_info.member_id = member.member_id
+				inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
+				left join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
+			WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
+				and school.school_id = #{school_id}
+				<if test = "sex != null">and member.sex = #{sex}</if>
+				<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
+				<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
 		</when>
-		<when test ="output=='백분율'">
-		    GROUP BY output_date, val
+		<when test ="output=='통계'">
+			<choose>
+				<when test ="section1=='HEIGHT' || section1=='WEIGHT'">
+				SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date, 
+					school.school_name, measure_info.school_grade,
+					truncate(round(avg(inbody_info.height)*10)/10, 1) as 'HEIGHT',
+					truncate(round(avg(inbody_info.weight)*10)/10, 1) as 'WEIGHT'
+				FROM member inner join school on school.school_id=member.school_id  
+					inner join measure_info on measure_info.member_id = member.member_id
+					inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
+					left join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
+				WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
+					and school.school_id = #{school_id}
+					<if test = "sex != null">and member.sex = #{sex}</if>
+					<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
+					<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
+				GROUP BY output_date, measure_info.school_id, measure_info.school_grade
+				</when>
+				<when test ="section1=='SMOKE'">
+				SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
+					school.school_name, measure_info.school_grade,
+					case
+						when ppm = '0' or ppm = '1' or ppm = '2' then '비흡연'
+			            when ppm = '3' or ppm = '4' then '간접흡연'
+			            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
+					    else '데이터없음'
+			        end as 'SMOKE', 
+			        count(*) as 'count'
+			    FROM member inner join school on school.school_id=member.school_id  
+					inner join measure_info on measure_info.member_id = member.member_id
+					inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
+					left join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
+			    WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
+					and school.school_id = #{school_id}
+					<if test = "sex != null">and member.sex = #{sex}</if>
+					<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
+					<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
+				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, SMOKE
+				</when>
+				<when test ="section1=='BMI'">
+				SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
+					school.school_name, measure_info.school_grade,
+					(select ms.Srandard_Grade
+						from
+							healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
+					        on ms.ms_grade_id = standard.ms_grade_id
+						where
+							ms.Grade_ID = measure_info.school_grade_id
+							and ms.sex = member.sex
+							and ms.Section = 'BMI'
+							and standard.Year = '2012'
+							and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
+							and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'BMI', 
+					count(*) as 'count'
+				FROM member inner join school on school.school_id=member.school_id  
+					inner join measure_info on measure_info.member_id = member.member_id
+					inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
+					left join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
+				WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
+					and school.school_id = #{school_id}
+					<if test = "sex != null">and member.sex = #{sex}</if>
+					<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
+					<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
+				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, BMI
+				</when>
+			</choose>
 		</when>
 	</choose>
-	
-</select>
-				
+</select>			
 
 </mapper>

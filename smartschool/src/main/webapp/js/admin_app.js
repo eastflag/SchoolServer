@@ -2697,6 +2697,11 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		});
  	}
 
+ 	//필터로 소팅하기
+ 	$scope.orderByColumn = function(x) {
+ 		$scope.column = x;
+ 	}
+
  	//datePicker 설정
 	$scope.maxDate = new Date(); //현재 날짜 이후는 선택 불가능하게 설정
 
