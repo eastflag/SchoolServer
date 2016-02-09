@@ -2487,7 +2487,6 @@ app.animation('.slide-animation', function () {
 app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', function($scope, StatSvc, $rootScope, $filter){
 	//입력폼 활성화, 비활성화 변수
 	$scope.gugunDisabled = true;
-	$scope.schoolDisabled = true;
 	$scope.gradeDisabled = true;
 	$scope.classDisabled = true;
 	$scope.submenuDisabled = true;
@@ -2503,6 +2502,37 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 	$scope.outputList;
 	$scope.results = null;
 
+	 	//출력형태 선택
+ 	$scope.getOutput = function() {
+ 		$scope.results = null;
+ 		$scope.select_menu = "";
+ 		$scope.select_submenu = "";
+ 	}
+
+	 //통계항목 메뉴선택 - sub메뉴 출력하기
+ 	$scope.getSubmenu = function() {
+ 		$scope.results = null;
+ 		if($scope.select_menu == "HEIGHT" || $scope.select_menu == "WEIGHT") {
+ 			$scope.submenuDisabled = true;
+ 			$scope.select_submenu = "";
+ 		} else if ($scope.select_menu == "BMI") {
+ 			$scope.submenuDisabled = false;
+ 			$scope.select_submenu = "";
+ 			$scope.submenuList = [
+ 				'저체중', '정상', '과체중', '비만', '고도비만'
+ 			]
+ 		} else if ($scope.select_menu == "SMOKE"){
+ 			$scope.submenuDisabled = false;
+ 			$scope.select_submenu = "";
+			$scope.submenuList = [
+				'비흡연', '간접흡연', '흡연중', '과다흡연'
+			]
+ 		} else {
+ 			$scope.submenuDisabled = true;
+ 			$scope.select_submenu = "";
+ 		}
+ 	}
+
  	//시입력-구군 구하기
 	$scope.getGugun = function() {
 		//유효성 체크
@@ -2510,7 +2540,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		$scope.select_school = "";
 		if($scope.select_sido == "") {
 			$scope.gugunDisabled = true;
-			$scope.schoolDisabled = true;
 			return;
 		}
 
@@ -2534,7 +2563,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 	//구군입력 - 학교 구하기
  	$scope.getSchoolByAddr = function(){
  		if($scope.select_gugun == "") {
- 			$scope.schoolDisabled = true;
  			return;
  		}
 
@@ -2548,8 +2576,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		StatSvc.getSchoolByAddr(search)
 		.success(function(schoolDatas){
 			$scope.schoolList = schoolDatas.data;
-			//성공시 학교선택 활성화
-			$scope.schoolDisabled = false;
 		}).error(function(data, status) {
 			if (status == 401) {
 				$rootScope.logout();
@@ -2616,55 +2642,30 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		});
  	}
 
- 	//메뉴선택 - sub메뉴 출력하기
- 	$scope.getSubmenu = function() {
- 		$scope.results = null;
- 		$scope.select_output = "";
- 		if($scope.select_menu == "HEIGHT" || $scope.select_menu == "WEIGHT") {
- 			$scope.submenuDisabled = true;
- 			$scope.select_submenu = "";
- 			$scope.outputList = [
- 				'명단', '평균'
- 			];
- 		} else if ($scope.select_menu == "BMI") {
- 			$scope.submenuDisabled = false;
- 			$scope.select_submenu = "";
- 			$scope.submenuList = [
- 				'저체중', '정상', '과체중', '비만', '고도비만'
- 			]
- 			$scope.outputList = [
- 				'명단', '백분율'
- 			];
- 		} else if ($scope.select_menu == "SMOKE"){
- 			$scope.submenuDisabled = false;
- 			$scope.select_submenu = "";
-			$scope.submenuList = [
-				'비흡연', '간접흡연', '흡연중', '과다흡연'
-			]
-			$scope.outputList = [
- 				'명단', '백분율'
- 			];
- 		} else {
- 			$scope.submenuDisabled = true;
- 			$scope.select_submenu = "";
- 		}
- 	}
-
- 	//출력형태 선택
- 	$scope.getOutput = function() {
- 		$scope.results = null;
- 	}
 
  	$scope.getResult = function(){
- 		if($scope.select_sido == "" || $scope.select_gugun == "" || $scope.select_school == ""
- 			|| $scope.select_menu == "" || $scope.select_output == "" || $scope.measure_date == null) {
- 			$rootScope.pop('error', 'warning', '항목을 선택하세요.', 2000);
+ 		if($scope.measure_date == null) {
+ 			$rootScope.pop('error', 'warning', '측정일을 선택하세요.', 1000);
  			return;
  		}
+ 		if($scope.output == null) {
+ 			$rootScope.pop('error', 'warning', '출력형태를 선택하세요.', 1000);
+ 			return;
+ 		}
+ 		if($scope.menu == null) {
+ 			$rootScope.pop('error', 'warning', '통계항목을 선택하세요.', 1000);
+ 			return;
+ 		}
+ 		if($scope.select_school == "") {
+			$rootScope.pop('error', 'warning', '학교를 선택하세요.', 1000);
+			return;
+		}
 
  		var formatted_date = $filter('date')($scope.measure_date,'yyyy-MM');
 
  		var search = {
+ 			search.sido = $scope.select_sido;
+			search.gugun = $scope.select_gugun;
 			school_id:$scope.select_school,
 			section1:$scope.select_menu,
 			output: $scope.select_output,

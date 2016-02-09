@@ -1649,14 +1649,14 @@ select
 			SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
 		    	school.school_name, measure_info.school_grade, measure_info.school_ban as 'school_class', member.sex, 
 				CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', 
-				truncate(round(inbody_info.height*10)/10, 1) as 'HEIGHT',
-				truncate(round(inbody_info.weight*10)/10, 1) as 'WEIGHT',
+				truncate(round(inbody_info.height*10)/10, 1) as 'height',
+				truncate(round(inbody_info.weight*10)/10, 1) as 'weight',
 				case
 					when ppm = '0' or ppm = '1' or ppm = '2' then '비흡연'
 		            when ppm = '3' or ppm = '4' then '간접흡연'
 		            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
 				    else '데이터없음'
-        		end as 'SMOKE',
+        		end as 'smoke',
         		(select ms.Srandard_Grade
 					from
 						healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
@@ -1667,7 +1667,7 @@ select
 						and ms.Section = 'BMI'
 						and standard.Year = '2012'
 						and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
-						and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'BMI'
+						and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'bmi'
 			FROM member inner join school on school.school_id=member.school_id  
 				inner join measure_info on measure_info.member_id = member.member_id
 				inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
@@ -1683,8 +1683,8 @@ select
 				<when test ="section1=='HEIGHT' || section1=='WEIGHT'">
 				SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date, 
 					school.school_name, measure_info.school_grade,
-					truncate(round(avg(inbody_info.height)*10)/10, 1) as 'HEIGHT',
-					truncate(round(avg(inbody_info.weight)*10)/10, 1) as 'WEIGHT'
+					truncate(round(avg(inbody_info.height)*10)/10, 1) as 'height',
+					truncate(round(avg(inbody_info.weight)*10)/10, 1) as 'weight'
 				FROM member inner join school on school.school_id=member.school_id  
 					inner join measure_info on measure_info.member_id = member.member_id
 					inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
@@ -1704,7 +1704,7 @@ select
 			            when ppm = '3' or ppm = '4' then '간접흡연'
 			            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
 					    else '데이터없음'
-			        end as 'SMOKE', 
+			        end as 'smoke', 
 			        count(*) as 'count'
 			    FROM member inner join school on school.school_id=member.school_id  
 					inner join measure_info on measure_info.member_id = member.member_id
@@ -1715,7 +1715,7 @@ select
 					<if test = "sex != null">and member.sex = #{sex}</if>
 					<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
 					<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
-				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, SMOKE
+				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, smoke
 				</when>
 				<when test ="section1=='BMI'">
 				SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
@@ -1730,7 +1730,7 @@ select
 							and ms.Section = 'BMI'
 							and standard.Year = '2012'
 							and standard.Start_Int <![CDATA[<=]]> inbody_info.bmi
-							and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'BMI', 
+							and standard.End_Int <![CDATA[>]]> inbody_info.bmi) as 'bmi_desc', 
 					count(*) as 'count'
 				FROM member inner join school on school.school_id=member.school_id  
 					inner join measure_info on measure_info.member_id = member.member_id
@@ -1741,7 +1741,7 @@ select
 					<if test = "sex != null">and member.sex = #{sex}</if>
 					<if test = "school_grade != null">and measure_info.school_grade = #{school_grade}</if>
 					<if test = "school_class != null">and measure_info.school_ban = #{school_class}</if>
-				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, BMI
+				GROUP BY output_date, measure_info.school_id, measure_info.school_grade, bmi_desc
 				</when>
 			</choose>
 		</when>

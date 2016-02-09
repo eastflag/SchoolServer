@@ -19,6 +19,10 @@ public class StatVO {
 	private String measure_date;
 	
 	private String val;
+	private String height;
+	private String weight;
+	private String smoke;
+	private String bmi_desc;
 	private String output_date;
 	private String count;
 	private String percent;
