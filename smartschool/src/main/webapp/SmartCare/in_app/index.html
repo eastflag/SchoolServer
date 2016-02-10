@@ -43,11 +43,11 @@
 				<li class="my_info" ng-repeat="row in member_list">
 					<div class="photo_wrap" ng-switch="row.is_parent">
 						<div class="photo" ng-switch-when="1">
-							<img ng-src="/profile/{{row.member_id}}" ng-show="row.photo != null"/>
+							<img ng-src="data:image/jpg;base64,{{row.photo}}" ng-show="row.photo != null"/>
 						</div>
 						<div class="photo" ng-switch-when="0">
 							<a href="#!/main.html" ng-click="setStudent(row)">
-								<img ng-src="/profile/{{row.member_id}}" ng-show="row.photo != null"/>
+								<img ng-src="data:image/jpg;base64,{{row.photo}}" ng-show="row.photo != null"/>
 							</a>
 						</div>
 						<span class="level orange" ng-show="row.is_parent==0">{{pay_date?'통합서비스':'기본서비스'}}</span>

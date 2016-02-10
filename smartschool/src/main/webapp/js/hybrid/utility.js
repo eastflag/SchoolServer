@@ -410,6 +410,7 @@ var UTIL = function() {
 		showIndicator: _showIndicator,
 		hideIndicator:_hideIndicator,
 		getGPSData : _getGPSData,
+		getPhoto : _getPhoto,
 		comma : _comma
 	};
 }();

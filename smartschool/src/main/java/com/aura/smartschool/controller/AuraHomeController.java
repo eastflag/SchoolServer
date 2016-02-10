@@ -322,31 +322,6 @@ public class AuraHomeController {
 	}
 	
 	/**
-	 * 프로필 이미지 보기
-	 * @param member_id
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping("/profile/{member_id}")
-	public ResponseEntity<byte[]> showImage(
-			@PathVariable("member_id") int member_id
-			,HttpServletResponse response
-			,ModelMap model){
-		
-		MemberVO member = mobileService.getMemberProfile(member_id);
-		if(member != null){
-			byte[] imageContent = Base64.decodeBase64(member.getPhoto());
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.IMAGE_JPEG);
-			return new ResponseEntity<byte[]>(imageContent, headers, HttpStatus.OK);
-		} else {
-			return null;
-		}
-		
-	}
-	
-	/**
 	 * 가족구성원 추가
 	 * @param request
 	 * @param data
@@ -404,41 +379,5 @@ public class AuraHomeController {
 			return new Result(500, "server error");
 		}
 	}
-	
-	@RequestMapping("/web/api/profile/upload")
-	public Result profileUpload(
-			HttpServletRequest request,
-			HttpSession session,
-			@RequestParam("profile") MultipartFile profile){
-		
-		//String path = request.getServletContext().getRealPath("/upload");
-		try {
-			String[] t = profile.getOriginalFilename().split("\\.");
-			
-			//String name = String.valueOf(System.currentTimeMillis()+"."+t[1]);
-			//File f = new File(path,name);
-			//profile.transferTo(f);
-			
-			//Map<String,Object> data = new HashMap<String,Object>();
-			//data.put("binary", profile.getBytes());
-			
-			Map<String,Object> data = new HashMap<String,Object>();
-			data.put("binary", profile.getBytes());
-			
-			if(t[1].equals("jpg")){
-				data.put("type", "image/jpg");
-			} else if(t[1].equals("png")){
-				data.put("type", "image/png");
-			} else if(t[1].equals("gif")) {
-				data.put("type", "image/gif");
-			}
-			
-			return new ResultData<Map<String,Object>>(0, "success",data);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new Result(200, "fail");
-		} finally {
-			profile = null;
-		}
-	}
+
 }

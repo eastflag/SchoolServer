@@ -82,3 +82,33 @@ function animateGrowthDetail(section){
 			}
 	}, 500);
 }
+
+function b64(s) {
+	var key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+	var i = 0, len = s.length,
+		c1, c2, c3,
+		e1, e2, e3, e4,
+		result = [];
+
+	while (i < len) {
+		c1 = s.charCodeAt(i++);
+		c2 = s.charCodeAt(i++);
+		c3 = s.charCodeAt(i++);
+
+		e1 = c1 >> 2;
+		e2 = ((c1 & 3) << 4) | (c2 >> 4);
+		e3 = ((c2 & 15) << 2) | (c3 >> 6);
+		e4 = c3 & 63;
+
+		if (isNaN(c2)) {
+			e3 = e4 = 64;
+		} else if (isNaN(c3)) {
+			e4 = 64;
+	}
+
+		result.push(e1, e2, e3, e4);
+	}
+	
+	return result.map(function (e) { return key.charAt(e); }).join('');
+}

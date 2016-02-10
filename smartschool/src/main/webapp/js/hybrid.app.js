@@ -567,28 +567,23 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.crop_state = false;
 	}
 	
-	$scope.selectFile = function(file){
-		if(file){
-			if(file.$error && 
-					(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-			){
-				UTIL.alert('이미지 파일만 등록가능합니다.');
+	$scope.selectFile = function(){
+		UTIL.getPhoto(
+			function(response){
+				if(response.result='success'){
+					var mimeType = response.type;
+					var binary = response.image;
+					
+					$scope.profile = 'data:'+mimeType+';base64,'+binary;
+					commonLayerClose('family_add01');
+					commonLayerOpen('profile-crop-area');
+				} else {
+					UTIL.alert('이미지 파일만 등록 가능합니다.');
+					return;
+				}
 			}
-			else{
-				$scope.upload = Upload.upload({
-					url: '/web/api/profile/upload',
-					data : {profile:file}
-				}).success(function(response) {
-					if(response.result==0){
-						$scope.profile = 'data:'+response.data.type+';base64,'+response.data.binary;
-						commonLayerClose('family_add01');
-						commonLayerOpen('profile-crop-area');
-					}
-				}).error(function(data, status) {
-					UTIL.alert("error : " + data.message);
-				});
-			}
-		}
+			,function(){}
+		);
 	}
 	
 	$scope.clearCrop = function(){
@@ -925,48 +920,30 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		$scope.crop_state = false;
 	}
 	
-	$scope.selectFile = function(file){
-		if(file){
-			if(file.$error && 
-					(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-			){
-				UTIL.alert('이미지 파일만 등록가능합니다.');
+	$scope.selectFile = function(){
+		UTIL.getPhoto(
+			function(response){
+				if(response.result='success'){
+					var mimeType = response.type;
+					var binary = response.image;
+					
+					$scope.profile = 'data:'+mimeType+';base64,'+binary;
+					commonLayerClose('family_add01');
+					commonLayerOpen('profile-crop-area');
+				} else {
+					UTIL.alert('이미지 파일만 등록 가능합니다.');
+					return;
+				}
 			}
-			else{
-				$scope.upload = Upload.upload({
-					url: '/web/api/profile/upload',
-					data : {profile:file}
-				}).success(function(response) {
-					if(response.result==0){
-						$scope.profile = 'data:'+response.data.type+';base64,'+response.data.binary;
-						commonLayerClose('family_add01');
-						commonLayerOpen('profile-crop-area');
-					}
-				}).error(function(data, status) {
-					UTIL.alert("error : " + data.message);
-				});
-			}
-		}
+			,function(){}
+		);
 	}
 	
 	$scope.clearCrop = function(){
-		$scope.crop_state = true;
+		$scope.crop_state = flse;
 		$scope.saved_profile = $scope.cropped_profile;
 		commonLayerClose('profile-crop-area');
 		commonLayerOpen('family_add01');
-	}
-	
-	$scope.getPhoto = function(){
-		$scope.clearProfile();
-		UTIL.getPhoto(
-			function(data){
-				if(data.result=='success'){
-					$scope.cropped_profile = data.image;
-					$scope.crop_state = true;
-				}
-			}
-			, function(){}
-		);
 	}
 	
 	$scope.removeProfile = function(){
@@ -1298,7 +1275,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			commonLayerOpen('join_complete');
 		};
 	}
-	
 	console.log('------------------ FamilyCtrl ------------------');
 }]);
 

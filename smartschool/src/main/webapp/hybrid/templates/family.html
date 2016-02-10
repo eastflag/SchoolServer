@@ -5,11 +5,11 @@
 			<li class="my_info" ng-repeat="row in family_list">
 				<div class="photo_wrap" ng-switch="row.is_parent">
 					<div class="photo" ng-switch-when="1">
-						<img ng-src="/profile/{{row.member_id}}" ng-if="row.photo != null"/>
+						<img ng-src="data:image/jpg;base64,{{row.photo}}" ng-if="row.photo != null"/>
 					</div>
 					<div class="photo" ng-switch-when="0">
 						<a href="javascript:;" ng-click="setStudent(row)">
-							<img ng-src="/profile/{{row.member_id}}" ng-if="row.photo != null"/>
+							<img ng-src="data:image/jpg;base64,{{row.photo}}" ng-if="row.photo != null"/>
 						</a>
 					</div>
 					<span class="level" ng-if="row.is_parent==0" ng-class="pay_date==null?'blue':'orange'">{{pay_date==null?'기본':'프리미엄'}}</span>
@@ -56,7 +56,7 @@
 					<img ng-show="crop_state" ng-src="{{saved_profile}}" />
 				</div>
 				<div class="photo_add">
-					<label class="btn_photo_add" for="add_photo" ng-show="!crop_state && v_photo==null" ngf-select="selectFile($file)" ngf-pattern="'.png,.jpg,.gif'">사진등록</label>
+					<label class="btn_photo_add" for="add_photo" ng-show="!crop_state" ng-click="selectFile()">사진등록</label>
 					<button type="button" class="btn_photo_delete" ng-show="crop_state" ng-click="clearProfile()">사진삭제</button>
 					<button type="button" class="btn_photo_delete" ng-show="v_photo" ng-click="removeProfile()">사진삭제</button>
 				</div>
