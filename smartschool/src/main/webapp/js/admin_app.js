@@ -2664,8 +2664,8 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
  		var formatted_date = $filter('date')($scope.measure_date,'yyyy-MM');
 
  		var search = {
- 			search.sido = $scope.select_sido;
-			search.gugun = $scope.select_gugun;
+ 			sido : $scope.select_sido,
+			gugun : $scope.select_gugun,
 			school_id:$scope.select_school,
 			section1:$scope.select_menu,
 			output: $scope.select_output,
