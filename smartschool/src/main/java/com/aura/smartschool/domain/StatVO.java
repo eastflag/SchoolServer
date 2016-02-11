@@ -1,5 +1,7 @@
 package com.aura.smartschool.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -28,4 +30,9 @@ public class StatVO {
 	private String percent;
 
 	private String name;
+	
+	@JsonProperty
+	private boolean group_school;
+	@JsonProperty
+	private boolean group_sex;
 }

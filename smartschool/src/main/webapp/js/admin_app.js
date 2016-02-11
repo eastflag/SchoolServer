@@ -2648,18 +2648,27 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
  			$rootScope.pop('error', 'warning', '측정일을 선택하세요.', 1000);
  			return;
  		}
- 		if($scope.output == null) {
+ 		if($scope.select_output == null) {
  			$rootScope.pop('error', 'warning', '출력형태를 선택하세요.', 1000);
  			return;
  		}
- 		if($scope.menu == null) {
- 			$rootScope.pop('error', 'warning', '통계항목을 선택하세요.', 1000);
- 			return;
+ 		if($scope.select_output == "통계") {
+			if($scope.select_menu == null) {
+	 			$rootScope.pop('error', 'warning', '통계항목을 선택하세요.', 1000);
+	 			return;
+	 		}
+	 		if($scope.select_school == "") {
+				$rootScope.pop('error', 'warning', '학교를 선택하세요.', 1000);
+				return;
+			}
+ 		} else if($scope.select_output == "명단") {
+			if($scope.select_school <= 0) {
+				$rootScope.pop('error', 'warning', '학교를 선택하세요.', 1000);
+				return;
+			}
  		}
- 		if($scope.select_school == "") {
-			$rootScope.pop('error', 'warning', '학교를 선택하세요.', 1000);
-			return;
-		}
+ 		
+ 		
 
  		var formatted_date = $filter('date')($scope.measure_date,'yyyy-MM');
 
@@ -2683,6 +2692,14 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		}
 		if($scope.select_submenu != "") {
 			search.section2 = $scope.select_submenu;
+		}
+
+		if($scope.group_school == true) {
+			search.group_school = true;
+		}
+
+		if($scope.group_sex == true) {
+			search.group_sex = true;
 		}
 
 		StatSvc.getResult(search)
