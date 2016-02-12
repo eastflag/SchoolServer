@@ -1,4 +1,4 @@
-var app = angular.module('hybrid', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngScrollbars','ngAnimate','ngTouch', 'ngImgCrop']);
+var app = angular.module('hybrid', ['ngRoute', 'ngCookies', 'ngFileUpload', 'ngSanitize','ngScrollbars','ngAnimate','ngTouch']);
 
 app.factory('highlighter', function () {
 	return new Scrollbars.Highlighter();
@@ -556,15 +556,9 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	//프로필사진 변수
 	$scope.profile = null;
-	$scope.cropped_profile = null;
-	$scope.saved_profile = null;
-	$scope.crop_state = false;
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
-		$scope.cropped_profile = null;
-		$scope.saved_profile = null;
-		$scope.crop_state = false;
 	}
 	
 	$scope.selectFile = function(){
@@ -575,8 +569,6 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 					var binary = response.image;
 					
 					$scope.profile = 'data:'+mimeType+';base64,'+binary;
-					commonLayerClose('family_add01');
-					commonLayerOpen('profile-crop-area');
 				} else {
 					UTIL.alert('이미지 파일만 등록 가능합니다.');
 					return;
@@ -584,13 +576,6 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			}
 			,function(){}
 		);
-	}
-	
-	$scope.clearCrop = function(){
-		$scope.crop_state = true;
-		$scope.saved_profile = $scope.cropped_profile;
-		commonLayerClose('profile-crop-area');
-		commonLayerOpen('family_add01');
 	}
 	
 	//회원가입
@@ -618,8 +603,8 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		else{
 			var param = {home_id:$scope.v_home_id, name:$scope.v_name, mdn:$scope.v_mdn, relation:$scope.v_relation, is_parent:1, os_type:$scope.v_os_type, gcm_id:$scope.v_gcm_id};
 			var data = null;
-			if($scope.crop_state){
-				data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
+			if($scope.profile){
+				data = {profile:Upload.dataUrltoBlob($scope.profile), data:JSON.stringify(param)};
 			}else{
 				data = {profile:null, data:JSON.stringify(param)};
 			}
@@ -657,12 +642,9 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 						.error(function(response, state){
 							UTIL.alert("error : " + response.message);
 						});
-				}else{
-					$scope.clearProfile();
 				}
 			})
 			.error(function(data, status) {
-				$scope.clearProfile();
 				UTIL.alert("error : " + data.message);
 			});
 		}
@@ -909,15 +891,9 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 
 	//프로필사진 변수
 	$scope.profile = null;
-	$scope.cropped_profile = null;
-	$scope.saved_profile = null;
-	$scope.crop_state = false;
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
-		$scope.cropped_profile = null;
-		$scope.saved_profile = null;
-		$scope.crop_state = false;
 	}
 	
 	$scope.selectFile = function(){
@@ -928,8 +904,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 					var binary = response.image;
 					
 					$scope.profile = 'data:'+mimeType+';base64,'+binary;
-					commonLayerClose('family_add01');
-					commonLayerOpen('profile-crop-area');
 				} else {
 					UTIL.alert('이미지 파일만 등록 가능합니다.');
 					return;
@@ -937,13 +911,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			}
 			,function(){}
 		);
-	}
-	
-	$scope.clearCrop = function(){
-		$scope.crop_state = flse;
-		$scope.saved_profile = $scope.cropped_profile;
-		commonLayerClose('profile-crop-area');
-		commonLayerOpen('family_add01');
 	}
 	
 	$scope.removeProfile = function(){
@@ -1015,7 +982,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	//가족구성원 수정화면 값설정
 	$scope.modFamily = function(member){
-		console.log('$scope.crop_state => ',$scope.crop_state);
 		$scope.v_is_parent = member.is_parent;
 		$scope.v_member_id = member.member_id;
 		$scope.v_mdn = member.mdn;
@@ -1125,8 +1091,8 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 					school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
 				};
 			}
-			if($scope.crop_state){
-				data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
+			if($scope.profile){
+				data = {profile:Upload.dataUrltoBlob($scope.profile), data:JSON.stringify(param)};
 			}else{
 				data = {profile:null,data:JSON.stringify(param)};
 			}
@@ -1197,8 +1163,8 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
 			};
 		}
-		if($scope.crop_state){
-			data = {profile:Upload.dataUrltoBlob($scope.cropped_profile), data:JSON.stringify(param)};
+		if($scope.profile){
+			data = {profile:Upload.dataUrltoBlob($scope.profile), data:JSON.stringify(param)};
 		}else{
 			data = {profile:null,data:JSON.stringify(param)};
 		}
@@ -1227,7 +1193,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 						UTIL.alert('가족구성원이 삭제되었습니다.');
 						$scope.getFamilyList();
 					}else{
-						UTIL.alert('가족구성원 삭제실패!\n잠시 수 다시 시도하세요.');
+						UTIL.alert('가족구성원 삭제실패!\n잠시 후, 다시 시도하세요.');
 					}
 				})
 				.error(function(response, state) {
@@ -1275,6 +1241,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			commonLayerOpen('join_complete');
 		};
 	}
+	
 	console.log('------------------ FamilyCtrl ------------------');
 }]);
 

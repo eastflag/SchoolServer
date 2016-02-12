@@ -52,12 +52,12 @@
 			<fieldset>
 				<legend class="screen_out">{{family_mode_text2}}</legend>
 				<div class="in_photo">
-					<img ng-show="v_photo" ng-src="{{v_photo?'/profile/'+v_member_id:''}}" />
-					<img ng-show="crop_state" ng-src="{{saved_profile}}" />
+					<img ng-show="v_photo" ng-src="{{v_photo}}" />
+					<img ng-show="profile" ng-src="{{profile}}" />
 				</div>
 				<div class="photo_add">
-					<label class="btn_photo_add" for="add_photo" ng-show="!crop_state" ng-click="selectFile()">사진등록</label>
-					<button type="button" class="btn_photo_delete" ng-show="crop_state" ng-click="clearProfile()">사진삭제</button>
+					<label class="btn_photo_add" for="add_photo" ng-show="!profile" ng-click="selectFile()">사진등록</label>
+					<button type="button" class="btn_photo_delete" ng-show="profile" ng-click="clearProfile()">사진삭제</button>
 					<button type="button" class="btn_photo_delete" ng-show="v_photo" ng-click="removeProfile()">사진삭제</button>
 				</div>
 				<div class="in_input">
@@ -96,15 +96,6 @@
 		</form>
 	</div>
 </section>
-
-<!-- 프로필 이미지 crop 레이어 -->
-<div class="common_layer profile-crop-area">
-	<div class="dim_area" ng-click="clearCrop()"></div>
-	<div class="crop-area">
-		<img-crop image="profile" result-image="cropped_profile" area-type="circle" area-min-size="100" result-image-format="image/jpeg"></img-crop>
-	</div>
-	<button type="button" class="btn delete" ng-click="clearCrop()">확인</button>
-</div>
 
 <!-- 가족구성원 추가 완료 레이어 -->
 <section class="common_layer add_member_complete">
