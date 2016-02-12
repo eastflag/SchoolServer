@@ -1694,7 +1694,8 @@ select
 					<when test="school_id>0">
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
 							and school.school_id = #{school_id}
-						GROUP BY output_date, school.school_id, measure_info.school_grade
+						GROUP BY output_date, school.school_id, measure_info.school_grade, member.sex
+						ORDER BY school.school_name, measure_info.school_grade, member.sex
 					</when>
 					<otherwise>
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
@@ -1737,7 +1738,7 @@ select
 					<when test="school_id>0">
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
 							and school.school_id = #{school_id}
-						GROUP BY output_date, school.school_id, measure_info.school_grade
+						GROUP BY output_date, school.school_id, measure_info.school_grade, smoke
 					</when>
 					<otherwise>
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
@@ -1782,12 +1783,11 @@ select
 				FROM member inner join school on school.school_id=member.school_id  
 					inner join measure_info on measure_info.member_id = member.member_id
 					inner join inbody_info on inbody_info.Inbody_seq = measure_info.Inbody_seq
-					left join smoke_info on smoke_info.Smoke_seq = measure_info.Smoke_seq
 				<choose>
 					<when test="school_id>0">
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
 							and school.school_id = #{school_id}
-						GROUP BY output_date, school.school_id, measure_info.school_grade
+						GROUP BY output_date, school.school_id, measure_info.school_grade, bmi_desc
 					</when>
 					<otherwise>
 						WHERE DATE_FORMAT(measure_info.measure_date, '%Y-%m') = #{measure_date}
