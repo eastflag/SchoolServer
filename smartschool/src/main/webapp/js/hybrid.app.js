@@ -565,10 +565,9 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		UTIL.getPhoto(
 			function(response){
 				if(response.result='success'){
-					var mimeType = response.type;
-					var binary = response.image;
-					
-					$scope.profile = 'data:'+mimeType+';base64,'+binary;
+					var dataUrl = 'data:'+response.type+';base64,'+response.image;
+					UTIL.alert('dataUrl > '+dataUrl);
+					$scope.profile = dataUrl;
 				} else {
 					UTIL.alert('이미지 파일만 등록 가능합니다.');
 					return;
@@ -900,10 +899,9 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		UTIL.getPhoto(
 			function(response){
 				if(response.result='success'){
-					var mimeType = response.type;
-					var binary = response.image;
-					
-					$scope.profile = 'data:'+mimeType+';base64,'+binary;
+					var dataUrl = 'data:'+response.type+';base64,'+response.image;
+					UTIL.alert('dataUrl > '+dataUrl);
+					$scope.profile = dataUrl;
 				} else {
 					UTIL.alert('이미지 파일만 등록 가능합니다.');
 					return;
