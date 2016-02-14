@@ -105,7 +105,7 @@ function b64(s) {
 			e3 = e4 = 64;
 		} else if (isNaN(c3)) {
 			e4 = 64;
-	}
+		}
 
 		result.push(e1, e2, e3, e4);
 	}

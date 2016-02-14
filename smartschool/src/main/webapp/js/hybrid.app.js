@@ -564,14 +564,9 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.selectFile = function(){
 		UTIL.getPhoto(
 			function(response){
-				if(response.result='success'){
-					var dataUrl = 'data:'+response.type+';base64,'+response.image;
-					UTIL.alert('dataUrl > '+dataUrl);
-					$scope.profile = dataUrl;
-				} else {
-					UTIL.alert('이미지 파일만 등록 가능합니다.');
-					return;
-				}
+				var dataUrl = 'data:image/jpg;base64,'+response.image;
+				UTIL.alert('dataUrl > '+dataUrl);
+				$scope.profile = dataUrl;
 			}
 			,function(){}
 		);
@@ -898,14 +893,9 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	$scope.selectFile = function(){
 		UTIL.getPhoto(
 			function(response){
-				if(response.result='success'){
-					var dataUrl = 'data:'+response.type+';base64,'+response.image;
-					UTIL.alert('dataUrl > '+dataUrl);
-					$scope.profile = dataUrl;
-				} else {
-					UTIL.alert('이미지 파일만 등록 가능합니다.');
-					return;
-				}
+				var dataUrl = 'data:image/jpg;base64,'+response.image;
+				UTIL.alert('dataUrl > '+dataUrl);
+				$scope.profile = dataUrl;
 			}
 			,function(){}
 		);

@@ -1,5 +1,8 @@
 package com.aura.smartschool.util;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -191,5 +195,23 @@ public class FileUtil {
 			}
 		};
 		return view;
+	}
+	
+	/**
+	 * convert image to byte array
+	 * @param ImageName
+	 * @return byte array
+	 * @throws IOException
+	 */
+	public byte[] extractBytes (String path, String name) throws IOException {
+		// open image
+		File imgPath = new File(path, name);
+		BufferedImage bufferedImage = ImageIO.read(imgPath);
+
+		// get DataBufferBytes from Raster
+		WritableRaster raster = bufferedImage .getRaster();
+		DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+
+		return ( data.getData() );
 	}
 }
