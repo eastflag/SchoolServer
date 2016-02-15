@@ -559,14 +559,15 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
+		$('#_profile').css('background-image','none');
 	}
 	
 	$scope.selectFile = function(){
 		UTIL.getPhoto(
 			function(response){
 				var dataUrl = 'data:image/jpg;base64,'+response.image;
-				UTIL.alert('dataUrl > '+dataUrl);
 				$scope.profile = dataUrl;
+				$('#_profile').css('background-image','url('+$scope.profile+')');
 			}
 			,function(){}
 		);
@@ -888,14 +889,15 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
+		$('#_profile').css('background-image','none');
 	}
 	
 	$scope.selectFile = function(){
 		UTIL.getPhoto(
 			function(response){
 				var dataUrl = 'data:image/jpg;base64,'+response.image;
-				UTIL.alert('dataUrl > '+dataUrl);
 				$scope.profile = dataUrl;
+				$('#_profile').css('background-image','url('+$scope.profile+')');
 			}
 			,function(){}
 		);

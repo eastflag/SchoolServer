@@ -954,9 +954,6 @@ public class MobileServiceImpl implements MobileService {
 	@Transactional
 	@Override
 	public long modMember(MemberVO member, MultipartFile file) throws Exception{
-		HomeVO home = new HomeVO();
-		home.setHome_id(member.getHome_id());
-		
 		if(file != null) {
 			member.setPhoto(Base64.encodeBase64String(file.getBytes()));
 		}

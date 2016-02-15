@@ -1,11 +1,5 @@
 package com.aura.smartschool.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,34 +7,21 @@ import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.rowset.serial.SerialException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
-import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.PressVO;
@@ -50,7 +31,6 @@ import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
 import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
-import com.aura.smartschool.util.CommonUtil;
 import com.aura.smartschool.util.SmsUtil;
 import com.google.gson.Gson;
 

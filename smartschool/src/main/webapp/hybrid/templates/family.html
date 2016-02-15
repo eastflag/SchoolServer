@@ -52,13 +52,13 @@
 			<fieldset>
 				<legend class="screen_out">{{family_mode_text2}}</legend>
 				<div class="in_photo">
-					<img ng-show="v_photo" ng-src="{{v_photo}}" />
-					<img ng-show="profile" ng-src="{{profile}}" />
+					<img ng-show="v_photo != null" ng-src="data:image/jpg;base64,{{v_photo}}" />
+					<span id="_profile" ng-show="profile != null" ></span>
 				</div>
 				<div class="photo_add">
-					<label class="btn_photo_add" for="add_photo" ng-show="!profile" ng-click="selectFile()">사진등록</label>
-					<button type="button" class="btn_photo_delete" ng-show="profile" ng-click="clearProfile()">사진삭제</button>
-					<button type="button" class="btn_photo_delete" ng-show="v_photo" ng-click="removeProfile()">사진삭제</button>
+					<button type="button" class="btn_photo_add" ng-show="profile == null && v_photo == null" ng-click="selectFile()">사진등록</button>
+					<button type="button" class="btn_photo_delete" ng-show="profile != null" ng-click="clearProfile()">사진삭제</button>
+					<button type="button" class="btn_photo_delete" ng-show="v_photo != null" ng-click="removeProfile()">사진삭제</button>
 				</div>
 				<div class="in_input">
 					<input type="tel" ng-model="v_mdn" placeholder="phone number" />
