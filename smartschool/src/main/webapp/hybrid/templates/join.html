@@ -8,7 +8,7 @@
 			<fieldset>
 				<legend class="screen_out">회원가입 정보</legend>
 				<div class="in_photo">
-					<span id="_profile" ng-show="profile != null" ></span>
+					<img ng-show="profile != null" ng-src="{{profile}}" />
 				</div>
 				<div class="photo_add">
 					<button type="button" class="btn_photo_add" ng-show="profile == null && v_photo == null" ng-click="selectFile()">사진등록</button>

@@ -559,18 +559,19 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
-		$('#_profile').css('background-image','none');
 	}
 	
 	$scope.selectFile = function(){
-		UTIL.getPhoto(
-			function(response){
-				var dataUrl = 'data:image/jpg;base64,'+response.image;
-				$scope.profile = dataUrl;
-				$('#_profile').css('background-image','url('+$scope.profile+')');
-			}
-			,function(){}
-		);
+		$timeout(function(){
+			UTIL.getPhoto(
+				function(response){
+					if(response.result=='success'){
+						$scope.profile = 'data:'+response.type+';base64,'+response.image;
+					}
+				}
+				,function(){}
+			);
+		},100);
 	}
 	
 	//회원가입
@@ -676,6 +677,17 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.init(null,null,false,false);
 	$scope.setWrappeDimension('#join_wrap',65);
 	$scope.getDeviceAndToken();
+	
+	$scope.$watch('profile', function(newValue, oldValue){
+		if (newValue === oldValue) { return; }
+		if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
+			$scope.profile = newValue;
+		}else{
+			$scope.$apply(function(){
+				$scope.profile = newValue;
+			});
+		}
+	}, true);
 	
 	console.log('------------------ JoinCtrl ------------------');
 }]);
@@ -889,18 +901,19 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	$scope.clearProfile = function(){
 		$scope.profile = null;
-		$('#_profile').css('background-image','none');
 	}
 	
 	$scope.selectFile = function(){
-		UTIL.getPhoto(
-			function(response){
-				var dataUrl = 'data:image/jpg;base64,'+response.image;
-				$scope.profile = dataUrl;
-				$('#_profile').css('background-image','url('+$scope.profile+')');
-			}
-			,function(){}
-		);
+		$timeout(function(){
+			UTIL.getPhoto(
+				function(response){
+					if(response.result=='success'){
+						$scope.profile = 'data:'+response.type+';base64,'+response.image;
+					}
+				}
+				,function(){}
+			);
+		},100);
 	}
 	
 	$scope.removeProfile = function(){
@@ -1231,6 +1244,17 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			commonLayerOpen('join_complete');
 		};
 	}
+	
+	$scope.$watch('profile', function(newValue, oldValue){
+		if (newValue === oldValue) { return; }
+		if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
+			$scope.profile = newValue;
+		}else{
+			$scope.$apply(function(){
+				$scope.profile = newValue;
+			});
+		}
+	}, true);
 	
 	console.log('------------------ FamilyCtrl ------------------');
 }]);
