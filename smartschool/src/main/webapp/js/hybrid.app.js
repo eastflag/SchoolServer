@@ -562,16 +562,16 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	}
 	
 	$scope.selectFile = function(){
-		$timeout(function(){
-			UTIL.getPhoto(
-				function(response){
-					if(response.result=='success'){
-						$scope.profile = 'data:'+response.type+';base64,'+response.image;
-					}
-				}
-				,function(){}
-			);
-		},100);
+		UTIL.getPhoto(
+			function(response){
+				var image = 'data:image/jpg;base64,'+response.image;
+				
+				$scope.$apply(function(){
+					$scope.profile = image;
+				});
+			}
+			,function(){}
+		);
 	}
 	
 	//회원가입
@@ -677,17 +677,6 @@ app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	$scope.init(null,null,false,false);
 	$scope.setWrappeDimension('#join_wrap',65);
 	$scope.getDeviceAndToken();
-	
-	$scope.$watch('profile', function(newValue, oldValue){
-		if (newValue === oldValue) { return; }
-		if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
-			$scope.profile = newValue;
-		}else{
-			$scope.$apply(function(){
-				$scope.profile = newValue;
-			});
-		}
-	}, true);
 	
 	console.log('------------------ JoinCtrl ------------------');
 }]);
@@ -904,16 +893,16 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	}
 	
 	$scope.selectFile = function(){
-		$timeout(function(){
-			UTIL.getPhoto(
-				function(response){
-					if(response.result=='success'){
-						$scope.profile = 'data:'+response.type+';base64,'+response.image;
-					}
-				}
-				,function(){}
-			);
-		},100);
+		UTIL.getPhoto(
+			function(response){
+				var image = 'data:image/jpg;base64,'+response.image;
+				
+				$scope.$apply(function(){
+					$scope.profile = image;
+				});
+			}
+			,function(){}
+		);
 	}
 	
 	$scope.removeProfile = function(){
@@ -1244,17 +1233,6 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 			commonLayerOpen('join_complete');
 		};
 	}
-	
-	$scope.$watch('profile', function(newValue, oldValue){
-		if (newValue === oldValue) { return; }
-		if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
-			$scope.profile = newValue;
-		}else{
-			$scope.$apply(function(){
-				$scope.profile = newValue;
-			});
-		}
-	}, true);
 	
 	console.log('------------------ FamilyCtrl ------------------');
 }]);
