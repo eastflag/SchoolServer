@@ -213,6 +213,8 @@ public interface MobileService {
 	public List<StatVO> getSchoolByAddress(StatVO stat);
 	public List<StatVO> getSchoolGrade(StatVO stat);
 	public List<StatVO> getSchoolClass(StatVO stat);
-	public List<StatVO> getResult(StatVO stat);
-	
+	public List<StatVO> getStatOfList(StatVO stat);
+	public List<StatVO> getStatOfBMI(StatVO stat);
+	public List<StatVO> getStatOfSMOKE(StatVO stat);
+	public List<StatVO> getStatOfHEIGHT(StatVO stat);
 }

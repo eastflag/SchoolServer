@@ -226,6 +226,9 @@ public interface MobileMapper {
 	public List<StatVO> selectSchoolByAddress(StatVO stat);
 	public List<StatVO> selectSchoolGrade(StatVO stat);
 	public List<StatVO> selectSchoolClass(StatVO stat);	
-	public List<StatVO> selectResult(StatVO stat);
+	public List<StatVO> selectStatOfList(StatVO stat);
+	public List<StatVO> selectStatOfBMI(StatVO stat);
+	public List<StatVO> selectStatOfSMOKE(StatVO stat);
+	public List<StatVO> selectStatOfHEIGHT(StatVO stat);
 	
 }

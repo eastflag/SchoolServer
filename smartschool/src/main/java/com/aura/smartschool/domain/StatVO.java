@@ -8,6 +8,7 @@ import lombok.Data;
 public class StatVO {
 	private String sido;
 	private String gugun;
+	private String gubun2; //초등학교, 중학교, 고등학교
 	private String school_id;
 	private String school_address;
 	private String school_name;
@@ -15,9 +16,8 @@ public class StatVO {
 	private String school_class;
 	private String sex;
 	
-	private String section1;
-	private String section2;
 	private String output;
+	private String section;
 	private String measure_date;
 	
 	private String val;

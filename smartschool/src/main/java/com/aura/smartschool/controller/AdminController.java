@@ -1006,7 +1006,33 @@ public class AdminController {
 	public ResultData<List<StatVO>> getResult(@RequestBody StatVO inStat) {
 		logger.debug("admin/api/getResult-------------------------------------------------");
 		
-		List<StatVO> list = mobileService.getResult(inStat);
+		List<StatVO> list;
+		
+		if("명단".equals(inStat.getOutput())) {
+			list = mobileService.getStatOfList(inStat);
+		} else {
+			int school_id = Integer.parseInt(inStat.getSchool_id());
+			if(school_id<=0) {
+				if (school_id == -1) {
+					inStat.setGubun2("초등학교");
+				}
+				if (school_id == -2) {
+					inStat.setGubun2("중학교");
+				}
+				if (school_id == -3) {
+					inStat.setGubun2("고등학교");
+				}
+			}
+			
+			if("BMI".equals(inStat.getSection())) {
+				list = mobileService.getStatOfBMI(inStat);
+			} else if ("SMOKE".equals(inStat.getSection())) {
+				list = mobileService.getStatOfSMOKE(inStat);
+			} else { //키와 체중
+				list = mobileService.getStatOfHEIGHT(inStat);
+			}
+		}
+		
 		return new ResultData<List<StatVO>>(0, "success", list);
 	}
 }

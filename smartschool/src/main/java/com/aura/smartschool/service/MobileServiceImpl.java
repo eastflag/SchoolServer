@@ -1251,8 +1251,23 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public List<StatVO> getResult(StatVO stat) {
-		return mobileMapper.selectResult(stat);
+	public List<StatVO> getStatOfList(StatVO stat) {
+		return mobileMapper.selectStatOfList(stat);
+	}
+
+	@Override
+	public List<StatVO> getStatOfBMI(StatVO stat) {
+		return mobileMapper.selectStatOfBMI(stat);
+	}
+
+	@Override
+	public List<StatVO> getStatOfSMOKE(StatVO stat) {
+		return mobileMapper.selectStatOfSMOKE(stat);
+	}
+
+	@Override
+	public List<StatVO> getStatOfHEIGHT(StatVO stat) {
+		return mobileMapper.selectStatOfHEIGHT(stat);
 	}
 
 }

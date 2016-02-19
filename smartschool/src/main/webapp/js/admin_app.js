@@ -2676,7 +2676,7 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
  			sido : $scope.select_sido,
 			gugun : $scope.select_gugun,
 			school_id:$scope.select_school,
-			section1:$scope.select_menu,
+			section:$scope.select_menu,
 			output: $scope.select_output,
 			measure_date: formatted_date
 		}
@@ -2692,14 +2692,6 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
 		}
 		if($scope.select_submenu != "") {
 			search.section2 = $scope.select_submenu;
-		}
-
-		if($scope.group_school == true) {
-			search.group_school = true;
-		}
-
-		if($scope.group_sex == true) {
-			search.group_sex = true;
 		}
 
 		StatSvc.getResult(search)

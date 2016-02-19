@@ -55,15 +55,6 @@
 			    				</select>
 							</div>
 						</div>
-						<div class="form-group"  ng-hide="select_output=='명단'">
-							<label class="control-label col-md-1" for="">그룹핑항목</label>
-							<div class="checkbox col-md-1">
-								<label><input type="checkbox" ng-model="group_school" />학교</label>
-							</div>
-							<div class="checkbox col-md-1">
-								<label><input type="checkbox" ng-model="group_sex" />성별</label>
-							</div>
-						</div>
 						<div class="form-group">
 							<label class="control-label col-md-1" for="sido">지역</label>
 							<div class="col-md-2">
@@ -143,10 +134,10 @@
 						<tr>
 							<th>측정일</th>
 							<th ng-click="orderByColumn('name')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-down"></i>이름</th>
-							<th ng-click="orderByColumn('school_name')" ng-show="select_output=='명단' || group_school==true"><i class="fa fa-sort-down" class="pointer"></i>학교명</th>
+							<th ng-click="orderByColumn('school_name')"><i class="fa fa-sort-down" class="pointer"></i>학교명</th>
 							<th ng-click="orderByColumn('school_grade')" class="pointer"><i class="fa fa-sort-down">학년</th>
 							<th ng-click="orderByColumn('school_class')" ng-show="select_output=='명단'" class="pointer"><i class="fa fa-sort-down">반</th>
-							<th ng-click="orderByColumn('sex')" ng-show="select_output=='명단' || group_sex==true" class="pointer"><i class="fa fa-sort-down">성별</th>
+							<th ng-click="orderByColumn('sex')" class="pointer"><i class="fa fa-sort-down">성별</th>
 							<th ng-click="orderByColumn('height')" ng-show="select_output=='명단'||select_menu=='HEIGHT'" class="pointer"><i class="fa fa-sort-down"></i>신장</th>
 							<th ng-click="orderByColumn('weight')" ng-show="select_output=='명단'||select_menu=='HEIGHT'" class="pointer"><i class="fa fa-sort-down"></i>체중</th>
 							<th ng-click="orderByColumn('smoke')" ng-show="select_output=='명단'||select_menu=='SMOKE'" class="pointer"><i class="fa fa-sort-down"></i>흡연</th>
@@ -159,10 +150,10 @@
 					    <tr ng-repeat="r in results | orderBy:column">
 					    	<td>{{ r.output_date}}</td>
 					    	<td ng-show="select_output=='명단'">{{ r.name}}</td>
-						    <td ng-show="select_output=='명단' || group_school==true">{{ r.school_name}}</td>
+						    <td>{{ r.school_name}}</td>
 						    <td>{{ r.school_grade}}</td>
 						    <td ng-show="select_output=='명단'">{{ r.school_class}}</td>
-						    <td ng-show="select_output=='명단' || group_sex==true">{{ r.sex}}</td>
+						    <td>{{ r.sex}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='HEIGHT'">{{ r.height}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='HEIGHT'">{{ r.weight}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='SMOKE'">{{ r.smoke}}</td>
