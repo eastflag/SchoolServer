@@ -361,6 +361,8 @@ public class ApiController {
 			for(MemberVO m : memberList) {
 				if(m.getIs_parent() == 1) {
 					if(!StringUtils.isNullOrEmpty(m.getGcm_id())) {
+						//gcm, apns를 보내기전에 기록을 저장
+						
 						JsonObject value = new JsonObject();
 						value.addProperty("school_id", member.getSchool_id());
 						value.addProperty("school_name", member.getSchool_name());
