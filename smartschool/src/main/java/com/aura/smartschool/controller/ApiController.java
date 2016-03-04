@@ -32,6 +32,7 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GeofenceVO;
 import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
@@ -64,6 +65,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mysql.jdbc.StringUtils;
 
 @RestController
 public class ApiController {
@@ -323,6 +325,72 @@ public class ApiController {
 		String msg = "success";
 		try {
 			mobileService.insertLocation(location);
+		} catch (PersistenceException e) {
+			result = 500;
+			msg = "server error";
+		} 
+		return new Result(result, msg);
+	}
+	
+	//자녀 지오펜스 등록
+	@RequestMapping("/api/addGeofence")
+	public Result addGeofence(@RequestBody GeofenceVO inGeofenceVO) {
+		logger.debug("/api/addGeofence-----------------------------------------------------------");
+		
+		int result = 0;
+		String msg = "success";
+		try {
+			//멤버 아이디로 학생의 학교명, 학생이름, 성별, 홈아이디를 가져온다.
+			MemberVO inMember = new MemberVO();
+			inMember.setMember_id(inGeofenceVO.getMember_id());
+			
+			MemberVO member = mobileService.selectMember(inMember);
+			
+			//지오펜스 정보를 기록 => 부모가 자녀의 등교 리스트를 확인시 필요
+			GeofenceVO geofenceVO = new GeofenceVO();
+			geofenceVO.setMember_id(inGeofenceVO.getMember_id());
+			geofenceVO.setSchool_id(member.getSchool_id());
+			geofenceVO.setType(inGeofenceVO.getType());
+			mobileService.addGeofence(geofenceVO);
+			
+			//홈아이디로 부모 목록을 가져와서, 저장하고, gcm을 보낸다.
+			HomeVO home = new HomeVO();
+			home.setHome_id(member.getHome_id());
+			List<MemberVO> memberList = mobileService.getMemberList(home);
+			
+			for(MemberVO m : memberList) {
+				if(m.getIs_parent() == 1) {
+					if(!StringUtils.isNullOrEmpty(m.getGcm_id())) {
+						JsonObject value = new JsonObject();
+						value.addProperty("school_id", member.getSchool_id());
+						value.addProperty("school_name", member.getSchool_name());
+						value.addProperty("name", member.getName());
+						value.addProperty("sex", member.getSex());
+						value.addProperty("type", geofenceVO.getType());
+						
+						JsonArray array = new JsonArray(); //get gcm_id
+						List<String> tokens = new ArrayList<String>();
+						
+						if(m.getOs_type() == 0) {
+							array.add(new JsonPrimitive(m.getGcm_id()));
+						} else {
+							tokens.add(m.getGcm_id());
+						}
+						
+						//send gcm
+						JsonObject jsonData = new JsonObject();
+						jsonData.addProperty("command", "geofence");
+						jsonData.addProperty("value", value.toString());
+						NetworkUtil.requestGCM(array, jsonData);
+						
+						//send apns
+						Map<String,String> extra = new HashMap<String,String>();
+						extra.put("command", "school");
+						NetworkUtil.requestAPNS(tokens, value.toString(), extra);
+					}
+				}
+			}
+			
 		} catch (PersistenceException e) {
 			result = 500;
 			msg = "server error";

@@ -37,6 +37,10 @@ public class NetworkUtil {
 	private static final Executor threadPool = Executors.newFixedThreadPool(5);
 	
 	public static void requestGCM(final JsonArray reg_IDs, final JsonObject sendData) {
+		if (reg_IDs.size() == 0) {
+			return;
+		}
+		
 		threadPool.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -123,6 +127,10 @@ public class NetworkUtil {
 	}
 	
 	public static void requestAPNS(final List<String> tokens, final String message, final Map<String, String> extra) {
+		if (tokens.size() == 0) {
+			return;
+		}
+		
 		threadPool.execute(new Runnable() {
 			@Override
 			public void run() {

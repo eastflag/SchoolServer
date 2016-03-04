@@ -26,6 +26,7 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GeofenceVO;
 import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
@@ -1268,6 +1269,11 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<StatVO> getStatOfHEIGHT(StatVO stat) {
 		return mobileMapper.selectStatOfHEIGHT(stat);
+	}
+
+	@Override
+	public long addGeofence(GeofenceVO geofenceVO) {
+		return mobileMapper.insertGeofence(geofenceVO);
 	}
 
 }

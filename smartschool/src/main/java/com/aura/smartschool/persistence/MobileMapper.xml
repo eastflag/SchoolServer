@@ -292,6 +292,11 @@
 		);
 </insert>
 
+<insert id="insertGeofence" parameterType="GeofenceVO">
+	INSERT INTO geofence(member_id, school_id, type) 
+		VALUES(#{member_id}, #{school_id}, #{type})
+</insert>
+
 <select id="selectLastLocation" parameterType="MemberVO" resultType="LocationVO">
 	SELECT 
 		member_id,

@@ -18,6 +18,7 @@ import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
+import com.aura.smartschool.domain.GeofenceVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.LocationVO;
@@ -68,6 +69,9 @@ public interface MobileMapper {
 	public LocationVO selectLastLocation(MemberVO member);
 	public List<LocationVO> selectLocationList(MemberVO member);
 	public List<LocationVO> selectChildLocation(HomeVO home);
+	
+	//지오펜스 
+	public long insertGeofence(GeofenceVO geofenceVO);
 	
 	//위치 정보 기록하기
 	public long insertLocationAccess(LocationAccessVO accessVO);
