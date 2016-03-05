@@ -15,12 +15,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StringUtils;
 
 import com.aura.smartschool.Constant;
+import com.aura.smartschool.controller.ApiController;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -33,6 +36,8 @@ import javapns.notification.PayloadPerDevice;
 import javapns.notification.PushNotificationPayload;
 
 public class NetworkUtil {
+	
+	private static Logger logger = LoggerFactory.getLogger(ApiController.class);
 	
 	private static final Executor threadPool = Executors.newFixedThreadPool(5);
 	
@@ -50,6 +55,7 @@ public class NetworkUtil {
 	}
 	
 	private static void sendGCM(JsonArray reg_IDs, JsonObject sendData) {
+		logger.debug("send GCM: " + sendData.toString());
 		
 		JsonObject json = new JsonObject();
 		Resource resource = new ClassPathResource("/app.properties");
@@ -81,7 +87,6 @@ public class NetworkUtil {
 			http.setRequestProperty("Authorization", "key=" + props.getProperty("api.key"));
 			out = new OutputStreamWriter(http.getOutputStream(), "UTF-8");
 			writer = new PrintWriter(out);
-			System.out.println("json:" + json.toString());
 			writer.write(json.toString()); // 보내기
 			writer.flush(); // 비우기
 			writer.close(); // 닫기

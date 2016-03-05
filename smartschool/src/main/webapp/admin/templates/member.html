@@ -57,7 +57,7 @@
 							        </button>
 							    </td>
 							    <td>{{ home.home_id }}</td>
-							    <td>{{ leaves[home.use_yn].name }}</td>
+							    <td>{{ leaves_array[home.use_yn] }}</td>
 							    <td>{{ home.created | date: 'yyyy-MM-dd' }}</td>
 							    <td>{{ home.updated | date: 'yyyy-MM-dd' }}</td>
 						    </tr>
@@ -169,8 +169,8 @@
 							    <td>{{ member.home_id}}</td>
 							    <td>{{ member.name}}</td>
 							    <td>{{ member.relation}}</td>
-							    <td>{{ parents[member.is_parent].name}}</td>
-							    <td>{{ deletes[member.use_yn].name}}</td>
+							    <td>{{ parents_array[member.is_parent] }} </td>
+							    <td>{{ deletes_array[member.use_yn] }}</td>
 							    <td>{{ member.pay_date}}</td>
 							    <td>{{ member.measure_date}}</td>
 							    <td>{{ member.access_date}}</td>

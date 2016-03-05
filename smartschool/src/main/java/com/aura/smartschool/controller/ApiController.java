@@ -358,6 +358,13 @@ public class ApiController {
 			home.setHome_id(member.getHome_id());
 			List<MemberVO> memberList = mobileService.getMemberList(home);
 			
+			//member에 학교명이 없기 때문에 memberList에서 학교명을 추출한다.
+			for(MemberVO m : memberList) {
+				if(m.getMember_id() == inGeofenceVO.getMember_id()) {
+					member.setSchool_name(m.getSchool_name());
+				}
+			}
+			
 			for(MemberVO m : memberList) {
 				if(m.getIs_parent() == 1) {
 					if(!StringUtils.isNullOrEmpty(m.getGcm_id())) {
