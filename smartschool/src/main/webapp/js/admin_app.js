@@ -355,20 +355,17 @@ app.controller('MemberCtrl', ['$scope', '$http', '$rootScope', '$window', '$cook
 	$scope.pay_mode = "";
 	$scope.pay_mode_text = "결제일 추가";
 
-	$scope.leaves = [
-		{code: 0, name: "탈퇴"},
-		{code: 1, name: "사용중"}
-	];
+	$scope.leaves = {
+		"탈퇴":0, "사용중": 1
+	};
 
-	$scope.deletes = [
-		{code: 0, name: "삭제"},
-		{code: 1, name: "사용중"}
-	];
+	$scope.deletes = {
+		"삭제":0, "사용중":1
+	};
 
-	$scope.parents = [
-		{code: 0, name: "자녀"},
-		{code: 1, name: "부모"}
-	];
+	$scope.parents = {
+		"자녀": 0, "부모": 1
+	};
 
 	$scope.isMemberEdit = function() {
 		if($scope.member_mode == "edit") {
