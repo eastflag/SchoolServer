@@ -297,6 +297,15 @@
 		VALUES(#{member_id}, #{school_id}, #{type})
 </insert>
 
+<select id="selectGeofenceList" parameterType="GeofenceVO" resultType="GeofenceVO">
+	SELECT geofence.type, member.sex,
+		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', school.school_name
+	FROM geofence inner join member on geofence.member_id = member.member_id
+		inner join school on geofence.school_id = school.school_id
+	WHERE geofence.member_id = #{member_id}
+	ORDER BY geofence.created desc
+</select>
+
 <select id="selectLastLocation" parameterType="MemberVO" resultType="LocationVO">
 	SELECT 
 		member_id,

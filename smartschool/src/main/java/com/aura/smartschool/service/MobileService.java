@@ -81,6 +81,7 @@ public interface MobileService {
 	
 	//지오펜스
 	public long addGeofence(GeofenceVO geofenceVO);
+	public List<GeofenceVO> getGeofenceList(GeofenceVO geofenceVO);
 	
 	//위치 정보 기록하기
 	public long addLocationAccess(LocationAccessVO accessVO);

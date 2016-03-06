@@ -407,6 +407,20 @@ public class ApiController {
 		return new Result(result, msg);
 	}
 	
+	//지오펜스 리스트 가져오기
+	@RequestMapping("/api/getGeofenceList")
+	public Result getGeofenceList(@RequestBody GeofenceVO inGeofenceVO) {
+		logger.debug("/api/getGeofenceList-------------------------------------------------------");
+		
+		List<GeofenceVO> geofenceList = mobileService.getGeofenceList(inGeofenceVO);
+		
+		if(geofenceList.size() > 0) {
+			return new ResultData<List<GeofenceVO>>(0, "success", geofenceList);
+		} else {
+			return new ResultData<List<GeofenceVO>>(100, "geofence does not exist", geofenceList);
+		}
+	}
+	
 	//오늘날짜의 위치 데이터 가져오기
 	@RequestMapping("/api/getLocationList")
 	public Result getLocationList(@RequestBody MemberVO member) {

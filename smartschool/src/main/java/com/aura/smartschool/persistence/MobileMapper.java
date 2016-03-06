@@ -72,6 +72,7 @@ public interface MobileMapper {
 	
 	//지오펜스 
 	public long insertGeofence(GeofenceVO geofenceVO);
+	public List<GeofenceVO> selectGeofenceList(GeofenceVO geofenceVO);
 	
 	//위치 정보 기록하기
 	public long insertLocationAccess(LocationAccessVO accessVO);

@@ -1276,4 +1276,9 @@ public class MobileServiceImpl implements MobileService {
 		return mobileMapper.insertGeofence(geofenceVO);
 	}
 
+	@Override
+	public List<GeofenceVO> getGeofenceList(GeofenceVO geofenceVO) {
+		return mobileMapper.selectGeofenceList(geofenceVO);
+	}
+
 }
