@@ -371,7 +371,7 @@ public class ApiController {
 						//gcm, apns를 보내기전에 기록을 저장
 						
 						JsonObject value = new JsonObject();
-						value.addProperty("school_id", member.getSchool_id());
+						value.addProperty("member_id", inGeofenceVO.getMember_id());
 						value.addProperty("school_name", member.getSchool_name());
 						value.addProperty("name", member.getName());
 						value.addProperty("sex", member.getSex());
