@@ -1664,9 +1664,10 @@ select
 		truncate(round(inbody_info.height*10)/10, 1) as 'height',
 		truncate(round(inbody_info.weight*10)/10, 1) as 'weight',
 		case
-			when ppm = '0' or ppm = '1' or ppm = '2' then '비흡연'
-            when ppm = '3' or ppm = '4' then '간접흡연'
-            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
+			when ppm <![CDATA[>=]]> 0  and ppm <![CDATA[<=]]> 4  then '비흡연'
+            when ppm <![CDATA[>=]]> 5  and ppm <![CDATA[<=]]> 6  then '간접흡연'
+            when ppm <![CDATA[>=]]> 7  and ppm <![CDATA[<=]]> 10 then '흡연중'
+            when ppm <![CDATA[>=]]> 11 and ppm <![CDATA[<=]]> 40 then '과다흡연'
 		    else '데이터없음'
       		end as 'smoke',
       		(select SUBSTR(ms.Srandard_Grade,  1, INSTR(ms.Srandard_Grade, ' ') - 1)
@@ -1749,9 +1750,10 @@ select
 	SELECT DATE_FORMAT(measure_info.measure_date, '%Y-%m') as output_date,
 		school.school_name, measure_info.school_grade, member.sex,
 		case
-			when ppm = '0' or ppm = '1' or ppm = '2' then '비흡연'
-            when ppm = '3' or ppm = '4' then '간접흡연'
-            when ppm = '5' or ppm = '6' or ppm = '7' or ppm = '8' or ppm = '9' then '흡연중'
+			when ppm <![CDATA[>=]]> 0  and ppm <![CDATA[<=]]> 4  then '비흡연'
+            when ppm <![CDATA[>=]]> 5  and ppm <![CDATA[<=]]> 6  then '간접흡연'
+            when ppm <![CDATA[>=]]> 7  and ppm <![CDATA[<=]]> 10 then '흡연중'
+            when ppm <![CDATA[>=]]> 11 and ppm <![CDATA[<=]]> 40 then '과다흡연'
 		    else '데이터없음'
         end as 'smoke', 
         count(*) as 'count'
