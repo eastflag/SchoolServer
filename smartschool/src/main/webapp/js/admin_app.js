@@ -1998,19 +1998,18 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 	
 	$scope.f = [];
 	$scope.uploadFiles = function(file,idx) {
-		console.log('index=> ',idx);
 		if (file != null && file.name != null) {
-			$scope.f.push(file);
+			$scope.f[idx] = file
 			$scope.filenames[idx].name = file.name;
 		};
 	}
 	
 	$scope.checkImgName = function(){
 		for(var i=0; i<($scope.filenames.length-1); i++){
-			if($scope.filenames[i].name == '') continue;
+			if($scope.filenames[i].name == null) continue;
 			
 			for(var j=i+1; j<$scope.filenames.length; j++){
-				if($scope.filenames[j].name != '' && $scope.filenames[j].name == $scope.filenames[i].name){
+				if($scope.filenames[j].name != null && $scope.filenames[j].name == $scope.filenames[i].name){
 					return false;
 				}
 			}
@@ -2209,16 +2208,16 @@ app.controller('MagazineCtrl', ['$scope', '$rootScope', '$window', '$cookieStore
 		
 		var path = '/upload/magazine/'+magazine.year+'/'+magazine.month+'/';
 		$scope.slide_images = [
-			{image: magazine.img_1!=''?path+magazine.img_1:''},
-			{image: magazine.img_2!=''?path+magazine.img_2:''},
-			{image: magazine.img_3!=''?path+magazine.img_3:''},
-			{image: magazine.img_4!=''?path+magazine.img_4:''},
-			{image: magazine.img_5!=''?path+magazine.img_5:''},
-			{image: magazine.img_6!=''?path+magazine.img_6:''},
-			{image: magazine.img_7!=''?path+magazine.img_7:''},
-			{image: magazine.img_8!=''?path+magazine.img_8:''},
-			{image: magazine.img_9!=''?path+magazine.img_9:''},
-			{image: magazine.img_10!=''?path+magazine.img_10:''}
+			{image: magazine.img_1!='null'?path+magazine.img_1:''},
+			{image: magazine.img_2!='null'?path+magazine.img_2:''},
+			{image: magazine.img_3!='null'?path+magazine.img_3:''},
+			{image: magazine.img_4!='null'?path+magazine.img_4:''},
+			{image: magazine.img_5!='null'?path+magazine.img_5:''},
+			{image: magazine.img_6!='null'?path+magazine.img_6:''},
+			{image: magazine.img_7!='null'?path+magazine.img_7:''},
+			{image: magazine.img_8!='null'?path+magazine.img_8:''},
+			{image: magazine.img_9!='null'?path+magazine.img_9:''},
+			{image: magazine.img_10!='null'?path+magazine.img_10:''}
 		];
 		
 		setSwiper();
