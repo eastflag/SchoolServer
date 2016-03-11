@@ -13,6 +13,7 @@ public class RankingListItem {
 	private int rank;
 	private int beforeRank;
 	private int total;
+	private int beforeTotal;
 	
 	private List<BodyMeasureGrade> list;
 	public int getMemberId() {
@@ -68,6 +69,12 @@ public class RankingListItem {
 	}
 	public void setTotal(int total) {
 		this.total = total;
+	}
+	public int getBeforeTotal() {
+		return beforeTotal;
+	}
+	public void setBeforeTotal(int beforeTotal) {
+		this.beforeTotal = beforeTotal;
 	}
 	public List<BodyMeasureGrade> getList() {
 		return list;

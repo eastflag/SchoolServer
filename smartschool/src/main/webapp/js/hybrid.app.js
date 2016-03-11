@@ -1885,6 +1885,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.diffRankOfNation = 0;
 	
 	$scope.setRankingData = function(data){
+		console.log('data =>',data);
 		$scope.measureDate = data.measureDate.substring(0,7);
 		$scope.value = data.value;
 		$scope.beforeValue = data.beforeValue;
@@ -1906,7 +1907,9 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.nameOfLocal = data.nameOfLocal;
 		$scope.totalOfLocal = data.totalOfLocal;
 		$scope.rankOfLocal = (data.rankOfLocal/data.totalOfLocal*100).toFixed(2);
-		$scope.beforeRankOfLocal = (data.beforeRankOfLocal / data.totalOfLocal * 100).toFixed(2);
+		$scope.beforeRankOfLocal = (data.beforeRankOfLocal / data.beforeTotalOfLocal * 100).toFixed(2);
+		console.log('rankOfLocal=>',$scope.rankOfLocal);
+		console.log('beforeRankOfLocal=>',$scope.beforeRankOfLocal);
 		if($scope.rankOfLocal == $scope.beforeRankOfLocal){
 			$scope.localChange = '';
 		}else if($scope.rankOfLocal < $scope.beforeRankOfLocal){
@@ -1918,7 +1921,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 
 		$scope.totalOfNation = data.totalOfNation;
 		$scope.rankOfNation = (data.rankOfNation/data.totalOfNation*100).toFixed(2);
-		$scope.beforeRankOfNation = (data.beforeRankOfNation / data.totalOfNation*100).toFixed(2);
+		$scope.beforeRankOfNation = (data.beforeRankOfNation / data.beforeTotalOfNation*100).toFixed(2);
 		if($scope.rankOfNation == $scope.beforeRankOfNation){
 			$scope.nationChange = '';
 		}else if($scope.rankOfNation < $scope.beforeRankOfNation){
@@ -1998,11 +2001,14 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			rank:data.rank,
 			beforeRank:data.beforeRank,
 			total:data.total,
+			beforeTotal:data.beforeTotal,
 			rank_rate:(data.rank/data.total*100).toFixed(2)
 		}
 		$scope.rank_list = data.list;
 	};
 	$scope.getRankingHeightList = function(){
+		$scope.rank_info = null;
+		$scope.rank_list = [];
 		RankingSvc.getRankingHeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
@@ -2015,6 +2021,8 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingWeightList = function(){
+		$scope.rank_info = null;
+		$scope.rank_list = [];
 		RankingSvc.getRankingWeightList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
@@ -2027,6 +2035,8 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingBmiList = function(){
+		$scope.rank_info = null;
+		$scope.rank_list = [];
 		RankingSvc.getRankingBmiList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
@@ -2039,6 +2049,8 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingMuscleList = function(){
+		$scope.rank_info = null;
+		$scope.rank_list = [];
 		RankingSvc.getRankingMuscleList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
@@ -2051,6 +2063,8 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 			});
 	};
 	$scope.getRankingFatList = function(){
+		$scope.rank_info = null;
+		$scope.rank_list = [];
 		RankingSvc.getRankingFatList({member_id:$scope.student_id,search_key:$scope.list_tab})
 			.success(function(response){
 				if(response.result==0){
@@ -2084,22 +2098,28 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	}
 	
 	$scope.schoolRankDiff = function(rank, beforeRank){
-		return Math.abs(rank - beforeRank);
-	}
-	
-	$scope.fontColor = function(rank, beforeRank){
-		if(rank < beforeRank){
-			return 'font_red';
-		} else if(rank > beforeRank){
-			return 'font_red';
-		} else {
-			return '';
+		if(rank > beforeRank){
+			return (rank - beforeRank);
+		}else{
+			return (beforeRank - rank);
 		}
 	}
 	
-	$scope.changeRankDiff = function(rank, beforeRank, total){
+	$scope.fontColor = function(rank, total, beforeRank, beforeTotal){
 		var v_rank = (rank/total*100).toFixed(2);
-		var v_beforeRank = (beforeRank/total*100).toFixed(2);
+		var v_beforeRank = (beforeRank/beforeTotal*100).toFixed(2);
+		if(v_rank == v_beforeRank){
+			return '';
+		} else if(v_rank>v_beforeRank){
+			return 'font_red';
+		} else if(v_rank<v_beforeRank){
+			return 'font_red';
+		}
+	}
+	
+	$scope.changeRankDiff = function(rank, total, beforeRank, beforeTotal){
+		var v_rank = (rank/total*100).toFixed(2);
+		var v_beforeRank = (beforeRank/beforeTotal*100).toFixed(2);
 		if(v_rank == v_beforeRank){
 			return '-';
 		} else {

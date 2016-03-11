@@ -14,15 +14,18 @@ public class RankingItem {
 	
 	private int totalOfSchool;
 	private int rankOfSchool;
+	private int beforeTotalOfSchool;
 	private int beforeRankOfSchool;
 	
 	private String nameOfLocal;
 	private int totalOfLocal;
 	private int rankOfLocal;
+	private int beforeTotalOfLocal;
 	private int beforeRankOfLocal;
 
 	private int totalOfNation;
 	private int rankOfNation;
+	private int beforeTotalOfNation;
 	private int beforeRankOfNation;
 	
 	public int getMember_id() {
@@ -85,6 +88,12 @@ public class RankingItem {
 	public void setRankOfSchool(int rankOfSchool) {
 		this.rankOfSchool = rankOfSchool;
 	}
+	public int getBeforeTotalOfSchool() {
+		return beforeTotalOfSchool;
+	}
+	public void setBeforeTotalOfSchool(int beforeTotalOfSchool) {
+		this.beforeTotalOfSchool = beforeTotalOfSchool;
+	}
 	public int getBeforeRankOfSchool() {
 		return beforeRankOfSchool;
 	}
@@ -109,6 +118,12 @@ public class RankingItem {
 	public void setRankOfLocal(int rankOfLocal) {
 		this.rankOfLocal = rankOfLocal;
 	}
+	public int getBeforeTotalOfLocal() {
+		return beforeTotalOfLocal;
+	}
+	public void setBeforeTotalOfLocal(int beforeTotalOfLocal) {
+		this.beforeTotalOfLocal = beforeTotalOfLocal;
+	}
 	public int getBeforeRankOfLocal() {
 		return beforeRankOfLocal;
 	}
@@ -126,6 +141,12 @@ public class RankingItem {
 	}
 	public void setRankOfNation(int rankOfNation) {
 		this.rankOfNation = rankOfNation;
+	}
+	public int getBeforeTotalOfNation() {
+		return beforeTotalOfNation;
+	}
+	public void setBeforeTotalOfNation(int beforeTotalOfNation) {
+		this.beforeTotalOfNation = beforeTotalOfNation;
 	}
 	public int getBeforeRankOfNation() {
 		return beforeRankOfNation;

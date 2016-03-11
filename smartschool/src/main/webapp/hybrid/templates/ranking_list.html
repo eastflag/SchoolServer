@@ -122,8 +122,8 @@
 						<td>{{rank_info.name}}</td>
 						<td>{{rank_info.value}}{{ranking_unit}}</td>
 						<td ng-class="schoolFontColor(rank_info.rank,rank_info.beforeRank)">
-							<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.beforeRank,rank_info.total)}}</span>
-							<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.beforeRank,rank_info.total)}}</span>
+							<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.total,rank_info.beforeRank,rank_info.beforeTotal)}}</span>
+							<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) =='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(rank_info.rank,rank_info.total,rank_info.beforeRank,rank_info.beforeTotal)}}</span>
 							<span ng-if="schoolFontColor(rank_info.rank,rank_info.beforeRank) ==''"><strong>-</strong></span>
 						</td>
 					</tr>
@@ -156,10 +156,10 @@
 							<td>{{row.schoolGrade}}</td>
 							<td>{{blindeName(row.name)}}</td>
 							<td>{{row.value}}{{ranking_unit}}</td>
-							<td ng-class="schoolFontColor(row.rank,row.beforeRank)">
-								<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
-								<span ng-if="schoolFontColor(row.rank,row.beforeRank)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{schoolRankDiff(row.rank ,row.beforeRank)}}</span>
-								<span ng-if="schoolFontColor(row.rank,row.beforeRank)==''"><strong>-</strong></span>
+							<td ng-class="fontColor(row.rank,row.total,row.beforeRank,row.beforeTotal)">
+								<span ng-if="fontColor(row.rank,row.total,row.beforeRank,row.beforeTotal)=='font_red'"><img src="/images/aura_in_app/ico_rank_up.png" alt="" class="img_rank" /> {{changeRankDiff(row.rank,row.total,row.beforeRank,row.beforeTotal)}}</span>
+								<span ng-if="fontColor(row.rank,row.total,row.beforeRank,row.beforeTotal)=='font_blue'"><img src="/images/aura_in_app/ico_rank_down.png" alt="" class="img_rank" /> {{changeRankDiff(row.rank,row.total,row.beforeRank,row.beforeTotal)}}</span>
+								<span ng-if="fontColor(row.rank,row.total,row.beforeRank,row.beforeTotal)==''"><strong>-</strong></span>
 							</td>
 						</tr>
 					</tbody>

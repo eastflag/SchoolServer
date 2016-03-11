@@ -1116,23 +1116,37 @@ public class MobileServiceImpl implements MobileService {
 
 			//이전 등수와 전체 학생수 : 이전 데이터가 없다면 최신데이터 값이 들어감.
 			if(list.size()>1) {
-				param.put("measureDate",list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
+				//이전 측정월을 가져와서 세팅
+				Map<String,Object> param2 = new HashMap<String,Object>();
+				param2.put("member_id",summaryVO.getMember_id());
+				param2.put("sex",summaryVO.getSex());
+				param2.put("school_id", list.get(1).getSchool_id());
+				param2.put("school_grade_id", list.get(1).getSchool_grade_id());
+				param2.put("section",section);
+				param2.put("measureDate",list.get(1).getMeasure_date());
+				
 				//학교등수,학생수 구하기--------------------------------------------------------
 				param.put("gubun", "school");
-				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param);
+				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param2);
 				rank.setBeforeRankOfSchool(result4.getRank());
+				rank.setBeforeTotalOfSchool(result4.getTotal());
 				//지역등수,학생수 구하기--------------------------------------------------------
 				param.put("gubun", "local");
-				BodyMeasureGrade result5 = mobileMapper.selectRankingByGubun(param);
+				BodyMeasureGrade result5 = mobileMapper.selectRankingByGubun(param2);
 				rank.setBeforeRankOfLocal(result5.getRank());
+				rank.setBeforeTotalOfLocal(result5.getTotal());
 				//전국등수,학생수 구하기--------------------------------------------------------
 				param.put("gubun", "nation");
-				BodyMeasureGrade result6 = mobileMapper.selectRankingByGubun(param);
+				BodyMeasureGrade result6 = mobileMapper.selectRankingByGubun(param2);
 				rank.setBeforeRankOfNation(result6.getRank());
+				rank.setBeforeTotalOfNation(result6.getTotal());
 			} else {
 				rank.setBeforeRankOfSchool(rank.getRankOfSchool());
+				rank.setBeforeTotalOfSchool(rank.getTotalOfSchool());
 				rank.setBeforeRankOfLocal(rank.getRankOfLocal());
+				rank.setBeforeTotalOfLocal(rank.getTotalOfLocal());
 				rank.setBeforeRankOfNation(rank.getRankOfNation());
+				rank.setBeforeTotalOfNation(rank.getBeforeTotalOfNation());
 			}
 			return rank;
 		}
@@ -1188,15 +1202,25 @@ public class MobileServiceImpl implements MobileService {
 
 			//이전 등수와 전체 학생수 : 이전 데이터가 없다면 최신데이터 값이 들어감.
 			if(summary_list.size()>1) {
-				param.put("measureDate",summary_list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
-				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param);
+				//이전 측정월을 가져와서 세팅
+				Map<String,Object> param2 = new HashMap<String,Object>();
+				param2.put("member_id",summaryVO.getMember_id());
+				param2.put("sex",summaryVO.getSex());
+				param2.put("school_id", summary_list.get(1).getSchool_id());
+				param2.put("school_grade_id", summary_list.get(1).getSchool_grade_id());
+				param2.put("section",section);
+				param2.put("measureDate",summary_list.get(1).getMeasure_date());
+				param2.put("gubun", in.getSearch_key());
+				
+				BodyMeasureGrade result4 = mobileMapper.selectRankingByGubun(param2);
 				rank.setBeforeRank(result4.getRank());
+				rank.setBeforeTotal(result4.getTotal());
 			} else {
 				rank.setBeforeRank(rank.getRank());
+				rank.setBeforeTotal(rank.getTotal());
 			}
 			
 			//순위[1~10]
-			param.put("measureDate",summaryVO.getMeasure_date());
 			List<BodyMeasureGrade> ranklist = mobileMapper.selectRankingList(param);
 			//------------------- 이전 등수 가져오기 ------------------------------------------
 			for(BodyMeasureGrade row : ranklist){
@@ -1215,8 +1239,10 @@ public class MobileServiceImpl implements MobileService {
 					p.put("measureDate",list.get(1).getMeasure_date()); //이전 측정월을 가져와서 세팅
 					BodyMeasureGrade rs = mobileMapper.selectRankingByGubun(p);
 					row.setBeforeRank(rs.getRank());
+					row.setBeforeTotal(rs.getTotal());
 				}else{
 					row.setBeforeRank(row.getRank());
+					row.setBeforeTotal(row.getTotal());
 				}
 			}
 			rank.setList(ranklist);
