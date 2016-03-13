@@ -1,5 +1,6 @@
 package com.aura.smartschool.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -836,13 +837,25 @@ public class MobileServiceImpl implements MobileService {
 	public int addChallenge(ChallengeVO challenge, String path) throws Exception {
 		//파일 업로드
 		for(int i=0; i<challenge.getFiles().size(); i++){
-			String name = FileUtil.fileUpload(challenge.getFiles().get(i), path);
+			String fileName = FileUtil.doMakeUniqueFileName(path,"jpg");
+			File dir = new File(path);
+			
+			//디렉토리 생성
+			if(!dir.isDirectory()){
+				dir.mkdirs();
+			}
+			MultipartFile file = challenge.getFiles().get(i);
+			if(!file.isEmpty()){
+				File saveFile = new File(path, fileName);
+				file.transferTo(saveFile);
+			}
+			
 			switch(i){
-				case 0: challenge.setImg_1(name); break;
-				case 1: challenge.setImg_2(name); break;
-				case 2: challenge.setImg_3(name); break;
-				case 3: challenge.setImg_4(name); break;
-				case 4: challenge.setImg_5(name); break;
+				case 0: challenge.setImg_1(fileName); break;
+				case 1: challenge.setImg_2(fileName); break;
+				case 2: challenge.setImg_3(fileName); break;
+				case 3: challenge.setImg_4(fileName); break;
+				case 4: challenge.setImg_5(fileName); break;
 			}
 		}
 		

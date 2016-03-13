@@ -2374,10 +2374,6 @@ app.controller('MagazineCtrl',['$scope', '$rootScope', '$cookies', '$window', '$
 }]);
 
 app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'Upload', 'ChallengeSvc', function($scope, $rootScope, $cookies, $window, $location, Upload, ChallengeSvc){
-	$scope.challenge = {
-		title:null,
-		content:null
-	}
 	$scope.f = [];
 	$scope.filenames = [
 		{code:1, name:null},
@@ -2401,37 +2397,6 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			});
 	}
 	
-	$scope.clearChallenge = function(){
-		$scope.challenge = {
-			title:null,
-			content:null
-		}
-		$scope.f = [];
-		$scope.filenames = [
-			{code:1, name:null},
-			{code:2, name:null},
-			{code:3, name:null},
-			{code:4, name:null},
-			{code:5, name:null},
-		];
-	}
-	
-	//첨부이미지 체크
-	$scope.uploadFiles = function(file,idx) {
-		if(file  && file.$error && 
-				(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-		){
-			UTIL.alert('이미지 파일만 등록가능합니다.');
-		} else if(file.size <10 || file.size > 1000*1000*10){
-			$console.log('10MB이하의 이미지만 등록가능합니다.');
-		}
-		else{
-			$scope.f[idx] = file;
-			$scope.filenames[idx].name = file.name;
-			console.log('attach file length => '+$scope.f.length);
-		}
-	}
-	
 	//도전!건강! 동일이미지명 체크
 	$scope.checkImgName = function(){
 		for(var i=0; i<($scope.filenames.length-1); i++){
@@ -2444,6 +2409,23 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			}
 		}
 		return true;
+	}
+	
+	//첨부이미지
+	$scope.selectFile = function(idx){
+		UTIL.getPhotoNoneCrop(
+			function(data){
+				var image = 'data:image/jpg;base64,'+data.image;
+				var d = new Date();
+				var name = d.getTime();
+				
+				$scope.$apply(function(){
+					$scope.f[idx] = Upload.dataUrltoBlob(image);
+					$scope.filenames[idx].name = name;
+				});
+			}
+			,function(){}
+		);
 	}
 	
 	//도전!!건강!! 수기응모
@@ -2465,26 +2447,14 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			return;
 		}
 		else {
-			var challenge = {
-					home_id: $scope.home_id,
-					member_id: $scope.member_id,
-					title: $scope.challenge.title,
-					content: $scope.challenge.content,
-					img_1: $scope.filenames[0].name,
-					img_2: $scope.filenames[1].name,
-					img_3: $scope.filenames[2].name,
-					img_4: $scope.filenames[3].name,
-					img_5: $scope.filenames[4].name,
-					files: $scope.f
-				}
-				
+			var challenge = {home_id: $scope.home_id,member_id: $scope.member_id,title: $scope.challenge.title,content: $scope.challenge.content,files: $scope.f}
+			
 			$scope.upload = Upload.upload({
 				url: '/api/addChallenge',
 				data : challenge
 			}).success(function(response) {
 				if(response.result == 0) {
 					UTIL.alert('도전건강! 응모하기가 완료되었습니다.');
-					$scope.clearChallenge();
 					$location.path('challenge');
 				} else {
 					UTIL.alert(response.msg);

@@ -136,7 +136,7 @@
 				</div>
 				<div class="in_file" ng-repeat="attach in filenames">
 					<input type="text" placeholder="이미지 (ex A.jpg / D.jpg, 10MB이하)" ng-model="filenames[$index].name" readonly="readonly" />
-					<label class="btn_file" type="file" ngf-select="uploadFiles($file,$index)" ngf-pattern="'.png,.jpg,.gif'" ngf-validate="{size:{min:'10B', max:'10MB'}}">찾아보기</label>
+					<label class="btn_file" type="file" ngf-select="uploadFiles($file,$index)" ngf-accept="'image/jpeg'" ngf-pattern="'.jpg'" ngf-validate="{size:{min:'10B', max:'10MB'}}">찾아보기</label>
 				</div>
 				<div class="half_wrap mg_top15">
 					<button type="submit" class="btn_common_blue box_round" ng-click="addChallenge()">확인</button>

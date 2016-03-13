@@ -261,6 +261,16 @@ var UTIL = function() {
 	};
 	
 	/**
+	 * image를 가져온다.
+	 */
+	var _getPhotoNoneCrop = function(success, error) {
+		var data = {
+			'type'		: NATIVE.CONST_COMMAND_GET_PHOTO_NONE_CROP
+		};
+		NATIVE.HYBRID.EXECUTE(data, success, error);
+	};
+	
+	/**
 	 * 푸쉬 수신 시, command를 가져온다.
 	 */
 	var _getPushCommand = function(success, error) {
@@ -411,6 +421,7 @@ var UTIL = function() {
 		hideIndicator:_hideIndicator,
 		getGPSData : _getGPSData,
 		getPhoto : _getPhoto,
+		getPhotoNoneCrop : _getPhotoNoneCrop,
 		comma : _comma
 	};
 }();

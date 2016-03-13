@@ -2204,11 +2204,9 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 	//첨부이미지 체크
 	$scope.uploadFiles = function(file,idx) {
 		console.log('file selected');
-		if(file  && file.$error && 
-				(file.$errorParam.indexOf('.png') > -1 || file.$errorParam.indexOf('.jpg') > -1 || file.$errorParam.indexOf('.gif') > -1)
-		){
-			$window.alert('이미지파일만 등록가능합니다.');
-		} else if(file.size <10 || file.size > 1000*1000*10){
+		if(file && file.$error && file.$errorParam.indexOf('.jpg') > -1){
+			$window.alert('jpg파일만 등록가능합니다.');
+		} else if(file && file.size <10 || file.size > 1000*1000*10){
 			$console.log('10MB이하의 이미지만 등록가능합니다.');
 		}
 		else{
@@ -2251,18 +2249,7 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 			return;
 		}
 		else {
-			var challenge = {
-				home_id: $scope.home_id,
-				member_id: $scope.member_id,
-				title: $scope.challenge.title,
-				content: $scope.challenge.content,
-				img_1: $scope.filenames[0].name,
-				img_2: $scope.filenames[1].name,
-				img_3: $scope.filenames[2].name,
-				img_4: $scope.filenames[3].name,
-				img_5: $scope.filenames[4].name,
-				files: $scope.f
-			}
+			var challenge = {home_id: $scope.home_id,member_id: $scope.member_id,title: $scope.challenge.title,content: $scope.challenge.content,files: $scope.f}
 			
 			$scope.upload = Upload.upload({
 				url: '/api/addChallenge',

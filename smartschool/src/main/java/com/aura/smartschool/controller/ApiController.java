@@ -947,22 +947,29 @@ public class ApiController {
 		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
 	}
 
-	//도전건강! 응모하기
+	/**
+	 * 도전건강! 응모하기
+	 * @param request
+	 * @param data
+	 * @param files
+	 * @return
+	 */
 	@RequestMapping(value="/api/addChallenge")
 	public Result addChallenge(HttpServletRequest request, @ModelAttribute ChallengeVO challenge) {
-		logger.debug("/api/addChallenge---------------------------------------------------");
-		String path = request.getServletContext().getRealPath("/upload") + "/challenge/"+challenge.getHome_id();
+		logger.debug("/web/api/addChallenge---------------------------------------------------");
+		String path = request.getServletContext().getRealPath("/upload") + "challenge/"+challenge.getHome_id();
 		logger.debug("path : " + path);
+		
 		try{
 			int rs = this.mobileService.addChallenge(challenge, path);
-			if(rs > 0) {
+			if (rs != 0) {
 				return new Result(0, "success");
-			} else {
-				return new Result(100, "insert or update failed");
+			}else{
+				return new Result(100, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Result(100, "insert or update failed");
+			return new Result(200, "오류가 발생하였습니다.\n잠시후에 시도하세요.");
 		}
 	}
 	
