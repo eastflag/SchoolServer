@@ -1667,6 +1667,7 @@ select
 		CAST(AES_DECRYPT(unhex(member.name), 'aura') AS CHAR(100)) as 'name', 
 		truncate(round(inbody_info.height*10)/10, 1) as 'height',
 		truncate(round(inbody_info.weight*10)/10, 1) as 'weight',
+		smoke_info.ppm,
 		case
 			when ppm <![CDATA[>=]]> 0  and ppm <![CDATA[<=]]> 4  then '비흡연'
             when ppm <![CDATA[>=]]> 5  and ppm <![CDATA[<=]]> 6  then '간접흡연'
@@ -1674,7 +1675,8 @@ select
             when ppm <![CDATA[>=]]> 11 and ppm <![CDATA[<=]]> 40 then '과다흡연'
 		    else '데이터없음'
       		end as 'smoke',
-      		(select SUBSTR(ms.Srandard_Grade,  1, INSTR(ms.Srandard_Grade, ' ') - 1)
+      	truncate(round(inbody_info.bmi*10)/10, 1) as 'bmi',
+      	(select SUBSTR(ms.Srandard_Grade,  1, INSTR(ms.Srandard_Grade, ' ') - 1)
 			from
 				healthcare_gwangmyeong.ms_grade_data as ms inner join healthcare_gwangmyeong.standard_data as standard
 		        on ms.ms_grade_id = standard.ms_grade_id

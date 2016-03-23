@@ -140,7 +140,9 @@
 							<th ng-click="orderByColumn('sex')" class="pointer"><i class="fa fa-sort-down">성별</th>
 							<th ng-click="orderByColumn('height')" ng-show="select_output=='명단'||select_menu=='HEIGHT'" class="pointer"><i class="fa fa-sort-down"></i>신장</th>
 							<th ng-click="orderByColumn('weight')" ng-show="select_output=='명단'||select_menu=='HEIGHT'" class="pointer"><i class="fa fa-sort-down"></i>체중</th>
+							<th ng-click="orderByColumn('smoke')" ng-show="select_output=='명단'||select_menu=='SMOKE'" class="pointer"><i class="fa fa-sort-down"></i>ppm</th>
 							<th ng-click="orderByColumn('smoke')" ng-show="select_output=='명단'||select_menu=='SMOKE'" class="pointer"><i class="fa fa-sort-down"></i>흡연</th>
+							<th ng-click="orderByColumn('bmi_desc')" ng-show="select_output=='명단'||select_menu=='BMI'" class="pointer"><i class="fa fa-sort-down"></i>bmi</th>
 							<th ng-click="orderByColumn('bmi_desc')" ng-show="select_output=='명단'||select_menu=='BMI'" class="pointer"><i class="fa fa-sort-down"></i>체형</th>
 							<th ng-click="orderByColumn('count')" ng-show="select_menu=='SMOKE'||select_menu=='BMI'" class="pointer"><i class="fa fa-sort-down"></i>카운트</th>
 						</tr>
@@ -156,7 +158,9 @@
 						    <td>{{ r.sex}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='HEIGHT'">{{ r.height}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='HEIGHT'">{{ r.weight}}</td>
+						    <td ng-show="select_output=='명단'||select_menu=='SMOKE'">{{ r.ppm}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='SMOKE'">{{ r.smoke}}</td>
+						    <td ng-show="select_output=='명단'||select_menu=='BMI'">{{ r.bmi}}</td>
 						    <td ng-show="select_output=='명단'||select_menu=='BMI'">{{ r.bmi_desc}}</td>
 						    <td ng-show="select_menu=='SMOKE'||select_menu=='BMI'">{{ r.count}}</td>
 					    </tr>
