@@ -2421,7 +2421,7 @@ app.controller('ChallengeCtrl',['$scope', '$rootScope', '$cookies', '$window', '
 				
 				$scope.$apply(function(){
 					$scope.f[idx] = Upload.dataUrltoBlob(image);
-					$scope.filenames[idx].name = name;
+					$scope.filenames[idx].name = name+'.jpg';
 				});
 			}
 			,function(){}

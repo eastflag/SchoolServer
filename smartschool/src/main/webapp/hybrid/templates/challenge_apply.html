@@ -11,7 +11,7 @@
 				</div>
 				<div class="in_file" ng-repeat="row in filenames">
 					<input type="text" placeholder="이미지 (ex A.jpg / D.jpg, 10MB이하)" ng-model="filenames[$index].name" readonly="readonly" />
-					<button type="button" class="btn_file" ng-click="selectFile()">찾아보기</button>
+					<button type="button" class="btn_file" ng-click="selectFile($index)">찾아보기</button>
 				</div>
 				<div class="half_wrap mg_top15">
 					<button type="submit" class="btn_common_blue box_round" ng-click="addChallenge()">확인</button>
