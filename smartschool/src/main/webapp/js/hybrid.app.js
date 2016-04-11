@@ -297,7 +297,7 @@ app.service('SafeGuardSvc', function($http) {
 	};
 });
 
-app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'MainSvc', function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, MainSvc){
+app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'MainSvc', 'LoginSvc',function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, MainSvc, LoginSvc){
 	//기본정보(로그인 정보)
 	$scope.home_id = null;
 	$scope.member_id = null;
@@ -517,7 +517,6 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 					$location.path('student');
 				}
 			}
-			
 		}else{
 			switch(path){
 			case '/join':
@@ -534,7 +533,57 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.badyClass = bgClass;
 	}
 	
-	$scope.init(null,$scope.home_id,true,true);
+	//안드로이드 요청 - 로그인 처리 
+	$scope.webviewLogin = function(params){
+		console.log('webview login');
+		LoginSvc.login(params)
+			.success(function(response){
+				if(response.result == 0) {
+					var family_list = response.data;
+					
+					//로그인 사용자 설정
+					for(var i=0; i<family_list.length; i++){
+						if(params.mdn == family_list[i].mdn){
+							$scope.home_id = family_list[i].home_id;
+							$scope.member_id = family_list[i].member_id;
+							$scope.mdn = family_list[i].mdn;
+							$scope.is_parent = family_list[i].is_parent;
+							
+							$rootScope.home_id = $scope.home_id;
+							$rootScope.member_id = $scope.member_id;
+							$rootScope.mdn = $scope.mdn;
+							$rootScope.is_parent = $scope.is_parent;
+							
+							//로그인정보 저장
+							var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
+							$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
+							//학생정보 저장
+							$scope.setStudent(family_list[i]);
+							
+							$window.location.href = '/hybrid/index.html#!'+params.u;
+							break;
+						}
+					}
+					
+				} else {
+					UTIL.alert(response.msg);
+				}
+			})
+			.error(function(response, state){
+				UTIL.alert("error : " + response.message);
+			});
+	}
+	
+	if($location.path() == '/webviewLogin'){
+		console.log('안드로이드 요청');
+		var params = $location.search();
+		if(params.home_id != undefined && params.mdn != undefined ){
+			$scope.webviewLogin(params);
+		}else{
+			$scope.init(null,$scope.home_id,true,true);
+		}
+		
+	}
 	$scope.setWrappeDimension('#loadWrapper', 0);
 }]);
 
@@ -2212,6 +2261,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		}
 		console.log('$scope.list_tab => '+$scope.list_tab);
 	}
+	
 	$scope.getStudent();
 	$scope.init('body_ranking',$scope.student_name,true,true);
 	$scope.init_rank();
