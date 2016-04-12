@@ -502,37 +502,6 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	}
 	highlighter.highlight();
 	
-	$scope.badyClass = null;
-	$scope.menu_yn = true;
-	$scope.header_title = null;
-	$scope.backBtnSttus = true;
-	
-	$scope.init = function(bgClass,title,menu,btnBack){
-		var path = $location.path();
-		if($scope.loggedIn()){
-			if(path == '' || path =='/join' || path == '/login'){
-				if($scope.is_parent==1){
-					$location.path('family');
-				} else if($scope.is_parent==0){
-					$location.path('student');
-				}
-			}
-		}else{
-			switch(path){
-			case '/join':
-				$location.path('join');
-				break;
-			default:
-				$location.path('login');
-			}
-		}
-		
-		$scope.menu_yn = menu;
-		$scope.header_title = title;
-		$scope.backBtnSttus = btnBack;
-		$scope.badyClass = bgClass;
-	}
-	
 	//안드로이드 요청 - 로그인 처리 
 	$scope.webviewLogin = function(params){
 		console.log('webview login');
@@ -574,16 +543,46 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 			});
 	}
 	
-	if($location.path() == '/webviewLogin'){
-		console.log('안드로이드 요청');
-		var params = $location.search();
-		if(params.home_id != undefined && params.mdn != undefined ){
-			$scope.webviewLogin(params);
-		}else{
-			$scope.init(null,$scope.home_id,true,true);
+	$scope.badyClass = null;
+	$scope.menu_yn = true;
+	$scope.header_title = null;
+	$scope.backBtnSttus = true;
+	
+	$scope.init = function(bgClass,title,menu,btnBack){
+		var path = $location.path();
+		if(path == '/webviewLogin'){
+			console.log('안드로이드 요청');
+			var params = $location.search();
+			if(params.home_id != undefined && params.mdn != undefined ){
+				$scope.webviewLogin(params);
+			}
+		} else {
+			if($scope.loggedIn()){
+				if(path == '' || path =='/join' || path == '/login'){
+					if($scope.is_parent==1){
+						$location.path('family');
+					} else if($scope.is_parent==0){
+						$location.path('student');
+					}
+				}
+			}else{
+				switch(path){
+				case '/join':
+					$location.path('join');
+					break;
+				default:
+					$location.path('login');
+				}
+			}
+			
+			$scope.menu_yn = menu;
+			$scope.header_title = title;
+			$scope.backBtnSttus = btnBack;
+			$scope.badyClass = bgClass;
 		}
-		
 	}
+	
+	$scope.init(null,$scope.home_id,true,true);
 	$scope.setWrappeDimension('#loadWrapper', 0);
 }]);
 
@@ -1957,8 +1956,6 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		$scope.totalOfLocal = data.totalOfLocal;
 		$scope.rankOfLocal = (data.rankOfLocal/data.totalOfLocal*100).toFixed(2);
 		$scope.beforeRankOfLocal = (data.beforeRankOfLocal / data.beforeTotalOfLocal * 100).toFixed(2);
-		console.log('rankOfLocal=>',$scope.rankOfLocal);
-		console.log('beforeRankOfLocal=>',$scope.beforeRankOfLocal);
 		if($scope.rankOfLocal == $scope.beforeRankOfLocal){
 			$scope.localChange = '';
 		}else if($scope.rankOfLocal < $scope.beforeRankOfLocal){
@@ -1970,6 +1967,9 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 
 		$scope.totalOfNation = data.totalOfNation;
 		$scope.rankOfNation = (data.rankOfNation/data.totalOfNation*100).toFixed(2);
+		if(data.beforeTotalOfNation == 0){
+			data.beforeTotalOfNation = data.totalOfNation;
+		}
 		$scope.beforeRankOfNation = (data.beforeRankOfNation / data.beforeTotalOfNation*100).toFixed(2);
 		if($scope.rankOfNation == $scope.beforeRankOfNation){
 			$scope.nationChange = '';
@@ -1978,7 +1978,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 		}else if($scope.rankOfNation > $scope.beforeRankOfNation){
 			$scope.nationChange = 'font_blue';
 		}
-		$scope.diffRankOfNation = Math.abs(($scope.rankOfNation - $scope.beforeRankOfNation).toFixed(2));
+		$scope.diffRankOfNation = Math.abs($scope.rankOfNation - $scope.beforeRankOfNation).toFixed(2);
 	}
 	
 	$scope.getRankingHeight = function(){
