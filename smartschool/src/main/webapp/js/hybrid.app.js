@@ -550,36 +550,37 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.init = function(bgClass,title,menu,btnBack){
 		var path = $location.path();
-		if(path == '/webviewLogin'){
-			console.log('안드로이드 요청');
-			var params = $location.search();
-			if(params.home_id != undefined && params.mdn != undefined ){
-				$scope.webviewLogin(params);
-			}
-		} else {
-			if($scope.loggedIn()){
-				if(path == '' || path =='/join' || path == '/login'){
-					if($scope.is_parent==1){
-						$location.path('family');
-					} else if($scope.is_parent==0){
-						$location.path('student');
-					}
+		if($scope.loggedIn()){
+			if(path == '' || path =='/join' || path == '/login'){
+				if($scope.is_parent==1){
+					$location.path('family');
+				} else if($scope.is_parent==0){
+					$location.path('student');
 				}
-			}else{
-				switch(path){
-				case '/join':
-					$location.path('join');
-					break;
-				default:
+			}
+		}else{
+			switch(path){
+			case '/join':
+				$location.path('join');
+				break;
+			case '/webviewLogin':
+				console.log('안드로이드 요청');
+				var params = $location.search();
+				if(params.home_id != undefined && params.mdn != undefined ){
+					$scope.webviewLogin(params);
+				}else{
 					$location.path('login');
 				}
+				break;
+			default:
+				$location.path('login');
 			}
-			
-			$scope.menu_yn = menu;
-			$scope.header_title = title;
-			$scope.backBtnSttus = btnBack;
-			$scope.badyClass = bgClass;
 		}
+		
+		$scope.menu_yn = menu;
+		$scope.header_title = title;
+		$scope.backBtnSttus = btnBack;
+		$scope.badyClass = bgClass;
 	}
 	
 	$scope.init(null,$scope.home_id,true,true);
