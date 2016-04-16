@@ -61,6 +61,7 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 		.when('/qna', {templateUrl: '/hybrid/templates/qna.html', controller:'QnaCtrl'})
 		.when('/inquiry', {templateUrl: '/hybrid/templates/inquiry.html', controller:'QnaCtrl'})
 		.when('/info', {templateUrl: '/hybrid/templates/info.html', controller:'OsInfoCtrl'})
+		.when('/webviewLogin', {controller:'WebviewLoginCtrl'})
 		
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -528,8 +529,11 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 							$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
 							//학생정보 저장
 							$scope.setStudent(family_list[i]);
-							
-							$window.location.href = '/hybrid/index.html#!'+params.u;
+							if(params.u != undefined) {
+								$window.location.href = '/hybrid/index.html#!'+params.u;
+							} else {
+								$window.location.href = '/hybrid/index.html#!/student';
+							}
 							break;
 						}
 					}
@@ -550,27 +554,31 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	$scope.init = function(bgClass,title,menu,btnBack){
 		var path = $location.path();
+		var params = $location.search();
+		
+		console.log('path=>',path);
 		if($scope.loggedIn()){
-			if(path == '' || path =='/join' || path == '/login'){
+			switch(path){
+			case '': case '/join': case '/login':
 				if($scope.is_parent==1){
 					$location.path('family');
 				} else if($scope.is_parent==0){
 					$location.path('student');
 				}
+				break;
+			case '/webviewLogin':
+				$window.location.href = '/hybrid/index.html#!'+params.u;
+				break;
 			}
 		}else{
 			switch(path){
-			case '/join':
-				$location.path('join');
-				break;
 			case '/webviewLogin':
-				console.log('안드로이드 요청');
-				var params = $location.search();
 				if(params.home_id != undefined && params.mdn != undefined ){
 					$scope.webviewLogin(params);
-				}else{
-					$location.path('login');
 				}
+				break;
+			case '/join':
+				$location.path('join');
 				break;
 			default:
 				$location.path('login');
@@ -582,9 +590,24 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.backBtnSttus = btnBack;
 		$scope.badyClass = bgClass;
 	}
-	
+	/*
+	if($location.path()=='/webviewLogin'){
+		console.log('webviewlogin');
+		var params = $location.search();
+		if($scope.loggedIn()){
+			console.log('loggedIn');
+			$window.location.href = '/hybrid/index.html#!'+params.u;
+		}else if(params.home_id != undefined && params.mdn != undefined ){
+			$scope.webviewLogin(params);
+		}
+	}else{
+		$scope.init(null,$scope.home_id,true,true);
+	}
+	*/
 	$scope.init(null,$scope.home_id,true,true);
 	$scope.setWrappeDimension('#loadWrapper', 0);
+	
+	console.log('------------------ MainCtrl ------------------');
 }]);
 
 app.controller('JoinCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'Upload', 'LoginSvc', 'JoinSvc', function($scope, $rootScope, $cookies, $window, $location, $timeout, Upload, LoginSvc, JoinSvc){
@@ -1934,7 +1957,7 @@ app.controller('RankingCtrl',['$scope', '$rootScope', '$cookies', '$window', '$l
 	$scope.diffRankOfNation = 0;
 	
 	$scope.setRankingData = function(data){
-		console.log('data =>',data);
+		//console.log('data =>',data);
 		$scope.measureDate = data.measureDate.substring(0,7);
 		$scope.value = data.value;
 		$scope.beforeValue = data.beforeValue;
@@ -3093,4 +3116,8 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 		},5000);
 	}
 	console.log('------------------ SafeGuardCtrl ------------------');
+}]);
+
+app.controller('WebviewLoginCtrl',['$scope', '$window', '$location', function($scope, $window, $location){
+	console.log('------------------ WebviewLoginCtrl ------------------');
 }]);
