@@ -787,6 +787,52 @@
 .app_info_wrap .info_box.com_intro dl dt {width:30%;}
 .app_info_wrap .info_box.com_intro dl dd {float:left; width:70%; font-size:0.875em;}
 
+/* 스마트 이용권 구매 */
+.payment .form_box {padding:50px 3.6% 12px; background:#f6f7f7;}
+.payment .form_box h2 {padding:18px 0 13px; color:#1f8fd0; font-size:0.925em;}
+.payment .form_box .product_list li {margin-top:6px; border:1px solid #bebebe; border-radius:6px; background:#fff; zoom:1;}
+.payment .form_box .product_list li:after {display:block; content:""; clear:both;}
+.payment .form_box .product_list li .info {float:left; padding:10px 0; width:85%; height:55px;}
+.payment .form_box .product_list li .info .price {display:block; padding-left:10px; color:#ea591d; font-size:0.975em; font-weight:normal;}
+.payment .form_box .product_list li .info .summary_big {margin:8px 0; padding-left:10px; color:#393939; font-size:0.975em;}
+.payment .form_box .product_list li .info .summary_small {padding-left:10px; color:#818181; font-size:0.675em;}
+.payment .form_box .product_list li input[type="radio"] {position:absolute; top:0; left:0;}
+.payment .form_box .product_list li label {display:block; float:right; padding-top:15px; width:15%; height:75px; color:#3d3d3d; font-size:0.831em; font-weight:normal; text-align:center; background:#eeeeed url('/images/aura_in_app/bg_radio_black_off.png') no-repeat center 37px; background-size:18px; border-left:1px solid #dcdcdc; border-radius:0 5px 5px 0; box-sizing:border-box;}
+.payment .form_box .product_list li input[type="radio"]:checked + label {background:#eeeeed url('/images/aura_in_app/bg_radio_black_on.png') no-repeat center 37px; background-size:18px;}
+.payment .form_box .payment_type {position:relative; margin-bottom:6px; border:1px solid #cecece; border-radius:6px; background:#fff; zoom:1;}
+.payment .form_box .payment_type:after {display:block; content:""; clear:both;}
+.payment .form_box .payment_type input[type="radio"] {position:absolute; top:0; left:-9999px;}
+.payment .form_box .payment_type label {display:inline-block; margin-left:10px; padding-left:25px; height:39px; line-height:39px; color:#3d3d3d; font-size:0.831em; background:url('/images/aura_in_app/bg_radio_black_off.png') no-repeat left; background-size:18px;}
+.payment .form_box .payment_type input[type="radio"]:checked + label {background:url('/images/aura_in_app/bg_radio_black_on.png') no-repeat left; background-size:18px;}
+.payment .user_guide {padding:15px 3.6%; border-top:1px dashed #bebebe; background:#fff;}
+.payment .user_guide h2 {margin-bottom:10px; color:#373737; font-size:0.975em;}
+.payment .user_guide li {padding-left:14px; height:16px; line-height:16px; color:#a8a8a8; font-size:0.725em; background:url('/images/aura_in_app/bullet_blue_dot.png') no-repeat left 3px; background-size:6px;}
+
+/* 결제실패, 결제완료 */
+.failed_payment {background:#eee;}
+.payment_result {padding:50px 3.6% 0; text-align:center; background:#eee;}
+.payment_result img {display:inline-block; margin:75px 0 58px; width:51.6%;}
+.payment_result .txt_big {margin-bottom:10px; color:#414141; font-size:1.625em;} 
+.payment_result .txt_summary {margin:0 0 35px; color:#676767; font-size:1.25em;} 
+.payment_result .txt_code {margin:0 0 30px; color:#191f60; font-size:1.125em;} 
+
+/* 결제내역 */
+.payment_history_list {padding:50px 3.6% 0; background:#f6f7f7;}
+.payment_history_list li {margin-top:6px; border:1px solid #bebebe; border-radius:6px;}
+.payment_history_list li.use {background:#fff;}
+.payment_history_list li.not_use {background:#eeeeed;}
+.payment_history_list li .row_top {padding:7px 3.6% 9px; border-bottom:1px dashed #bfbfbf; zoom:1;}
+.payment_history_list li .row_top:after {display:block; content:""; clear:both;}
+.payment_history_list li .row_top .title {float:left; height:23px; line-height:23px; color:#393939; font-size:0.975em;}
+.payment_history_list li .row_top .stat {float:right; width:46px; height:23px; line-height:23px; color:#fff; font-size:0.675em; text-align:center;}
+.payment_history_list li .row_bottom {padding:10px 3.6%;}
+.payment_history_list li .row_bottom .info {zoom:1;}
+.payment_history_list li .row_bottom .info:after {display:block; content:""; clear:both;}
+.payment_history_list li .row_bottom .info dl {float:left; margin-left:5px;}
+.payment_history_list li .row_bottom .info dl dt,
+.payment_history_list li .row_bottom .info dl dd {display:inline-block; color:#818181; font-size:0.675em;}
+.payment_history_list li.use .row_top .stat {background:#ea591d;}
+.payment_history_list li.not_use .row_top .stat {background:#575757;}
 
 /* common layer */
 .common_layer {display:none; position:absolute; top:0; left:0; width:100%; height:100%;}

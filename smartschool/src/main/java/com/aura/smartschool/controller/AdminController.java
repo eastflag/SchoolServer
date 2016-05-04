@@ -31,6 +31,7 @@ import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.BoardVO;
 import com.aura.smartschool.domain.ChallengeVO;
 import com.aura.smartschool.domain.ConsultVO;
+import com.aura.smartschool.domain.GoodsVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
 import com.aura.smartschool.domain.MagazineVO;
@@ -1034,5 +1035,69 @@ public class AdminController {
 		}
 		
 		return new ResultData<List<StatVO>>(0, "success", list);
+	}
+	
+	//결제상품 목록조회
+	@RequestMapping("/admin/api/getGoodsList")
+	public ResultData<List<GoodsVO>> getGoodsList(@RequestBody SearchVO search) {
+		logger.debug("/admin/api/getGoodsList--------------------------------------------------");
+		List<GoodsVO> goodsList = mobileService.getGoodsList(search);
+		int total = mobileService.countGoodsList(search);
+		
+		return new ResultDataTotal<List<GoodsVO>>(0, "success", goodsList, total);
+	}
+
+	//결제상품 등록
+	@RequestMapping(value="/admin/api/addGoods")
+	public Result addGoods(@RequestBody GoodsVO goods) {
+		logger.debug("/admin/api/addGoods---------------------------------------------------");
+		
+		try{
+			int rs = this.mobileService.addGoods(goods);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(100, e.getMessage());
+		}
+	}
+
+	//결제상품 수정
+	@RequestMapping(value="/admin/api/modifyGoods")
+	public Result modifyGoods(@RequestBody GoodsVO goods) {
+		logger.debug("/admin/api/modifyGoods---------------------------------------------------");
+		
+		try{
+			int rs = this.mobileService.modifyGoods(goods);
+			if (rs != 0) {
+				return new Result(0, "success");
+			}else{
+				return new Result(100, "fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
+	}
+	
+	//결제상품 삭제
+	@RequestMapping("/admin/api/removeGoods")
+	public Result removeGoods(@RequestBody GoodsVO goods) {
+		logger.debug("/admin/api/removeGoods---------------------------------------------------");
+		
+		try{
+			int rsCnt = mobileService.removeGoods(goods);
+			if(rsCnt > 0) {
+				return new Result(0, "success");
+			} else {
+				return new Result(100, "delete failed");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(200, e.getMessage());
+		}
 	}
 }

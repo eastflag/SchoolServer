@@ -50,6 +50,7 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 	.when('/magazine', {templateUrl: '/admin/templates/magazine.html'})
 	.when('/challenge', {templateUrl: '/admin/templates/challenge.html'})
 	.when('/statistic', {templateUrl: '/admin/templates/statistic.html'})
+	.when('/goods', {templateUrl: '/admin/templates/goods.html'})
 	
 	
 	$locationProvider.html5Mode(false);
@@ -2720,4 +2721,133 @@ app.controller('StatisticCtrl', ['$scope', 'StatSvc', '$rootScope', '$filter', f
  		$scope.isOpened = true;
 	};
 
+}]);
+
+app.service('GoodsSvc', function($http) {
+	this.getGoodsList = function(goods) {
+		return $http.post('/admin/api/getGoodsList', goods);
+	}
+	this.addGoods = function(goods) {
+		return $http.post('/admin/api/addGoods', goods);
+	}
+	this.modifyGoods = function(goods) {
+		return $http.post('/admin/api/modifyGoods', goods);
+	}
+	this.removeGoods = function(goods) {
+		return $http.post('/admin/api/removeGoods', goods);
+	}
+});
+app.controller('GoodsCtrl', ['$scope', '$rootScope', '$window', '$cookieStore', 'GoodsSvc', function ($scope, $rootScope, $window, $cookieStore, GoodsSvc) {
+	$scope.goods_id = '';
+	$scope.goods_name = '';
+	$scope.goods_price = '';
+	$scope.goods_days = '';
+	$scope.goodsList = [];
+
+	$scope.mode = "";
+	$scope.mode_text = "";
+	$scope.currentPage = 1;
+	$scope.totalListCount = 0;
+
+	$scope.getGoodsList = function() {
+		GoodsSvc.getGoodsList({start_index:($scope.currentPage - 1) * 10, page_size:10})
+		.success(function(response, status, headers) {
+			$rootScope.refreshToken(headers('X-Auth'));
+			$scope.goodsList = response.data;
+			$scope.totalListCount = response.total;
+
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.editGoods = function(goods) {
+		$scope.goods_id = goods.goods_id;
+		$scope.goods_name = goods.name;
+		$scope.goods_price = goods.price;
+		$scope.goods_days = goods.days;
+
+		$scope.mode = "edit";
+		$scope.mode_text = "결제상품 수정";
+	}
+
+	$scope.deleteConfirm = function(goods) {
+		if ($window.confirm("삭제하시겠습니까?")) {
+			GoodsSvc.removeGoods(goods)
+			.success(function(result) {
+				$scope.getGoodsList();
+
+				$scope.clearGoods();
+			}).error(function(data, status) {
+				if (status == 401) {
+					$rootScope.logout();
+				} else {
+					alert("error : " + data.message);
+				}
+			});
+		};
+	}
+
+	$scope.modifyGoods = function(){
+		GoodsSvc.modifyGoods({goods_id:$scope.goods_id,name:$scope.goods_name,price:$scope.goods_price,days:$scope.goods_days})
+		.success(function(result) {
+			$scope.getGoodsList();
+
+			$scope.clearGoods();
+		});
+	}
+
+	$scope.addGoods = function() {
+		if ($scope.goods_name == "") {
+			alert("공지 제목을 입력하세요.");
+			return;
+		}
+		if ($scope.goods_price == "") {
+			alert("공지 내용을 입력하세요.");
+			return;
+		}
+		if ($scope.goods_days == "") {
+			alert("이용기간을 입력하세요.");
+			return;
+		}
+
+		GoodsSvc.addGoods({name:$scope.goods_name,price:$scope.goods_price,days:$scope.goods_days})
+		.success(function(result) {
+			$scope.getGoodsList();
+
+			$scope.clearGoods();
+		}).error(function(data, status) {
+			if (status == 401) {
+				$rootScope.logout();
+			} else {
+				alert("error : " + data.message);
+			}
+		});
+	}
+
+	$scope.listPageChanged = function() {
+		$scope.getGoodsList();
+	};
+
+	$scope.initGoods = function() {
+		$scope.clearGoods();
+		$scope.mode = "add";
+		$scope.mode_text = "결제상품 추가";
+	}
+
+	$scope.clearGoods = function(){
+		$scope.mode = "";
+		$scope.mode_text = "";
+
+		$scope.goods_id = '';
+		$scope.goods_name = '';
+		$scope.goods_price = '';
+		$scope.goods_days = '';
+	}
+
+	$scope.getGoodsList();
 }]);

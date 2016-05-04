@@ -61,7 +61,9 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', function ($
 		.when('/qna', {templateUrl: '/hybrid/templates/qna.html', controller:'QnaCtrl'})
 		.when('/inquiry', {templateUrl: '/hybrid/templates/inquiry.html', controller:'QnaCtrl'})
 		.when('/info', {templateUrl: '/hybrid/templates/info.html', controller:'OsInfoCtrl'})
-		.when('/webviewLogin', {controller:'WebviewLoginCtrl'})
+		.when('/paymentStart', {templateUrl: '/hybrid/templates/payment_start.html', controller:'PaymentCtrl'})
+		.when('/paymentResult', {templateUrl: '/hybrid/templates/payment_result.html', controller:'PaymentCtrl'})
+		.when('/paymentList', {templateUrl: '/hybrid/templates/payment_list.html', controller:'PaymentCtrl'})
 		
 	$locationProvider.html5Mode(false);
 	$locationProvider.hashPrefix('!');
@@ -351,7 +353,11 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	
 	//이전페이지 이동
 	$scope.historyBack = function(){
-		window.history.back();
+		if($location.path() == '/paymentResult'){
+			$location.path('family');
+		} else {
+			window.history.back();
+		}
 	}
 	
 	//목록박스 너비,높이 설정
@@ -511,8 +517,8 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 				if(response.result == 0) {
 					var family_list = response.data;
 					
-					//로그인 사용자 설정
 					for(var i=0; i<family_list.length; i++){
+						//로그인정보 저장
 						if(params.mdn == family_list[i].mdn){
 							$scope.home_id = family_list[i].home_id;
 							$scope.member_id = family_list[i].member_id;
@@ -524,20 +530,18 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 							$rootScope.mdn = $scope.mdn;
 							$rootScope.is_parent = $scope.is_parent;
 							
-							//로그인정보 저장
 							var user_info = {home_id:$scope.home_id, member_id:$scope.member_id, mdn:$scope.mdn, is_parent:$scope.is_parent};
 							$cookies.putObject("user_info", user_info,{'path': '/hybrid'});
-							//학생정보 저장
+						}
+						
+						//학생정보 저장
+						if(params.member_id == family_list[i].member_id){
+							console.log(family_list[i]);
 							$scope.setStudent(family_list[i]);
-							if(params.u != undefined) {
-								$window.location.href = '/hybrid/index.html#!'+params.u;
-							} else {
-								$window.location.href = '/hybrid/index.html#!/student';
-							}
-							break;
 						}
 					}
 					
+					$window.location.href = '/hybrid/index.html#!'+params.u;
 				} else {
 					UTIL.alert(response.msg);
 				}
@@ -556,7 +560,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		var path = $location.path();
 		var params = $location.search();
 		
-		console.log('path=>',path);
+		console.log('params=>',params);
 		if($scope.loggedIn()){
 			switch(path){
 			case '': case '/join': case '/login':
@@ -573,7 +577,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		}else{
 			switch(path){
 			case '/webviewLogin':
-				if(params.home_id != undefined && params.mdn != undefined ){
+				if(params.home_id != undefined && params.mdn != undefined && params.member_id != undefined && params.u != undefined){
 					$scope.webviewLogin(params);
 				}
 				break;
@@ -590,20 +594,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.backBtnSttus = btnBack;
 		$scope.badyClass = bgClass;
 	}
-	/*
-	if($location.path()=='/webviewLogin'){
-		console.log('webviewlogin');
-		var params = $location.search();
-		if($scope.loggedIn()){
-			console.log('loggedIn');
-			$window.location.href = '/hybrid/index.html#!'+params.u;
-		}else if(params.home_id != undefined && params.mdn != undefined ){
-			$scope.webviewLogin(params);
-		}
-	}else{
-		$scope.init(null,$scope.home_id,true,true);
-	}
-	*/
+	
 	$scope.init(null,$scope.home_id,true,true);
 	$scope.setWrappeDimension('#loadWrapper', 0);
 	
@@ -1304,6 +1295,10 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		if($scope.getParentJoinData()){
 			commonLayerOpen('join_complete');
 		};
+	}
+	
+	$scope.payment = function(member){
+		$window.location.href = '#!/paymentStart?member_id='+member.member_id;
 	}
 	
 	console.log('------------------ FamilyCtrl ------------------');
@@ -3118,6 +3113,179 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 	console.log('------------------ SafeGuardCtrl ------------------');
 }]);
 
-app.controller('WebviewLoginCtrl',['$scope', '$window', '$location', function($scope, $window, $location){
-	console.log('------------------ WebviewLoginCtrl ------------------');
+app.service('PaymentSvc', function($http) {
+	this.getGoodsList = function(param){
+		console.log('----------------- 상품목록조회 --------------------');
+		return $http.post('/api/getGoodsList',param);
+	};
+	this.result = function(param){
+		console.log('----------------- 결제결과조회 --------------------');
+		return $http.post('/api/payment/result',param);
+	};
+	this.addPayInfo = function(param){
+		console.log('----------------- 결제결과등록 --------------------');
+		return $http.post('/api/addPay',param);
+	};
+	this.getPayList = function(param){
+		console.log('----------------- 결제결과등록 --------------------');
+		return $http.post('/api/getPayInfoList',param);
+	};
+});
+
+app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$cookies', '$timeout', 'PaymentSvc', function($scope, $rootScope, $window, $location, $cookies, $timeout, PaymentSvc){
+	$scope.keyData = "6aMoJujE34XnL9gvUqdKGMqs9GzYaNo6";	//가맹점 배포 PASSKEY 입력
+	
+	$scope.target_id = '';
+	$scope.goods_id = '';
+	$scope.Amount = '';
+	$scope.days = '';
+	$scope.SelectPayment = '';
+	
+	$scope.goodsList = [];
+	$scope.getGoodsList = function(){
+		PaymentSvc.getGoodsList({page_size:0})
+			.success(function(response){
+				$scope.goodsList = response.data;
+			})
+			.error(function(data, status) {
+				UTIL.alert("error : " + data.message);
+			});
+	}
+	
+	$scope.setGoods = function(goods){
+		$scope.goods_id = goods.goods_id;
+		$scope.Amount = goods.price;
+		$scope.days = goods.days;
+	}
+	
+	$scope.payproc = function(){
+		if($scope.Amount == ''){
+			UTIL.alert('결제상품을 선택하세요.');
+			return;
+		}
+		if($scope.SelectPayment == ''){
+			UTIL.alert('결제방법을 선택하세요.');
+			return;
+		}else{
+			$timeout(function(){
+				var payment_info = {member_id:$scope.target_id, goods_id:$scope.goods_id, amount:$scope.Amount, days:$scope.days, payment_type:$scope.SelectPayment};
+				$cookies.putObject("payment_info", payment_info,{'path': '/hybrid'});
+				
+				makedata();
+				var frm = $('#fdpay');
+				frm.submit();
+			},500);
+		}
+	}
+	
+	$scope.getPayDate = function(){
+		var date = new Date();
+		var y = date.getFullYear();
+		var m = (date.getMonth()+1);
+		var d = date.getDate();
+		
+		if (m < 10) {
+			m = "0" + m;
+		}
+		if (date < 10) {
+			d = "0" + d;
+		}
+		return y+'-'+m+'-'+d;
+	}
+	
+	$scope.mreturn = null;
+	$scope.paymentResult = 0;
+	$scope.rtnCode = '';
+	$scope.rtnMessage = '';
+	//결제결과
+	$scope.result = function(){
+		$scope.mreturn = $location.search();
+		if($scope.mreturn.code == '0000'){
+			PaymentSvc.result({fdtid:$scope.mreturn.fdtid, mxid:$scope.mreturn.mxid, mxissueno:$scope.mreturn.mxissueno})
+				.success(function(response){
+					if(response.data.ReplyCode=='0000'){
+						$scope.paymentResult = 1;
+						console.log("Payment Info =>",response);
+						//결제정보 등록
+						console.log("결제정보 등록");
+						var payment_info = $cookies.getObject("payment_info");
+						var data = {member_id:payment_info.member_id,pay_date:$scope.getPayDate(),mxIssueNo:response.data.MxIssueNO, goods_id:payment_info.goods_id};
+						PaymentSvc.addPayInfo(data)
+							.success(function(){
+								console.log('결제정보 등록성공');
+							})
+							.error(function(data, status){
+								console.log('결제정보 등록실패');
+							});
+						$cookies.remove("payment_info",{'path': '/hybrid'});
+					}else{
+						$scope.paymentResult = 0;
+						$scope.rtnCode = response.data.ReplyCode;
+						$scope.rtnMessage = returnCode(response.data.ReplyCode);
+					}
+				})
+				.error(function(data, status) {
+					$scope.paymentResult = 0;
+					UTIL.alert("error : " + data.message);
+				});
+		} else {
+			$scope.paymentResult = 0;
+			$scope.rtnCode = $scope.mreturn.code;
+			$scope.rtnMessage = returnCode($scope.rtnCode);
+		}
+		$timeout(function(){
+			$cookies.remove("payment_info",{'path': '/hybrid'});
+		},5000);
+	}
+	
+	$scope.payInfoList = [];
+	$scope.getPayList = function(){
+		console.log('$rootScope.home_id=>',$rootScope.home_id);
+		PaymentSvc.getPayList({home_id:$rootScope.home_id})
+			.success(function(response){
+				if(response.result==0){
+					$scope.payInfoList = response.data;
+				}
+			})
+			.error(function(data, status) {
+				UTIL.alert("error : " + data.message);
+			});
+	}
+	
+	$scope.getUseYn = function(remainDays){
+		if(remainDays>0){
+			return '사용중';
+		} else {
+			return '이용종료';
+		}
+	}
+	
+	$scope.getRemainDays = function(remainDays){
+		if(remainDays>0){
+			return 'D-'+remainDays+'일';
+		} else {
+			return 'D-0';
+		}
+	}
+	
+	switch($location.path()){
+	case '/paymentStart':
+		$scope.target_id = $location.search().member_id;
+		console.log('$scope.target_id=>',$scope.target_id);
+		$scope.init(null,'스마트 이용권 구매',true,true);
+		$scope.getGoodsList();
+		break;
+	case '/paymentResult':
+		$scope.init('body_gray','스마트 이용권 구매',true,true);
+		$scope.result();
+		break;
+	case '/paymentList':
+		$scope.init('body_gray','결제내역',true,true);
+		$scope.setWrappeDimension('#payment_history_wrap',50);
+		$scope.getPayList();
+		break;
+	}
+	
+	
+	console.log('------------------ PaymentCtrl ------------------');
 }]);

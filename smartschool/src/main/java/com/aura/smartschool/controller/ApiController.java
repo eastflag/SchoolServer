@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -33,6 +34,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.GeofenceVO;
+import com.aura.smartschool.domain.GoodsVO;
 import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
@@ -43,7 +45,10 @@ import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.MenuData;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
+import com.aura.smartschool.domain.PayInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PaymentResultVO;
+import com.aura.smartschool.domain.PaymentReturnVO;
 import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.RankingItem;
 import com.aura.smartschool.domain.RankingListItem;
@@ -57,9 +62,11 @@ import com.aura.smartschool.domain.VideoTypeVO;
 import com.aura.smartschool.domain.VideoVO;
 import com.aura.smartschool.result.Result;
 import com.aura.smartschool.result.ResultData;
+import com.aura.smartschool.result.ResultDataTotal;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.DateUtil;
 import com.aura.smartschool.util.NetworkUtil;
+import com.aura.smartschool.util.PaymentUtil;
 import com.aura.smartschool.util.SchoolApi;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -1218,4 +1225,70 @@ public class ApiController {
 			return new ResultData<RankingListItem>(100, "data does not exist",null);
 		}
 	}
+	
+	//결제상품 조회
+	@RequestMapping("/api/getGoodsList")
+	public ResultData<List<GoodsVO>> getGoodsList(@RequestBody SearchVO search) {
+		logger.debug("/api/getGoodsList--------------------------------------------------");
+		List<GoodsVO> goodsList = mobileService.getGoodsList(search);
+		
+		return new ResultData<List<GoodsVO>>(0, "success", goodsList);
+	}
+	
+	
+	//결제결과
+	@RequestMapping("/api/payment/result")
+	public ResultData<PaymentResultVO> getPaymentResult(HttpServletRequest request, @RequestBody PaymentReturnVO in){
+		logger.debug("/api/payment/result-----------------------------------------------------");
+		
+		String EncodeType = "U";
+		String rtnData = "";
+		String amount = "";
+		String pids = "";
+		String hashValue = "";
+		
+		if(request.getParameter("Amount") != null) amount = request.getParameter("Amount");
+		if(request.getParameter("PIDS") != null) pids = request.getParameter("PIDS");
+		
+		/**
+		* ■ Hash DATA 생성 처리
+		* FDTid 값이 있는 경우  MxID + MxIssueNO + keyData로 HashData 생성 처리
+		* FDTid 값이 없는 경우  
+		*   1. PIDS(현금영수증 신분확인번호) 값이 있는 경우
+		*     MxID + MxIssueNO + Amount + PIDS + keyData로 HashData 생성 처리
+		*   2. PIDS(현금영수증 신분확인번호) 값이 없는 경우
+		*     MxID + MxIssueNO + Amount + keyData로 HashData 생성 처리
+		**/
+		if(!"".equals(in.getFdtid())){
+			hashValue = PaymentUtil.MD5data(in.getMxid() + in.getMxissueno() + Constant.KEY_DATA);
+		}else{
+			if(!"".equals(pids)){	//현금영수증 신분확인 번호가 있는 경우 포함하여 hashData 생성
+				hashValue = PaymentUtil.MD5data(in.getMxid() + in.getMxissueno() + amount + pids + Constant.KEY_DATA);
+			}else{
+				hashValue = PaymentUtil.MD5data(in.getMxid() + in.getMxissueno() + amount + Constant.KEY_DATA);
+			}
+		}
+		
+		//request DATA (Client - FDK SERVER) WEB(HTTPS) 통신 처리
+		rtnData = PaymentUtil.sendHttps(Constant.FDK_SEND_URL, request, hashValue, EncodeType);
+		System.out.println("rtnData=> "+rtnData);
+		
+		Gson gson = new Gson();
+		PaymentResultVO result = gson.fromJson(rtnData, PaymentResultVO.class);
+		
+		//결제결과(성공) 저장
+		if(result.getReplyCode()=="0000"){
+			mobileService.addPayInfoMobile(result);
+		}
+		
+		return new ResultData<PaymentResultVO>(0, "success", result);
+	}
+	
+	@RequestMapping("/api/getPayInfoList")
+	public ResultData<List<PayInfoVO>> getPayInfoList(@RequestBody MemberVO in){
+		
+		List<PayInfoVO> result = mobileService.getPayInfoList(in);
+		return new ResultData<List<PayInfoVO>>(0, "success", result);
+	}
+
 }

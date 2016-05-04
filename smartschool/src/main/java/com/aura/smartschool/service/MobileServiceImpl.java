@@ -28,6 +28,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.GeofenceVO;
+import com.aura.smartschool.domain.GoodsVO;
 import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
@@ -37,7 +38,9 @@ import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
+import com.aura.smartschool.domain.PayInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PaymentResultVO;
 import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.RankingItem;
 import com.aura.smartschool.domain.RankingListItem;
@@ -1318,6 +1321,42 @@ public class MobileServiceImpl implements MobileService {
 	@Override
 	public List<GeofenceVO> getGeofenceList(GeofenceVO geofenceVO) {
 		return mobileMapper.selectGeofenceList(geofenceVO);
+	}
+
+	@Override
+	public List<GoodsVO> getGoodsList(SearchVO search) {
+		return mobileMapper.selectGoodsList(search);
+	}
+
+	@Override
+	public int countGoodsList(SearchVO search) {
+		return mobileMapper.countGoodsList(search);
+	}
+
+	@Override
+	public int addGoods(GoodsVO goods) throws PersistenceException {
+		int goods_id = mobileMapper.insertGoods(goods);
+		return goods_id;
+	}
+
+	@Override
+	public int modifyGoods(GoodsVO goods) throws PersistenceException {
+		return mobileMapper.updateGoods(goods);
+	}
+
+	@Override
+	public int removeGoods(GoodsVO goods) throws PersistenceException {
+		return mobileMapper.deleteGoods(goods);
+	}
+
+	@Override
+	public void addPayInfoMobile(PaymentResultVO result) throws PersistenceException {
+		mobileMapper.insertPayInfoMobile(result);
+	}
+
+	@Override
+	public List<PayInfoVO> getPayInfoList(MemberVO in) {
+		return mobileMapper.selectPayInfoList(in);
 	}
 
 }

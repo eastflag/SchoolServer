@@ -23,6 +23,7 @@ import com.aura.smartschool.domain.ConsultHistoryVO;
 import com.aura.smartschool.domain.ConsultVO;
 import com.aura.smartschool.domain.DiningVO;
 import com.aura.smartschool.domain.GeofenceVO;
+import com.aura.smartschool.domain.GoodsVO;
 import com.aura.smartschool.domain.GrowthInfo;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.LocationAccessVO;
@@ -32,7 +33,9 @@ import com.aura.smartschool.domain.ManagerVO;
 import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.NotiVO;
 import com.aura.smartschool.domain.OsInfoVO;
+import com.aura.smartschool.domain.PayInfoVO;
 import com.aura.smartschool.domain.PayVO;
+import com.aura.smartschool.domain.PaymentResultVO;
 import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.RankingItem;
 import com.aura.smartschool.domain.RankingListItem;
@@ -222,4 +225,17 @@ public interface MobileService {
 	public List<StatVO> getStatOfBMI(StatVO stat);
 	public List<StatVO> getStatOfSMOKE(StatVO stat);
 	public List<StatVO> getStatOfHEIGHT(StatVO stat);
+	
+	//결제상품
+	public List<GoodsVO> getGoodsList(SearchVO search);
+	public int countGoodsList(SearchVO search);
+	public int addGoods(GoodsVO goods) throws PersistenceException ;
+	public int modifyGoods(GoodsVO goods) throws PersistenceException;
+	public int removeGoods(GoodsVO goods) throws PersistenceException;
+	
+	//결제결과(성공) 등록
+	public void addPayInfoMobile(PaymentResultVO result) throws PersistenceException ;
+	
+	//결제내역(home_id 기준)
+	public List<PayInfoVO> getPayInfoList(MemberVO in);
 }

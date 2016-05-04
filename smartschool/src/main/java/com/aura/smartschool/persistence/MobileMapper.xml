@@ -275,8 +275,18 @@
 	WHERE pay_id = #{pay_id}
 </update>
 
-<insert id="insertPay" parameterType="PayVO">
-	INSERT INTO pay_info(member_id, pay_date) values(#{member_id}, #{pay_date});
+<insert id="insertPay" parameterType="PayVO" useGeneratedKeys="true" keyProperty="pay_id">
+	INSERT INTO pay_info(
+		member_id
+		,pay_date
+		,mxIssueNo
+		,goods_id
+	) values(
+		#{member_id}
+		,#{pay_date}
+		,#{mxIssueNo}
+		,#{goods_id}
+	)
 </insert>
 
 <delete id="deletePay" parameterType="PayVO">
@@ -1778,6 +1788,112 @@ select
 			</otherwise>
 		</choose>		
 	GROUP BY output_date, school.school_id, measure_info.school_grade, member.sex, smoke
-</select>			
+</select>
 
+<select id="selectGoodsList" parameterType="SearchVO" resultType="GoodsVO">
+	select * from goods
+	order by days asc
+	<if test="page_size!=0">
+	limit #{start_index}, #{page_size}
+	</if>
+</select>
+
+<select id="countGoodsList" parameterType="SearchVO" resultType="Integer">
+	select count(*) from goods
+</select>
+
+<insert id="insertGoods" parameterType="GoodsVO" useGeneratedKeys="true" keyProperty="goods_id">
+	INSERT INTO goods (
+		name
+		,price
+		,days
+	) VALUES (
+		#{name}
+		,#{price}
+		,#{days}
+	)
+</insert>
+
+<update id="updateGoods" parameterType="GoodsVO">
+	update goods set
+		name = #{name}
+		,price = #{price}
+		,days = #{days}
+	where goods_id = #{goods_id}
+</update>
+
+<delete id="deleteGoods" parameterType="GoodsVO">
+	delete from goods where goods_id = #{goods_id}
+</delete>
+
+<insert id="insertPayInfoMobile" parameterType="PaymentResultVO">
+	Insert into pay_info_mobile(
+		MxIssueNO,
+		PayMethod,
+		MxIssueDate,
+		Amount,
+		CcMode,
+		AuthNO,
+		AcqCD,
+		AcqName,
+		IssCD,
+		IssName,
+		CheckYn,
+		CcNO,
+		AcqNO,
+		Installment,
+		CAP,
+		BkCode,
+		vactno,
+		EscrowYn,
+		EscrowCustNo,
+		BkName,
+		ReplyCode,
+		ReplyMessage
+	) values (
+		#{MxIssueNO},
+		#{PayMethod},
+		#{MxIssueDate},
+		#{Amount},
+		#{CcMode},
+		#{AuthNO},
+		#{AcqCD},
+		#{AcqName},
+		#{IssCD},
+		#{IssName},
+		#{CheckYn},
+		#{CcNO},
+		#{AcqNO},
+		#{Installment},
+		#{CAP},
+		#{BkCode},
+		#{vactno},
+		#{EscrowYn},
+		#{EscrowCustNo},
+		#{BkName},
+		#{ReplyCode},
+		#{ReplyMessage}
+	)
+</insert>
+
+<select id="selectPayInfoList" parameterType="MemberVO" resultType="PayInfoVO">
+	select
+		date_format(str_to_date(a.pay_date, '%Y-%m-%d'),'%Y.%m.%d') as pay_date
+		,b.name as goods_name
+		,b.price as goods_price
+		,b.days as goods_days
+		,case (select PayMethod from pay_info_detail c where c.mxIssueNo = a.MxIssueNO)
+			when 'CC' then '카드결제'
+			when 'IC' then '계좌이체'
+			when 'MO' then '핸드폰결제'
+			when 'VA' then '가상계좌'
+			when 'CA' then '현금영수증'
+		end as payMethod
+		,(b.days - (to_days(now()) - to_days(CAST(a.pay_date AS DATE)))) as remain_days
+	from pay_info a, goods b
+	where a.goods_id = b.goods_id
+	and a.member_id in (
+		select member_id from member where home_id =#{home_id}
+	)
+</select>
 </mapper>
