@@ -1,0 +1,169 @@
+<article class="payment">
+	<form id="fdpay" name="fdpay" action="https://testpg.firstpay.co.kr/jsp/mobile.jsp" target="_self" method="post" accept-charset="euc-kr">
+		<input type="hidden" name="MxID" value="testcorp" />
+		<input type="hidden" name="MxIssueNO" value="" />
+		<input type="hidden" name="MxIssueDate" value="" />
+		<input type="hidden" name="CcProdDesc" value="스마트 이용권" />
+		<!-- <input type="hidden" name="ApprtnUrl" value="http://localhost:9000/hybrid/index.html#!/paymentResult" /> -->
+		<input type="hidden" name="rtnUrl" value="http://localhost:9000/smarthealth/payment/result.html" />
+		<input type="hidden" name="ItemInfo" value="2" />
+		<input type="hidden" name="connectionType" value="http" />
+		<input type="hidden" name="URL" value="localhost" />
+		<input type="hidden" name="DBPATH" value="/hybrid/index.html#!/paymentInsert" />
+		<input type="hidden" name="Currency" value="KRW" />
+		<input type="hidden" name="Tmode" value="MOB" />
+		<input type="hidden" name="LangType" value="HAN" />
+		<input type="hidden" name="BillType" value="00" />
+		<input type="hidden" name="CardSelect" value="01:07:02:03:05:12:27:04:13:22:14:11:24:23:17" />
+		<input type="hidden" name="escrowYn" value="N" />
+		<!-- 
+		<input name="CcNameOnCard" value="" />
+		<input name="PhoneNO" value="" />
+		<input name="Email" value="" />
+		<input name="SupportDate" value="" />
+		 -->
+		<input name="PAYDATA" value="" />
+		
+		<fieldset>
+			<legend class="screen_out">상품 결제</legend>
+			<div class="form_box">
+				<h2>상품 선택</h2>
+				<div class="product_list">
+					<ul>
+						<li ng-repeat="row in goodsList">
+							<div class="info">
+								<strong class="price">금액: {{row.price}}원</strong>
+								<p class="summary_big">{{row.name}}</p>
+								<p class="summary_small">이용기간 {{row.days}}일 / 구매내역은 결제 정보에서 확인가능</p>
+							</div>
+							<input type="radio" id="product0{{$index}}" name="Amount" ng-value="row.price" ng-click="setGoods(row);"/>
+							<label for="product0{{$index}}">선택</label>
+						</li>
+					</ul>
+				</div>
+				<h2>결제 수단</h2>
+				<div class="payment_type">
+					<input type="radio" id="payment01" name="SelectPayment" ng-model="SelectPayment" value="CRDT" checked="checked" />
+					<label for="payment01">카드 결제</label>
+					<input type="radio" id="payment02" name="SelectPayment" ng-model="SelectPayment" value="ACCT" />
+					<label for="payment02">실시간 계좌이체</label>
+					<input type="radio" id="payment03" name="SelectPayment" ng-model="SelectPayment" value="HP" />
+					<label for="payment03">휴대폰 결제</label>
+				</div>
+				<a href="javascript:;" class="btn_common_blue_line box_round" ng-click="payproc()">결제하기</a>
+			</div>
+		</fieldset>
+	</form>
+	
+	<div class="user_guide">
+		<h2>스마트 안전건강지킴이 사용자 안내</h2>
+		<ul>
+			<li>본 상품은 아우라의 이니시스 결제 시스템으로 구매됩니다.</li>
+			<li>로그인 후 내 정보에서 결제내역 조회가 가능합니다.</li>
+			<li>청구 금액에는 부과세와 결제 수수료가 포함됩니다.</li>
+			<li>문의사항은 1544-1284로 연락주시길 바랍니다.</li>
+		</ul>
+	</div>
+</article>
+
+<script type="text/javascript">
+	var keyData = "6aMoJujE34XnL9gvUqdKGMqs9GzYaNo6";	//가맹점 배포 PASSKEY 입력
+	
+	//주문번호, 주문시간 자동 생성 처리
+	function initValue(){
+		document.fdpay.MxIssueDate.value = date_data();
+		document.fdpay.MxIssueNO.value = document.fdpay.MxID.value + date_data();
+	}
+	
+	//현재 시간 생성 처리(YYYYMMDDHHMMSS)
+	function date_data() {
+		var time = new Date();
+		var year = time.getFullYear() + "";
+		var month = time.getMonth() + 1;
+		var date = time.getDate();
+		var hour = time.getHours();
+		var min = time.getMinutes();
+		var sec = time.getSeconds();
+		if (month < 10) {
+			month = "0" + month;
+		}
+		if (date < 10) {
+			date = "0" + date;
+		}
+		if (hour < 10) {
+			hour = "0" + hour;
+		}
+		if (min < 10) {
+			min = "0" + min;
+		}
+		if (sec < 10) {
+			sec = "0" + sec;
+		}
+		return year + month + date + hour + min + sec;
+	}
+	
+	//결제 창 호출 요청 전문 생성 처리
+	function makedata(){
+		var mxid = document.fdpay.MxID.value;
+		var mxissueno = document.fdpay.MxIssueNO.value;
+		var amount = document.fdpay.Amount.value;
+
+		//HASH DATA 생성!!
+		var callhash = hex_md5(mxid + mxissueno + amount + keyData);
+		
+		var temp = "";
+
+		try{ temp += "MxID=" + document.fdpay.MxID.value + "|"; }catch (e) { temp += "MxID=|"; }
+		try{ temp += "MxIssueNO=" + document.fdpay.MxIssueNO.value + "|"; }catch (e) { temp += "MxIssueNO=|"; }
+		try{ temp += "MxIssueDate=" + document.fdpay.MxIssueDate.value + "|"; }catch (e) { temp += "MxIssueDate=|"; }
+		try{ temp += "CcProdDesc=" + document.fdpay.CcProdDesc.value + "|"; }catch (e) { temp += "CcProdDesc=|"; }
+		try{ temp += "Amount=" + document.fdpay.Amount.value + "|"; }catch (e) { temp += "Amount=|"; }
+		//try{ temp += "ApprtnUrl=" + document.fdpay.ApprtnUrl.value + "|"; }catch (e) { temp += "ApprtnUrl=|"; }
+		try{ temp += "rtnUrl=" + document.fdpay.rtnUrl.value + "|"; }catch (e) { temp += "rtnUrl=|"; }
+		try{ temp += "ItemInfo=" + document.fdpay.ItemInfo.value + "|"; }catch (e) { temp += "ItemInfo=|"; }
+		try{ temp += "connectionType=" + document.fdpay.connectionType.value + "|"; }catch (e) { temp += "connectionType=|"; }
+		try{ temp += "URL=" + document.fdpay.URL.value + "|"; }catch (e) { temp += "URL=|"; }
+		try{ temp += "DBPATH=" + document.fdpay.DBPATH.value + "|"; }catch (e) { temp += "DBPATH=|"; }
+		try{ temp += "Currency=" + document.fdpay.Currency.value + "|"; }catch (e) { temp += "Currency=|"; }
+		try{ temp += "SelectPayment=" + document.fdpay.SelectPayment.value + "|"; }catch (e) { temp += "SelectPayment=|"; }
+		try{ temp += "Tmode=" + document.fdpay.Tmode.value + "|"; }catch (e) { temp += "Tmode=|"; }
+		try{ temp += "LangType=" + document.fdpay.LangType.value + "|"; }catch (e) { temp += "LangType=|"; }
+		try{ temp += "BillType=" + document.fdpay.BillType.value + "|"; }catch (e) { temp += "BillType=|"; }
+		try{ temp += "CardSelect=" + document.fdpay.CardSelect.value + "|"; }catch (e) { temp += "CardSelect=|"; }
+		try{ temp += "escrowYn=" + document.fdpay.escrowYn.value + "|"; }catch (e) { temp += "escrowYn=|"; }
+		try{ temp += "CcNameOnCard=" + document.fdpay.CcNameOnCard.value + "|"; }catch (e) { temp += "CcNameOnCard=|"; }
+		try{ temp += "PhoneNO=" + document.fdpay.PhoneNO.value + "|"; }catch (e) { temp += "PhoneNO=|"; }
+		try{ temp += "Email=" + document.fdpay.Email.value + "|"; }catch (e) { temp += "Email=|"; }
+		try{ temp += "SupportDate=" + document.fdpay.SupportDate.value + "|"; }catch (e) { temp += "SupportDate=|"; }
+
+		temp += "CallHash=" + callhash + "|"; //CallHash DATA 추가!!
+
+		document.fdpay.PAYDATA.value = temp;
+		
+		console.log(temp);
+	};
+
+	//결제하기 호출 시 처리
+	function payproc(){
+		if(document.fdpay.Amount == '0'){
+			UTIL.alert('결제상품을 선택하세요.');
+			return;
+		}
+		if(document.fdpay.SelectPayment == ''){
+			UTIL.alert('결제방법을 선택하세요.');
+			return;
+		}else{
+			makedata();
+			
+			var frm = $('#fdpay');
+			frm.acceptCharset = 'utf8';
+			console.log(frm.acceptCharset);
+			
+			frm.submit();
+		}
+	};
+	
+	$(document).ready(function(){
+		initValue();
+	});
+</script>

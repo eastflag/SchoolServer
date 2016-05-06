@@ -1,0 +1,38 @@
+<article class="payment_history_list">
+	<div ng-scrollbars ng-scrollbars-config="config" id="payment_history_wrap">
+		<ul>
+			<li class="use" ng-repeat="row in payInfoList">
+				<div class="row_top">
+					<p class="title">{{row.goods_name}}</p>
+					<span class="stat">{{getUseYn(row.remain_days)}}</span>
+				</div>
+				<div class="row_bottom">
+					<div class="info">
+						<dl>
+							<dt>결제가격 : </dt>
+							<dd>{{row.goods_price}}원</dd>
+						</dl>
+						<dl>
+							<dt>/ 이용기간 : </dt>
+							<dd>{{row.goods_days}}일</dd>
+						</dl>
+						<dl>
+							<dt>/ 남은기간 : </dt>
+							<dd>{{getRemainDays(row.remain_days)}}</dd>
+						</dl>
+					</div>
+					<div class="info">
+						<dl>
+							<dt>결제일 : </dt>
+							<dd>{{row.pay_date}}</dd>
+						</dl>
+						<dl>
+							<dt>/ 결제수단 : </dt>
+							<dd>{{row.payMethod}}</dd>
+						</dl>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</article>
