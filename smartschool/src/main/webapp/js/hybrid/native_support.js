@@ -21,6 +21,7 @@ var NATIVE = function(){
 	var _CONST_COMMAND_GET_PUSH_COMMAND		= 'GET_PUSH_COMMAND'; 	//푸쉬의 command 가져오기
 	var _CONST_COMMAND_GET_PHOTO			= 'GET_PHOTO';					// 프로필사진 업로드한다.
 	var _CONST_COMMAND_GET_PHOTO_NONE_CROP	= 'GET_PHOTO_NONE_CROP';		// 이미지찾기
+	var _CONST_COMMAND_USER_LOGOUT			= 'USER_LOGOUT';				// 사용자 로그아웃 : 네이티브에 저장되어있던 사용자 정보 삭제됨.
 
 	/*
 	 * NATIVE.HYBRID : HYBRID js
@@ -127,7 +128,7 @@ var NATIVE = function(){
 					}
 					
 					if ( sendData != undefined ) {
-						location.href = 'nativecommand://execute?' + JSON.stringify(sendData); // 이부분 해당 스키마로 변경해야함.	
+						location.href = 'nativecommand://execute?' + JSON.stringify(sendData); // 이부분 해당 스키마로 변경해야함.
 					}
 				} catch(e){
 					if ( errorCallback ) {
@@ -184,6 +185,7 @@ var NATIVE = function(){
 		CONST_COMMAND_GET_VERSION_DATA		: _CONST_COMMAND_GET_VERSION_DATA,
 		CONST_COMMAND_GET_PHOTO				: _CONST_COMMAND_GET_PHOTO,
 		CONST_COMMAND_GET_PUSH_COMMAND		: _CONST_COMMAND_GET_PUSH_COMMAND,
-		CONST_COMMAND_GET_PHOTO_NONE_CROP	: _CONST_COMMAND_GET_PHOTO_NONE_CROP
+		CONST_COMMAND_GET_PHOTO_NONE_CROP	: _CONST_COMMAND_GET_PHOTO_NONE_CROP,
+		CONST_COMMAND_USER_LOGOUT			: _CONST_COMMAND_USER_LOGOUT
 	};
 }();

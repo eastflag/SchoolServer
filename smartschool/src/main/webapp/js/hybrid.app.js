@@ -348,6 +348,8 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		$scope.mdn = null;
 		$scope.is_parent = null;
 		
+		UTIL.logout();
+		
 		$location.path('login');
 	}
 	
@@ -3156,6 +3158,8 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		$scope.goods_id = goods.goods_id;
 		$scope.Amount = goods.price;
 		$scope.days = goods.days;
+		
+		return true;
 	}
 	
 	$scope.payproc = function(){

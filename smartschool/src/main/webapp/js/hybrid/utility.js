@@ -157,6 +157,14 @@ var UTIL = function() {
 			return true;
 		}
 	}
+
+	/**
+	 * 로그아웃
+	 * UTIL.logout();
+	 */
+	var _logout = function() {
+		NATIVE.HYBRID.EXECUTE({'type' :NATIVE.CONST_COMMAND_USER_LOGOUT});
+	};
 	
 	/**
 	 * 모바일 여부 확인
@@ -422,6 +430,7 @@ var UTIL = function() {
 		getGPSData : _getGPSData,
 		getPhoto : _getPhoto,
 		getPhotoNoneCrop : _getPhotoNoneCrop,
+		logout		: _logout,
 		comma : _comma
 	};
 }();
