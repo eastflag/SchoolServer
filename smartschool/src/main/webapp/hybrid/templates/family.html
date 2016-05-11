@@ -23,7 +23,7 @@
 					<p class="infos place" ng-switch-when="0">위치정보없음</p>
 					<button type="button" class="btn modify_info" style="cursor:pointer;" ng-click="modFamily(row)">정보수정</button>
 					<button type="button" class="btn delete" style="cursor:pointer;" ng-click="removeMember(row)" ng-switch-when="0">삭제하기</button>
-					<button type="button" class="btn delete" style="cursor:pointer;" ng-click="payment(row)" ng-switch-when="0">결제하기</button>
+					<button type="button" class="btn delete" style="cursor:pointer;" ng-click="payment(row)" ng-if="row.is_parent==0">결제하기</button>
 				</div>
 			</li>
 		</ul>
