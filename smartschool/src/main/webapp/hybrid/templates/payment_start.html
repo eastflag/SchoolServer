@@ -3,7 +3,9 @@
 		<input type="hidden" name="MxID" value="testcorp" />
 		<input type="hidden" name="MxIssueNO" value="" />
 		<input type="hidden" name="MxIssueDate" value="" />
-		<input type="hidden" name="CcProdDesc" value="스마트 이용권" />
+		<input type="hidden" name="CcProdDesc" value="" />
+		<input type="hidden" name="Amount" value="" />
+		<input type="hidden" name="SelectPayment" value="" />
 		<!-- <input type="hidden" name="ApprtnUrl" value="http://localhost:9000/hybrid/index.html#!/paymentResult" /> -->
 		<input type="hidden" name="rtnUrl" value="http://localhost:9000/smarthealth/payment/result.html" />
 		<input type="hidden" name="ItemInfo" value="2" />
@@ -36,18 +38,18 @@
 								<p class="summary_big">{{row.name}}</p>
 								<p class="summary_small">이용기간 {{row.days}}일 / 구매내역은 결제 정보에서 확인가능</p>
 							</div>
-							<input type="radio" id="product0{{$index}}" name="Amount" ng-value="row.price" ng-click="setGoods(row);"/>
+							<input type="radio" id="product0{{$index}}" name="price" value="{{row.price}}" ng-click="setGoods(row);"/>
 							<label for="product0{{$index}}">선택</label>
 						</li>
 					</ul>
 				</div>
 				<h2>결제 수단</h2>
 				<div class="payment_type">
-					<input type="radio" id="payment01" name="SelectPayment" ng-model="SelectPayment" value="CRDT" checked="checked" />
+					<input type="radio" id="payment01" name="payType" ng-click="setSelectPayment('CRDT')" value="CRDT" />
 					<label for="payment01">카드 결제</label>
-					<input type="radio" id="payment02" name="SelectPayment" ng-model="SelectPayment" value="ACCT" />
+					<input type="radio" id="payment02" name="payType" ng-click="setSelectPayment('ACCT')" value="ACCT" />
 					<label for="payment02">실시간 계좌이체</label>
-					<input type="radio" id="payment03" name="SelectPayment" ng-model="SelectPayment" value="HP" />
+					<input type="radio" id="payment03" name="payType" ng-click="setSelectPayment('HP')" value="HP" />
 					<label for="payment03">휴대폰 결제</label>
 				</div>
 				<a href="javascript:;" class="btn_common_blue_line box_round" ng-click="payproc()">결제하기</a>
@@ -102,6 +104,15 @@
 		return year + month + date + hour + min + sec;
 	}
 	
+	function setGoodsInfo(prodDesc,amount){
+		document.fdpay.CcProdDesc.value = prodDesc;
+		document.fdpay.Amount.value = amount;
+	}
+	
+	function setSelectPayment(payType){
+		document.fdpay.SelectPayment.value = payType;
+	}
+	
 	//결제 창 호출 요청 전문 생성 처리
 	function makedata(){
 		var mxid = document.fdpay.MxID.value;
@@ -145,7 +156,7 @@
 
 	//결제하기 호출 시 처리
 	function payproc(){
-		if(document.fdpay.Amount == '0'){
+		if(document.fdpay.Amount == ''){
 			UTIL.alert('결제상품을 선택하세요.');
 			return;
 		}

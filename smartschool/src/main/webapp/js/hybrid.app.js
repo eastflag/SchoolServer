@@ -1303,6 +1303,8 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		$window.location.href = '#!/paymentStart?member_id='+member.member_id;
 	}
 	
+	$cookies.remove("payment_info",{'path': '/hybrid'});
+	
 	console.log('------------------ FamilyCtrl ------------------');
 }]);
 
@@ -3159,7 +3161,13 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		$scope.Amount = goods.price;
 		$scope.days = goods.days;
 		
-		return true;
+		setGoodsInfo(goods.name,goods.price);
+	}
+	
+	$scope.setSelectPayment = function(payType){
+		$scope.SelectPayment = payType;
+		
+		setSelectPayment(payType);
 	}
 	
 	$scope.payproc = function(){
