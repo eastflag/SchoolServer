@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1273,8 +1274,33 @@ public class ApiController {
 		rtnData = PaymentUtil.sendHttps(Constant.FDK_SEND_URL, request, hashValue, EncodeType);
 		System.out.println("rtnData=> "+rtnData);
 		
-		Gson gson = new Gson();
-		PaymentResultVO result = gson.fromJson(rtnData, PaymentResultVO.class);
+		//rtnData to JSON DATA 전환 처리
+		JSONObject resData = PaymentUtil.StringToJsonProc(rtnData);
+		
+		PaymentResultVO result = new PaymentResultVO();
+		result.setReplyCode(String.valueOf(resData.get("ReplyCode")));
+		result.setReplyMessage(String.valueOf(resData.get("ReplyMessage")));
+		result.setPayMethod(String.valueOf(resData.get("PayMethod")));
+		result.setMxID(String.valueOf(resData.get("MxID")));
+		result.setMxIssueNO(String.valueOf(resData.get("MxIssueNO")));
+		result.setMxIssueDate(String.valueOf(resData.get("MxIssueDate")));
+		result.setAmount(String.valueOf(resData.get("Amount")));
+		result.setCcMode(String.valueOf(resData.get("CcMode")));
+		result.setAuthNO(String.valueOf(resData.get("AuthNO")));
+		result.setAcqCD(String.valueOf(resData.get("AcqCD")));
+		result.setAcqName(String.valueOf(resData.get("AcqName")));
+		result.setIssCD(String.valueOf(resData.get("IssCD")));
+		result.setIssName(String.valueOf(resData.get("IssName")));
+		result.setCheckYn(String.valueOf(resData.get("CheckYn")));
+		result.setCcNO(String.valueOf(resData.get("CcNO")));
+		result.setAcqNO(String.valueOf(resData.get("AcqNO")));
+		result.setInstallment(String.valueOf(resData.get("Installment")));
+		result.setCAP(String.valueOf(resData.get("CAP")));
+		result.setBkCode(String.valueOf(resData.get("BkCode")));
+		result.setBkName(String.valueOf(resData.get("BkName")));
+		result.setVactno(String.valueOf(resData.get("vactno")));
+		result.setEscrowYn(String.valueOf(resData.get("EscrowYn")));
+		result.setEscrowCustNo(String.valueOf(resData.get("EscrowCustNo")));
 		
 		//결제결과(성공) 저장
 		if(result.getReplyCode()=="0000"){

@@ -14,6 +14,9 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.net.HttpURLConnection;
 
 public class PaymentUtil {
@@ -115,6 +118,23 @@ public class PaymentUtil {
 		rtnValue += "EncodeType=" + EncodeType;
 		
 		return rtnValue;
+	}
+
+	public static JSONObject StringToJsonProc(String data) {
+		JSONObject jsonObj = new JSONObject();
+		
+		try{
+			JSONParser jsonParser = new JSONParser();
+			//JSON데이터를 넣어 JSON Object 로 만들어 준다.
+			jsonObj = (JSONObject) jsonParser.parse(data);
+		}catch(Exception e){
+			e.printStackTrace();
+			
+			jsonObj.put("ReplyCode","9998");
+			jsonObj.put("ReplyMessage","수신 데이터 처리 중 오류 발생");
+		}
+		
+		return jsonObj;
 	}
 
 }
