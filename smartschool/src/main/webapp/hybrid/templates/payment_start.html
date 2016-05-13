@@ -146,6 +146,8 @@
 		try{ temp += "PhoneNO=" + document.fdpay.PhoneNO.value + "|"; }catch (e) { temp += "PhoneNO=|"; }
 		try{ temp += "Email=" + document.fdpay.Email.value + "|"; }catch (e) { temp += "Email=|"; }
 		try{ temp += "SupportDate=" + document.fdpay.SupportDate.value + "|"; }catch (e) { temp += "SupportDate=|"; }
+		try{ temp += "EncodeType=" + document.fdpay.EncodeType.value + "|"; }catch (e) { temp += "EncodeType=|"; }
+		try{ temp += "ApprtnUrl=" + document.fdpay.ApprtnUrl.value + "|"; }catch (e) { temp += "ApprtnUrl=|"; }
 
 		temp += "CallHash=" + callhash + "|"; //CallHash DATA 추가!!
 
@@ -153,7 +155,6 @@
 		
 		//console.log(temp);
 	};
-
 	
 	$(document).ready(function(){
 		initValue();
