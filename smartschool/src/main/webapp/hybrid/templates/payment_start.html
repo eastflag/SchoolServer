@@ -20,8 +20,8 @@
 		<input type="hidden" name="URL" value="" />
 		<input type="hidden" name="DBPATH" value="" />
 		<!-- 부가정보 관련 파라메터 -->
-		<input name="CcNameOnCard" value="" />
-		<input name="PhoneNO" value="" />
+		<input name="CcNameOnCard" value="{{payUserName}}" />
+		<input name="PhoneNO" value="{{payUserPhone}}" />
 		<input name="Email" value="" />
 		<input name="SupportDate" value="" />
 		<input name="PAYDATA" value="" />
@@ -153,7 +153,7 @@
 
 		document.fdpay.PAYDATA.value = temp;
 		
-		//console.log(temp);
+		console.log(temp);
 	};
 	
 	$(document).ready(function(){

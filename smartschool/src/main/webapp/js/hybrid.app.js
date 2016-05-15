@@ -562,7 +562,6 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 		var path = $location.path();
 		var params = $location.search();
 		
-		console.log('params=>',params);
 		if($scope.loggedIn()){
 			switch(path){
 			case '': case '/join': case '/login':
@@ -3118,6 +3117,10 @@ app.controller('SafeGuardCtrl',['$scope', '$window', '$location','$interval', '$
 }]);
 
 app.service('PaymentSvc', function($http) {
+	this.getLoginUserInfo = function(param){
+		console.log('----------------- 회원정보조회 --------------------');
+		return $http.post('/api/getMember',param);
+	};
 	this.getGoodsList = function(param){
 		console.log('----------------- 상품목록조회 --------------------');
 		return $http.post('/api/getGoodsList',param);
@@ -3144,6 +3147,22 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 	$scope.Amount = '';
 	$scope.days = '';
 	$scope.SelectPayment = '';
+	
+	$scope.payUserName = '';
+	$scope.payUserPhone = '';
+	
+	$scope.getLoginUserInfo = function(){
+		var user_info = $cookies.getObject("user_info");
+		
+		PaymentSvc.getLoginUserInfo({member_id:user_info.member_id})
+			.success(function(response){
+				$scope.payUserName = response.data.name;
+				$scope.payUserPhone = response.data.mdn;
+			})
+			.error(function(data, status) {
+				UTIL.alert("error : " + data.message);
+			});
+	}
 	
 	$scope.goodsList = [];
 	$scope.getGoodsList = function(){
@@ -3184,6 +3203,7 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 				$cookies.putObject("payment_info", payment_info,{'path': '/hybrid'});
 				
 				makedata();
+				
 				var frm = $('#fdpay');
 				frm.submit();
 			},500);
@@ -3283,8 +3303,8 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 	switch($location.path()){
 	case '/paymentStart':
 		$scope.target_id = $location.search().member_id;
-		console.log('$scope.target_id=>',$scope.target_id);
 		$scope.init(null,'스마트 이용권 구매',true,true);
+		$scope.getLoginUserInfo();
 		$scope.getGoodsList();
 		break;
 	case '/paymentResult':

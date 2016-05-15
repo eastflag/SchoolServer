@@ -1227,6 +1227,14 @@ public class ApiController {
 		}
 	}
 	
+	//회원정보 조회
+	@RequestMapping("/api/getMember")
+	public ResultData<MemberVO> getLoginUserInfo(@RequestBody MemberVO member) {
+		logger.debug("/api/getMember--------------------------------------------------");
+		
+		return new ResultData<MemberVO>(0, "success", mobileService.selectMember(member));
+	}
+	
 	//결제상품 조회
 	@RequestMapping("/api/getGoodsList")
 	public ResultData<List<GoodsVO>> getGoodsList(@RequestBody SearchVO search) {
@@ -1235,7 +1243,6 @@ public class ApiController {
 		
 		return new ResultData<List<GoodsVO>>(0, "success", goodsList);
 	}
-	
 	
 	//결제결과
 	@RequestMapping("/api/payment/result")
