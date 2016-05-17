@@ -49,7 +49,6 @@ import com.aura.smartschool.domain.OsInfoVO;
 import com.aura.smartschool.domain.PayInfoVO;
 import com.aura.smartschool.domain.PayVO;
 import com.aura.smartschool.domain.PaymentResultVO;
-import com.aura.smartschool.domain.PaymentReturnVO;
 import com.aura.smartschool.domain.PressVO;
 import com.aura.smartschool.domain.RankingItem;
 import com.aura.smartschool.domain.RankingListItem;
