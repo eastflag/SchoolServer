@@ -1,13 +1,12 @@
 <!-- 결제 - 결제완료 -->
 <article class="payment_result" ng-switch="paymentResult">
-	<img ng-switch-when="1" src="/images/aura_in_app/img_sshp_big.png" alt="SSHP" />
+	<img src="/images/aura_in_app/img_sshp_big.png" alt="SSHP" />
 	<p ng-switch-when="1" class="txt_big">감사합니다.</p>
 	<p ng-switch-when="1" class="txt_summary">결제가 완료되었습니다.</p>
 	<a ng-switch-when="1" href="#!/family" class="btn_common_blue_line box_round">홈으로</a>
 	
-	<img ng-switch-when="0" src="/images/aura_in_app/img_sshp_big.png" alt="SSHP" />
 	<p ng-switch-when="0" class="txt_big">죄송합니다.</p>
 	<p ng-switch-when="0" class="txt_summary">결제가 실패하였습니다.</p>
-	<p ng-switch-when="0" class="txt_code">결제오류코드 : {{rtnCode}} ({{rtnMessage}})</p>
+	<p ng-switch-when="0" class="txt_code">결제오류코드 : {{replyCode}} ({{replyMessage}})</p>
 	<a ng-switch-when="0" href="#!family" class="btn_common_blue_line box_round">다시시도하기</a>
 </article>

@@ -1826,8 +1826,8 @@ select
 	delete from goods where goods_id = #{goods_id}
 </delete>
 
-<insert id="insertPayInfoMobile" parameterType="PaymentResultVO">
-	Insert into pay_info_mobile(
+<insert id="insertPayInfoDetail" parameterType="PaymentResultVO">
+	Insert into pay_info_detail(
 		MxIssueNO,
 		PayMethod,
 		MxIssueDate,
@@ -1888,12 +1888,14 @@ select
 			when 'MO' then '핸드폰결제'
 			when 'VA' then '가상계좌'
 			when 'CA' then '현금영수증'
+			else '일반결제'
 		end as payMethod
-		,(b.days - (to_days(now()) - to_days(CAST(a.pay_date AS DATE)))) as remain_days
+		,(b.days - datediff(now(),a.pay_date)) as remain_days
 	from pay_info a, goods b
 	where a.goods_id = b.goods_id
 	and a.member_id in (
 		select member_id from member where home_id =#{home_id}
 	)
+	order by pay_date asc
 </select>
 </mapper>

@@ -247,7 +247,7 @@ public interface MobileMapper {
 	public int deleteGoods(GoodsVO goods) throws PersistenceException;
 	
 	//결제결과(성공) 등록
-	public void insertPayInfoMobile(PaymentResultVO result) throws PersistenceException;
+	public void insertPayInfoDetail(PaymentResultVO result) throws PersistenceException;
 	
 	//결제내역(home_id 기준)
 	public List<PayInfoVO> selectPayInfoList(MemberVO in);

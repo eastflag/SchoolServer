@@ -234,7 +234,7 @@ public interface MobileService {
 	public int removeGoods(GoodsVO goods) throws PersistenceException;
 	
 	//결제결과(성공) 등록
-	public void addPayInfoMobile(PaymentResultVO result) throws PersistenceException ;
+	public void addPayInfoDetail(PaymentResultVO result) throws PersistenceException ;
 	
 	//결제내역(home_id 기준)
 	public List<PayInfoVO> getPayInfoList(MemberVO in);

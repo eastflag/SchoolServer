@@ -105,6 +105,9 @@ public class PaymentUtil {
 				key = enums.nextElement();
 				value = req.getParameter(key);
 				
+				System.out.println("key => "+key);
+				System.out.println("value => "+value);
+				
 				rtnValue += key + "=" + ((value!=null)?URLEncoder.encode(value,"EUC-KR"):"") + "&";
 			}
 		}catch(Exception e){

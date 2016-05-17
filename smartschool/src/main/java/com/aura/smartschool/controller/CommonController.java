@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.View;
 
+import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.AttachVO;
 import com.aura.smartschool.domain.HomeVO;
 import com.aura.smartschool.domain.MemberVO;
+import com.aura.smartschool.domain.PaymentResultVO;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.FileUtil;
+import com.aura.smartschool.util.PaymentUtil;
 
 @Controller
 public class CommonController {
@@ -101,11 +105,89 @@ public class CommonController {
 		if(request.getParameter("MxIssueNO") != null) rtnMxIssueNO = request.getParameter("MxIssueNO");
 		
 		StringBuffer params = new StringBuffer();
-		params.append("code=").append(rtnCode).append("&");
-		params.append("message=").append(rtnMsg).append("&");
-		params.append("fdtid=").append(rtnFDTid).append("&");
-		params.append("mxid=").append(rtnMxID).append("&");
-		params.append("mxissueno=").append(rtnMxIssueNO);
+		if(rtnCode.equals("0000")) { //인증성공
+			System.out.println("===== 인증성공 =====");
+			String EncodeType = "U";
+			String rtnData = "";
+			String fdtid = "";
+			String mxid = "";
+			String mxissueno = "";
+			String amount = "";
+			String pids = "";
+			String hashValue = "";
+			
+			fdtid = rtnFDTid;
+			mxid = rtnMxID;
+			mxissueno = rtnMxIssueNO;
+			if(request.getParameter("Amount") != null) amount = request.getParameter("Amount");
+			if(request.getParameter("PIDS") != null) pids = request.getParameter("PIDS");
+			
+			System.out.println("FdTid => "+fdtid);
+			System.out.println("Mxid => "+mxid);
+			System.out.println("Mxissueno => "+mxissueno);
+			
+			/**
+			* ■ Hash DATA 생성 처리
+			* FDTid 값이 있는 경우  MxID + MxIssueNO + keyData로 HashData 생성 처리
+			* FDTid 값이 없는 경우  
+			*   1. PIDS(현금영수증 신분확인번호) 값이 있는 경우
+			*     MxID + MxIssueNO + Amount + PIDS + keyData로 HashData 생성 처리
+			*   2. PIDS(현금영수증 신분확인번호) 값이 없는 경우
+			*     MxID + MxIssueNO + Amount + keyData로 HashData 생성 처리
+			**/
+			if(!"".equals(fdtid)){
+				hashValue = PaymentUtil.MD5data(mxid + mxissueno + Constant.KEY_DATA);
+			}else{
+				if(!"".equals(pids)){	//현금영수증 신분확인 번호가 있는 경우 포함하여 hashData 생성
+					hashValue = PaymentUtil.MD5data(mxid + mxissueno + amount + pids + Constant.KEY_DATA);
+				}else{
+					hashValue = PaymentUtil.MD5data(mxid + mxissueno + amount + Constant.KEY_DATA);
+				}
+			}
+			
+			//request DATA (Client - FDK SERVER) WEB(HTTPS) 통신 처리
+			rtnData = PaymentUtil.sendHttps(Constant.FDK_SEND_URL, request, hashValue, EncodeType);
+			System.out.println("rtnData=> "+rtnData);
+			
+			//rtnData to JSON DATA 전환 처리
+			JSONObject resData = PaymentUtil.StringToJsonProc(rtnData);
+			
+			if(resData.get("ReplyCode").equals("0000")){
+				System.out.println("====== 결제상세정보 등록 ======");
+				PaymentResultVO result = new PaymentResultVO();
+				result.setReplyCode(String.valueOf(resData.get("ReplyCode")).trim());
+				result.setReplyMessage(String.valueOf(resData.get("ReplyMessage")).trim());
+				result.setPayMethod(String.valueOf(resData.get("PayMethod")).trim());
+				result.setMxID(String.valueOf(resData.get("MxID")).trim());
+				result.setMxIssueNO(String.valueOf(resData.get("MxIssueNO")).trim());
+				result.setMxIssueDate(String.valueOf(resData.get("MxIssueDate")).trim());
+				result.setAmount(String.valueOf(resData.get("Amount")).trim());
+				result.setCcMode(String.valueOf(resData.get("CcMode")).trim());
+				result.setAuthNO(String.valueOf(resData.get("AuthNO")).trim());
+				result.setAcqCD(String.valueOf(resData.get("AcqCD")).trim());
+				result.setAcqName(String.valueOf(resData.get("AcqName")).trim());
+				result.setIssCD(String.valueOf(resData.get("IssCD")).trim());
+				result.setIssName(String.valueOf(resData.get("IssName")).trim());
+				result.setCheckYn(String.valueOf(resData.get("CheckYn")).trim());
+				result.setCcNO(String.valueOf(resData.get("CcNO")).trim());
+				result.setAcqNO(String.valueOf(resData.get("AcqNO")).trim());
+				result.setInstallment(String.valueOf(resData.get("Installment")).trim());
+				result.setCAP(String.valueOf(resData.get("CAP")).trim());
+				result.setBkCode(String.valueOf(resData.get("BkCode")).trim());
+				result.setBkName(String.valueOf(resData.get("BkName")).trim());
+				result.setVactno(String.valueOf(resData.get("vactno")).trim());
+				result.setEscrowYn(String.valueOf(resData.get("EscrowYn")).trim());
+				result.setEscrowCustNo(String.valueOf(resData.get("EscrowCustNo")).trim());
+				
+				mobileService.addPayInfoDetail(result);
+			}
+			params.append("code=").append(resData.get("ReplyCode"));
+			params.append("&message=").append(resData.get("ReplyMessage"));
+			//params.append("&mxissueno=").append(resData.get("MxIssueNO"));
+		} else { //인증실패
+			params.append("code=").append(rtnCode);
+			params.append("&message=").append(rtnMsg);
+		}
 		
 		return "redirect:/hybrid/index.html#!/paymentResult?"+params.toString();
 	}

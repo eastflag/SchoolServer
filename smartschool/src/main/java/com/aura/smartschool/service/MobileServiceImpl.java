@@ -1350,8 +1350,8 @@ public class MobileServiceImpl implements MobileService {
 	}
 
 	@Override
-	public void addPayInfoMobile(PaymentResultVO result) throws PersistenceException {
-		mobileMapper.insertPayInfoMobile(result);
+	public void addPayInfoDetail(PaymentResultVO result) throws PersistenceException {
+		mobileMapper.insertPayInfoDetail(result);
 	}
 
 	@Override

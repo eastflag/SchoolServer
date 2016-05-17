@@ -1,12 +1,13 @@
 <article class="payment">
 	<form id="fdpay" name="fdpay" action="https://testpg.firstpay.co.kr/jsp/mobile.jsp" target="_self" method="post" accept-charset="euc-kr">
 		<input type="hidden" name="MxID" value="testcorp" />
-		<input type="hidden" name="MxIssueNO" value="" />
+		<input type="hidden" name="MxIssueNO" value="" ng-model="mxissueno" />
 		<input type="hidden" name="MxIssueDate" value="" />
 		<input type="hidden" name="CcProdDesc" value="" />
 		<input type="hidden" name="Amount" value="" />
 		<input type="hidden" name="SelectPayment" value="" />
-		<input type="hidden" name="rtnUrl" value="https://aurasystem.kr:9000/smarthealth/payment/result.html" />
+		<!-- <input type="hidden" name="rtnUrl" value="https://aurasystem.kr:9000/smarthealth/payment/result.html" /> -->
+		<input type="hidden" name="rtnUrl" value="http://localhost:9000/smarthealth/payment/result.html" />
 		<input type="hidden" name="ItemInfo" value="2" />
 		<input type="hidden" name="Currency" value="KRW" />
 		<input type="hidden" name="Tmode" value="MOB" />
@@ -20,12 +21,12 @@
 		<input type="hidden" name="URL" value="" />
 		<input type="hidden" name="DBPATH" value="" />
 		<!-- 부가정보 관련 파라메터 -->
-		<input name="CcNameOnCard" value="{{payUserName}}" />
-		<input name="PhoneNO" value="{{payUserPhone}}" />
-		<input name="Email" value="" />
-		<input name="SupportDate" value="" />
-		<input name="PAYDATA" value="" />
-		<input type="hidden" name="ApprtnUrl" value="smarthealth" /><!-- SmartHealth앱 호출 -->
+		<input type="hidden" name="CcNameOnCard" value="{{payUserName}}" />
+		<input type="hidden" name="PhoneNO" value="{{payUserPhone}}" />
+		<input type="hidden" name="Email" value="" />
+		<input type="hidden" name="SupportDate" value="" />
+		<input type="hidden" name="PAYDATA" value="" />
+		<input type="hidden" name="ApprtnUrl" value="smarthealth://" />
 		
 		<fieldset>
 			<legend class="screen_out">상품 결제</legend>
@@ -103,6 +104,10 @@
 			sec = "0" + sec;
 		}
 		return year + month + date + hour + min + sec;
+	}
+	
+	function getMxissueno(){
+		return document.fdpay.MxIssueNO.value;
 	}
 	
 	function setGoodsInfo(prodDesc,amount){

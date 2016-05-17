@@ -3189,7 +3189,11 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		setSelectPayment(payType);
 	}
 	
+	$scope.mxissueno = '';
 	$scope.payproc = function(){
+		$scope.mxissueno = $window.getMxissueno();
+		
+		console.log('$scope.mxissueno => ',$scope.mxissueno);
 		if($scope.Amount == ''){
 			UTIL.alert('결제상품을 선택하세요.');
 			return;
@@ -3199,7 +3203,7 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 			return;
 		}else{
 			$timeout(function(){
-				var payment_info = {member_id:$scope.target_id, goods_id:$scope.goods_id, amount:$scope.Amount, days:$scope.days, payment_type:$scope.SelectPayment};
+				var payment_info = {member_id:$scope.target_id, mxissueno:$scope.mxissueno, goods_id:$scope.goods_id, amount:$scope.Amount, days:$scope.days, payment_type:$scope.SelectPayment};
 				$cookies.putObject("payment_info", payment_info,{'path': '/hybrid'});
 				
 				makedata();
@@ -3225,49 +3229,37 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		return y+'-'+m+'-'+d;
 	}
 	
-	$scope.mreturn = null;
 	$scope.paymentResult = 0;
-	$scope.rtnCode = '';
-	$scope.rtnMessage = '';
+	$scope.replyCode = '';
+	$scope.replyMessage = '';
 	//결제결과
-	$scope.result = function(){
-		$scope.mreturn = $location.search();
-		if($scope.mreturn.code == '0000'){
-			PaymentSvc.result({fdtid:$scope.mreturn.fdtid, mxid:$scope.mreturn.mxid, mxissueno:$scope.mreturn.mxissueno})
+	$scope.payResult = function(){
+		var params = $location.search();
+		console.log('params=>',params);
+		var code = params.code;
+		var message = params.message;
+		
+		if(code == '0000'){
+			$scope.paymentResult = 1;
+			var payment_info = $cookies.getObject("payment_info");
+			//결제정보 등록
+			PaymentSvc.addPayInfo({member_id:payment_info.member_id,pay_date:$scope.getPayDate(),mxIssueNo:payment_info.mxissueno, goods_id:payment_info.goods_id})
 				.success(function(response){
-					if(response.data.ReplyCode=='0000'){
-						$scope.paymentResult = 1;
-						console.log("Payment Info =>",response);
-						//결제정보 등록
-						console.log("결제정보 등록");
-						var payment_info = $cookies.getObject("payment_info");
-						var data = {member_id:payment_info.member_id,pay_date:$scope.getPayDate(),mxIssueNo:response.data.MxIssueNO, goods_id:payment_info.goods_id};
-						PaymentSvc.addPayInfo(data)
-							.success(function(){
-								console.log('결제정보 등록성공');
-							})
-							.error(function(data, status){
-								console.log('결제정보 등록실패');
-							});
-						$cookies.remove("payment_info",{'path': '/hybrid'});
-					}else{
-						$scope.paymentResult = 0;
-						$scope.rtnCode = response.data.ReplyCode;
-						$scope.rtnMessage = returnCode(response.data.ReplyCode);
-					}
+					console.log('결제상세정보 등록');
 				})
-				.error(function(data, status) {
-					$scope.paymentResult = 0;
-					UTIL.alert("error : " + data.message);
+				.error(function(data, status){
+					console.log('결제정보 등록실패');
 				});
+			$cookies.remove("payment_info",{'path': '/hybrid'});
 		} else {
 			$scope.paymentResult = 0;
-			$scope.rtnCode = $scope.mreturn.code;
-			$scope.rtnMessage = returnCode($scope.rtnCode);
+			$scope.replyCode = code;
+			$scope.replyMessage = message;
 		}
-		$timeout(function(){
-			$cookies.remove("payment_info",{'path': '/hybrid'});
-		},5000);
+	}
+	
+	$scope.reTry = function(){
+		$window.location.reload();
 	}
 	
 	$scope.payInfoList = [];
@@ -3309,7 +3301,7 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		break;
 	case '/paymentResult':
 		$scope.init('body_gray','스마트 이용권 구매',true,true);
-		$scope.result();
+		$scope.payResult();
 		break;
 	case '/paymentList':
 		$scope.init('body_gray','결제내역',true,true);
