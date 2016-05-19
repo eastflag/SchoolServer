@@ -1174,32 +1174,32 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	//가족구성원 정보수정
 	$scope.modMember = function(){
-		if($scope.v_mdn==null){
+		if($scope.v_mdn==''){
 			UTIL.alert('휴대전화번호을 입력하세요.');
 			return false;
 		}
-		else if($scope.v_name==null){
+		else if($scope.v_name==''){
 			UTIL.alert('이름을 입력하세요.');
 			return false;
 		}
-		else if($scope.v_relation==null){
+		else if($scope.v_relation==''){
 			UTIL.alert('관계를 입력하세요.');
 			return false;
 		}
 		else if($scope.v_is_parent==0){
-			if($scope.v_birth_date==null){
+			if($scope.v_birth_date==''){
 				UTIL.alert('생년월일을 입력하세요.');
 				return false;
-			}else if($scope.v_school_id==null || $scope.v_school_name==null){
+			}else if($scope.v_school_id=='' || $scope.v_school_name==''){
 				UTIL.alert('학교명을 입력하세요.');
 				return false;
-			}else if($scope.v_school_grade==null){
+			}else if($scope.v_school_grade==''){
 				UTIL.alert('학년을 입력하세요.');
 				return false;
-			}else if($scope.v_school_class == null){
+			}else if($scope.v_school_class == ''){
 				UTIL.alert('반을 입력하세요.');
 				return false;
-			}else if($scope.v_sex == null || $scope.v_sex == ''){
+			}else if($scope.v_sex == ''){
 				UTIL.alert('성별을 선택하세요.');
 				return false;
 			}
