@@ -1006,18 +1006,18 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 		$scope.family_mode_text2 = '';
 		$scope.family_relation_text = '';
 
-		$scope.v_is_parent = null;
-		$scope.v_member_id = null;
-		$scope.v_mdn = null;
-		$scope.v_name = null;
-		$scope.v_relation = null;
-		$scope.v_birth_date = null;
-		$scope.v_school_id = null;
-		$scope.v_school_name = null;
-		$scope.v_school_grade = null;
-		$scope.v_school_class = null;
-		$scope.v_sex = null;
-		$scope.v_photo = null;
+		$scope.v_is_parent = '';
+		$scope.v_member_id = '';
+		$scope.v_mdn = '';
+		$scope.v_name = '';
+		$scope.v_relation = '';
+		$scope.v_birth_date = '';
+		$scope.v_school_id = '';
+		$scope.v_school_name = '';
+		$scope.v_school_grade = '';
+		$scope.v_school_class = '';
+		$scope.v_sex = '';
+		$scope.v_photo = '';
 		
 		commonLayerClose('family_add01');
 	}
@@ -1102,75 +1102,74 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 	
 	//가족구성원 추가
 	$scope.addMember = function(){
-		if($scope.v_mdn==null){
+		if($scope.v_mdn==''){
 			UTIL.alert('휴대전화번호을 입력하세요.');
 			return false;
 		}
-		else if($scope.v_name==null){
+		else if($scope.v_name==''){
 			UTIL.alert('이름을 입력하세요.');
 			return false;
 		}
-		else if($scope.v_relation==null){
+		else if($scope.v_relation==''){
 			UTIL.alert('관계를 입력하세요.');
 			return false;
 		}
 		else if($scope.v_is_parent==0){
-			if($scope.v_birth_date==null){
+			if($scope.v_birth_date==''){
 				UTIL.alert('생년월일을 입력하세요.');
 				return false;
-			}else if($scope.v_school_id==null || $scope.v_school_name==null){
+			}else if($scope.v_school_id=='' || $scope.v_school_name==''){
 				UTIL.alert('학교명을 입력하세요.');
 				return false;
-			}else if($scope.v_school_grade==null){
+			}else if($scope.v_school_grade==''){
 				UTIL.alert('학년을 입력하세요.');
 				return false;
-			}else if($scope.v_school_class == null){
+			}else if($scope.v_school_class == ''){
 				UTIL.alert('반을 입력하세요.');
 				return false;
-			}else if($scope.v_sex == null || $scope.v_sex == ''){
+			}else if($scope.v_sex == ''){
 				UTIL.alert('성별을 선택하세요.');
 				return false;
 			}
 		}
-		else{
-			var data = null;
-			var param = null;
-			if($scope.v_is_parent==1){
-				param = {
-					home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name,
-					relation:$scope.v_relation, is_parent:$scope.v_is_parent
-				};
-			}else{
-				param = {
-					home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name, relation:$scope.v_relation,
-					is_parent:$scope.v_is_parent, sex:$scope.v_sex, birth_date:$scope.v_birth_date,
-					school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
-				};
-			}
-			if($scope.profile){
-				data = {profile:Upload.dataUrltoBlob($scope.profile), data:JSON.stringify(param)};
-			}else{
-				data = {profile:null,data:JSON.stringify(param)};
-			}
-			
-			$scope.upload = Upload.upload({
-				url: '/web/api/addMember',
-				data : data
-			}).success(function(response) {
-				if(response.result==0){
-					if(!$scope.getAddCompleteYn()){
-						$scope.clear();
-						commonLayerOpen('add_member_complete');
-					}else{
-						$window.location.reload();
-					}
-				}else{
-					UTIL.alert(response.msg);
-				}
-			}).error(function(data, status) {
-				UTIL.alert("error : " + data.message);
-			});
+		console.log('가족추가');
+		var data = null;
+		var param = null;
+		if($scope.v_is_parent==1){
+			param = {
+				home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name,
+				relation:$scope.v_relation, is_parent:$scope.v_is_parent
+			};
+		}else{
+			param = {
+				home_id:$scope.home_id, mdn:$scope.v_mdn, name:$scope.v_name, relation:$scope.v_relation,
+				is_parent:$scope.v_is_parent, sex:$scope.v_sex, birth_date:$scope.v_birth_date,
+				school_id:$scope.v_school_id, school_grade:$scope.v_school_grade, school_class:$scope.v_school_class
+			};
 		}
+		if($scope.profile){
+			data = {profile:Upload.dataUrltoBlob($scope.profile), data:JSON.stringify(param)};
+		}else{
+			data = {profile:null,data:JSON.stringify(param)};
+		}
+		
+		$scope.upload = Upload.upload({
+			url: '/web/api/addMember',
+			data : data
+		}).success(function(response) {
+			if(response.result==0){
+				if(!$scope.getAddCompleteYn()){
+					$scope.clear();
+					commonLayerOpen('add_member_complete');
+				}else{
+					$window.location.reload();
+				}
+			}else{
+				UTIL.alert(response.msg);
+			}
+		}).error(function(data, status) {
+			UTIL.alert("error : " + data.message);
+		});
 	};
 	
 	//가족구성원 정보수정
