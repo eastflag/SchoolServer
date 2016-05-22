@@ -42,6 +42,11 @@ public class AuraHomeController {
 	@Autowired
 	private MobileService mobileService;
 	
+	/**
+	 * 랜덤 숫자생성
+	 * @param len
+	 * @return
+	 */
 	private String randomString(int len){
 		String n = "0123456789";
 		Random rnd = new Random();
@@ -104,6 +109,13 @@ public class AuraHomeController {
 		}
 	}
 	
+	/**
+	 * 인증번호 확인
+	 * @param sms
+	 * @param reqst
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping("/web/api/confirmCertify")
 	public ResultData<Map<String,Object>> confirmCertify(
 			@RequestBody SmsVO sms,
@@ -195,7 +207,7 @@ public class AuraHomeController {
 	 * @param in
 	 * @return
 	 */
-	@RequestMapping(value="home/api/getPress")
+	@RequestMapping(value="/web/api/getPress")
 	public ResultData<PressVO> getPress(@RequestBody PressVO in){
 		PressVO rs = mobileService.getPress(in);
 		if(rs != null){

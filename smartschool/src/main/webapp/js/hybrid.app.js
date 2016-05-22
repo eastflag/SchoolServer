@@ -1132,7 +1132,7 @@ app.controller('FamilyCtrl',['$scope', '$rootScope', '$cookies', '$window', '$lo
 				return false;
 			}
 		}
-		console.log('가족추가');
+		
 		var data = null;
 		var param = null;
 		if($scope.v_is_parent==1){
@@ -3179,20 +3179,21 @@ app.controller('PaymentCtrl',['$scope', '$rootScope', '$window', '$location', '$
 		$scope.Amount = goods.price;
 		$scope.days = goods.days;
 		
-		setGoodsInfo(goods.name,goods.price);
+		$window.setGoodsInfo(goods.name,goods.price);
 	}
 	
 	$scope.setSelectPayment = function(payType){
 		$scope.SelectPayment = payType;
 		
-		setSelectPayment(payType);
+		$window.setSelectPayment(payType);
 	}
 	
 	$scope.mxissueno = '';
 	$scope.payproc = function(){
 		$scope.mxissueno = $window.getMxissueno();
-		
+		$scope.SelectPayment = $window.getSelectPayment();
 		console.log('$scope.mxissueno => ',$scope.mxissueno);
+		
 		if($scope.Amount == ''){
 			UTIL.alert('결제상품을 선택하세요.');
 			return;

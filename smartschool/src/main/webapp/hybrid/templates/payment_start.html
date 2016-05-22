@@ -1,7 +1,7 @@
 <article class="payment">
 	<form id="fdpay" name="fdpay" action="https://testpg.firstpay.co.kr/jsp/mobile.jsp" target="_self" method="post" accept-charset="euc-kr">
 		<input type="hidden" name="MxID" value="testcorp" />
-		<input type="hidden" name="MxIssueNO" value="" ng-model="mxissueno" />
+		<input type="hidden" name="MxIssueNO" value="" />
 		<input type="hidden" name="MxIssueDate" value="" />
 		<input type="hidden" name="CcProdDesc" value="" />
 		<input type="hidden" name="Amount" value="" />
@@ -46,11 +46,11 @@
 				</div>
 				<h2>결제 수단</h2>
 				<div class="payment_type">
-					<input type="radio" id="payment01" name="payType" ng-click="setSelectPayment('CRDT')" value="CRDT" />
+					<input type="radio" id="payment01" name="payType" onclick="UTIL.alert('준비중입니다.'); return false;" value="CRDT" />
 					<label for="payment01">카드 결제</label>
-					<input type="radio" id="payment02" name="payType" ng-click="setSelectPayment('ACCT')" value="ACCT" />
+					<input type="radio" id="payment02" name="payType" onclick="UTIL.alert('준비중입니다.'); return false;" value="ACCT" />
 					<label for="payment02">실시간 계좌이체</label>
-					<input type="radio" id="payment03" name="payType" ng-click="setSelectPayment('HP')" value="HP" />
+					<input type="radio" id="payment03" name="payType" ng-click="setSelectPayment('HP')" value="HP" checked="checked" />
 					<label for="payment03">휴대폰 결제</label>
 				</div>
 				<a href="javascript:;" class="btn_common_blue_line box_round" ng-click="payproc()">결제하기</a>
@@ -118,6 +118,10 @@
 		document.fdpay.SelectPayment.value = payType;
 	}
 	
+	function getSelectPayment(payType){
+		return document.fdpay.SelectPayment.value;
+	}
+	
 	//결제 창 호출 요청 전문 생성 처리
 	function makedata(){
 		var mxid = document.fdpay.MxID.value;
@@ -162,5 +166,7 @@
 	
 	$(document).ready(function(){
 		initValue();
+		
+		setSelectPayment('HP');
 	});
 </script>

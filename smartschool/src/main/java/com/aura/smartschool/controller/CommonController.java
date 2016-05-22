@@ -1,16 +1,9 @@
 package com.aura.smartschool.controller;
 
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.util.List;
 
-import javax.jws.WebParam.Mode;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -18,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,8 +19,6 @@ import org.springframework.web.servlet.View;
 
 import com.aura.smartschool.Constant;
 import com.aura.smartschool.domain.AttachVO;
-import com.aura.smartschool.domain.HomeVO;
-import com.aura.smartschool.domain.MemberVO;
 import com.aura.smartschool.domain.PaymentResultVO;
 import com.aura.smartschool.service.MobileService;
 import com.aura.smartschool.util.FileUtil;
@@ -45,6 +35,10 @@ public class CommonController {
 	
 	/**
 	 * 에디터 이미지 파일 업로드
+	 * @param request
+	 * @param response
+	 * @param upload
+	 * @param model
 	 */
 	@RequestMapping(value="/editor/image/upload", method = RequestMethod.POST)
 	public void editorImageUpload(
@@ -78,6 +72,11 @@ public class CommonController {
 		}
 	}
 	
+	/**
+	 * 첨부파일 다운로드
+	 * @param file_id
+	 * @return
+	 */
 	@RequestMapping("/download.html")
 	public View downAttachFile(@RequestParam(value="f") int file_id){
 		AttachVO attach = new AttachVO();
@@ -86,10 +85,14 @@ public class CommonController {
 		return FileUtil.download(mobileService.getAttachFileById(attach));
 	}
 	
+	/**
+	 * 결제 승인 및 완료 시, 결제상세 정보 가져오기
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping("/smarthealth/payment/result.html")
-	public String paymentResult(
-			HttpServletRequest request
-			,ModelMap model){
+	public String paymentResult(HttpServletRequest request){
 		
 		//RECV DATA
 		String rtnCode = "";

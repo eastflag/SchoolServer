@@ -699,7 +699,7 @@ public class AdminController {
 	/**
 	 * 언론자료 목록
 	 * @param search
-	 * @return
+	 * @return List<PressVO>
 	 */
 	@RequestMapping(value="/admin/api/getPressList")
 	public ResultDataTotal<List<PressVO>> getPressList(@RequestBody SearchVO search){
@@ -1037,7 +1037,11 @@ public class AdminController {
 		return new ResultData<List<StatVO>>(0, "success", list);
 	}
 	
-	//결제상품 목록조회
+	/**
+	 * 결제상품 목록조회
+	 * @param search
+	 * @return List<GoodsVO>
+	 */
 	@RequestMapping("/admin/api/getGoodsList")
 	public ResultData<List<GoodsVO>> getGoodsList(@RequestBody SearchVO search) {
 		logger.debug("/admin/api/getGoodsList--------------------------------------------------");
@@ -1047,7 +1051,11 @@ public class AdminController {
 		return new ResultDataTotal<List<GoodsVO>>(0, "success", goodsList, total);
 	}
 
-	//결제상품 등록
+	/**
+	 * 결제상품 등록
+	 * @param goods
+	 * @return
+	 */
 	@RequestMapping(value="/admin/api/addGoods")
 	public Result addGoods(@RequestBody GoodsVO goods) {
 		logger.debug("/admin/api/addGoods---------------------------------------------------");
@@ -1065,7 +1073,11 @@ public class AdminController {
 		}
 	}
 
-	//결제상품 수정
+	/**
+	 * 결제상품 수정
+	 * @param goods
+	 * @return
+	 */
 	@RequestMapping(value="/admin/api/modifyGoods")
 	public Result modifyGoods(@RequestBody GoodsVO goods) {
 		logger.debug("/admin/api/modifyGoods---------------------------------------------------");
@@ -1083,7 +1095,11 @@ public class AdminController {
 		}
 	}
 	
-	//결제상품 삭제
+	/**
+	 * 결제상품 삭제
+	 * @param goods
+	 * @return
+	 */
 	@RequestMapping("/admin/api/removeGoods")
 	public Result removeGoods(@RequestBody GoodsVO goods) {
 		logger.debug("/admin/api/removeGoods---------------------------------------------------");

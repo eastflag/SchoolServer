@@ -564,6 +564,11 @@ public class ApiController {
 		return result;
 	}
 	
+	/**
+	 * 체중정보 조회
+	 * @param MemberVO m
+	 * @return MeasureItem
+	 */
 	@RequestMapping("/api/getWeight")
 	public Result getWeight(@RequestBody MemberVO m) {
 		logger.debug("/api/getWeight-----------------------------------------------------");
@@ -896,6 +901,11 @@ public class ApiController {
 		return new ResultData<VideoTimeVO>(0, "success", videoTime);
 	}
 	
+	/**
+	 * 앱버전 가져오기
+	 * @param inOsInfo
+	 * @return OsInfoVO 버전정보
+	 */
 	@RequestMapping("/api/getOsInfo")
 	public ResultData<OsInfoVO> getVideoListByInfoType(@RequestBody OsInfoVO inOsInfo) {
 		logger.debug("/api/getVideoListByInfoType--------------------------------------------------");
@@ -948,7 +958,10 @@ public class ApiController {
 		return new ResultData<List<DiningVO>>(0, "success", diningList);
 	}
 	
-	//도전건강 목록[상위 5개]
+	/**
+	 * 도전건강 목록[상위 5개]
+	 * @return
+	 */
 	@RequestMapping(value="/api/getChallengeTop5List")
 	public ResultData<List<ChallengeVO>> getChallengeTop5List(){
 		return new ResultData<List<ChallengeVO>>(0,"success", mobileService.getChallengeTop5List());
@@ -980,7 +993,11 @@ public class ApiController {
 		}
 	}
 	
-	//건강메거진 목록 조회
+	/**
+	 * 건강메거진 목록 조회
+	 * @param search
+	 * @return List<MagazineVO> 매거진 목록
+	 */
 	@RequestMapping("/api/getMagazineList")
 	public ResultData<List<MagazineVO>> getMagazineList(@RequestBody SearchVO search){
 		List<MagazineVO> list = mobileService.getMagazineList(search);
@@ -991,7 +1008,11 @@ public class ApiController {
 		}
 	}
 	
-	//건강메거진 상세
+	/**
+	 * 건강메거진 상세
+	 * @param in
+	 * @return MagazineVO
+	 */
 	@RequestMapping("/api/getMagazine")
 	public ResultData<MagazineVO> getMagazineView(@RequestBody MagazineVO in){
 		MagazineVO vo = mobileService.getMagazine(in);
@@ -1002,7 +1023,11 @@ public class ApiController {
 		}
 	}
 	
-	//언론자료 목록 조회
+	/**
+	 * 언론자료 목록 조회
+	 * @param search
+	 * @return List<PressVO>
+	 */
 	@RequestMapping("/api/getPressList")
 	public ResultData<List<PressVO>> getPressList(@RequestBody SearchVO search){
 		List<PressVO> list = mobileService.getPressList(search);
@@ -1010,7 +1035,11 @@ public class ApiController {
 		return new ResultData<List<PressVO>>(0, "success", list);
 	}
 	
-	//학교급식목록 가져오기
+	/**
+	 * 학교급식목록 가져오기
+	 * @param in
+	 * @return List<Map<String,Object>>
+	 */
 	@RequestMapping("/api/getSchoolMenuList")
 	public ResultData<List<Map<String,Object>>> getSchoolMenuList(@RequestBody SearchVO in){
 		SchoolVO school = mobileService.getSchoolById(in.getSchool_id());
@@ -1038,7 +1067,11 @@ public class ApiController {
 		return new ResultData<List<Map<String,Object>>>(100,"Menu does not exist.", null);
 	}
 	
-	//학교정보알리미(학사일정) 가져오기
+	/**
+	 * 학교정보알리미(학사일정) 가져오기
+	 * @param in
+	 * @return List<Map<String,Object>>
+	 */
 	@RequestMapping("/api/getSchoolScheduleList")
 	public ResultData<List<Map<String,Object>>> getSchoolScheduleList(@RequestBody SearchVO in){
 		SchoolVO school = mobileService.getSchoolById(in.getSchool_id());
@@ -1067,7 +1100,11 @@ public class ApiController {
 		return new ResultData<List<Map<String,Object>>>(100,"Menu does not exist.", null);
 	}
 	
-	//신체측정목록 카운트
+	/**
+	 * 학생의 신체측정목록 카운트
+	 * @param SearchVO in(member_id,search_year)
+	 * @return
+	 */
 	@RequestMapping("/api/getMeasureHistoryCount")
 	public ResultData<Integer> getMeasureHistoryCount(@RequestBody SearchVO in){
 		if(in.getSearch_year()==0){
@@ -1076,7 +1113,11 @@ public class ApiController {
 		return new ResultData<Integer>(0,"success", mobileService.getMeasureHistoryCount(in));
 	}
 	
-	//신체측정(키)목록
+	/**
+	 * 학생의 신체측정(키)목록
+	 * @param SearchVO in
+	 * @return GrowthInfo
+	 */
 	@RequestMapping("/api/getHeightHistoryList")
 	public ResultData<GrowthInfo> getHeightHistoryList(@RequestBody SearchVO in){
 		logger.debug("/api/getHeightHistoryList-----------------------------------------------------");
@@ -1091,7 +1132,11 @@ public class ApiController {
 		}
 	}
 	
-	//신체측정(체중)목록
+	/**
+	 * 학생의 신체측정(체중)목록
+	 * @param MemberVO in
+	 * @return
+	 */
 	@RequestMapping("/api/getWeightHistoryList")
 	public ResultData<GrowthInfo> getWeightHistoryList(@RequestBody SearchVO in){
 		logger.debug("/api/getWeightHistoryList-----------------------------------------------------");
@@ -1106,7 +1151,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹 - 신장
+	/**
+	 * 랭킹정보 조회 - 신장
+	 * @param MemberVO in
+	 * @return RankingItem
+	 */
 	@RequestMapping("/api/getRankingHeight")
 	public ResultData<RankingItem> getRankingHeight(@RequestBody MemberVO in){
 		logger.debug("/api/getRankingHeight-----------------------------------------------------");
@@ -1118,7 +1167,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹 - 체중 
+	/**
+	 * 랭킹정보 조회 - 체중
+	 * @param MemberVO in
+	 * @return RankingItem
+	 */
 	@RequestMapping("/api/getRankingWeight")
 	public ResultData<RankingItem> getRankingWeight(@RequestBody MemberVO in){
 		logger.debug("/api/getRankingWeight-----------------------------------------------------");
@@ -1130,7 +1183,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹 - BMI 
+	/**
+	 * 랭킹정보 조회 - BMI 
+	 * @param MemberVO in
+	 * @return RankingItem
+	 */
 	@RequestMapping("/api/getRankingBmi")
 	public ResultData<RankingItem> getRankingBmi(@RequestBody MemberVO in){
 		logger.debug("/api/getRankingBmi-----------------------------------------------------");
@@ -1142,7 +1199,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹 - 근육량 
+	/**
+	 * 랭킹정보 조회 - 근육량 
+	 * @param MemberVO in
+	 * @return RankingItem
+	 */
 	@RequestMapping("/api/getRankingMuscle")
 	public ResultData<RankingItem> getRankingMuscle(@RequestBody MemberVO in){
 		logger.debug("/api/getRankingMuscle-----------------------------------------------------");
@@ -1154,7 +1215,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹 - 체지방율 
+	/**
+	 * 랭킹정보 조회 - 체지방율 
+	 * @param MemberVO in
+	 * @return RankingItem
+	 */
 	@RequestMapping("/api/getRankingFat")
 	public ResultData<RankingItem> getRankingFat(@RequestBody MemberVO in){
 		logger.debug("/api/getRankingFat-----------------------------------------------------");
@@ -1166,7 +1231,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹목록 - 신장
+	/**
+	 * 랭킹목록 - 신장
+	 * @param SearchVO in
+	 * @return RankingListItem
+	 */
 	@RequestMapping("/api/getRankingHeightList")
 	public ResultData<RankingListItem> getRankingHeightList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingHeightList-----------------------------------------------------");
@@ -1178,7 +1247,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹목록 - 체중
+	/**
+	 * 랭킹목록 - 체중
+	 * @param SearchVO in
+	 * @return RankingListItem
+	 */
 	@RequestMapping("/api/getRankingWeightList")
 	public ResultData<RankingListItem> getRankingWeightList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingWeightList-----------------------------------------------------");
@@ -1190,7 +1263,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹목록 - bmi
+	/**
+	 * 랭킹목록 - BMI
+	 * @param SearchVO in
+	 * @return RankingListItem
+	 */
 	@RequestMapping("/api/getRankingBmiList")
 	public ResultData<RankingListItem> getRankingBmiList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingBmiList-----------------------------------------------------");
@@ -1202,7 +1279,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹목록 - 근육량
+	/**
+	 * 랭킹목록 - 근육량
+	 * @param SearchVO in
+	 * @return RankingListItem
+	 */
 	@RequestMapping("/api/getRankingMuscleList")
 	public ResultData<RankingListItem> getRankingMuscleList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingMuscleList-----------------------------------------------------");
@@ -1214,7 +1295,11 @@ public class ApiController {
 		}
 	}
 	
-	//랭킹목록 - 체지방율
+	/**
+	 * 랭킹목록 - 체지방율
+	 * @param SearchVO in
+	 * @return RankingListItem
+	 */
 	@RequestMapping("/api/getRankingFatList")
 	public ResultData<RankingListItem> getRankingFatList(@RequestBody SearchVO in){
 		logger.debug("/api/getRankingFatList-----------------------------------------------------");
@@ -1226,15 +1311,23 @@ public class ApiController {
 		}
 	}
 	
-	//회원정보 조회
+	/**
+	 * 회원정보 조회
+	 * @param MemberVO in(member_id)
+	 * @return MemberVO
+	 */
 	@RequestMapping("/api/getMember")
-	public ResultData<MemberVO> getLoginUserInfo(@RequestBody MemberVO member) {
+	public ResultData<MemberVO> getLoginUserInfo(@RequestBody MemberVO in) {
 		logger.debug("/api/getMember--------------------------------------------------");
 		
-		return new ResultData<MemberVO>(0, "success", mobileService.selectMember(member));
+		return new ResultData<MemberVO>(0, "success", mobileService.selectMember(in));
 	}
 	
-	//결제상품 조회
+	/**
+	 * 결제상품 조회
+	 * @param search
+	 * @return List<GoodsVO>
+	 */
 	@RequestMapping("/api/getGoodsList")
 	public ResultData<List<GoodsVO>> getGoodsList(@RequestBody SearchVO search) {
 		logger.debug("/api/getGoodsList--------------------------------------------------");
@@ -1243,6 +1336,11 @@ public class ApiController {
 		return new ResultData<List<GoodsVO>>(0, "success", goodsList);
 	}
 	
+	/**
+	 * 결제내역 조회
+	 * @param in(home_id)
+	 * @return List<PayInfoVO>
+	 */
 	@RequestMapping("/api/getPayInfoList")
 	public ResultData<List<PayInfoVO>> getPayInfoList(@RequestBody MemberVO in){
 		
