@@ -164,10 +164,9 @@ var UTIL = function() {
 	 */
 	var _logout = function(success, error) {
 		var data = {
-				'type'		: NATIVE.CONST_COMMAND_USER_LOGOUT
-			};
-			NATIVE.HYBRID.EXECUTE(data, success, error);
+			'type'		: NATIVE.CONST_COMMAND_USER_LOGOUT
 		};
+		NATIVE.HYBRID.EXECUTE(data, success, error);
 	};
 	
 	/**
