@@ -300,7 +300,7 @@ app.service('SafeGuardSvc', function($http) {
 	};
 });
 
-app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', 'highlighter', 'Upload', 'MainSvc', 'LoginSvc',function($scope, $rootScope, $cookies, $window, $location, highlighter, Upload, MainSvc, LoginSvc){
+app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$location', '$timeout', 'highlighter', 'Upload', 'MainSvc', 'LoginSvc',function($scope, $rootScope, $cookies, $window, $location, $timeout, highlighter, Upload, MainSvc, LoginSvc){
 	//기본정보(로그인 정보)
 	$scope.home_id = null;
 	$scope.member_id = null;
@@ -335,22 +335,21 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	//로그아웃
 	$scope.logout = function() {
 		console.log('----------------- 로그아웃 --------------------');
-		gnbHide();
-		
-		//자동로그인 해제
-		$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'N'});
+		UTIL.logout(function(){
+			gnbHide();
+			//자동로그인 해제
+			$scope.setLoginData({home_id:$scope.home_id,mdn:$scope.mdn,isauto:'N'});
 
-		$cookies.remove("user_info",{'path': '/hybrid'});
-		$scope.clearStudent();
-		
-		$scope.home_id = null;
-		$scope.member_id = null;
-		$scope.mdn = null;
-		$scope.is_parent = null;
-		
-		UTIL.logout();
-		
-		$location.path('login');
+			$cookies.remove("user_info",{'path': '/hybrid'});
+			$scope.clearStudent();
+			
+			$scope.home_id = null;
+			$scope.member_id = null;
+			$scope.mdn = null;
+			$scope.is_parent = null;
+			
+			$location.path('login');
+		}, function(){});
 	}
 	
 	//이전페이지 이동
@@ -365,7 +364,7 @@ app.controller('MainCtrl',['$scope', '$rootScope', '$cookies', '$window', '$loca
 	//목록박스 너비,높이 설정
 	$scope.setWrappeDimension = function(target, h){
 		$(target).height($window.innerHeight - h);
-		setTimeout(function(){
+		$timeout(function(){
 			$(target).find('.list').width($(target).width());
 		},500);
 	}
