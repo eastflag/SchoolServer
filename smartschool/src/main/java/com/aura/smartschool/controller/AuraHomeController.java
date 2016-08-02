@@ -96,6 +96,7 @@ public class AuraHomeController {
 				session.setAttribute("member", member);
 				
 				String[] rMsg = SmsUtil.smsSend(sms);
+				logger.debug(rMsg[0]);
 				session.setAttribute("certifyKey", certifyKey);
 				Map<String,Object> data = new HashMap<String,Object>();
 				data.put("rsCode", rMsg[0]);

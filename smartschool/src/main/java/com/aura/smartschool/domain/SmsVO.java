@@ -5,9 +5,9 @@ public class SmsVO {
 	private final String userId = "aurasystem";
 	private final String source = "32c8990212758a346a50acbe6a106ee0 ";
 	
-	private final static String sphone1 = "070";
-	private final static String sphone2 = "4699";
-	private final static String sphone3 = "3679";
+	private final static String sphone1 = "1544";
+	private final static String sphone2 = "1284";
+	private final static String sphone3 = "";
 	
 	private String msg;
 	private String rphone;
