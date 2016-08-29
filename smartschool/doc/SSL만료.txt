@@ -1,0 +1,2 @@
+C:\web\git\SchoolServer\smartschool 
+에 keystore 화일 복사후 리부팅
